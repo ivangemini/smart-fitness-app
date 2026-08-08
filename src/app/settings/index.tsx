@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // @ts-ignore - expo-updates types are not available in this workspace, but the runtime module exists on device.
 import * as Updates from 'expo-updates';
 
@@ -40,6 +42,7 @@ export default function SettingsScreen() {
   const { formatDate, languagePreference, locale, setLanguagePreference, t } = useLocalization();
   const { weight, length, energy, setWeightUnit, setLengthUnit, setEnergyUnit } =
     useUnitPreferences();
+  const safeAreaInsets = useSafeAreaInsets();
   const [developerExpanded, setDeveloperExpanded] = useState(false);
   const styles = useMemo(() => createStyles(colors), [colors]);
   const unitCopy = getUnitCopy(locale);
@@ -111,7 +114,19 @@ export default function SettingsScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.content} style={styles.screen}>
+    <ScrollView
+      automaticallyAdjustKeyboardInsets
+      contentContainerStyle={[
+        styles.content,
+        {
+          paddingBottom: safeAreaInsets.bottom + Spacing.eight,
+          paddingTop: safeAreaInsets.top + Spacing.four,
+        },
+      ]}
+      keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+      style={styles.screen}>
       <View style={styles.container}>
         <View style={styles.headerRow}>
           <Pressable
@@ -119,7 +134,7 @@ export default function SettingsScreen() {
             accessibilityRole="button"
             onPress={() => router.back()}
             style={styles.backButton}>
-            <Text style={styles.backLabel}>‹</Text>
+            <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
           </Pressable>
           <View style={styles.headerCopy}>
             <Text style={styles.title}>{t('settings.title')}</Text>
@@ -244,9 +259,11 @@ export default function SettingsScreen() {
 }
 
 function SettingsSection({ children, title }: { children: React.ReactNode; title: string }) {
+  const { colors } = useAppTheme();
+
   return (
     <View style={stylesStatic.section}>
-      <Text style={stylesStatic.sectionTitle}>{title}</Text>
+      <Text style={[stylesStatic.sectionTitle, { color: colors.textSecondary }]}>{title}</Text>
       {children}
     </View>
   );
@@ -261,10 +278,14 @@ function SettingBlock({
   description: string;
   title: string;
 }) {
+  const { colors } = useAppTheme();
+
   return (
     <View style={stylesStatic.settingBlock}>
-      <Text style={stylesStatic.settingTitle}>{title}</Text>
-      <Text style={stylesStatic.settingDescription}>{description}</Text>
+      <Text style={[stylesStatic.settingTitle, { color: colors.textPrimary }]}>{title}</Text>
+      <Text style={[stylesStatic.settingDescription, { color: colors.textSecondary }]}>
+        {description}
+      </Text>
       {children}
     </View>
   );
@@ -273,7 +294,6 @@ function SettingBlock({
 const stylesStatic = StyleSheet.create({
   section: { gap: Spacing.two },
   sectionTitle: {
-    color: Colors.dark.textSecondary,
     fontSize: Typography.sectionTitle.fontSize,
     fontWeight: Typography.sectionTitle.fontWeight,
     letterSpacing: Typography.sectionTitle.letterSpacing,
@@ -281,12 +301,10 @@ const stylesStatic = StyleSheet.create({
   },
   settingBlock: { gap: Spacing.two },
   settingDescription: {
-    color: Colors.dark.textSecondary,
     fontSize: Typography.body.fontSize,
     lineHeight: Typography.body.lineHeight,
   },
   settingTitle: {
-    color: Colors.dark.textPrimary,
     fontSize: Typography.cardTitle.fontSize,
     fontWeight: Typography.cardTitle.fontWeight,
     lineHeight: Typography.cardTitle.lineHeight,
@@ -308,9 +326,7 @@ const createStyles = (colors: typeof Colors.light) =>
     container: { gap: Spacing.four, maxWidth: MaxContentWidth, width: '100%' },
     content: {
       alignItems: 'center',
-      paddingBottom: Spacing.eight,
       paddingHorizontal: Spacing.four,
-      paddingTop: Spacing.four,
     },
     developerCopy: { flex: 1, gap: Spacing.one },
     developerHeader: {
@@ -327,7 +343,7 @@ const createStyles = (colors: typeof Colors.light) =>
       lineHeight: Typography.caption.lineHeight,
       paddingHorizontal: Spacing.two,
     },
-    headerCopy: { flex: 1, gap: Spacing.one },
+    headerCopy: { flex: 1, gap: Spacing.one, minWidth: 0 },
     headerRow: { alignItems: 'flex-start', flexDirection: 'row', gap: Spacing.three },
     screen: { backgroundColor: colors.background, flex: 1 },
     section: { gap: Spacing.two },
@@ -340,11 +356,13 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     subtitle: {
       color: colors.textSecondary,
+      flexShrink: 1,
       fontSize: Typography.body.fontSize,
       lineHeight: Typography.body.lineHeight,
     },
     title: {
       color: colors.textPrimary,
+      flexShrink: 1,
       fontSize: Typography.screenTitle.fontSize,
       fontWeight: Typography.screenTitle.fontWeight,
       letterSpacing: Typography.screenTitle.letterSpacing,

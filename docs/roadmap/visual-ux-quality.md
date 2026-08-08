@@ -22,7 +22,8 @@ Updated: 2026-08-09
 - VUX-4F remaining Coach back touch targets PR #481 → `43eef67c867e88cd832acc719c5b4f8529d32783`.
 - VUX-4G Coach strategy back icon language PR #482 → `59cf4c2d80bb17c2a9f362c19fd35e032e17ac2c`.
 - VUX-4H secondary Coach back icon language PR #483 → `acb9de8df023ebfce8a04ded1697c2c4c22798e0`.
-- Active visual branch: `ui/coach-final-back-icons`.
+- VUX-4I complete Coach back navigation language PR #484 → `c8318d625a7eb8a489e3e51c005898cc283f0a37`.
+- Active visual branch: `ui/settings-shell-hardening`.
 - Backend is a separate workstream and remains outside this roadmap execution.
 
 Source/CI completion is not physical-device proof. OTA/EAS publication, native build/install, provider/production activation and store/release actions remain separately authorization-gated.
@@ -165,28 +166,41 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - Combined/recovery/limitation models, forms, review generation, sync, persistence and routes remain unchanged.
 - A focused source-contract guard protects the secondary navigation icon language.
 
-## VUX-4I — complete Coach back navigation language
+### VUX-4I — complete Coach back navigation language — PR #484
 
-**Status: active on `ui/coach-final-back-icons`.**
+- Coach History, Coach History Detail, Safety Recovery Preflight and Combined Proposal now use Lucide `ChevronLeft` instead of raw text `‹` for the back action.
+- Coach History and Coach History Detail now expose the localized `common.back` accessibility label.
+- Existing 44 pt geometry, history/filter behavior, preflight gating, combined proposal behavior, sync and persistence are unchanged.
+- A directory-level source guard prevents raw `‹` action glyphs from returning anywhere under `src/features/coach/screens`.
+
+## VUX-5A — Settings shell hardening
+
+**Status: active on `ui/settings-shell-hardening`.**
 
 Audit findings:
 
-- Coach History, Coach History Detail, Safety Recovery Preflight and Combined Proposal are the final Coach screen files still rendering a raw text `‹` back glyph.
-- Coach History and Coach History Detail also expose only `accessibilityRole="button"`; they lack the localized back label used elsewhere.
+- Root navigation intentionally hides the native header for `settings/index`, but Settings did not own top/bottom safe-area padding itself.
+- The screen contains editable Personal Details fields, while its parent `ScrollView` lacked keyboard-inset/dismissal ownership.
+- Settings still used a raw text `‹` back glyph despite the Lucide action-icon standard.
+- `SettingsSection` / `SettingBlock` presentation hard-coded `Colors.dark` text colors instead of the current app theme, which is incorrect under explicit light appearance.
+- Header copy did not explicitly own shrink/reflow behavior for narrow/large-text layouts.
 
 Current bounded remediation:
 
-- Replace the final raw glyphs with Lucide `ChevronLeft`.
-- Add the existing localized `common.back` label to History and History Detail.
-- Preserve existing 44 pt geometry, routes, history loading/filtering, preflight gating, combined proposal behavior, sync and persistence.
-- Add a directory-level source guard so no `.tsx` under `src/features/coach/screens` can regress to the raw `‹` action glyph.
+- Own top and bottom safe-area padding in the Settings scroll content while the native header remains hidden.
+- Add automatic keyboard insets, platform-appropriate dismissal and handled taps so Personal Details inputs/actions remain reachable.
+- Replace the Settings raw back glyph with Lucide `ChevronLeft` while preserving the existing 44 pt Pressable and localized label.
+- Make Settings section/block copy use `useAppTheme()` colors instead of static `Colors.dark` text colors.
+- Add `minWidth: 0` / `flexShrink` ownership to Settings header copy.
+- Add a focused source-contract guard.
+- Do not change preferences, account/session behavior, unit semantics, personal-details validation, sync, OTA developer actions or persistence.
 
 **Merge gate:** full exact-head Mobile CI.
 
 ## Remaining hierarchy / validation review order
 
-1. Finish VUX-4I and close the Coach navigation-language source audit.
-2. Profile / Settings, beginning with the already-confirmed raw Settings back glyph.
+1. Finish VUX-5A Settings shell hardening.
+2. Profile theme consistency: remove confirmed static `Colors.dark` presentation from the Profile root / Goals disclosure / Goals card without changing goal logic.
 3. Secondary Social surfaces.
 4. Return to Workouts/Nutrition/Progress only for concrete audited defects.
 
@@ -209,8 +223,8 @@ No source/CI result is physical-device evidence.
 
 ## Next execution order
 
-1. Finish VUX-4I and run full exact-head Mobile CI.
-2. Merge only the validated VUX-4I head.
-3. Continue to Profile / Settings from concrete source findings.
-4. Keep icon cleanup audit-driven; do not replace clear text actions or semantic symbols without a usability reason.
+1. Finish VUX-5A and run full exact-head Mobile CI.
+2. Merge only the validated VUX-5A head.
+3. Continue with the separate Profile theme-consistency package.
+4. Continue to Social only from concrete source findings.
 5. Keep backend, OTA/EAS/native/release and production/provider actions out of this autonomous UI sequence unless directly requested.
