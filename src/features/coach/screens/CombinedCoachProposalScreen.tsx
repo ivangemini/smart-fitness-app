@@ -299,9 +299,9 @@ const createStyles = (colors: typeof Colors.light) =>
       alignItems: 'center',
       backgroundColor: colors.surfaceSecondary,
       borderRadius: 999,
-      height: 36,
+      height: 44,
       justifyContent: 'center',
-      width: 36,
+      width: 44,
     },
     backLabel: { color: colors.textPrimary, fontSize: 24, lineHeight: 25 },
     body: {

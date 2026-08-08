@@ -228,9 +228,9 @@ const createStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
     backButton: {
       alignItems: 'center',
-      height: 42,
+      height: 44,
       justifyContent: 'center',
-      width: 42,
+      width: 44,
     },
     backLabel: {
       color: colors.textPrimary,
