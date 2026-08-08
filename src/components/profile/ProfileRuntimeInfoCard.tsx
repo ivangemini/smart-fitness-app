@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 
 import { getMobileApiBaseUrl } from '@/api';
@@ -5,6 +6,7 @@ import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 
 export function ProfileRuntimeInfoCard({
   channel,
@@ -19,6 +21,8 @@ export function ProfileRuntimeInfoCard({
   runtimeVersion: string;
   updateId: string;
 }) {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { t } = useLocalization();
   const apiBaseUrl = getMobileApiBaseUrl();
 
@@ -63,13 +67,13 @@ export function ProfileRuntimeInfoCard({
   );
 }
 
-const styles = {
+const createStyles = (colors: typeof Colors.light) => ({
   otaCard: {
     gap: Spacing.two,
     marginTop: Spacing.two,
   },
   otaLabel: {
-    color: Colors.dark.textSecondary,
+    color: colors.textSecondary,
     flex: 1,
     fontSize: Typography.metricSmall.fontSize,
     fontWeight: Typography.metricSmall.fontWeight,
@@ -77,31 +81,31 @@ const styles = {
     textTransform: Typography.metricSmall.textTransform,
   },
   otaRow: {
-    borderColor: Colors.dark.border,
+    borderColor: colors.border,
     borderTopWidth: 1,
     flexDirection: 'row' as const,
     gap: Spacing.two,
     paddingTop: Spacing.two,
   },
   otaTitle: {
-    color: Colors.dark.text,
+    color: colors.textPrimary,
     fontSize: Typography.bodyStrong.fontSize,
     fontWeight: Typography.bodyStrong.fontWeight,
     lineHeight: Typography.bodyStrong.lineHeight,
   },
   otaValue: {
-    color: Colors.dark.text,
+    color: colors.textPrimary,
     flex: 1,
     fontSize: Typography.caption.fontSize,
     lineHeight: Typography.caption.lineHeight,
     textAlign: 'right' as const,
   },
   title: {
-    color: Colors.dark.text,
+    color: colors.textPrimary,
     fontSize: Typography.sectionTitle.fontSize,
     fontWeight: Typography.sectionTitle.fontWeight,
     letterSpacing: Typography.sectionTitle.letterSpacing,
     lineHeight: Typography.sectionTitle.lineHeight,
     textTransform: Typography.sectionTitle.textTransform,
   },
-};
+});
