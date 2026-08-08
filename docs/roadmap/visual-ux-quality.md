@@ -28,7 +28,8 @@ Updated: 2026-08-09
 - VUX-5C Settings child theme and affordances PR #487 → `78238c6ff457fa532eae27c2f211b36b2319325d`.
 - VUX-5D Settings support/developer theme consistency PR #488 → `1adb5dd31e491e76eabcc60a8ce0d3d9d6f4dc0b`.
 - VUX-6A Social Profile Lookup shell/input hardening PR #489 → `46829390a5215b453ac5a054e1fdc40edba4ca27`.
-- Active visual branch: `ui/social-info-list-shell-ux` (VUX-6B).
+- VUX-6B Social information/list shell hardening PR #490 → `e152fc7bb693b1fe40980d3b8a60a035302a4e9c`.
+- Active visual branch: `ui/social-workout-post-shell-ux` (VUX-6C).
 - Backend is a separate workstream and remains outside this roadmap execution.
 
 Source/CI completion is not physical-device proof. OTA/EAS publication, native build/install, provider/production activation and store/release actions remain separately authorization-gated.
@@ -222,33 +223,42 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - A focused source-contract guard protects the shell and route semantics.
 - Exact head `6ae33cb32ac1b70ac0fb53bde6a5f4333632ceb2` passed full Mobile CI #1898 before merge.
 
-## VUX-6B — Social information/list shell hardening
+### VUX-6B — Social information/list shell hardening — PR #490
 
-**Status: active on `ui/social-info-list-shell-ux`.**
+- Community Guidelines, Notifications and Relationship Lists now own runtime top/bottom safe-area spacing while their native headers remain intentionally hidden.
+- Raw back glyphs were replaced with Lucide `ChevronLeft` while preserving localized labels, `router.back()` and 44 pt back ownership.
+- Header copy now owns bounded shrink/reflow and the list scroll surfaces explicitly own `flexGrow: 1`.
+- Relationship List tabs now own the shared 44 pt minimum interaction height instead of 42 pt.
+- Notification optimistic-read/navigation behavior, relationship API actions/filter kinds, guideline content, auth/session behavior, routes, persistence, sync and backend contracts are unchanged.
+- A focused source-contract guard protects these contracts.
+- Exact head `ff5760526751ce90d3e51c249d5dca9b831f4378` passed full Mobile CI #1901 before merge.
+
+## VUX-6C — Social workout-post shell hardening
+
+**Status: active on `ui/social-workout-post-shell-ux`.**
 
 Confirmed findings:
 
-- Community Guidelines, Notifications and Relationship Lists all run with the native stack header hidden but previously applied only bottom runtime inset plus a fixed top padding;
-- all three still used a raw `‹` back glyph instead of the shared Lucide navigation language;
-- their header copy needed bounded `minWidth`/shrink ownership for narrow widths and Dynamic Type;
-- Notifications and Relationship Lists scroll content did not explicitly own `flexGrow: 1`;
-- Relationship List tabs had a 42 pt minimum height, below the 44 pt interaction target used by the rest of the hardened UI.
+- Following Feed, Profile Workout Posts and Workout Post Detail all use a shared hidden-header shell whose shared styles still imposed fixed `paddingTop: Spacing.four` rather than runtime top safe-area ownership;
+- all three screens still used the shared raw `‹` back glyph despite the 44 × 44 back Pressable already being correct;
+- comment Report and Delete text actions on the shared workout-post surface owned only 32 pt minimum height, below the 44 pt interaction target;
+- shared header copy/reflow and scroll `flexGrow` were already correct and should not be churned.
 
 Current bounded remediation:
 
-- apply runtime top/bottom safe-area padding to all three screens and keep scroll content `flexGrow: 1`;
-- replace raw back glyphs with Lucide `ChevronLeft` while preserving localized labels, `router.back()` and 44 pt back ownership;
-- add bounded header-copy shrink ownership without changing copy or information hierarchy;
-- raise Relationship List tab ownership from 42 pt to 44 pt while preserving tab semantics and selected state;
-- preserve notification optimistic-read/navigation behavior, relationship API actions/filter kinds, guideline content, auth/session behavior, routes, persistence, sync and backend contracts;
+- move top spacing to `insets.top + Spacing.four` on all three screens while preserving runtime bottom inset and existing keyboard behavior on Post Detail;
+- replace raw back glyphs with Lucide `ChevronLeft` while preserving localized accessibility labels, `router.back()` and existing 44 pt geometry;
+- remove the obsolete shared `backLabel` and fixed top-padding styles;
+- raise comment Report/Delete action ownership from 32 pt to 44 pt without changing labels, permissions, confirmation or report/delete behavior;
+- preserve following-feed cache and pagination, profile-post lookup/pagination, post detail loading/deletion, comments, reactions, reports, auth/session behavior, routes, persistence, sync and backend contracts;
 - protect the package with a focused source-contract guard.
 
 **Merge gate:** full exact-head Mobile CI on the final documentation-synchronized head, with no unresolved review threads.
 
 ## Remaining hierarchy / validation review order
 
-1. Finish VUX-6B Social information/list shell hardening and merge only its validated exact head.
-2. Continue the remaining Social workout/profile/share hidden-header shells from concrete safe-area/back-target findings.
+1. Finish VUX-6C Social workout-post shell hardening and merge only its validated exact head.
+2. Continue Social Public Profile, Social Profile Editor and Share Workout from concrete hidden-header safe-area/back-target findings.
 3. Return to Workouts/Nutrition/Progress only for concrete audited defects.
 
 For each surface verify one obvious primary action, restrained surface nesting, EN/RU/Dynamic Type resilience, consistent interaction states and coherent loading/empty/error/success presentation.
@@ -260,7 +270,7 @@ Runtime UI PRs require exact-head:
 - repository and changed-file line audits;
 - TypeScript;
 - full regression suite;
-- expanded sync smoke;
+- expanded model runner smoke;
 - Expo export;
 - Expo Doctor.
 
@@ -270,8 +280,8 @@ No source/CI result is physical-device evidence.
 
 ## Next execution order
 
-1. Finish VUX-6B and run full exact-head Mobile CI on the final documentation-synchronized head.
-2. Merge only the validated VUX-6B head.
-3. Continue the remaining Social hidden-header workout/profile/share shell audit as the next bounded package.
+1. Finish VUX-6C and run full exact-head Mobile CI on the final documentation-synchronized head.
+2. Merge only the validated VUX-6C head.
+3. Continue Social Public Profile, Social Profile Editor and Share Workout as the next bounded shell package.
 4. Return to Workouts/Nutrition/Progress only for concrete audited defects.
 5. Keep backend, OTA/EAS/native/release and production/provider actions out of this autonomous UI sequence unless directly requested.
