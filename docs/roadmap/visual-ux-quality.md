@@ -25,7 +25,8 @@ Updated: 2026-08-09
 - VUX-4I complete Coach back navigation language PR #484 → `c8318d625a7eb8a489e3e51c005898cc283f0a37`.
 - VUX-5A Settings shell hardening PR #485 → `ff81c5fb737704e8d15605f8435729ef3e8be8d1`.
 - VUX-5B Profile theme consistency PR #486 → `c7928b25dc2d01a3a3fc891e0ff8496cdeb1710a`.
-- Active visual branch: `ui/settings-child-theme-affordances`.
+- VUX-5C Settings child theme and affordances PR #487 → `78238c6ff457fa532eae27c2f211b36b2319325d`.
+- Active visual branch: `ui/settings-support-theme-consistency`.
 - Backend is a separate workstream and remains outside this roadmap execution.
 
 Source/CI completion is not physical-device proof. OTA/EAS publication, native build/install, provider/production activation and store/release actions remain separately authorization-gated.
@@ -193,32 +194,38 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - Existing safe-area/floating-tab clearance, keyboard behavior, goal validation, confirmation, nutrition-target recalculation, persistence, routes and Social entry behavior are unchanged.
 - A focused source-contract guard rejects `Colors.dark` in the three audited Profile presentation files.
 
-## VUX-5C — Settings child theme and affordances
+### VUX-5C — Settings child theme and affordances — PR #487
 
-**Status: active on `ui/settings-child-theme-affordances`.**
+- Personal Details copy, radio controls and selected states now resolve from `useAppTheme()` instead of static `Colors.dark`.
+- Existing DOB/formula validation and 46 pt option geometry are preserved.
+- About Settings Coach History navigation now uses Lucide `ChevronRight` instead of a raw `›` glyph.
+- Profile persistence, Coach History routing, diagnostics data, sync and auth behavior remain unchanged.
+- A focused source-contract guard protects the child-theme and disclosure-icon contracts.
+
+## VUX-5D — Settings support/developer theme consistency
+
+**Status: active on `ui/settings-support-theme-consistency`.**
 
 Audit findings:
 
-- `PersonalDetailsSettingsCard` still hard-coded `Colors.dark` for titles, helper copy, radio options, selected surfaces and error/success-adjacent presentation despite explicit light/dark appearance support.
-- The Coach History disclosure in About Settings used a raw `›` text action glyph while the rest of the updated navigation/action language uses Lucide icons.
-- `SyncSettingsCard` and the Privacy/About text palette are already current-theme aware and do not need broader restyling.
-- Support-only diagnostics remain a separate audit surface and are intentionally excluded from this user-facing package.
+- `ProfileActionsCard`, `ProfileRuntimeInfoCard` and `LocalPerformanceDiagnosticsCard` still hard-coded `Colors.dark` even though these cards can appear inside Settings while explicit light appearance is active.
+- `SupportDiagnosticsCard`, `DataRecoveryCard` and `SyncConflictReviewCard` already resolve colors from `useAppTheme()` and do not need broad restyling.
 
 Current bounded remediation:
 
-- Bind Personal Details copy, radio controls and selected states to `useAppTheme()` while preserving the existing DOB/formula validation and 46 pt option geometry.
-- Replace the About Coach History raw `›` glyph with Lucide `ChevronRight` while preserving its route and accessibility label.
-- Add a focused source-contract guard.
-- Do not change personal-details validation, calculation-sex semantics, profile persistence, Coach History routing, diagnostics data, sync, auth or backend contracts.
+- Bind developer action title/badge presentation to the current theme.
+- Bind runtime metadata labels, values, dividers and titles to the current theme.
+- Bind local performance diagnostics titles, copy, rows and dividers to the current theme.
+- Add a focused source-contract guard that rejects `Colors.dark` in the three audited support files while protecting existing preview/reset, OTA check and diagnostics recorder actions.
+- Do not change developer routes, reset behavior, OTA update behavior, diagnostics collection/storage, sync, auth, persistence or backend contracts.
 
 **Merge gate:** full exact-head Mobile CI.
 
 ## Remaining hierarchy / validation review order
 
-1. Finish VUX-5C Settings child theme and affordances.
-2. Audit support-only Settings diagnostics for static theme assumptions as a separate bounded package.
-3. Secondary Social surfaces.
-4. Return to Workouts/Nutrition/Progress only for concrete audited defects.
+1. Finish VUX-5D Settings support/developer theme consistency.
+2. Secondary Social surfaces, beginning with the already-confirmed Social Profile Lookup shell/input issues.
+3. Return to Workouts/Nutrition/Progress only for concrete audited defects.
 
 For each surface verify one obvious primary action, restrained surface nesting, EN/RU/Dynamic Type resilience, consistent interaction states and coherent loading/empty/error/success presentation.
 
@@ -239,8 +246,8 @@ No source/CI result is physical-device evidence.
 
 ## Next execution order
 
-1. Finish VUX-5C and run full exact-head Mobile CI.
-2. Merge only the validated VUX-5C head.
-3. Audit support-only Settings diagnostics as a separate package.
-4. Continue to Social only from concrete source findings.
+1. Finish VUX-5D and run full exact-head Mobile CI.
+2. Merge only the validated VUX-5D head.
+3. Continue to Social Profile Lookup from the confirmed hidden-header safe-area, keyboard reachability and raw back-glyph findings.
+4. Continue further Social work only from concrete source findings.
 5. Keep backend, OTA/EAS/native/release and production/provider actions out of this autonomous UI sequence unless directly requested.
