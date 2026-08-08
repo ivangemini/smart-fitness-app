@@ -26,11 +26,11 @@ export const createSocialPublicProfileStyles = (colors: typeof Colors.dark) =>
       borderColor: colors.borderSubtle,
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
+      flexShrink: 0,
       height: 44,
       justifyContent: 'center',
       width: 44,
     },
-    backLabel: { color: colors.textPrimary, fontSize: 32, lineHeight: 34 },
     bio: {
       color: colors.textSecondary,
       fontSize: Typography.body.fontSize,
@@ -50,8 +50,8 @@ export const createSocialPublicProfileStyles = (colors: typeof Colors.dark) =>
     container: { gap: Spacing.four, maxWidth: MaxContentWidth, width: '100%' },
     content: {
       alignItems: 'center',
+      flexGrow: 1,
       paddingHorizontal: Spacing.four,
-      paddingTop: Spacing.four,
     },
     displayName: {
       color: colors.textPrimary,
@@ -65,9 +65,9 @@ export const createSocialPublicProfileStyles = (colors: typeof Colors.dark) =>
       fontWeight: '800',
       letterSpacing: 1.2,
     },
-    headerCopy: { flex: 1, gap: Spacing.one },
+    headerCopy: { flex: 1, gap: Spacing.one, minWidth: 0 },
     headerRow: { alignItems: 'flex-start', flexDirection: 'row', gap: Spacing.three },
-    identityCopy: { flex: 1, gap: Spacing.one },
+    identityCopy: { flex: 1, gap: Spacing.one, minWidth: 0 },
     identityRow: { alignItems: 'center', flexDirection: 'row', gap: Spacing.three },
     pressed: { opacity: 0.72 },
     relationshipLabel: {
@@ -79,6 +79,7 @@ export const createSocialPublicProfileStyles = (colors: typeof Colors.dark) =>
     screen: { backgroundColor: colors.background, flex: 1 },
     title: {
       color: colors.textPrimary,
+      flexShrink: 1,
       fontSize: Typography.screenTitle.fontSize,
       fontWeight: Typography.screenTitle.fontWeight,
       letterSpacing: Typography.screenTitle.letterSpacing,
