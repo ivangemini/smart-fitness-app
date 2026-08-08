@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ChevronLeft } from 'lucide-react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -46,10 +47,15 @@ export default function SocialProfileLookupScreen() {
 
   return (
     <ScrollView
+      automaticallyAdjustKeyboardInsets
       contentContainerStyle={[
         styles.content,
-        { paddingBottom: insets.bottom + Spacing.eight },
+        {
+          paddingBottom: insets.bottom + Spacing.eight,
+          paddingTop: insets.top + Spacing.four,
+        },
       ]}
+      keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
       keyboardShouldPersistTaps="handled"
       style={styles.screen}>
       <View style={styles.container}>
@@ -59,7 +65,7 @@ export default function SocialProfileLookupScreen() {
             accessibilityRole="button"
             onPress={() => router.back()}
             style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}>
-            <Text style={styles.backLabel}>‹</Text>
+            <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
           </Pressable>
           <View style={styles.headerCopy}>
             <Text style={styles.eyebrow}>{copy.findEyebrow}</Text>
@@ -110,11 +116,11 @@ const createStyles = (colors: typeof Colors.dark) =>
       borderColor: colors.borderSubtle,
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
+      flexShrink: 0,
       height: 44,
       justifyContent: 'center',
       width: 44,
     },
-    backLabel: { color: colors.textPrimary, fontSize: 32, lineHeight: 34 },
     body: {
       color: colors.textSecondary,
       fontSize: Typography.body.fontSize,
@@ -129,26 +135,30 @@ const createStyles = (colors: typeof Colors.dark) =>
     container: { gap: Spacing.four, maxWidth: MaxContentWidth, width: '100%' },
     content: {
       alignItems: 'center',
+      flexGrow: 1,
       paddingHorizontal: Spacing.four,
       paddingTop: Spacing.four,
     },
     eyebrow: {
       color: colors.accent,
+      flexShrink: 1,
       fontSize: Typography.caption.fontSize,
       fontWeight: '800',
       letterSpacing: 1.2,
     },
-    headerCopy: { flex: 1, gap: Spacing.one },
+    headerCopy: { flex: 1, gap: Spacing.one, minWidth: 0 },
     headerRow: { alignItems: 'flex-start', flexDirection: 'row', gap: Spacing.three },
     pressed: { opacity: 0.72 },
     screen: { backgroundColor: colors.background, flex: 1 },
     subtitle: {
       color: colors.textSecondary,
+      flexShrink: 1,
       fontSize: Typography.body.fontSize,
       lineHeight: Typography.body.lineHeight,
     },
     title: {
       color: colors.textPrimary,
+      flexShrink: 1,
       fontSize: Typography.screenTitle.fontSize,
       fontWeight: Typography.screenTitle.fontWeight,
       letterSpacing: Typography.screenTitle.letterSpacing,
