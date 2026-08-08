@@ -19,7 +19,8 @@ Updated: 2026-08-09
 - VUX-4C Coach input touch targets PR #478 → `8e73fcb76b77c834b81c63d998d6dfa1f85b0524`.
 - VUX-4D Coach review touch targets PR #479 → `4add9d5dd7342c662d1a095ce86a436b5024a758`.
 - VUX-4E Coach history filter accessibility PR #480 → `35acf1a2cafb0e491b34fa7720b572f12d473c45`.
-- Active visual branch: `ui/coach-inline-back-targets`.
+- VUX-4F remaining Coach back touch targets PR #481 → `43eef67c867e88cd832acc719c5b4f8529d32783`.
+- Active visual branch: `ui/coach-back-icon-language`.
 - Backend is a separate workstream and remains outside this roadmap execution.
 
 Source/CI completion is not physical-device proof. OTA/EAS publication, native build/install, provider/production activation and store/release actions remain separately authorization-gated.
@@ -140,30 +141,36 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - Filter values, query construction, loading/error behavior, routes and backend contracts remain unchanged.
 - A focused source-contract guard protects filter geometry and selected state.
 
-## VUX-4F — remaining Coach back touch targets
+### VUX-4F — remaining Coach back touch targets — PR #481
 
-**Status: active on `ui/coach-inline-back-targets`.**
+- Safety Recovery Preflight back navigation now owns 44 × 44 geometry.
+- Combined Proposal back navigation now owns 44 × 44 geometry.
+- Localized accessibility labels and existing `router.back()` behavior are preserved.
+- Preflight gating, combined proposal generation/confirmation, sync and persistence remain unchanged.
+- A focused source-contract guard protects the final audited Coach back geometry findings.
+
+## VUX-4G — Coach strategy back icon language
+
+**Status: active on `ui/coach-back-icon-language`.**
 
 Audit findings:
 
-- Safety Recovery Preflight still used a 42 × 42 custom back target.
-- Combined Proposal still used a 36 × 36 custom back target.
-- Both already expose localized accessibility labels and correct navigation behavior; the remaining defect is touch geometry.
+- Strength Coach, Nutrition Coach and Nutrition Target Proposal still render the navigation action with a raw text `‹` glyph.
+- Their Pressable geometry and localized accessibility labels are already correct; the defect is inconsistent action-icon language.
 
 Current bounded remediation:
 
-- Safety Recovery Preflight back → 44 × 44.
-- Combined Proposal back → 44 × 44.
+- Replace the raw glyph with Lucide `ChevronLeft` in the three strategy/review screens.
+- Preserve each existing Pressable surface, 44 pt ownership, pressed state, localized accessibility label and `router.back()` behavior.
 - Add a focused source-contract guard.
-- Keep raw `‹` glyph replacement / Lucide navigation language separate from geometry.
-- Do not change preflight gating, combined proposal generation/confirmation, routes, sync, persistence or backend contracts.
+- Do not change Coach generation/review/confirmation logic, period selection, sync, persistence, routes or backend contracts.
 
 **Merge gate:** full exact-head Mobile CI.
 
 ## Remaining hierarchy / validation review order
 
-1. Finish remaining Coach back touch targets.
-2. Audit repeated raw Coach back glyphs/navigation presentation as a separate visual-language package.
+1. Finish VUX-4G Coach strategy back icon language.
+2. Continue the same audit across remaining Coach history/recovery/combined/limitation navigation surfaces as a separate bounded package.
 3. Profile / Settings.
 4. Secondary Social surfaces.
 5. Return to Workouts/Nutrition/Progress only for concrete audited defects.
@@ -187,8 +194,8 @@ No source/CI result is physical-device evidence.
 
 ## Next execution order
 
-1. Finish VUX-4F and run full exact-head Mobile CI.
-2. Merge only the validated VUX-4F head.
-3. Audit Coach back icon language as a separate package.
+1. Finish VUX-4G and run full exact-head Mobile CI.
+2. Merge only the validated VUX-4G head.
+3. Continue remaining Coach back icon migration as a separate bounded package.
 4. Continue to Profile / Settings only from concrete source findings.
 5. Keep backend, OTA/EAS/native/release and production/provider actions out of this autonomous UI sequence unless directly requested.
