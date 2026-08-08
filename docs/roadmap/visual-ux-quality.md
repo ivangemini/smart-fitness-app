@@ -18,7 +18,8 @@ Updated: 2026-08-09
 - VUX-3E Progress compact selector touch targets PR #477 → `b58356f5b814b076c964ef249f4a0cc12c30dffd`.
 - VUX-4C Coach input touch targets PR #478 → `8e73fcb76b77c834b81c63d998d6dfa1f85b0524`.
 - VUX-4D Coach review touch targets PR #479 → `4add9d5dd7342c662d1a095ce86a436b5024a758`.
-- Active visual branch: `ui/coach-history-filters`.
+- VUX-4E Coach history filter accessibility PR #480 → `35acf1a2cafb0e491b34fa7720b572f12d473c45`.
+- Active visual branch: `ui/coach-inline-back-targets`.
 - Backend is a separate workstream and remains outside this roadmap execution.
 
 Source/CI completion is not physical-device proof. OTA/EAS publication, native build/install, provider/production activation and store/release actions remain separately authorization-gated.
@@ -132,33 +133,40 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - Review calculations, period semantics, generation behavior, routes, persistence and sync remain unchanged.
 - A focused source-contract guard protects the review interaction geometry.
 
-## VUX-4E — Coach history filter accessibility
+### VUX-4E — Coach history filter accessibility — PR #480
 
-**Status: active on `ui/coach-history-filters`.**
+- Coach History domain/status pills now own a 44 pt minimum interaction height.
+- Active domain/status filters expose `accessibilityState.selected` instead of relying on visual state alone.
+- Filter values, query construction, loading/error behavior, routes and backend contracts remain unchanged.
+- A focused source-contract guard protects filter geometry and selected state.
+
+## VUX-4F — remaining Coach back touch targets
+
+**Status: active on `ui/coach-inline-back-targets`.**
 
 Audit findings:
 
-- Coach History domain/status pills had no explicit 44 pt interaction floor.
-- Active filter state was visual-only and was not exposed through `accessibilityState.selected`.
-- Filter API/query semantics are already correct and do not need modification.
+- Safety Recovery Preflight still used a 42 × 42 custom back target.
+- Combined Proposal still used a 36 × 36 custom back target.
+- Both already expose localized accessibility labels and correct navigation behavior; the remaining defect is touch geometry.
 
 Current bounded remediation:
 
-- Give each history filter pill `minHeight: 44` with centered content.
-- Expose `selected` state to accessibility while preserving button semantics.
+- Safety Recovery Preflight back → 44 × 44.
+- Combined Proposal back → 44 × 44.
 - Add a focused source-contract guard.
-- Do not change domain/status values, query construction, loading/error behavior, history routing or backend contracts.
+- Keep raw `‹` glyph replacement / Lucide navigation language separate from geometry.
+- Do not change preflight gating, combined proposal generation/confirmation, routes, sync, persistence or backend contracts.
 
 **Merge gate:** full exact-head Mobile CI.
 
 ## Remaining hierarchy / validation review order
 
-1. Finish Coach History filter accessibility package.
-2. Fix remaining inline-heavy Coach back geometry in Preflight and Combined Proposal as a separate bounded package.
-3. Audit repeated raw Coach back glyphs/navigation presentation as a separate visual-language package.
-4. Profile / Settings.
-5. Secondary Social surfaces.
-6. Return to Workouts/Nutrition/Progress only for concrete audited defects.
+1. Finish remaining Coach back touch targets.
+2. Audit repeated raw Coach back glyphs/navigation presentation as a separate visual-language package.
+3. Profile / Settings.
+4. Secondary Social surfaces.
+5. Return to Workouts/Nutrition/Progress only for concrete audited defects.
 
 For each surface verify one obvious primary action, restrained surface nesting, EN/RU/Dynamic Type resilience, consistent interaction states and coherent loading/empty/error/success presentation.
 
@@ -179,8 +187,8 @@ No source/CI result is physical-device evidence.
 
 ## Next execution order
 
-1. Finish VUX-4E Coach History filters and run full exact-head Mobile CI.
-2. Merge only the validated VUX-4E head.
-3. Continue with Preflight/Combined Proposal back geometry.
-4. Keep back icon migration separate and audit-driven.
+1. Finish VUX-4F and run full exact-head Mobile CI.
+2. Merge only the validated VUX-4F head.
+3. Audit Coach back icon language as a separate package.
+4. Continue to Profile / Settings only from concrete source findings.
 5. Keep backend, OTA/EAS/native/release and production/provider actions out of this autonomous UI sequence unless directly requested.
