@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChevronLeft } from "lucide-react-native";
 import {
   Alert,
   Platform,
@@ -209,7 +210,10 @@ export default function SocialProfileEditorScreen() {
       automaticallyAdjustKeyboardInsets
       contentContainerStyle={[
         styles.content,
-        { paddingBottom: insets.bottom + Spacing.eight },
+        {
+          paddingBottom: insets.bottom + Spacing.eight,
+          paddingTop: insets.top + Spacing.four,
+        },
       ]}
       keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
       keyboardShouldPersistTaps="handled"
@@ -226,7 +230,7 @@ export default function SocialProfileEditorScreen() {
               pressed && styles.pressed,
             ]}
           >
-            <Text style={styles.backLabel}>‹</Text>
+            <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
           </Pressable>
           <View style={styles.headerCopy}>
             <Text style={styles.eyebrow}>{copy.eyebrow}</Text>
@@ -336,7 +340,6 @@ const createStyles = (colors: typeof Colors.dark) =>
       justifyContent: "center",
       width: 44,
     },
-    backLabel: { color: colors.textPrimary, fontSize: 32, lineHeight: 34 },
     body: {
       color: colors.textSecondary,
       fontSize: Typography.body.fontSize,
