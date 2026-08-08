@@ -27,7 +27,8 @@ Updated: 2026-08-09
 - VUX-5B Profile theme consistency PR #486 → `c7928b25dc2d01a3a3fc891e0ff8496cdeb1710a`.
 - VUX-5C Settings child theme and affordances PR #487 → `78238c6ff457fa532eae27c2f211b36b2319325d`.
 - VUX-5D Settings support/developer theme consistency PR #488 → `1adb5dd31e491e76eabcc60a8ce0d3d9d6f4dc0b`.
-- Active visual branch: `ui/social-profile-lookup-ux` (VUX-6A, PR #489).
+- VUX-6A Social Profile Lookup shell/input hardening PR #489 → `46829390a5215b453ac5a054e1fdc40edba4ca27`.
+- Active visual branch: `ui/social-info-list-shell-ux` (VUX-6B).
 - Backend is a separate workstream and remains outside this roadmap execution.
 
 Source/CI completion is not physical-device proof. OTA/EAS publication, native build/install, provider/production activation and store/release actions remain separately authorization-gated.
@@ -211,32 +212,43 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - A focused source-contract guard protects the support-theme boundaries.
 - Exact head `8aa052b8ae8f73b83fc2f56d2d29d55d64eb9d83` passed full Mobile CI #1895 before merge.
 
-## VUX-6A — Social Profile Lookup shell/input hardening
+### VUX-6A — Social Profile Lookup shell/input hardening — PR #489
 
-**Status: active on `ui/social-profile-lookup-ux` (PR #489).**
+- Social Profile Lookup now owns runtime top/bottom safe-area spacing while its native header remains intentionally hidden.
+- The username form uses automatic keyboard insets with platform-appropriate dismissal for short-height reachability.
+- Back navigation uses Lucide `ChevronLeft` on the existing 44 pt Pressable.
+- Header title/subtitle copy now has bounded shrink ownership for narrow widths, EN/RU and Dynamic Type pressure.
+- Username validation/normalization, auth gating and route targets are unchanged.
+- A focused source-contract guard protects the shell and route semantics.
+- Exact head `6ae33cb32ac1b70ac0fb53bde6a5f4333632ceb2` passed full Mobile CI #1898 before merge.
+
+## VUX-6B — Social information/list shell hardening
+
+**Status: active on `ui/social-info-list-shell-ux`.**
 
 Confirmed findings:
 
-- the native stack header is intentionally hidden, so the screen must own runtime top/bottom safe-area spacing;
-- the authenticated username form needs automatic keyboard insets and platform-appropriate dismissal for short-height reachability;
-- the custom back action still used a raw `‹` glyph instead of the shared Lucide navigation language;
-- header title/subtitle copy needs explicit bounded shrink ownership under narrow widths, EN/RU localization and Dynamic Type pressure.
+- Community Guidelines, Notifications and Relationship Lists all run with the native stack header hidden but previously applied only bottom runtime inset plus a fixed top padding;
+- all three still used a raw `‹` back glyph instead of the shared Lucide navigation language;
+- their header copy needed bounded `minWidth`/shrink ownership for narrow widths and Dynamic Type;
+- Notifications and Relationship Lists scroll content did not explicitly own `flexGrow: 1`;
+- Relationship List tabs had a 42 pt minimum height, below the 44 pt interaction target used by the rest of the hardened UI.
 
 Current bounded remediation:
 
-- apply top and bottom spacing from `useSafeAreaInsets()` and keep scroll content `flexGrow: 1`;
-- add `automaticallyAdjustKeyboardInsets`, `keyboardShouldPersistTaps="handled"` and iOS interactive / Android on-drag keyboard dismissal;
-- replace the raw back glyph with Lucide `ChevronLeft` while preserving the existing 44 pt Pressable and localized accessibility label;
-- add `minWidth: 0` / `flexShrink` ownership only to the touched header copy;
-- preserve username validation/normalization, auth gating, `/social/[username]` and `/auth/sign-in` route targets, Social API behavior, persistence and sync contracts;
+- apply runtime top/bottom safe-area padding to all three screens and keep scroll content `flexGrow: 1`;
+- replace raw back glyphs with Lucide `ChevronLeft` while preserving localized labels, `router.back()` and 44 pt back ownership;
+- add bounded header-copy shrink ownership without changing copy or information hierarchy;
+- raise Relationship List tab ownership from 42 pt to 44 pt while preserving tab semantics and selected state;
+- preserve notification optimistic-read/navigation behavior, relationship API actions/filter kinds, guideline content, auth/session behavior, routes, persistence, sync and backend contracts;
 - protect the package with a focused source-contract guard.
 
 **Merge gate:** full exact-head Mobile CI on the final documentation-synchronized head, with no unresolved review threads.
 
 ## Remaining hierarchy / validation review order
 
-1. Finish VUX-6A Social Profile Lookup and merge only its validated exact head.
-2. Continue further secondary Social work only from concrete source findings.
+1. Finish VUX-6B Social information/list shell hardening and merge only its validated exact head.
+2. Continue the remaining Social workout/profile/share hidden-header shells from concrete safe-area/back-target findings.
 3. Return to Workouts/Nutrition/Progress only for concrete audited defects.
 
 For each surface verify one obvious primary action, restrained surface nesting, EN/RU/Dynamic Type resilience, consistent interaction states and coherent loading/empty/error/success presentation.
@@ -258,8 +270,8 @@ No source/CI result is physical-device evidence.
 
 ## Next execution order
 
-1. Finish VUX-6A and run full exact-head Mobile CI on the final documentation-synchronized head.
-2. Merge only the validated VUX-6A head.
-3. Continue the secondary Social audit from concrete source findings; do not create cosmetic churn without a demonstrated defect.
+1. Finish VUX-6B and run full exact-head Mobile CI on the final documentation-synchronized head.
+2. Merge only the validated VUX-6B head.
+3. Continue the remaining Social hidden-header workout/profile/share shell audit as the next bounded package.
 4. Return to Workouts/Nutrition/Progress only for concrete audited defects.
 5. Keep backend, OTA/EAS/native/release and production/provider actions out of this autonomous UI sequence unless directly requested.
