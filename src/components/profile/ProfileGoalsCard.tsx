@@ -1,4 +1,5 @@
-import { Text } from 'react-native';
+import { useMemo } from 'react';
+import { StyleSheet, Text } from 'react-native';
 
 import { AppCard } from '@/components/ui/AppCard';
 import { FormField } from '@/components/ui/FormField';
@@ -7,6 +8,7 @@ import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { getGoalTypeLabel } from '@/features/progress/progressLocalization';
 import { useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import type { WeightUnit } from '@/units';
 
 type GoalType = 'lose_fat' | 'maintain' | 'gain_muscle';
@@ -46,6 +48,8 @@ export function ProfileGoalsCard({
   weeklyWeightChangeGoal,
   weightUnit,
 }: ProfileGoalsCardProps) {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { t } = useLocalization();
   const goalOptions = [
     { label: getGoalTypeLabel(t, 'lose_fat'), value: 'lose_fat' as const },
@@ -104,18 +108,19 @@ export function ProfileGoalsCard({
   );
 }
 
-const styles = {
-  goalLabel: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.caption.fontSize,
-    fontWeight: Typography.caption.fontWeight,
-    lineHeight: Typography.caption.lineHeight,
-  },
-  sectionTitle: {
-    color: Colors.dark.textPrimary,
-    fontSize: Typography.cardTitle.fontSize,
-    fontWeight: Typography.cardTitle.fontWeight,
-    lineHeight: Typography.cardTitle.lineHeight,
-    marginBottom: Spacing.two,
-  },
-};
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    goalLabel: {
+      color: colors.textSecondary,
+      fontSize: Typography.caption.fontSize,
+      fontWeight: Typography.caption.fontWeight,
+      lineHeight: Typography.caption.lineHeight,
+    },
+    sectionTitle: {
+      color: colors.textPrimary,
+      fontSize: Typography.cardTitle.fontSize,
+      fontWeight: Typography.cardTitle.fontWeight,
+      lineHeight: Typography.cardTitle.lineHeight,
+      marginBottom: Spacing.two,
+    },
+  });
