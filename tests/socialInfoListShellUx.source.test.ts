@@ -43,7 +43,9 @@ describe('Social information and list shell UX', () => {
     const source = readSource('src/features/social/screens/SocialNotificationScreen.tsx');
 
     expect(source).toContain('markSocialNotificationReadOptimistically');
-    expect(source).toContain('socialApi.markNotificationRead(notification.id)');
+    expect(source).toMatch(
+      /socialApi\s*\.markNotificationRead\(notification\.id\)/,
+    );
     expect(source).toContain("pathname: '/social/[username]'");
     expect(source).toContain("pathname: '/social/workout-post/[postId]'");
   });
