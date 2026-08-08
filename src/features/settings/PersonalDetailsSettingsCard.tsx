@@ -9,6 +9,7 @@ import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import { useAppActions } from '@/context/AppContext';
 import { useProfileState } from '@/context/ProfileStateContext';
 import { useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import type { ProfileCalculationSex } from '@/types';
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
@@ -32,6 +33,8 @@ const validateDateOfBirth = (value: string): string | null => {
 };
 
 export function PersonalDetailsSettingsCard() {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { profile } = useProfileState();
   const { updatePersonalDetails } = useAppActions();
   const { t } = useLocalization();
@@ -127,6 +130,9 @@ function FormulaOption({
   onPress(): void;
   selected: boolean;
 }) {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <Pressable
       accessibilityRole="radio"
@@ -142,41 +148,42 @@ function FormulaOption({
   );
 }
 
-const styles = StyleSheet.create({
-  group: { gap: Spacing.one },
-  help: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.caption.fontSize,
-    lineHeight: Typography.caption.lineHeight,
-  },
-  label: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.label.fontSize,
-    fontWeight: Typography.label.fontWeight,
-  },
-  option: {
-    alignItems: 'center',
-    backgroundColor: Colors.dark.surfaceSecondary,
-    borderColor: Colors.dark.borderSubtle,
-    borderRadius: Radii.medium,
-    borderWidth: StyleSheet.hairlineWidth,
-    flex: 1,
-    minHeight: 46,
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.two,
-  },
-  optionLabel: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.label.fontSize,
-    fontWeight: Typography.label.fontWeight,
-  },
-  optionLabelSelected: { color: Colors.dark.textPrimary },
-  optionSelected: { backgroundColor: Colors.dark.backgroundSelected, borderColor: Colors.dark.accent },
-  pressed: { opacity: 0.76 },
-  row: { flexDirection: 'row', gap: Spacing.two },
-  title: {
-    color: Colors.dark.textPrimary,
-    fontSize: Typography.cardTitle.fontSize,
-    fontWeight: Typography.cardTitle.fontWeight,
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    group: { gap: Spacing.one },
+    help: {
+      color: colors.textSecondary,
+      fontSize: Typography.caption.fontSize,
+      lineHeight: Typography.caption.lineHeight,
+    },
+    label: {
+      color: colors.textSecondary,
+      fontSize: Typography.label.fontSize,
+      fontWeight: Typography.label.fontWeight,
+    },
+    option: {
+      alignItems: 'center',
+      backgroundColor: colors.surfaceSecondary,
+      borderColor: colors.borderSubtle,
+      borderRadius: Radii.medium,
+      borderWidth: StyleSheet.hairlineWidth,
+      flex: 1,
+      minHeight: 46,
+      justifyContent: 'center',
+      paddingHorizontal: Spacing.two,
+    },
+    optionLabel: {
+      color: colors.textSecondary,
+      fontSize: Typography.label.fontSize,
+      fontWeight: Typography.label.fontWeight,
+    },
+    optionLabelSelected: { color: colors.textPrimary },
+    optionSelected: { backgroundColor: colors.backgroundSelected, borderColor: colors.accent },
+    pressed: { opacity: 0.76 },
+    row: { flexDirection: 'row', gap: Spacing.two },
+    title: {
+      color: colors.textPrimary,
+      fontSize: Typography.cardTitle.fontSize,
+      fontWeight: Typography.cardTitle.fontWeight,
+    },
+  });
