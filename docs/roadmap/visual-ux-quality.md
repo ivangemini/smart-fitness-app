@@ -20,7 +20,8 @@ Updated: 2026-08-09
 - VUX-4D Coach review touch targets PR #479 → `4add9d5dd7342c662d1a095ce86a436b5024a758`.
 - VUX-4E Coach history filter accessibility PR #480 → `35acf1a2cafb0e491b34fa7720b572f12d473c45`.
 - VUX-4F remaining Coach back touch targets PR #481 → `43eef67c867e88cd832acc719c5b4f8529d32783`.
-- Active visual branch: `ui/coach-back-icon-language`.
+- VUX-4G Coach strategy back icon language PR #482 → `59cf4c2d80bb17c2a9f362c19fd35e032e17ac2c`.
+- Active visual branch: `ui/coach-secondary-back-icons`.
 - Backend is a separate workstream and remains outside this roadmap execution.
 
 Source/CI completion is not physical-device proof. OTA/EAS publication, native build/install, provider/production activation and store/release actions remain separately authorization-gated.
@@ -149,28 +150,35 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - Preflight gating, combined proposal generation/confirmation, sync and persistence remain unchanged.
 - A focused source-contract guard protects the final audited Coach back geometry findings.
 
-## VUX-4G — Coach strategy back icon language
+### VUX-4G — Coach strategy back icon language — PR #482
 
-**Status: active on `ui/coach-back-icon-language`.**
+- Strength Coach, Nutrition Coach and Nutrition Target Proposal now use Lucide `ChevronLeft` instead of raw text `‹` for the back action.
+- Existing Pressable geometry, 44 pt touch ownership, pressed states, localized accessibility labels and `router.back()` behavior are preserved.
+- Coach generation/review/confirmation logic, period selection, sync, persistence and routes remain unchanged.
+- A focused source-contract guard protects the strategy/review navigation icon language.
+
+## VUX-4H — secondary Coach back icon language
+
+**Status: active on `ui/coach-secondary-back-icons`.**
 
 Audit findings:
 
-- Strength Coach, Nutrition Coach and Nutrition Target Proposal still render the navigation action with a raw text `‹` glyph.
-- Their Pressable geometry and localized accessibility labels are already correct; the defect is inconsistent action-icon language.
+- Combined Review, Recovery Check-in, Safety Recovery Review and User Limitations still render the back action with a raw text `‹` glyph.
+- Their interaction geometry and navigation behavior were already hardened in earlier packages; this is a visual-language consistency defect only.
 
 Current bounded remediation:
 
-- Replace the raw glyph with Lucide `ChevronLeft` in the three strategy/review screens.
+- Replace the raw glyph with Lucide `ChevronLeft` in the four secondary Coach screens.
 - Preserve each existing Pressable surface, 44 pt ownership, pressed state, localized accessibility label and `router.back()` behavior.
 - Add a focused source-contract guard.
-- Do not change Coach generation/review/confirmation logic, period selection, sync, persistence, routes or backend contracts.
+- Do not change combined/recovery/limitation models, form behavior, review generation, sync, persistence, routes or backend contracts.
 
 **Merge gate:** full exact-head Mobile CI.
 
 ## Remaining hierarchy / validation review order
 
-1. Finish VUX-4G Coach strategy back icon language.
-2. Continue the same audit across remaining Coach history/recovery/combined/limitation navigation surfaces as a separate bounded package.
+1. Finish VUX-4H secondary Coach back icon language.
+2. Finish remaining Coach History / History Detail / Preflight / Combined Proposal raw back glyphs as one final bounded navigation-language package.
 3. Profile / Settings.
 4. Secondary Social surfaces.
 5. Return to Workouts/Nutrition/Progress only for concrete audited defects.
@@ -194,8 +202,8 @@ No source/CI result is physical-device evidence.
 
 ## Next execution order
 
-1. Finish VUX-4G and run full exact-head Mobile CI.
-2. Merge only the validated VUX-4G head.
-3. Continue remaining Coach back icon migration as a separate bounded package.
+1. Finish VUX-4H and run full exact-head Mobile CI.
+2. Merge only the validated VUX-4H head.
+3. Finish remaining Coach back icon migration as a final bounded package.
 4. Continue to Profile / Settings only from concrete source findings.
 5. Keep backend, OTA/EAS/native/release and production/provider actions out of this autonomous UI sequence unless directly requested.

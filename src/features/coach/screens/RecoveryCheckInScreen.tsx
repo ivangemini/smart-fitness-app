@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -151,7 +152,7 @@ export default function RecoveryCheckInScreen() {
           accessibilityRole="button"
           onPress={() => router.back()}
           style={({ pressed }) => [themedStyles.backButton, pressed && themedStyles.pressed]}>
-          <Text style={themedStyles.backLabel}>‹</Text>
+          <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
         </Pressable>
         <View style={themedStyles.headerCopy}>
           <Text style={themedStyles.title}>{copy.title}</Text>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { router } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
@@ -338,7 +339,7 @@ export default function CombinedCoachScreen() {
           accessibilityRole="button"
           onPress={() => router.back()}
           style={({ pressed }) => [themedStyles.backButton, pressed && styles.pressed]}>
-          <Text style={themedStyles.backLabel}>‹</Text>
+          <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
         </Pressable>
         <View style={styles.flexCopy}>
           <Text style={themedStyles.title}>{copy.title}</Text>
