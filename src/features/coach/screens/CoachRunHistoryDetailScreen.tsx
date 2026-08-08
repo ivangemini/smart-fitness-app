@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { createCoachApi, type CoachRunEnvelope } from '@/api/coach';
@@ -23,7 +24,7 @@ export default function CoachRunHistoryDetailScreen() {
   const { colors } = useAppTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const insets = useSafeAreaInsets();
-  const { locale, formatDate } = useLocalization();
+  const { locale, formatDate, t } = useLocalization();
   const copy = getCoachHistoryCopy(locale);
   const { refresh, session } = useAuthSession();
   const [run, setRun] = useState<CoachRunEnvelope | null>(null);
@@ -105,10 +106,11 @@ export default function CoachRunHistoryDetailScreen() {
     <View style={styles.screen}>
       <View style={[styles.header, { paddingTop: insets.top + Spacing.two }]}>
         <Pressable
+          accessibilityLabel={t('common.back')}
           accessibilityRole="button"
           onPress={() => router.back()}
           style={styles.backButton}>
-          <Text style={styles.backLabel}>‹</Text>
+          <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
         </Pressable>
         <View style={styles.headerCopy}>
           <Text style={styles.title}>{copy.title}</Text>
