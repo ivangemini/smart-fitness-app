@@ -7,6 +7,7 @@ import {
   View,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
@@ -216,7 +217,10 @@ export default function SocialNotificationScreen() {
     <ScrollView
       contentContainerStyle={[
         styles.content,
-        { paddingBottom: insets.bottom + Spacing.eight },
+        {
+          paddingBottom: insets.bottom + Spacing.eight,
+          paddingTop: insets.top + Spacing.four,
+        },
       ]}
       refreshControl={
         ready && isAuthenticated && status === 'ready' ? (
@@ -239,7 +243,7 @@ export default function SocialNotificationScreen() {
               styles.backButton,
               pressed && styles.pressed,
             ]}>
-            <Text style={styles.backLabel}>‹</Text>
+            <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
           </Pressable>
           <View style={styles.headerCopy}>
             <Text style={styles.eyebrow}>{copy.eyebrow}</Text>

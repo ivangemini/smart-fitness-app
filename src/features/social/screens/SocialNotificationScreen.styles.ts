@@ -17,14 +17,10 @@ export const createSocialNotificationScreenStyles = (
       borderColor: colors.borderSubtle,
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
+      flexShrink: 0,
       height: 44,
       justifyContent: 'center',
       width: 44,
-    },
-    backLabel: {
-      color: colors.textPrimary,
-      fontSize: 32,
-      lineHeight: 34,
     },
     body: {
       color: colors.textSecondary,
@@ -44,8 +40,8 @@ export const createSocialNotificationScreenStyles = (
     },
     content: {
       alignItems: 'center',
+      flexGrow: 1,
       paddingHorizontal: Spacing.four,
-      paddingTop: Spacing.four,
     },
     eyebrow: {
       color: colors.accent,
@@ -56,6 +52,7 @@ export const createSocialNotificationScreenStyles = (
     headerCopy: {
       flex: 1,
       gap: Spacing.one,
+      minWidth: 0,
     },
     headerRow: {
       alignItems: 'flex-start',
@@ -103,6 +100,7 @@ export const createSocialNotificationScreenStyles = (
     },
     subtitle: {
       color: colors.textSecondary,
+      flexShrink: 1,
       fontSize: Typography.body.fontSize,
       lineHeight: Typography.body.lineHeight,
     },
@@ -114,6 +112,7 @@ export const createSocialNotificationScreenStyles = (
     },
     title: {
       color: colors.textPrimary,
+      flexShrink: 1,
       fontSize: Typography.screenTitle.fontSize,
       fontWeight: Typography.screenTitle.fontWeight,
       letterSpacing: Typography.screenTitle.letterSpacing,
