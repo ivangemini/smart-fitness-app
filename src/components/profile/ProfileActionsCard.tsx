@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Text } from 'react-native';
 import { useRouter } from 'expo-router';
 
@@ -6,6 +7,7 @@ import { DestructiveButton } from '@/components/ui/DestructiveButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 
 type ProfileActionsCardProps = {
   onResetOnboarding: () => void;
@@ -13,6 +15,8 @@ type ProfileActionsCardProps = {
 
 export function ProfileActionsCard({ onResetOnboarding }: ProfileActionsCardProps) {
   const router = useRouter();
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { t } = useLocalization();
 
   return (
@@ -43,12 +47,12 @@ export function ProfileActionsCard({ onResetOnboarding }: ProfileActionsCardProp
   );
 }
 
-const styles = {
+const createStyles = (colors: typeof Colors.light) => ({
   badge: {
     alignSelf: 'flex-start' as const,
-    backgroundColor: Colors.dark.backgroundSelected,
+    backgroundColor: colors.backgroundSelected,
     borderRadius: 999,
-    color: Colors.dark.textSecondary,
+    color: colors.textSecondary,
     fontSize: Typography.caption.fontSize,
     fontWeight: '700' as const,
     marginBottom: Spacing.two,
@@ -57,11 +61,11 @@ const styles = {
     paddingVertical: 4,
   },
   title: {
-    color: Colors.dark.text,
+    color: colors.textPrimary,
     fontSize: Typography.sectionTitle.fontSize,
     fontWeight: Typography.sectionTitle.fontWeight,
     letterSpacing: Typography.sectionTitle.letterSpacing,
     lineHeight: Typography.sectionTitle.lineHeight,
     textTransform: Typography.sectionTitle.textTransform,
   },
-};
+});
