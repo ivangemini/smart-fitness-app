@@ -22,7 +22,6 @@ export const createSocialWorkoutPostSurfaceStyles = (
       justifyContent: "center",
       width: 44,
     },
-    backLabel: { color: colors.textPrimary, fontSize: 32, lineHeight: 34 },
     body: {
       color: colors.textSecondary,
       flexShrink: 1,
@@ -68,7 +67,7 @@ export const createSocialWorkoutPostSurfaceStyles = (
     commentDeleteButton: {
       alignItems: "center",
       justifyContent: "center",
-      minHeight: 32,
+      minHeight: 44,
       paddingHorizontal: Spacing.two,
     },
     commentDeleteLabel: {
@@ -90,7 +89,7 @@ export const createSocialWorkoutPostSurfaceStyles = (
     commentReportButton: {
       alignItems: "center",
       justifyContent: "center",
-      minHeight: 32,
+      minHeight: 44,
       paddingHorizontal: Spacing.two,
     },
     commentReportLabel: {
@@ -105,7 +104,6 @@ export const createSocialWorkoutPostSurfaceStyles = (
       alignItems: "center",
       flexGrow: 1,
       paddingHorizontal: Spacing.four,
-      paddingTop: Spacing.four,
     },
     detailLabel: {
       color: colors.textSecondary,
