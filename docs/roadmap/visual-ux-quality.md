@@ -1,6 +1,6 @@
 # Visual UX and information architecture roadmap
 
-Updated: 2026-08-08
+Updated: 2026-08-09
 
 ## Current checkpoint
 
@@ -17,7 +17,8 @@ Updated: 2026-08-08
 - VUX-3D Progress weight action ownership PR #476 → `fd361bc5eaf10a2be8054488d9a0cbc6cbcfa41a`.
 - VUX-3E Progress compact selector touch targets PR #477 → `b58356f5b814b076c964ef249f4a0cc12c30dffd`.
 - VUX-4C Coach input touch targets PR #478 → `8e73fcb76b77c834b81c63d998d6dfa1f85b0524`.
-- Active visual branch: `ui/coach-review-touch-targets`.
+- VUX-4D Coach review touch targets PR #479 → `4add9d5dd7342c662d1a095ce86a436b5024a758`.
+- Active visual branch: `ui/coach-history-filters`.
 - Backend is a separate workstream and remains outside this roadmap execution.
 
 Source/CI completion is not physical-device proof. OTA/EAS publication, native build/install, provider/production activation and store/release actions remain separately authorization-gated.
@@ -123,37 +124,41 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - Recovery scoring, required signals, limitation state transitions, routes, persistence and sync remain unchanged.
 - A focused source-contract guard protects the interaction geometry.
 
-## VUX-4D — Coach review touch targets
+### VUX-4D — Coach review touch targets — PR #479
 
-**Status: active on `ui/coach-review-touch-targets`.**
+- Safety & Recovery review back navigation now owns 44 × 44 geometry.
+- Safety & Recovery review period controls now own a 44 pt minimum height.
+- Combined review back navigation now owns 44 × 44 geometry.
+- Review calculations, period semantics, generation behavior, routes, persistence and sync remain unchanged.
+- A focused source-contract guard protects the review interaction geometry.
+
+## VUX-4E — Coach history filter accessibility
+
+**Status: active on `ui/coach-history-filters`.**
 
 Audit findings:
 
-- Safety & Recovery review back navigation uses 42 × 42 geometry.
-- Safety & Recovery review period controls use `minHeight: 42`.
-- Combined review back navigation uses 42 × 42 geometry.
-- These controls already have explicit state/selection behavior; the defect is interaction geometry, not business logic.
+- Coach History domain/status pills had no explicit 44 pt interaction floor.
+- Active filter state was visual-only and was not exposed through `accessibilityState.selected`.
+- Filter API/query semantics are already correct and do not need modification.
 
 Current bounded remediation:
 
-- Safety & Recovery review back → 44 × 44.
-- Safety & Recovery review period controls → `minHeight: 44`.
-- Combined review back → 44 × 44.
+- Give each history filter pill `minHeight: 44` with centered content.
+- Expose `selected` state to accessibility while preserving button semantics.
 - Add a focused source-contract guard.
-- Keep raw back glyph/icon-language migration separate from this geometry-only package.
-- Do not change review calculations, period semantics, generation behavior, routes, persistence, sync or backend contracts.
+- Do not change domain/status values, query construction, loading/error behavior, history routing or backend contracts.
 
 **Merge gate:** full exact-head Mobile CI.
 
 ## Remaining hierarchy / validation review order
 
-1. Finish Coach review touch-target package.
+1. Finish Coach History filter accessibility package.
 2. Fix remaining inline-heavy Coach back geometry in Preflight and Combined Proposal as a separate bounded package.
-3. Harden Coach history filter pills from the source-audited compact-control finding.
-4. Audit repeated raw Coach back glyphs/navigation presentation as a separate visual-language package.
-5. Profile / Settings.
-6. Secondary Social surfaces.
-7. Return to Workouts/Nutrition/Progress only for concrete audited defects.
+3. Audit repeated raw Coach back glyphs/navigation presentation as a separate visual-language package.
+4. Profile / Settings.
+5. Secondary Social surfaces.
+6. Return to Workouts/Nutrition/Progress only for concrete audited defects.
 
 For each surface verify one obvious primary action, restrained surface nesting, EN/RU/Dynamic Type resilience, consistent interaction states and coherent loading/empty/error/success presentation.
 
@@ -174,8 +179,8 @@ No source/CI result is physical-device evidence.
 
 ## Next execution order
 
-1. Finish VUX-4D Coach review touch targets and run full exact-head Mobile CI.
-2. Merge only the validated VUX-4D head.
-3. Continue with Preflight/Combined Proposal back geometry, then Coach history filters.
+1. Finish VUX-4E Coach History filters and run full exact-head Mobile CI.
+2. Merge only the validated VUX-4E head.
+3. Continue with Preflight/Combined Proposal back geometry.
 4. Keep back icon migration separate and audit-driven.
 5. Keep backend, OTA/EAS/native/release and production/provider actions out of this autonomous UI sequence unless directly requested.
