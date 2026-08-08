@@ -26,7 +26,8 @@ Updated: 2026-08-09
 - VUX-5A Settings shell hardening PR #485 → `ff81c5fb737704e8d15605f8435729ef3e8be8d1`.
 - VUX-5B Profile theme consistency PR #486 → `c7928b25dc2d01a3a3fc891e0ff8496cdeb1710a`.
 - VUX-5C Settings child theme and affordances PR #487 → `78238c6ff457fa532eae27c2f211b36b2319325d`.
-- Active visual branch: `ui/settings-support-theme-consistency`.
+- VUX-5D Settings support/developer theme consistency PR #488 → `1adb5dd31e491e76eabcc60a8ce0d3d9d6f4dc0b`.
+- Active visual branch: `ui/social-profile-lookup-ux` (VUX-6A, PR #489).
 - Backend is a separate workstream and remains outside this roadmap execution.
 
 Source/CI completion is not physical-device proof. OTA/EAS publication, native build/install, provider/production activation and store/release actions remain separately authorization-gated.
@@ -202,29 +203,40 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - Profile persistence, Coach History routing, diagnostics data, sync and auth behavior remain unchanged.
 - A focused source-contract guard protects the child-theme and disclosure-icon contracts.
 
-## VUX-5D — Settings support/developer theme consistency
+### VUX-5D — Settings support/developer theme consistency — PR #488
 
-**Status: active on `ui/settings-support-theme-consistency`.**
+- `ProfileActionsCard`, `ProfileRuntimeInfoCard` and `LocalPerformanceDiagnosticsCard` now resolve presentation colors from the current app theme instead of static `Colors.dark` assumptions.
+- Existing developer preview/reset routes, OTA check/fetch/reload behavior and diagnostics recorder/storage behavior are unchanged.
+- `SupportDiagnosticsCard`, `DataRecoveryCard` and `SyncConflictReviewCard` were audited and already used current-theme colors, so they were not churned.
+- A focused source-contract guard protects the support-theme boundaries.
+- Exact head `8aa052b8ae8f73b83fc2f56d2d29d55d64eb9d83` passed full Mobile CI #1895 before merge.
 
-Audit findings:
+## VUX-6A — Social Profile Lookup shell/input hardening
 
-- `ProfileActionsCard`, `ProfileRuntimeInfoCard` and `LocalPerformanceDiagnosticsCard` still hard-coded `Colors.dark` even though these cards can appear inside Settings while explicit light appearance is active.
-- `SupportDiagnosticsCard`, `DataRecoveryCard` and `SyncConflictReviewCard` already resolve colors from `useAppTheme()` and do not need broad restyling.
+**Status: active on `ui/social-profile-lookup-ux` (PR #489).**
+
+Confirmed findings:
+
+- the native stack header is intentionally hidden, so the screen must own runtime top/bottom safe-area spacing;
+- the authenticated username form needs automatic keyboard insets and platform-appropriate dismissal for short-height reachability;
+- the custom back action still used a raw `‹` glyph instead of the shared Lucide navigation language;
+- header title/subtitle copy needs explicit bounded shrink ownership under narrow widths, EN/RU localization and Dynamic Type pressure.
 
 Current bounded remediation:
 
-- Bind developer action title/badge presentation to the current theme.
-- Bind runtime metadata labels, values, dividers and titles to the current theme.
-- Bind local performance diagnostics titles, copy, rows and dividers to the current theme.
-- Add a focused source-contract guard that rejects `Colors.dark` in the three audited support files while protecting existing preview/reset, OTA check and diagnostics recorder actions.
-- Do not change developer routes, reset behavior, OTA update behavior, diagnostics collection/storage, sync, auth, persistence or backend contracts.
+- apply top and bottom spacing from `useSafeAreaInsets()` and keep scroll content `flexGrow: 1`;
+- add `automaticallyAdjustKeyboardInsets`, `keyboardShouldPersistTaps="handled"` and iOS interactive / Android on-drag keyboard dismissal;
+- replace the raw back glyph with Lucide `ChevronLeft` while preserving the existing 44 pt Pressable and localized accessibility label;
+- add `minWidth: 0` / `flexShrink` ownership only to the touched header copy;
+- preserve username validation/normalization, auth gating, `/social/[username]` and `/auth/sign-in` route targets, Social API behavior, persistence and sync contracts;
+- protect the package with a focused source-contract guard.
 
-**Merge gate:** full exact-head Mobile CI.
+**Merge gate:** full exact-head Mobile CI on the final documentation-synchronized head, with no unresolved review threads.
 
 ## Remaining hierarchy / validation review order
 
-1. Finish VUX-5D Settings support/developer theme consistency.
-2. Secondary Social surfaces, beginning with the already-confirmed Social Profile Lookup shell/input issues.
+1. Finish VUX-6A Social Profile Lookup and merge only its validated exact head.
+2. Continue further secondary Social work only from concrete source findings.
 3. Return to Workouts/Nutrition/Progress only for concrete audited defects.
 
 For each surface verify one obvious primary action, restrained surface nesting, EN/RU/Dynamic Type resilience, consistent interaction states and coherent loading/empty/error/success presentation.
@@ -246,8 +258,8 @@ No source/CI result is physical-device evidence.
 
 ## Next execution order
 
-1. Finish VUX-5D and run full exact-head Mobile CI.
-2. Merge only the validated VUX-5D head.
-3. Continue to Social Profile Lookup from the confirmed hidden-header safe-area, keyboard reachability and raw back-glyph findings.
-4. Continue further Social work only from concrete source findings.
+1. Finish VUX-6A and run full exact-head Mobile CI on the final documentation-synchronized head.
+2. Merge only the validated VUX-6A head.
+3. Continue the secondary Social audit from concrete source findings; do not create cosmetic churn without a demonstrated defect.
+4. Return to Workouts/Nutrition/Progress only for concrete audited defects.
 5. Keep backend, OTA/EAS/native/release and production/provider actions out of this autonomous UI sequence unless directly requested.
