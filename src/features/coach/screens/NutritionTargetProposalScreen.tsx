@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { router } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { createCoachApi, type CoachRunEnvelope } from '@/api/coach';
@@ -209,7 +210,7 @@ export default function NutritionTargetProposalScreen() {
           accessibilityRole="button"
           onPress={() => router.back()}
           style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}>
-          <Text style={styles.backLabel}>‹</Text>
+          <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
         </Pressable>
         <View>
           <Text style={styles.title}>{copy.title}</Text>
