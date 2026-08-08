@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { createSocialApi, type SocialWorkoutPostDto } from '@/api/social';
@@ -163,7 +164,11 @@ export default function SocialWorkoutPostDetailScreen() {
       automaticallyAdjustKeyboardInsets
       contentContainerStyle={[
         styles.content,
-        { flexGrow: 1, paddingBottom: insets.bottom + Spacing.eight },
+        {
+          flexGrow: 1,
+          paddingBottom: insets.bottom + Spacing.eight,
+          paddingTop: insets.top + Spacing.four,
+        },
       ]}
       keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
       keyboardShouldPersistTaps="handled"
@@ -175,7 +180,7 @@ export default function SocialWorkoutPostDetailScreen() {
             accessibilityRole="button"
             onPress={() => router.back()}
             style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}>
-            <Text style={styles.backLabel}>‹</Text>
+            <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
           </Pressable>
           <View style={styles.headerCopy}>
             <Text style={styles.eyebrow}>{copy.detailEyebrow}</Text>
