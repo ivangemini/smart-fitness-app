@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ProfileGoalsCard } from '@/components/profile/ProfileGoalsCard';
@@ -9,6 +9,7 @@ import { useProgressState } from '@/context/ProgressStateContext';
 import { getGoalTypeLabel } from '@/features/progress/progressLocalization';
 import { useLocalization } from '@/localization';
 import { getProfileGoalsValidationCopy } from '@/localization/profileGoalsValidationCopy';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import {
   formatWeightValue,
   parseDisplayNumber,
@@ -23,6 +24,8 @@ import {
 } from './profilePlan';
 
 export function ProfileGoalsSection() {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { profile } = useProfileState();
   const { weightHistory } = useProgressState();
   const { updateNutritionTargets, updateProfileGoals } = useAppActions();
@@ -148,23 +151,24 @@ export function ProfileGoalsSection() {
   );
 }
 
-const styles = StyleSheet.create({
-  chevron: { color: Colors.dark.textPrimary, fontSize: 24, fontWeight: '600', lineHeight: 26 },
-  copy: { flex: 1, gap: 4 },
-  disclosure: {
-    alignItems: 'center',
-    backgroundColor: Colors.dark.surfacePrimary,
-    borderColor: Colors.dark.borderSubtle,
-    borderRadius: Radii.large,
-    borderWidth: StyleSheet.hairlineWidth,
-    flexDirection: 'row',
-    gap: Spacing.two,
-    justifyContent: 'space-between',
-    minHeight: 68,
-    padding: Spacing.three,
-  },
-  pressed: { opacity: 0.78 },
-  section: { gap: Spacing.two },
-  subtitle: { color: Colors.dark.textSecondary, fontSize: 13, lineHeight: 18 },
-  title: { color: Colors.dark.textPrimary, fontSize: 18, fontWeight: '800' },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    chevron: { color: colors.textPrimary, fontSize: 24, fontWeight: '600', lineHeight: 26 },
+    copy: { flex: 1, gap: 4 },
+    disclosure: {
+      alignItems: 'center',
+      backgroundColor: colors.surfacePrimary,
+      borderColor: colors.borderSubtle,
+      borderRadius: Radii.large,
+      borderWidth: StyleSheet.hairlineWidth,
+      flexDirection: 'row',
+      gap: Spacing.two,
+      justifyContent: 'space-between',
+      minHeight: 68,
+      padding: Spacing.three,
+    },
+    pressed: { opacity: 0.78 },
+    section: { gap: Spacing.two },
+    subtitle: { color: colors.textSecondary, fontSize: 13, lineHeight: 18 },
+    title: { color: colors.textPrimary, fontSize: 18, fontWeight: '800' },
+  });

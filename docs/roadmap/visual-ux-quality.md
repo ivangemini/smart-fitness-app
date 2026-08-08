@@ -23,7 +23,8 @@ Updated: 2026-08-09
 - VUX-4G Coach strategy back icon language PR #482 → `59cf4c2d80bb17c2a9f362c19fd35e032e17ac2c`.
 - VUX-4H secondary Coach back icon language PR #483 → `acb9de8df023ebfce8a04ded1697c2c4c22798e0`.
 - VUX-4I complete Coach back navigation language PR #484 → `c8318d625a7eb8a489e3e51c005898cc283f0a37`.
-- Active visual branch: `ui/settings-shell-hardening`.
+- VUX-5A Settings shell hardening PR #485 → `ff81c5fb737704e8d15605f8435729ef3e8be8d1`.
+- Active visual branch: `ui/profile-theme-consistency-v2`.
 - Backend is a separate workstream and remains outside this roadmap execution.
 
 Source/CI completion is not physical-device proof. OTA/EAS publication, native build/install, provider/production activation and store/release actions remain separately authorization-gated.
@@ -173,34 +174,40 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - Existing 44 pt geometry, history/filter behavior, preflight gating, combined proposal behavior, sync and persistence are unchanged.
 - A directory-level source guard prevents raw `‹` action glyphs from returning anywhere under `src/features/coach/screens`.
 
-## VUX-5A — Settings shell hardening
+### VUX-5A — Settings shell hardening — PR #485
 
-**Status: active on `ui/settings-shell-hardening`.**
+- Settings now owns top/bottom safe-area padding while its native stack header remains intentionally hidden.
+- The parent scroll is keyboard-aware so Personal Details inputs and actions remain reachable.
+- Settings back navigation now uses Lucide `ChevronLeft` with the existing 44 pt target and localized label.
+- Settings section/block copy now resolves from the current app theme instead of static `Colors.dark` text colors.
+- Header copy owns narrow/large-text reflow through `minWidth: 0` / `flexShrink`.
+- Preferences, account/session behavior, unit semantics, Personal Details validation, sync, OTA developer actions and persistence remain unchanged.
+- A focused source-contract guard protects the shell contracts.
+
+## VUX-5B — Profile theme consistency
+
+**Status: active on `ui/profile-theme-consistency-v2`.**
 
 Audit findings:
 
-- Root navigation intentionally hides the native header for `settings/index`, but Settings did not own top/bottom safe-area padding itself.
-- The screen contains editable Personal Details fields, while its parent `ScrollView` lacked keyboard-inset/dismissal ownership.
-- Settings still used a raw text `‹` back glyph despite the Lucide action-icon standard.
-- `SettingsSection` / `SettingBlock` presentation hard-coded `Colors.dark` text colors instead of the current app theme, which is incorrect under explicit light appearance.
-- Header copy did not explicitly own shrink/reflow behavior for narrow/large-text layouts.
+- The Profile root hard-coded `Colors.dark` for screen background, headings and the Settings action despite explicit system/light/dark appearance support.
+- Profile Goals disclosure hard-coded dark surface/border/text colors.
+- Profile Goals card hard-coded dark title/label colors even though its surrounding `AppCard`, fields and segmented controls already use the current app theme.
 
 Current bounded remediation:
 
-- Own top and bottom safe-area padding in the Settings scroll content while the native header remains hidden.
-- Add automatic keyboard insets, platform-appropriate dismissal and handled taps so Personal Details inputs/actions remain reachable.
-- Replace the Settings raw back glyph with Lucide `ChevronLeft` while preserving the existing 44 pt Pressable and localized label.
-- Make Settings section/block copy use `useAppTheme()` colors instead of static `Colors.dark` text colors.
-- Add `minWidth: 0` / `flexShrink` ownership to Settings header copy.
-- Add a focused source-contract guard.
-- Do not change preferences, account/session behavior, unit semantics, personal-details validation, sync, OTA developer actions or persistence.
+- Bind Profile shell background/headings/Settings icon and button surface to `useAppTheme()`.
+- Bind Goals disclosure surface/border/text to the current theme.
+- Bind Goals card title/label to the current theme.
+- Add a focused source-contract guard that rejects `Colors.dark` in these three Profile presentation files.
+- Preserve existing safe-area/floating-tab clearance, keyboard behavior, goal validation, confirmation, nutrition-target recalculation, persistence, routes and Social entry behavior.
 
 **Merge gate:** full exact-head Mobile CI.
 
 ## Remaining hierarchy / validation review order
 
-1. Finish VUX-5A Settings shell hardening.
-2. Profile theme consistency: remove confirmed static `Colors.dark` presentation from the Profile root / Goals disclosure / Goals card without changing goal logic.
+1. Finish VUX-5B Profile theme consistency.
+2. Audit remaining Settings child cards for static theme assumptions as a separate bounded package.
 3. Secondary Social surfaces.
 4. Return to Workouts/Nutrition/Progress only for concrete audited defects.
 
@@ -223,8 +230,8 @@ No source/CI result is physical-device evidence.
 
 ## Next execution order
 
-1. Finish VUX-5A and run full exact-head Mobile CI.
-2. Merge only the validated VUX-5A head.
-3. Continue with the separate Profile theme-consistency package.
+1. Finish VUX-5B and run full exact-head Mobile CI.
+2. Merge only the validated VUX-5B head.
+3. Audit remaining Settings child-card theme assumptions as a separate package.
 4. Continue to Social only from concrete source findings.
 5. Keep backend, OTA/EAS/native/release and production/provider actions out of this autonomous UI sequence unless directly requested.
