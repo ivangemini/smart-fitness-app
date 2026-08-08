@@ -8,7 +8,7 @@ import {
 } from '@/api/client';
 import { AppCard } from '@/components/ui/AppCard';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography } from '@/constants/theme';
 import {
   createAsyncStorageAdapter,
   createLocalStateDiagnosticsRecorder,
@@ -16,6 +16,7 @@ import {
 } from '@/storage';
 import { useLocalization } from '@/localization';
 import { getSupportDiagnosticsMetricsCopy } from '@/localization/supportDiagnosticsMetricsCopy';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 
 type DiagnosticsState = {
   state: LocalStateDiagnostics;
@@ -33,15 +34,17 @@ const API_CATEGORIES: ApiDiagnosticCategory[] = [
 ];
 
 function Row({ label, value }: { label: string; value: string }) {
+  const { colors } = useAppTheme();
   return (
     <View style={styles.row}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{value}</Text>
+      <Text style={[styles.label, { color: colors.textSecondary }]}>{label}</Text>
+      <Text style={[styles.value, { color: colors.textPrimary }]}>{value}</Text>
     </View>
   );
 }
 
 export function LocalPerformanceDiagnosticsCard() {
+  const { colors } = useAppTheme();
   const { locale, formatNumber } = useLocalization();
   const copy = getSupportDiagnosticsMetricsCopy(locale);
   const storage = useMemo(() => createAsyncStorageAdapter(), []);
@@ -96,14 +99,22 @@ export function LocalPerformanceDiagnosticsCard() {
 
   return (
     <AppCard>
-      <Text style={styles.title}>{copy.title}</Text>
-      <Text style={styles.description}>{copy.description}</Text>
-      {loading ? <Text style={styles.notice}>{copy.loading}</Text> : null}
-      {failed ? <Text style={styles.notice}>{copy.unavailable}</Text> : null}
+      <Text style={[styles.title, { color: colors.textPrimary }]}>{copy.title}</Text>
+      <Text style={[styles.description, { color: colors.textSecondary }]}>
+        {copy.description}
+      </Text>
+      {loading ? (
+        <Text style={[styles.notice, { color: colors.textSecondary }]}>{copy.loading}</Text>
+      ) : null}
+      {failed ? (
+        <Text style={[styles.notice, { color: colors.textSecondary }]}>{copy.unavailable}</Text>
+      ) : null}
       {diagnostics && !loading ? (
         <>
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{copy.stateSection}</Text>
+          <View style={[styles.section, { borderTopColor: colors.borderSubtle }]}>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+              {copy.stateSection}
+            </Text>
             <Row
               label={copy.currentSize}
               value={bytes(diagnostics.state.lastSerializedBytes)}
@@ -140,8 +151,10 @@ export function LocalPerformanceDiagnosticsCard() {
               value={duration(diagnostics.state.maximumSaveDurationMs)}
             />
           </View>
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{copy.apiSection}</Text>
+          <View style={[styles.section, { borderTopColor: colors.borderSubtle }]}>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+              {copy.apiSection}
+            </Text>
             <Row
               label={copy.requestCount}
               value={number(diagnostics.api.totalRequests)}
@@ -170,9 +183,13 @@ export function LocalPerformanceDiagnosticsCard() {
               label={copy.maximumAttempts}
               value={number(diagnostics.api.maximumAttempts)}
             />
-            <Text style={styles.categoryTitle}>{copy.categoryFailures}</Text>
+            <Text style={[styles.categoryTitle, { color: colors.textSecondary }]}>
+              {copy.categoryFailures}
+            </Text>
             {categoryFailures.length === 0 ? (
-              <Text style={styles.notice}>{copy.noFailures}</Text>
+              <Text style={[styles.notice, { color: colors.textSecondary }]}>
+                {copy.noFailures}
+              </Text>
             ) : (
               categoryFailures.map((category) => (
                 <Row
@@ -192,23 +209,19 @@ export function LocalPerformanceDiagnosticsCard() {
 
 const styles = StyleSheet.create({
   categoryTitle: {
-    color: Colors.dark.textSecondary,
     fontSize: Typography.caption.fontSize,
     fontWeight: '700',
     marginTop: Spacing.one,
   },
   description: {
-    color: Colors.dark.textSecondary,
     fontSize: Typography.caption.fontSize,
     lineHeight: Typography.caption.lineHeight,
   },
   label: {
-    color: Colors.dark.textSecondary,
     flex: 1,
     fontSize: Typography.caption.fontSize,
   },
   notice: {
-    color: Colors.dark.textSecondary,
     fontSize: Typography.caption.fontSize,
     lineHeight: Typography.caption.lineHeight,
   },
@@ -219,23 +232,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   section: {
-    borderTopColor: Colors.dark.borderSubtle,
     borderTopWidth: StyleSheet.hairlineWidth,
     gap: Spacing.one,
     paddingTop: Spacing.two,
   },
   sectionTitle: {
-    color: Colors.dark.textPrimary,
     fontSize: Typography.body.fontSize,
     fontWeight: '700',
   },
   title: {
-    color: Colors.dark.textPrimary,
     fontSize: Typography.cardTitle.fontSize,
     fontWeight: Typography.cardTitle.fontWeight,
   },
   value: {
-    color: Colors.dark.textPrimary,
     flex: 1,
     fontSize: Typography.caption.fontSize,
     textAlign: 'right',
