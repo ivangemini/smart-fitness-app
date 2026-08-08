@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { createSocialApi, type SocialWorkoutPostDto } from '@/api/social';
@@ -155,7 +156,10 @@ export default function SocialProfileWorkoutPostsScreen() {
     <ScrollView
       contentContainerStyle={[
         styles.content,
-        { paddingBottom: insets.bottom + Spacing.eight },
+        {
+          paddingBottom: insets.bottom + Spacing.eight,
+          paddingTop: insets.top + Spacing.four,
+        },
       ]}
       style={styles.screen}>
       <View style={styles.container}>
@@ -165,7 +169,7 @@ export default function SocialProfileWorkoutPostsScreen() {
             accessibilityRole="button"
             onPress={() => router.back()}
             style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}>
-            <Text style={styles.backLabel}>‹</Text>
+            <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
           </Pressable>
           <View style={styles.headerCopy}>
             <Text style={styles.eyebrow}>{copy.listEyebrow}</Text>
