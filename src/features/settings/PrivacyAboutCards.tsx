@@ -1,5 +1,6 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
+import { ChevronRight } from 'lucide-react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { AppCard } from '@/components/ui/AppCard';
 import { Spacing, Typography } from '@/constants/theme';
@@ -64,7 +65,7 @@ export function AboutSettingsCard() {
             {t('about.coachHistoryBody')}
           </Text>
         </View>
-        <Text style={[styles.chevron, { color: colors.textMuted }]}>›</Text>
+        <ChevronRight color={colors.textMuted} size={24} strokeWidth={2} />
       </Pressable>
       <Row label={t('about.appVersion')} value={diagnostics.appVersion} />
       <Row label={t('about.build')} value={diagnostics.buildNumber} />
@@ -88,7 +89,6 @@ export function AboutSettingsCard() {
 
 const styles = StyleSheet.create({
   body: { fontSize: Typography.body.fontSize, lineHeight: Typography.body.lineHeight },
-  chevron: { fontSize: 28, lineHeight: 30 },
   disclosure: {
     borderTopWidth: StyleSheet.hairlineWidth,
     gap: Spacing.one,
