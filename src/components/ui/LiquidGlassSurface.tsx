@@ -66,8 +66,12 @@ export function LiquidGlassSurface({
 
 const styles = StyleSheet.create({
   blurLayer: {
-    ...StyleSheet.absoluteFillObject,
+    bottom: 0,
+    left: 0,
     overflow: 'hidden',
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
   surface: {
     borderCurve: 'continuous',
