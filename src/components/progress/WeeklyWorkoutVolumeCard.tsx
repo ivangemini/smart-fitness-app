@@ -6,6 +6,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { Colors, Spacing } from '@/constants/theme';
 import { getWeeklyWorkoutVolume } from '@/lib/progress';
 import { useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import type { WorkoutSession } from '@/types';
 import { weightFromKg, useUnitPreferences } from '@/units';
 
@@ -16,8 +17,10 @@ type Props = {
 };
 
 export function WeeklyWorkoutVolumeCard({ sessions }: Props) {
+  const { colors } = useAppTheme();
   const { formatDate, formatNumber, t } = useLocalization();
   const { weight: weightUnit } = useUnitPreferences();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const timezoneOffsetMinutes = -new Date().getTimezoneOffset();
   const weeklyVolume = useMemo(
     () => getWeeklyWorkoutVolume(sessions, { timezoneOffsetMinutes, weeks: 10 }),
@@ -90,18 +93,19 @@ export function WeeklyWorkoutVolumeCard({ sessions }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  comparison: {
-    color: Colors.dark.textSecondary,
-    fontSize: 12,
-    lineHeight: 18,
-    marginBottom: Spacing.two,
-  },
-  header: { gap: 2, marginBottom: Spacing.two },
-  subtitle: { color: Colors.dark.textSecondary, fontSize: 13, lineHeight: 18 },
-  summaryItem: { flex: 1, gap: 2 },
-  summaryLabel: { color: Colors.dark.textSecondary, fontSize: 12, fontWeight: '700' },
-  summaryRow: { flexDirection: 'row', gap: Spacing.three, marginBottom: Spacing.one },
-  summaryValue: { color: Colors.dark.textPrimary, fontSize: 18, fontWeight: '800' },
-  title: { color: Colors.dark.textPrimary, fontSize: 18, fontWeight: '800' },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    comparison: {
+      color: colors.textSecondary,
+      fontSize: 12,
+      lineHeight: 18,
+      marginBottom: Spacing.two,
+    },
+    header: { gap: 2, marginBottom: Spacing.two },
+    subtitle: { color: colors.textSecondary, fontSize: 13, lineHeight: 18 },
+    summaryItem: { flex: 1, gap: 2 },
+    summaryLabel: { color: colors.textSecondary, fontSize: 12, fontWeight: '700' },
+    summaryRow: { flexDirection: 'row', gap: Spacing.three, marginBottom: Spacing.one },
+    summaryValue: { color: colors.textPrimary, fontSize: 18, fontWeight: '800' },
+    title: { color: colors.textPrimary, fontSize: 18, fontWeight: '800' },
+  });
