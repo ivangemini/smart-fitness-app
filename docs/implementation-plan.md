@@ -1,31 +1,32 @@
 # Smart Fitness — Implementation Plan
 
-Updated: 2026-08-08
+Updated: 2026-08-09
 
-This file is the **canonical forward roadmap**. PR-by-PR history and exact validation detail belong in `docs/current-status.md` and `docs/handoffs/latest.md`. Keep this plan focused on capability status, active blockers, architectural invariants, and execution order.
+This file is the **canonical forward roadmap**. PR-by-PR history and exact validation detail belong in `docs/current-status.md` and `docs/handoffs/latest.md`. Focused Liquid Glass execution detail belongs in `docs/roadmap/liquid-glass.md`.
 
 ## Current verified mobile checkpoint
 
-- Mobile repo: `ivangemini/smart-fitness-app`
-- Mobile `main`: `3473520ae1ad66b1474b015296c5593a0f14b314` (PR #465 — RUI-4B)
-- Active mobile UI branch: `ui/rui5-secondary-surfaces`
-- Open mobile PR #466 is a draft **RUI-6 test-only guardrail package** based on the pre-RUI-5 main. It must be revalidated after RUI-5 lands.
-- Backend implementation is a separate workstream. The mobile UI execution order below must not inspect, edit, merge, deploy, or otherwise advance backend work.
+- Mobile repo: `ivangemini/smart-fitness-app`.
+- Mobile `main` at the start of the active package: `8fe97589d652a48ad45b295c2e460a145439b5c5`.
+- Latest runtime merge: `9c9e67a929d10e9f91475c92ba0b579bbadbb805` (PR #505 — LG-H1 social-first Home).
+- PR #505 exact validated head: `9f28c198ed75070bcf10484ef09a28a78cbc5571`; Mobile CI #1931 passed.
+- Active mobile UI branch: `ui/lg2b-progress-coach-primary`.
+- Active package: **Phase 11 / LG-2B Progress + Coach primary surfaces — first bounded Progress batch**.
+- Backend baseline inspected for dependency awareness: `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`; backend is not part of this package.
 
 Release readiness remains lower than source completeness because staging/provider/physical-device/native-release/production evidence is separately gated.
 
 ## Operating rules
 
-- Re-check exact mobile `main`, open mobile PRs, `AGENTS.md`, this roadmap, current status, and handoff before new mobile work.
-- Prefer one bounded package that closes adjacent safe UI items over one micro-PR per visual nudge.
-- Preserve routes, IDs, persistence schemas, synchronization contracts, calculations, auth/session semantics, workout/program lifecycle, completed history, and backend API contracts unless a task explicitly changes them.
-- Do not claim provider, production, physical-device, native-release, OTA, or deployment evidence unless it actually ran.
-- Do not perform backend work, production migrations, provider activation, production data access, OTA/EAS publication, native build/install, credential/DNS changes, destructive production cleanup, or store submission without direct authorization.
-- Keep analytics/telemetry collection disabled until the P9-C consent/evidence gate is explicitly satisfied.
+- Re-check exact mobile `main`, open PRs, `AGENTS.md`, this plan, current status, handoff, and the focused roadmap before new work.
+- Prefer one bounded package that closes adjacent defects over one micro-PR per visual nudge.
+- Preserve routes, IDs, persistence schemas, synchronization contracts, calculations, auth/session semantics, workout/program lifecycle, completed history, Social authority/privacy boundaries, and backend API contracts unless a task explicitly changes them.
+- Follow `docs/architecture/responsive-mobile-ui.md` and `docs/architecture/liquid-glass-ui.md` for mobile UI work.
+- Use shared navigation/safe-area geometry and shared material primitives instead of screen-local magic clearances or duplicate glass recipes.
 - Preserve the reviewed local-state decision in `docs/architecture/local-state-performance-decision.md`; do not replace the current AsyncStorage architecture without new measured evidence and a separately reviewed decision.
-- There is no remaining approved autonomous source-refactor phase; responsive UI hardening is a bounded product-quality phase and does not reopen the completed storage/state refactor program.
-- For mobile UI work, follow `docs/architecture/responsive-mobile-ui.md`; use shared navigation/safe-area geometry instead of screen-local magic-number clearances.
-- Fixed dimensions remain valid for intentional control/touch/media geometry. The prohibited pattern is device-specific positioning, guessed clearance, or arbitrary pixel nudging used to make primary layout fit one viewport.
+- Keep analytics/telemetry collection disabled until the P9-C consent/evidence gate is explicitly satisfied.
+- Do not claim provider, production, physical-device, native-release, OTA, or deployment evidence unless it actually ran.
+- Do not perform backend deployment/migrations, provider activation, production data access, OTA/EAS publication, native build/install, credential/DNS changes, destructive production cleanup, HealthKit/Health Connect activation, or store submission without direct authorization.
 
 ---
 
@@ -41,15 +42,13 @@ Legacy/demo ownership cleanup, migration/repository foundations, canonical sync-
 
 **Status: complete for the established source contract.**
 
-Registration, login, refresh, current-user, sessions, password reset/change, account deletion and restart-safe deletion recovery exist. Further backend work is owned outside the current mobile UI stream.
+Registration, login, refresh, current-user, sessions, password reset/change, account deletion and restart-safe deletion recovery exist. Further backend implementation is a separate workstream.
 
 ## Phase 3 — mobile auth + durable sync
 
 **Status: complete for current source scope.**
 
 Authenticated shell, session restoration, ownership-safe sync, durable outbox/retry/idempotency/conflict handling, current entity coverage, rehydration and logout/account-delete cleanup boundaries are complete.
-
-Remaining work is physical-device/staging release evidence, not another source refactor pass.
 
 ## Phase 4 — product domain convergence
 
@@ -73,7 +72,7 @@ Provider-neutral interfaces, validation, provenance/audit metadata, bounded retr
 
 **Status: complete for current planned source scope.**
 
-Profiles, graph, feed, workout posts, reactions, comments, notifications, moderation/reporting/restrictions and managed-media governance source contracts exist. Operational provider/storage activation remains separate and gated.
+Profiles, graph, chronological Following feed, workout posts, reactions, comments, notifications, moderation/reporting/restrictions and managed-media governance source contracts exist. Social remains server-authoritative and separate from private revisioned `AppState` synchronization.
 
 ## Phase 8 — privacy/security hardening
 
@@ -85,40 +84,31 @@ Data/retention inventories, account deletion, auth/sync/moderation/export privac
 
 # Phase 9 — release, privacy evidence and data access
 
-Phase 9 remains a cross-repository/release program. It is **not part of the current autonomous mobile UI workstream** except where a separately authorized mobile product surface is explicitly requested.
+Phase 9 remains a cross-repository/release program and is **not part of the current autonomous mobile UI workstream** except where a separately authorized product surface is explicitly requested.
 
 ## P9-A — release evidence
 
 **Status: source checks exist; physical/release evidence remains authorization-gated.**
 
-Still required when explicitly authorized:
-
-- standalone runtime on real devices;
-- production-scheme/native build evidence;
-- OTA/EAS channel and rollback verification;
-- store/release checklist and rollback evidence.
-
-CI/source compilation does not substitute for these checks.
+Still required when explicitly authorized: standalone real-device runtime, production-scheme/native build evidence, OTA/EAS channel and rollback verification, and store/release rollback evidence. CI/source compilation does not substitute for these checks.
 
 ## P9-B — privacy/retention evidence
 
 **Status: source inventories exist; exact provider/environment evidence remains external.**
 
-Activated providers/environments must prove bounded retention lifetime, access, expiry/deletion behavior, failure monitoring, account-deletion behavior and exceptional/legal-hold behavior where applicable. Generic provider documentation is insufficient.
+Activated providers/environments must prove bounded retention, access, expiry/deletion behavior, monitoring, account-deletion behavior and exceptional/legal-hold behavior where applicable.
 
 ## P9-C — analytics and consent
 
 **Status: collection remains disabled.**
 
-Before activation: define purpose/region policy, exact provider/environment, retention/deletion/ownership semantics, event/property allowlists, consent persistence/UX, disclosure/localization/accessibility and explicit activation approval.
+Before activation define purpose/region policy, exact provider/environment, retention/deletion/ownership semantics, event/property allowlists, consent persistence/UX, disclosure/localization/accessibility and explicit activation approval.
 
 ## P9-D — authenticated data-access export
 
-**Status: backend/source work is separate; product availability remains fail closed until the full reviewed chain exists.**
+**Status: product availability remains fail closed until the full reviewed chain exists.**
 
-Do not infer product availability from source-only backend pieces. Mobile UI work must not activate backend export routes, providers, storage or credentials implicitly.
-
-A complete product path still requires the separately reviewed storage/delivery/status/download lifecycle plus an explicitly authorized mobile export surface and release evidence. Large-account handling must be explicit rather than silently relaxing bounded payload limits.
+Do not infer availability from source-only pieces or activate backend export routes/providers/storage implicitly from mobile work.
 
 ---
 
@@ -126,135 +116,65 @@ A complete product path still requires the separately reviewed storage/delivery/
 
 Canonical contract: `docs/architecture/responsive-mobile-ui.md`.
 
-This phase is layout/product-quality hardening, not a business-logic redesign. Preserve routes, persistence, sync, calculations, workout state and data contracts while correcting viewport, safe-area, keyboard and text-pressure behavior.
+**Status: complete for the current source/CI scope.**
 
-## RUI-1 — responsive layout foundation
+RUI-1 through the final responsive guardrail work are merged. The completed phase established shared floating-tab clearance, short-screen scroll/reflow ownership, keyboard-aware editable surfaces, bounded text-pressure behavior, virtualized growing pickers, measured sticky-footer clearance, responsive workout set-table behavior, and focused source guardrails.
 
-**Status: complete.**
+Phase 10 must not be reopened as a broad refactor. New responsive defects should be fixed only when concrete evidence appears in current product work.
 
-PR #459 merged as `2ff71de222a0cc393ed41806978cce859c98b306`.
-
-Completed scope:
-
-- shared floating-tab bottom-clearance geometry;
-- Nutrition/Profile/Coach/Workouts moved away from independent guessed tab clearances;
-- Workouts scroll content reserves sticky action space;
-- touched horizontal/text rows gained bounded shrink/wrap ownership;
-- canonical responsive rules were documented.
-
-## RUI-2 — primary tabs
-
-**Status: complete.**
-
-PR #460 merged as `740ae06d24c895e882a37e715b59ce47e599ab5d`.
-
-Completed scope:
-
-- Home and Progress use shared floating-tab clearance;
-- short-screen root content can grow and scroll naturally;
-- Home/Progress high-pressure rows can wrap/shrink without changing base typography or touch targets;
-- `LiquidGlassTabBar` consumes the shared runtime geometry constants.
-
-## RUI-3A — active Workout Session + Finish
-
-**Status: complete.**
-
-PR #462 merged as `2219213a9b1ba3800d10e343bebe7fad7b13080f`.
-
-Completed scope:
-
-- active set table keeps 358 px as preferred maximum rather than required viewport width;
-- Previous/weight/reps compress proportionally while Set/completion controls remain bounded;
-- active-session inputs are keyboard-aware;
-- long exercise names/header labels can reflow;
-- Workout Session Finish measures its actual sticky-footer height instead of guessing `176` px;
-- Save/Share remain reachable with the keyboard.
-
-## RUI-3B — workout creation/detail flows
-
-**Status: complete.**
-
-PR #463 merged as `5c9ac4bf96e2ecb2c1c4a07b4b09de0521f4edc8`.
-
-Completed scope:
-
-- Exercise Library keeps `FlatList` virtualization and reserves its measured Add-footer height rather than `insets.bottom + 128`;
-- Program workout picker and New Routine exercise picker use bounded virtualized lists instead of growing `.map()`/ScrollView collections;
-- New Routine, Workout Builder and editor flows are keyboard-aware;
-- touched workout creation/detail headers, names and actions have explicit shrink/wrap ownership;
-- Program Detail/Exercise Detail were changed only where audit evidence required it.
-
-## RUI-4A — auth/onboarding/account-security forms
-
-**Status: complete.**
-
-PR #464 merged as `4a631101c11630787e046fabc84343a3b6350d0e`.
-
-Completed scope:
-
-- shared login/register, forgot/reset password and onboarding scroll surfaces use automatic keyboard insets/dismissal;
-- localized choice/action groups can wrap instead of forcing one row;
-- Change Password/Delete Account over-full-screen sheets account for keyboard/safe-area behavior;
-- auth/session/account semantics remain unchanged.
-
-## RUI-4B — Profile/Nutrition editable surfaces
-
-**Status: complete.**
-
-PR #465 merged as `3473520ae1ad66b1474b015296c5593a0f14b314`.
-
-Completed scope:
-
-- editable Profile goals are keyboard-aware while preserving floating-tab clearance;
-- Nutrition Add Food is keyboard-aware on short screens;
-- Food Portion over-full-screen sheet is keyboard-aware while preserving save/delete semantics.
-
-## RUI-5 — secondary Coach/Social/Progress surfaces
-
-**Status: active on `ui/rui5-secondary-surfaces`; exact-head CI not yet complete.**
-
-Audit findings being remediated:
-
-- `weight-entry` still had legacy `safeAreaInsets.bottom + 120` clearance;
-- User Limitations and Recovery Check-In had editable fields without automatic keyboard insets/dismissal;
-- Social Profile Editor, Share Workout caption and Workout Post Detail comments had the same keyboard-reachability gap;
-- touched Social headers/comment actions/switch rows needed explicit bounded text ownership for localization/Dynamic Type pressure.
-
-Current bounded implementation:
-
-- replace weight-entry `+120` with actual safe-area spacing;
-- automatic keyboard insets and interactive/on-drag dismissal across the audited editable secondary surfaces;
-- `flexGrow: 1` where short-screen content must remain scroll-reachable;
-- `minWidth: 0`, `flexShrink` and wrapping only on touched high-pressure Social rows;
-- preserve visual tokens, touch-target geometry, validation, API behavior, local persistence and synchronization semantics.
-
-**Merge gate:** full exact-head Mobile CI. Do not mark RUI-5 complete before the validated head merges.
-
-## RUI-6 — focused responsive regression guardrails
-
-**Status: draft PR #466 exists; queued behind RUI-5.**
-
-After RUI-5 merges:
-
-1. revalidate/rebase #466 against the resulting `main`;
-2. ensure its assertions protect proven failure modes rather than implementation trivia;
-3. include newly fixed RUI-5 secondary editable surfaces where useful;
-4. do not add blanket regex bans on legitimate fixed control dimensions or intentional overlays;
-5. merge only after exact-head Mobile CI is green.
+Physical responsive evidence on real devices remains a separate authorization-gated release step.
 
 ---
 
-# Mobile UI execution order from this checkpoint
+# Phase 11 — Liquid Glass migration
 
-1. Finish RUI-5 source review and documentation sync.
-2. Open one bounded RUI-5 PR against exact current `main`.
-3. Run the complete exact-head Mobile CI gate and fix only concrete failures.
-4. Merge only the validated RUI-5 head.
-5. Update/revalidate existing RUI-6 PR #466 against post-RUI-5 `main`; merge only its validated exact head.
-6. Run physical responsive evidence only when explicitly authorized: narrow/small-height device, Dynamic Type, open keyboard, iPhone safe areas, Android navigation/system insets, long localization and dense/empty states.
-7. Keep OTA/EAS/native/release actions separately authorization-gated.
+Canonical architecture: `docs/architecture/liquid-glass-ui.md`.
+Focused execution roadmap: `docs/roadmap/liquid-glass.md`.
 
-Backend execution is intentionally absent from this mobile UI sequence.
+**Status: active.**
+
+## Completed milestones
+
+- **LG-1 shared foundation:** complete via PR #501 / Mobile CI #1922.
+- **LG-2A original Home pilot:** complete via PR #503 / Mobile CI #1925.
+- **LG-H1 social-first Home:** complete via PR #505 / exact green head `9f28c198ed75070bcf10484ef09a28a78cbc5571` / Mobile CI #1931.
+
+Home remains a social-first hybrid: compact personal daily metrics → future Stories only after real contracts → existing server-authoritative Following Feed. Do not fabricate Stories or Steps.
+
+## Blocked Home follow-ups
+
+- **LG-H2 Stories:** blocked until reviewed DTO/schema, expiry, ownership, follow/block/private-profile, media lifecycle, moderation, viewed-state, retention/account-deletion, pagination and cache contracts exist.
+- **LG-H3 Steps:** blocked until a reviewed native health/activity source, dependency/permission disclosure, and later separately authorized physical runtime evidence exist.
+- **LG-H4 feed retention:** planned after the base Home feed is stable; preserve current chronological Following semantics unless a separately reviewed ranking contract exists.
+
+## Active LG-2B — Progress + Coach primary surfaces
+
+Coach primary audit found that the screen already uses shared `AppCard` and `AppButton` primitives. Do not create meaningless Coach churn.
+
+First bounded Progress batch:
+
+- migrate the 7D/30D/90D weight-range selector to shared `LiquidGlassSurface` and adaptive selected/pressed tokens;
+- migrate body-measurement metric/unit choices and inputs to adaptive control tokens;
+- migrate the reusable Progress trend-chart shell to shared `LiquidGlassSurface` without per-chart native blur;
+- add focused source-contract regression coverage.
+
+Preserve 44 pt interaction ownership, Progress analytics, chart data, navigation, persistence, localization, accessibility states, and Coach domain behavior.
+
+This first batch does **not** complete LG-2B. Remaining Progress material debt includes nested Safety/Recovery filters/detail summary surfaces that still use local recipes. Continue them as one coherent follow-up after the first batch passes exact-head CI and merges.
+
+## Remaining Phase 11 execution order
+
+1. Validate/merge the first bounded LG-2B Progress batch.
+2. Finish the remaining coherent LG-2B Progress/Coach primary-surface debt, especially Safety/Recovery nested material recipes.
+3. **LG-2C Nutrition primary surfaces.** Keep dense diary/food rows fast; no blur per row.
+4. **LG-2D Profile primary surfaces.** Preserve completed theme/safe-area behavior.
+5. **LG-3 secondary surfaces.** Batch adjacent Settings/Sync/Social detail/Progress detail/Nutrition detail/Coach detail/exercise surfaces by shared defect.
+6. **LG-4 Workouts:** hub/program cards → library/builder → active workout chrome → set-table states → finish/summary. Preserve session persistence and dense set-table readability.
+7. **LG-5 elevated chrome/motion:** use true blur only for bounded elevated/floating roles.
+8. **LG-6 visual QA/stabilization:** exact-head CI/source guards first; physical cross-device/light-dark/Dynamic Type/keyboard/performance evidence only when separately authorized.
+9. Revisit LG-H2/H3 when their contract/native blockers are actually resolved; do not use placeholders as a substitute.
+
+---
 
 # Validation policy
 
@@ -263,21 +183,23 @@ For runtime/code PRs, use repository-required exact-head Mobile CI:
 - repository and changed-file line limits;
 - TypeScript;
 - full regression suite and relevant source contracts;
-- expanded sync smoke;
+- expanded sync/model smoke;
 - Expo export;
 - Expo Doctor.
 
-Responsive UI packages must also be reviewed against `docs/architecture/responsive-mobile-ui.md`. CI does not substitute for physical-device evidence.
+Responsive and Liquid Glass UI packages must also be reviewed against their canonical architecture documents. CI does not substitute for physical-device evidence.
 
 For docs-only synchronization, verify diff/ancestry; workflows may intentionally ignore Markdown-only changes.
 
-# Definition of done for Phase 10
+# Current definition of done
 
-Phase 10 source/CI hardening is complete only when:
+The active LG-2B batch is done only when:
 
-- RUI-1 through RUI-5 are merged on validated heads;
-- focused RUI-6 guardrails are merged on a validated post-remediation head;
-- the roadmap/status/handoff agree with actual Git history;
-- no known audited high-risk magic clearance, keyboard reachability, unbounded growing picker, or text-pressure defect remains in the scoped mobile surfaces.
+- the bounded Progress material migration and focused guard are present on the PR head;
+- Coach primary compliance is verified without unnecessary runtime churn;
+- Progress analytics/domain behavior and accessibility ownership remain unchanged;
+- repository line limits, TypeScript, regression tests, model smoke, Expo export and Expo Doctor pass on the exact PR head;
+- roadmap/status/handoff agree with actual Git history;
+- the validated exact head merges without unresolved review blockers.
 
-Physical-device responsive/release evidence remains a separate gate and must not be inferred from source/CI completion.
+Physical-device, OTA/EAS, native-release, provider, production and store evidence remain separate gates and must not be inferred from source/CI completion.
