@@ -6,24 +6,25 @@ Architecture contract: `docs/architecture/liquid-glass-ui.md`.
 
 ## Objective
 
-Converge Smart Fitness on the Liquid Glass material language while preserving responsive/safe-area rules, accessibility, localization, business logic, persistence, synchronization, and backend contracts.
+Converge Smart Fitness on the Liquid Glass material language while preserving responsive/safe-area rules, accessibility, localization, business logic, persistence, synchronization, Social authority, and backend contracts.
 
-Home remains **social-first hybrid**: compact personal fitness context above the continuously updating Social feed.
+Home remains **social-first hybrid**: compact personal fitness context above the server-authoritative Social feed.
 
 ## Status
 
 - Phase 10 responsive source hardening is complete for the current source scope.
-- VUX secondary-surface cleanup is complete through VUX-7F.
 - **LG-1 foundation:** PR #501 / Mobile CI #1922.
 - **LG-2A Home pilot:** PR #503 / Mobile CI #1925.
 - **LG-H1 social-first Home:** PR #505 / Mobile CI #1931.
-- **LG-2B Progress + Coach primary:** PR #507 + #509 / Mobile CI #1937 + #1943 / merge `7355c0aa8b4b94a7cac8a7682acba90808739b77`.
-- **LG-2C Nutrition primary:** PR #511 / Mobile CI #1947 / merge `eaad35aac4733ba7488ae0aa151c285dca3acc38`.
-- **LG-2D Profile primary:** PR #513 / Mobile CI #1949 / merge `fb5943c1497cf893858d59ca6b41dcab60790da8`.
-- **LG-3A Settings controls/disclosures:** PR #515 / Mobile CI #1951 / merge `be332729c070bbdf5050536d038b270656a5f0e8`.
-- **LG-3B Nutrition secondary:** PR #517 / Mobile CI #1953 / merge `8f7df7507c3a833cdfa82b636820080106b15b9c`.
-- **LG-3C Social interaction controls complete:** PR #519, exact green head `d739a5406490e38773e9acc91e69605a21184c98`, Mobile CI #1955, merge `7a9274d910c0e2dfc8bd270d0d1dc332989d6863`.
-- **LG-3D Social shell + notification controls is active.**
+- **LG-2B Progress + Coach primary:** PR #507 + #509 / Mobile CI #1937 + #1943.
+- **LG-2C Nutrition primary:** PR #511 / Mobile CI #1947.
+- **LG-2D Profile primary:** PR #513 / Mobile CI #1949.
+- **LG-3A Settings controls/disclosures:** PR #515 / Mobile CI #1951.
+- **LG-3B Nutrition secondary:** PR #517 / Mobile CI #1953.
+- **LG-3C Social interaction controls:** PR #519 / Mobile CI #1955 / merge `7a9274d910c0e2dfc8bd270d0d1dc332989d6863`.
+- **LG-3D Social shell + notification controls — batch 1 complete:** PR #521, exact green head `290f19513e1871f705cd87a3a78838e6ed27b609`, Mobile CI #1957, merge `97d497ccda6bcc756d808190e4d84ce1de3f849f`.
+- **LG-3E Social Share Workout material is active.**
+- One LG-3D residual remains: the local back control in `SocialCommunityGuidelinesScreen`; do not mark LG-3D fully complete until it lands.
 - LG-H2 Stories and LG-H3 Steps remain blocked by real server/native contracts and must not be faked.
 - No OTA/EAS publication, native install/build, or physical-device proof is implied by source/CI completion.
 
@@ -59,33 +60,38 @@ LG-2B Progress + Coach, LG-2C Nutrition primary, and LG-2D Profile primary are c
 
 ### LG-3C — Social interaction controls
 
-**Complete for source/CI scope.**
-
-PR #519 delivered:
-
-- `SocialReportModal` sheet/reason/radio material on adaptive elevated/control/accent tokens with explicit neutral/selected pressed states;
-- shared `LiquidGlassIconButton` for relationship-list back navigation;
-- adaptive relationship tabs and avatar fallback material;
-- opacity feedback retained only for the lightweight profile link inside the existing `AppCard`.
-
-Preserved: Social report reason/submit/success/error/rate-limit semantics, API authority, relationship paging/stale-request protection, cursor handling, approve/reject/cancel/unfollow actions, profile routing, privacy/visibility rules and cache contracts. No native blur was added per report option/list item.
-
-Exact head `d739a5406490e38773e9acc91e69605a21184c98` passed repository/changed-file line audits, TypeScript, full regression, expanded model smoke, Expo export and Expo Doctor in Mobile CI #1955; merge `7a9274d910c0e2dfc8bd270d0d1dc332989d6863`.
+**Complete.** Report options, relationship-list back navigation, tabs and avatar fallback use adaptive material. Moderation/relationship data flow and Social API authority remain unchanged.
 
 ### LG-3D — Social shell + notification controls
+
+**Status: batch 1 complete; one residual remains.**
+
+PR #521 delivered:
+
+- shared `LiquidGlassIconButton` for Social Notifications back navigation;
+- adaptive notification-card `cardFill/cardBorder` material with explicit `controlPressedFill` feedback instead of legacy selected-background + opacity ownership;
+- shared `LiquidGlassIconButton` for Social Profile Lookup;
+- focused guards preserving optimistic notification read/mark-read routing and Profile Lookup validation/navigation semantics.
+
+Preserved: notification pagination, request sequencing, missing-notification rollback/removal, profile/post routing, Profile Lookup keyboard/safe-area behavior, username validation/normalization and sign-in/profile routes. No native blur was added per notification card or shell control.
+
+Exact head `290f19513e1871f705cd87a3a78838e6ed27b609` passed repository/changed-file line audits, TypeScript, full regression, expanded model smoke, Expo export and Expo Doctor in Mobile CI #1957; merge `97d497ccda6bcc756d808190e4d84ce1de3f849f`.
+
+Residual: `SocialCommunityGuidelinesScreen` still owns its local 44 pt bordered back Pressable. Its existing `AppCard` content is already acceptable and must not be churned merely to close the back-control item.
+
+### LG-3E — Social Share Workout material
 
 **Status: active.**
 
 Audited bounded scope:
 
-- `SocialNotificationScreen`: replace local back control with shared `LiquidGlassIconButton`; migrate notification-card and avatar-fallback material from direct legacy surfaces to adaptive card/control tokens with explicit pressed feedback while preserving optimistic-read behavior, API marking and profile/post routing;
-- `SocialCommunityGuidelinesScreen`: replace only the local 44 pt back material with the shared icon primitive; existing `AppCard` section ownership stays unchanged;
-- `SocialProfileLookupScreen`: replace only the local back material with shared `LiquidGlassIconButton`; preserve keyboard/safe-area behavior, username validation/normalization, auth route and public-profile routing;
-- update existing Social shell/profile-lookup guards to assert shared back ownership rather than the old direct Chevron implementation;
-- do not include Share Workout in this batch; its publishing/media form has broader material and domain risk and remains a later LG-3 package;
-- no native blur per notification card or shell control.
+- `ShareWorkoutScreen`: replace local back control with shared `LiquidGlassIconButton` while preserving safe-area/keyboard behavior;
+- migrate caption input, visibility toggle, preview shell/rows and other material-owning controls from direct `surfaceSecondary` / `backgroundSelected` / `borderSubtle` recipes to adaptive card/control/accent tokens with explicit pressed states;
+- preserve the existing publishing state machine, idempotency, media release/cleanup, moderation error handling, request sequencing, preview semantics, localization/accessibility and Social API authority;
+- keep the publishing/media form blur-free; do not add native blur behind preview rows or inputs;
+- update existing Share Workout shell guards and add one focused material/no-blur guard.
 
-After LG-3D, continue remaining Settings/account, Sync & Backup, Social publishing/detail, Progress detail, Coach detail and exercise detail/library surfaces by shared defect.
+After LG-3E, continue remaining Settings/account, Sync & Backup, Social profile/detail, Progress detail, Coach detail and exercise detail/library surfaces by shared defect, and revisit the single LG-3D Guidelines residual when it can be landed safely.
 
 ## LG-4 — Workouts
 
