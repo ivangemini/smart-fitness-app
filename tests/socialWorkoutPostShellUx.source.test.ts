@@ -53,9 +53,10 @@ describe('Social workout-post shell UX', () => {
   });
 
   it('preserves feed, post-list and post-detail behavior boundaries', () => {
-    const feed = readSource(
+    const feedScreen = readSource(
       'src/features/social/screens/SocialFollowingFeedScreen.tsx',
     );
+    const feedState = readSource('src/features/social/useSocialFollowingFeed.ts');
     const profilePosts = readSource(
       'src/features/social/screens/SocialProfileWorkoutPostsScreen.tsx',
     );
@@ -63,8 +64,9 @@ describe('Social workout-post shell UX', () => {
       'src/features/social/screens/SocialWorkoutPostDetailScreen.tsx',
     );
 
-    expect(feed).toContain('cacheStore.load(accountId)');
-    expect(feed).toContain('socialApi.listFollowingFeed');
+    expect(feedScreen).toContain('useSocialFollowingFeed()');
+    expect(feedState).toContain('cacheStore.load(accountId)');
+    expect(feedState).toContain('socialApi.listFollowingFeed');
     expect(profilePosts).toContain('socialApi.listWorkoutPosts(username');
     expect(detail).toContain('socialApi.getWorkoutPost(postId)');
     expect(detail).toContain('socialApi.deleteWorkoutPost(postId)');
