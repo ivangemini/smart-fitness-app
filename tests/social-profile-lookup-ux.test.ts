@@ -27,11 +27,12 @@ describe('Social Profile Lookup UX', () => {
     expect(source).toContain('headerCopy: { flex: 1, gap: Spacing.one, minWidth: 0 }');
   });
 
-  it('uses the shared Lucide back language while preserving lookup and auth routes', () => {
+  it('uses the shared glass back control while preserving lookup and auth routes', () => {
     expect(source).toContain("import { ChevronLeft } from 'lucide-react-native';");
-    expect(source).toContain(
-      '<ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />',
-    );
+    expect(source).toContain('LiquidGlassIconButton');
+    expect(source).toContain('Icon={ChevronLeft}');
+    expect(source).toContain('onPress={() => router.back()}');
+    expect(source).not.toContain('styles.backButton');
     expect(source).not.toContain('>‹</Text>');
     expect(source).toContain('validateSocialLookupUsername');
     expect(source).toContain('normalizeSocialLookupUsername');

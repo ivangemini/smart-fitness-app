@@ -1,0 +1,40 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { describe, expect, it } from 'vitest';
+
+const readSource = (path) => readFileSync(resolve(process.cwd(), path), 'utf8');
+
+describe('LG-3D Social shell Liquid Glass controls', () => {
+  it('keeps Notifications on shared back navigation and adaptive card press material', () => {
+    const screen = readSource('src/features/social/screens/SocialNotificationScreen.tsx');
+    const styles = readSource('src/features/social/screens/SocialNotificationScreen.styles.ts');
+
+    expect(screen).toContain('LiquidGlassIconButton');
+    expect(screen).toContain('Icon={ChevronLeft}');
+    expect(screen).toContain('resolveLiquidGlassPalette(resolvedAppearance)');
+    expect(screen).toContain('pressed && styles.notificationPressed');
+    expect(screen).toContain('markSocialNotificationReadOptimistically');
+    expect(screen).toMatch(/socialApi\s*\.markNotificationRead\(notification\.id\)/);
+    expect(styles).toContain('backgroundColor: glass.cardFill');
+    expect(styles).toContain('borderColor: glass.cardBorder');
+    expect(styles).toContain('backgroundColor: glass.controlPressedFill');
+    expect(styles).not.toContain('colors.backgroundSelected');
+    expect(styles).not.toContain('pressed: { opacity:');
+    expect(styles).not.toContain('BlurView');
+  });
+
+  it('keeps Profile Lookup on the shared back control without changing lookup semantics', () => {
+    const source = readSource('src/features/social/screens/SocialProfileLookupScreen.tsx');
+
+    expect(source).toContain('LiquidGlassIconButton');
+    expect(source).toContain('Icon={ChevronLeft}');
+    expect(source).toContain('onPress={() => router.back()}');
+    expect(source).toContain('validateSocialLookupUsername');
+    expect(source).toContain('normalizeSocialLookupUsername');
+    expect(source).toContain("pathname: '/social/[username]'");
+    expect(source).toContain("router.push('/auth/sign-in')");
+    expect(source).not.toContain('styles.backButton');
+    expect(source).not.toContain('pressed: { opacity:');
+    expect(source).not.toContain('BlurView');
+  });
+});

@@ -16,6 +16,7 @@ import {
 } from '@/api/social';
 import { AppCard } from '@/components/ui/AppCard';
 import { InlineError } from '@/components/ui/InlineError';
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
@@ -26,6 +27,7 @@ import {
   useLocalization,
 } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
 import {
   getSocialNotificationCopy,
@@ -50,12 +52,16 @@ const PAGE_SIZE = 20;
 export default function SocialNotificationScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { locale, t } = useLocalization();
   const copy = getSocialNotificationCopy(locale);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const styles = useMemo(
-    () => createSocialNotificationScreenStyles(colors),
-    [colors],
+    () => createSocialNotificationScreenStyles(colors, glass),
+    [colors, glass],
   );
   const { isAuthenticated, ready, refresh, session } = useAuthSession();
   const requestSequence = useRef(0);
@@ -235,16 +241,11 @@ export default function SocialNotificationScreen() {
       style={styles.screen}>
       <View style={styles.container}>
         <View style={styles.headerRow}>
-          <Pressable
+          <LiquidGlassIconButton
             accessibilityLabel={t('common.back')}
-            accessibilityRole="button"
+            Icon={ChevronLeft}
             onPress={() => router.back()}
-            style={({ pressed }) => [
-              styles.backButton,
-              pressed && styles.pressed,
-            ]}>
-            <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
-          </Pressable>
+          />
           <View style={styles.headerCopy}>
             <Text style={styles.eyebrow}>{copy.eyebrow}</Text>
             <Text style={styles.title}>{copy.title}</Text>
@@ -327,7 +328,7 @@ export default function SocialNotificationScreen() {
                     onPress={() => openNotification(notification)}
                     style={({ pressed }) => [
                       styles.notificationCard,
-                      pressed && styles.pressed,
+                      pressed && styles.notificationPressed,
                     ]}>
                     <View style={styles.notificationHeader}>
                       {unread ? <View style={styles.unreadDot} /> : null}

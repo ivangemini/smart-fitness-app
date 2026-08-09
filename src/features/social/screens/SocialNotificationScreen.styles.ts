@@ -7,21 +7,13 @@ import {
   Spacing,
   Typography,
 } from '@/constants/theme';
+import type { LiquidGlassPalette } from '@/theme/liquidGlass';
 
 export const createSocialNotificationScreenStyles = (
-  colors: typeof Colors.dark,
+  colors: typeof Colors.light,
+  glass: LiquidGlassPalette,
 ) =>
   StyleSheet.create({
-    backButton: {
-      alignItems: 'center',
-      borderColor: colors.borderSubtle,
-      borderRadius: Radii.large,
-      borderWidth: StyleSheet.hairlineWidth,
-      flexShrink: 0,
-      height: 44,
-      justifyContent: 'center',
-      width: 44,
-    },
     body: {
       color: colors.textSecondary,
       fontSize: Typography.body.fontSize,
@@ -66,8 +58,8 @@ export const createSocialNotificationScreenStyles = (
       lineHeight: Typography.body.lineHeight,
     },
     notificationCard: {
-      backgroundColor: colors.backgroundSelected,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.cardFill,
+      borderColor: glass.cardBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
@@ -85,8 +77,8 @@ export const createSocialNotificationScreenStyles = (
       gap: Spacing.two,
       justifyContent: 'space-between',
     },
-    pressed: {
-      opacity: 0.72,
+    notificationPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     readLabel: {
       color: colors.textSecondary,

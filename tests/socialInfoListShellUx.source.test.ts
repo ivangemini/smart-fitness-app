@@ -14,11 +14,12 @@ const projectRoot = resolve(__dirname, '..');
 const readSource = (relativePath: string) =>
   readFileSync(resolve(projectRoot, relativePath), 'utf8');
 
-const directIconScreens = [
+const guidelinesScreen = readSource(
   'src/features/social/screens/SocialCommunityGuidelinesScreen.tsx',
+);
+const notificationScreen = readSource(
   'src/features/social/screens/SocialNotificationScreen.tsx',
-];
-
+);
 const relationshipScreen = readSource(
   'src/features/social/screens/SocialRelationshipListsScreen.tsx',
 );
@@ -30,36 +31,35 @@ const relationshipStyles = readSource(
 );
 
 describe('Social information and list shell UX', () => {
-  it.each(directIconScreens)('%s owns hidden-header top safe area and Lucide back language', (path) => {
-    const source = readSource(path);
-
-    expect(source).toContain("import { ChevronLeft } from 'lucide-react-native';");
-    expect(source).toContain('paddingTop: insets.top + Spacing.four');
-    expect(source).toContain(
+  it('keeps Guidelines on the existing Lucide language and hidden-header safe area', () => {
+    expect(guidelinesScreen).toContain("import { ChevronLeft } from 'lucide-react-native';");
+    expect(guidelinesScreen).toContain('paddingTop: insets.top + Spacing.four');
+    expect(guidelinesScreen).toContain(
       '<ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />',
     );
+    expect(guidelinesScreen).not.toContain('>‹</Text>');
+  });
+
+  it.each([
+    ['notification', notificationScreen],
+    ['relationship-list', relationshipScreen],
+  ])('keeps %s safe area and Lucide language through the shared back control', (_name, source) => {
+    expect(source).toContain("import { ChevronLeft } from 'lucide-react-native';");
+    expect(source).toContain('paddingTop: insets.top + Spacing.four');
+    expect(source).toContain('LiquidGlassIconButton');
+    expect(source).toContain('Icon={ChevronLeft}');
+    expect(source).toContain('onPress={() => router.back()}');
+    expect(source).not.toContain('styles.backButton');
     expect(source).not.toContain('>‹</Text>');
   });
 
-  it('keeps relationship-list safe area and Lucide language through the shared back control', () => {
-    expect(relationshipScreen).toContain("import { ChevronLeft } from 'lucide-react-native';");
-    expect(relationshipScreen).toContain('paddingTop: insets.top + Spacing.four');
-    expect(relationshipScreen).toContain('LiquidGlassIconButton');
-    expect(relationshipScreen).toContain('Icon={ChevronLeft}');
-    expect(relationshipScreen).toContain('onPress={() => router.back()}');
-    expect(relationshipScreen).not.toContain('styles.backButton');
-    expect(relationshipScreen).not.toContain('>‹</Text>');
-  });
-
   it('preserves notification navigation/read semantics', () => {
-    const source = readSource('src/features/social/screens/SocialNotificationScreen.tsx');
-
-    expect(source).toContain('markSocialNotificationReadOptimistically');
-    expect(source).toMatch(
+    expect(notificationScreen).toContain('markSocialNotificationReadOptimistically');
+    expect(notificationScreen).toMatch(
       /socialApi\s*\.markNotificationRead\(notification\.id\)/,
     );
-    expect(source).toContain("pathname: '/social/[username]'");
-    expect(source).toContain("pathname: '/social/workout-post/[postId]'");
+    expect(notificationScreen).toContain("pathname: '/social/[username]'");
+    expect(notificationScreen).toContain("pathname: '/social/workout-post/[postId]'");
   });
 
   it('preserves relationship list actions and 44 pt tab ownership', () => {
