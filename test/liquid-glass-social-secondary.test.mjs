@@ -61,4 +61,38 @@ describe('LG-3C Social interaction Liquid Glass controls', () => {
     expect(styles).toContain('borderColor: glass.controlBorder');
     expect(styles).not.toContain('pressed: { opacity:');
   });
+
+  it('keeps Public Profile on shared navigation and adaptive avatar fallback material', () => {
+    const screen = readSource('src/features/social/screens/SocialPublicProfileScreen.tsx');
+    const styles = readSource('src/features/social/screens/SocialPublicProfileScreen.styles.ts');
+
+    expect(screen).toContain('LiquidGlassIconButton');
+    expect(screen).toContain('Icon={ChevronLeft}');
+    expect(screen).toContain('resolveLiquidGlassPalette(resolvedAppearance)');
+    expect(screen).toContain('socialApi.follow(username)');
+    expect(screen).toContain('socialApi.unfollow(username)');
+    expect(screen).toContain('socialApi.block(username)');
+    expect(screen).toContain('socialApi.unblock(username)');
+    expect(screen).toContain('<SocialReportModal');
+    expect(styles).toContain('backgroundColor: glass.controlFill');
+    expect(styles).toContain('borderColor: glass.controlBorder');
+    expect(styles).not.toContain('colors.backgroundSelected');
+    expect(styles).not.toContain('backButton:');
+    expect(styles).not.toContain('pressed: { opacity:');
+    expect(styles).not.toContain('BlurView');
+  });
+
+  it('keeps managed-avatar preview, status and progress shells adaptive without changing controller operations', () => {
+    const source = readSource('src/features/social/SocialManagedAvatarCard.tsx');
+
+    expect(source).toContain('resolveLiquidGlassPalette(resolvedAppearance)');
+    expect(source).toContain('backgroundColor: glass.controlFill');
+    expect(source).toContain('borderColor: glass.controlBorder');
+    expect(source).toContain('accessibilityRole="progressbar"');
+    expect(source).toContain('controller.chooseImage()');
+    expect(source).toContain('controller.refresh()');
+    expect(source).toContain('controller.remove()');
+    expect(source).not.toContain('colors.surfaceSecondary');
+    expect(source).not.toContain('BlurView');
+  });
 });
