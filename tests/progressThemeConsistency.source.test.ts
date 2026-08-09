@@ -16,6 +16,8 @@ const readSource = (relativePath: string) =>
 
 const themeAwareFiles = [
   'src/app/(tabs)/progress.tsx',
+  'src/app/weight-details.tsx',
+  'src/app/weight-entry.tsx',
   'src/components/progress/AddBodyMeasurementCard.tsx',
   'src/components/progress/ProgressTrendChart.tsx',
   'src/components/progress/WeeklyWorkoutVolumeCard.tsx',
@@ -33,6 +35,8 @@ describe('Progress theme consistency', () => {
 
   it.each([
     'src/app/(tabs)/progress.tsx',
+    'src/app/weight-details.tsx',
+    'src/app/weight-entry.tsx',
     'src/components/progress/AddBodyMeasurementCard.tsx',
     'src/components/progress/ProgressTrendChart.tsx',
     'src/components/progress/WeeklyWorkoutVolumeCard.tsx',
@@ -52,6 +56,20 @@ describe('Progress theme consistency', () => {
     expect(source).toContain("router.push('/workout-history')");
     expect(source).toContain('buildBodyMeasurement');
     expect(source).toContain('addBodyMeasurement(result.measurement)');
+  });
+
+  it('preserves secondary weight behavior and removes legacy bottom clearance', () => {
+    const entry = readSource('src/app/weight-entry.tsx');
+    const details = readSource('src/app/weight-details.tsx');
+
+    expect(entry).toContain('displayWeightInputToKg');
+    expect(entry).toContain('addWeightEntry({');
+    expect(entry).toContain('safeAreaInsets.bottom + Spacing.eight');
+    expect(details).toContain('getProgressAnalytics');
+    expect(details).toContain("router.push('/workout-history')");
+    expect(details).toContain('safeAreaInsets.bottom + Spacing.eight');
+    expect(details).not.toContain('safeAreaInsets.bottom + 120');
+    expect(details).toContain('flexGrow: 1');
   });
 
   it('preserves Safety/Recovery analytics and selected-state interaction semantics', () => {

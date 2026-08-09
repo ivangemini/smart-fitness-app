@@ -11,13 +11,16 @@ import { useAppActions } from '@/context/AppContext';
 import { createUuid, formatShortDate } from '@/lib';
 import { useLocalization } from '@/localization';
 import { getWeightEntryCopy } from '@/localization/weightEntryCopy';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import { displayWeightInputToKg, parseDisplayNumber, useUnitPreferences } from '@/units';
 
 export default function WeightEntryScreen() {
+  const { colors } = useAppTheme();
   const { addWeightEntry } = useAppActions();
   const { locale } = useLocalization();
   const copy = useMemo(() => getWeightEntryCopy(locale), [locale]);
   const { weight: weightUnit } = useUnitPreferences();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const safeAreaInsets = useSafeAreaInsets();
   const [weight, setWeight] = useState('');
   const [error, setError] = useState('');
@@ -70,7 +73,7 @@ export default function WeightEntryScreen() {
                 if (error) setError('');
               }}
               placeholder={weightUnit === 'lb' ? '182.3' : '82.7'}
-              placeholderTextColor={Colors.dark.textSecondary}
+              placeholderTextColor={colors.textSecondary}
               style={styles.input}
               value={weight}
             />
@@ -84,27 +87,28 @@ export default function WeightEntryScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
-  content: { alignItems: 'center', flexGrow: 1, padding: Spacing.three },
-  error: {
-    color: Colors.dark.error,
-    fontSize: 13,
-    lineHeight: 18,
-    marginTop: Spacing.one,
-  },
-  fieldGroup: { gap: Spacing.one, marginBottom: Spacing.two },
-  input: {
-    backgroundColor: Colors.dark.surfacePrimary,
-    borderColor: Colors.dark.borderSubtle,
-    borderCurve: 'continuous',
-    borderRadius: 8,
-    borderWidth: 1,
-    color: Colors.dark.textPrimary,
-    fontSize: 16,
-    minHeight: 48,
-    paddingHorizontal: Spacing.two,
-  },
-  label: { color: Colors.dark.textSecondary, fontSize: 13, fontWeight: '700' },
-  screen: { backgroundColor: Colors.dark.background, flex: 1 },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
+    content: { alignItems: 'center', flexGrow: 1, padding: Spacing.three },
+    error: {
+      color: colors.error,
+      fontSize: 13,
+      lineHeight: 18,
+      marginTop: Spacing.one,
+    },
+    fieldGroup: { gap: Spacing.one, marginBottom: Spacing.two },
+    input: {
+      backgroundColor: colors.surfacePrimary,
+      borderColor: colors.borderSubtle,
+      borderCurve: 'continuous',
+      borderRadius: 8,
+      borderWidth: 1,
+      color: colors.textPrimary,
+      fontSize: 16,
+      minHeight: 48,
+      paddingHorizontal: Spacing.two,
+    },
+    label: { color: colors.textSecondary, fontSize: 13, fontWeight: '700' },
+    screen: { backgroundColor: colors.background, flex: 1 },
+  });
