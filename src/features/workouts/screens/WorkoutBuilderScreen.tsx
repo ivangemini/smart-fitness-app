@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ProgramWorkoutEditorModal } from '@/components/workouts/ProgramWorkoutEditorModal';
 import { ProgramWorkoutPickerModal } from '@/components/workouts/ProgramWorkoutPickerModal';
-import { BottomTabInset, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import { useAppActions, useWorkoutState } from '@/context/AppContext';
 import {
   attachWorkoutsToProgramDraft,
@@ -298,7 +298,7 @@ export function WorkoutBuilderScreen() {
           contentInsetAdjustmentBehavior="automatic"
           contentContainerStyle={[
             styles.content,
-            { paddingBottom: insets.bottom + BottomTabInset + Spacing.four },
+            { paddingBottom: insets.bottom + Spacing.four },
           ]}
           keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
           keyboardShouldPersistTaps="handled"
