@@ -1,14 +1,16 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { AppButton } from '@/components/ui/AppButton';
 import { Colors, Radii, Spacing } from '@/constants/theme';
-import { getBodyMeasurementMetricLabel } from '@/features/progress/progressLocalization';
-import { useLocalization } from '@/localization';
 import {
   BODY_MEASUREMENT_METRICS,
   getBodyMeasurementUnits,
   type BodyMeasurementDraft,
 } from '@/features/progress/bodyMeasurementModel';
+import { getBodyMeasurementMetricLabel } from '@/features/progress/progressLocalization';
+import { useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import type { BodyMeasurementMetric, BodyMeasurementUnit } from '@/types';
 
 type Props = {
@@ -32,7 +34,9 @@ export function AddBodyMeasurementCard({
   onChangeValue,
   onSave,
 }: Props) {
+  const { colors } = useAppTheme();
   const { t } = useLocalization();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const availableUnits = getBodyMeasurementUnits(draft.metric);
 
   return (
@@ -60,10 +64,10 @@ export function AddBodyMeasurementCard({
         <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>{t('measurement.customLabel')}</Text>
           <TextInput
-            onChangeText={onChangeCustomLabel}
             accessibilityLabel={t('measurement.customLabel')}
+            onChangeText={onChangeCustomLabel}
             placeholder={t('measurement.customPlaceholder')}
-            placeholderTextColor={Colors.dark.textSecondary}
+            placeholderTextColor={colors.textSecondary}
             style={styles.input}
             value={draft.customLabel}
           />
@@ -77,7 +81,7 @@ export function AddBodyMeasurementCard({
             keyboardType="decimal-pad"
             onChangeText={onChangeValue}
             placeholder={draft.unit === 'in' ? '33.1' : draft.unit === 'percent' ? '15' : '84'}
-            placeholderTextColor={Colors.dark.textSecondary}
+            placeholderTextColor={colors.textSecondary}
             style={styles.input}
             value={draft.value}
           />
@@ -109,54 +113,60 @@ export function AddBodyMeasurementCard({
   );
 }
 
-const styles = StyleSheet.create({
-  choice: {
-    alignItems: 'center',
-    borderColor: Colors.dark.border,
-    borderRadius: Radii.pill,
-    borderWidth: 1,
-    justifyContent: 'center',
-    minHeight: 44,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.one,
-  },
-  choiceGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.one,
-    marginBottom: Spacing.two,
-  },
-  choiceLabel: { color: Colors.dark.textSecondary, fontSize: 13, fontWeight: '700' },
-  choiceLabelSelected: { color: Colors.dark.accent },
-  choiceSelected: { backgroundColor: Colors.dark.accentSoft, borderColor: Colors.dark.accent },
-  editor: {
-    borderTopColor: Colors.dark.divider,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    paddingTop: Spacing.three,
-  },
-  error: { color: Colors.dark.error, fontSize: 13, marginBottom: Spacing.two },
-  input: {
-    backgroundColor: Colors.dark.background,
-    borderColor: Colors.dark.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    color: Colors.dark.text,
-    fontSize: 16,
-    minHeight: 48,
-    paddingHorizontal: Spacing.two,
-  },
-  inputGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two, marginBottom: Spacing.two },
-  inputGroup: { flex: 1, gap: Spacing.one, minWidth: 130, marginBottom: Spacing.two },
-  inputLabel: { color: Colors.dark.textSecondary, fontSize: 13, fontWeight: '700' },
-  sectionTitle: { color: Colors.dark.text, fontSize: 18, fontWeight: '800', marginBottom: Spacing.two },
-  unitChoice: {
-    alignItems: 'center',
-    borderColor: Colors.dark.border,
-    borderRadius: Radii.medium,
-    borderWidth: 1,
-    flex: 1,
-    minHeight: 48,
-    justifyContent: 'center',
-  },
-  unitRow: { flexDirection: 'row', gap: Spacing.one },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    choice: {
+      alignItems: 'center',
+      borderColor: colors.border,
+      borderRadius: Radii.pill,
+      borderWidth: 1,
+      justifyContent: 'center',
+      minHeight: 44,
+      paddingHorizontal: Spacing.two,
+      paddingVertical: Spacing.one,
+    },
+    choiceGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: Spacing.one,
+      marginBottom: Spacing.two,
+    },
+    choiceLabel: { color: colors.textSecondary, fontSize: 13, fontWeight: '700' },
+    choiceLabelSelected: { color: colors.accent },
+    choiceSelected: { backgroundColor: colors.accentSoft, borderColor: colors.accent },
+    editor: {
+      borderTopColor: colors.divider,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      paddingTop: Spacing.three,
+    },
+    error: { color: colors.error, fontSize: 13, marginBottom: Spacing.two },
+    input: {
+      backgroundColor: colors.background,
+      borderColor: colors.border,
+      borderRadius: 8,
+      borderWidth: 1,
+      color: colors.text,
+      fontSize: 16,
+      minHeight: 48,
+      paddingHorizontal: Spacing.two,
+    },
+    inputGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: Spacing.two,
+      marginBottom: Spacing.two,
+    },
+    inputGroup: { flex: 1, gap: Spacing.one, minWidth: 130, marginBottom: Spacing.two },
+    inputLabel: { color: colors.textSecondary, fontSize: 13, fontWeight: '700' },
+    sectionTitle: { color: colors.text, fontSize: 18, fontWeight: '800', marginBottom: Spacing.two },
+    unitChoice: {
+      alignItems: 'center',
+      borderColor: colors.border,
+      borderRadius: Radii.medium,
+      borderWidth: 1,
+      flex: 1,
+      justifyContent: 'center',
+      minHeight: 48,
+    },
+    unitRow: { flexDirection: 'row', gap: Spacing.one },
+  });
