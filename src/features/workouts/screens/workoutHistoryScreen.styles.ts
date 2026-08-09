@@ -11,7 +11,7 @@ export const createFilterChipStyles = (colors: typeof Colors.light) =>
       borderRadius: Radii.pill,
       borderWidth: StyleSheet.hairlineWidth,
       justifyContent: 'center',
-      minHeight: 38,
+      minHeight: 44,
       paddingHorizontal: Spacing.three,
     },
     chipSelected: {
@@ -51,18 +51,6 @@ export const createFilterRowStyles = (colors: typeof Colors.light) =>
 
 export const createWorkoutHistoryScreenStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
-    backButton: {
-      alignItems: 'center',
-      height: 42,
-      justifyContent: 'center',
-      width: 42,
-    },
-    backLabel: {
-      color: colors.textPrimary,
-      fontSize: 42,
-      fontWeight: '300',
-      lineHeight: 42,
-    },
     bodyText: {
       color: colors.textSecondary,
       fontSize: Typography.body.fontSize,
@@ -89,6 +77,13 @@ export const createWorkoutHistoryScreenStyles = (colors: typeof Colors.light) =>
       color: colors.textMuted,
       fontSize: 24,
       lineHeight: 24,
+    },
+    clearButton: {
+      alignItems: 'center',
+      flexShrink: 0,
+      justifyContent: 'center',
+      minHeight: 44,
+      paddingHorizontal: Spacing.one,
     },
     clearLabel: {
       color: colors.accent,
@@ -192,7 +187,7 @@ export const createWorkoutHistoryScreenStyles = (colors: typeof Colors.light) =>
       borderRadius: Radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
       justifyContent: 'center',
-      minHeight: 42,
+      minHeight: 44,
       paddingHorizontal: Spacing.three,
     },
     resetLabel: {

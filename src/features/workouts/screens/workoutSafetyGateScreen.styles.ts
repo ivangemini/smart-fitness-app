@@ -24,18 +24,6 @@ export const createWorkoutSafetyGateStyles = (colors: typeof Colors.light) =>
       flexDirection: 'row',
       gap: Spacing.two,
     },
-    backButton: {
-      alignItems: 'center',
-      height: 42,
-      justifyContent: 'center',
-      width: 42,
-    },
-    backLabel: {
-      color: colors.textPrimary,
-      fontSize: 42,
-      fontWeight: '300',
-      lineHeight: 42,
-    },
     blockedCard: {
       backgroundColor: colors.errorSoft,
       borderColor: colors.error,

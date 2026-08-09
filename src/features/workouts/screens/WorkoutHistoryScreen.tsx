@@ -1,9 +1,11 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppCard } from '@/components/ui/AppCard';
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { Spacing } from '@/constants/theme';
 import { useWorkoutState } from '@/context/AppContext';
 import { useLocalization } from '@/localization';
@@ -177,7 +179,10 @@ export default function WorkoutHistoryScreen() {
             </Text>
           </View>
           {filtersActive ? (
-            <Pressable accessibilityRole="button" onPress={clearFilters} style={({ pressed }) => [pressed && styles.pressed]}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={clearFilters}
+              style={({ pressed }) => [styles.clearButton, pressed && styles.pressed]}>
               <Text style={styles.clearLabel}>{copy.clear}</Text>
             </Pressable>
           ) : null}
@@ -227,13 +232,11 @@ export default function WorkoutHistoryScreen() {
   return (
     <View style={styles.screen}>
       <View style={[styles.header, { paddingTop: insets.top + Spacing.two }]}>
-        <Pressable
+        <LiquidGlassIconButton
           accessibilityLabel={copy.back}
-          accessibilityRole="button"
+          Icon={ChevronLeft}
           onPress={() => router.back()}
-          style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}>
-          <Text style={styles.backLabel}>‹</Text>
-        </Pressable>
+        />
         <View style={styles.headerCopy}>
           <Text style={styles.title}>{copy.title}</Text>
           <Text style={styles.subtitle}>{copy.subtitle}</Text>
