@@ -5,13 +5,13 @@ Updated: 2026-08-09
 ## Verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current runtime `main`: `ad17cc9d8be896cf9610027a63018c07119b5b01`.
-- Latest runtime merge: PR #535 — managed Story authoring lifecycle.
-- PR #535 exact validated head: `8045e96c07cb2f1fac6113b56d0061cb1547f4ee`; Mobile CI #1990 passed the full required gate.
+- Current runtime `main`: `279a09e4b73e067a2cb0c1d836b8da809ce0b6b1`.
+- Latest runtime merge: PR #537 — Exercise Detail / shared secondary-material theme convergence.
+- PR #537 exact validated head: `5ee5a3dfb1cf3591168821c3b4275b26e597aca4`; Mobile CI #1992 passed the full required gate.
 - Backend repo: `ivangemini/smart-fitness-backend`.
 - Current Stories backend baseline: merge `2339f6ce…` from backend PR #214; exact validated head `9a5af3aba1f4470f261eb9ea00a6e2f2f8979bfe`.
 - **LG-H2 Stories is complete for the current image-only v1 source scope.**
-- Active product/source priority: **reassess remaining Progress/exercise secondary material before LG-4 Workouts material convergence**.
+- Progress/exercise secondary-material reassessment is active; the first bounded package is complete.
 - **Coach material remains deferred by explicit product priority.**
 
 Exact code, tests and current Git history override this checkpoint if it becomes stale.
@@ -58,8 +58,6 @@ Mobile PR #533 added:
 - localized loading/error/retry copy;
 - regression guards for strict parsing, cache expiry/account isolation, Home ordering and Liquid Glass/safe-area ownership.
 
-The CI investigation exposed one stale source guard in `tests/homeSocialFirst.source.test.ts` that still prohibited the word `Story` from the pre-contract era. It was updated to require real `useSocialStories`/server state while continuing to reject fabricated steps and mock/demo Stories. Temporary diagnostic CI changes were fully removed before merge.
-
 ### Stories mobile authoring/delete — complete
 
 Mobile PR #535 added:
@@ -79,27 +77,42 @@ Mobile PR #535 added:
 
 Story v1 remains intentionally image-only: no arbitrary URL, caption, text overlay, video or client-authored expiry.
 
+## Progress / exercise material status
+
+PR #537 completed the first evidence-backed package from the post-Stories reassessment:
+
+- `ExerciseDetailScreen` now uses active semantic theme colors through extracted adaptive styles rather than `Colors.dark`;
+- `MuscleMap` now derives SVG fills, border, background and label colors from the active theme;
+- shared `StatChip` now follows the active theme, fixing its use in Exercise Detail and other secondary cards;
+- the Exercise Detail back control now uses shared `LiquidGlassIconButton`;
+- the inert unimplemented “More” affordance was removed instead of presenting a false button;
+- media play/pause uses a shared button primitive;
+- exercise lookup, GIF/media behavior, favorite persistence, sharing, workout-history/progress calculations, navigation and safe-area/content-driven layout were preserved;
+- `tests/exerciseDetailThemeConsistency.source.test.ts` guards the theme and responsive/media boundary.
+
+A repository search during this package found no remaining indexed `Colors.dark` occurrences after the change. The broader Progress/exercise audit must still check for other legacy material debt instead of treating that single token pattern as exhaustive.
+
 ## Validation state
 
-PR #535 exact head `8045e96c07cb2f1fac6113b56d0061cb1547f4ee` passed Mobile CI #1990:
+PR #537 exact head `5ee5a3dfb1cf3591168821c3b4275b26e597aca4` passed Mobile CI #1992:
 
 - repository and changed-file line audits;
 - TypeScript;
-- full regression suite: **1560/1560 tests passed**;
+- full regression suite;
 - expanded model smoke;
 - Expo export;
 - Expo Doctor.
 
-No review submissions or inline review threads blocked merge. PR #535 merged as `ad17cc9d8be896cf9610027a63018c07119b5b01`.
+No review submissions or inline review threads blocked merge. PR #537 merged as `279a09e4b73e067a2cb0c1d836b8da809ce0b6b1`.
 
-Validation also revealed a docs-only regression from PR #534: two local-state decision markers required by `tests/local-state-storage-decision.test.ts` had been removed while Markdown-only workflow filters skipped Mobile CI. PR #535 restored the canonical link and guard phrase without weakening the test.
+The prior docs-only regression lesson remains active: `docs/implementation-plan.md` must retain the reviewed local-state decision link and the explicit “There is no remaining approved autonomous source-refactor phase” source-guard marker unless the underlying contract is deliberately changed.
 
 Source/CI validation is not physical-device or release proof.
 
 ## Next roadmap work
 
-- Reassess remaining Progress/exercise secondary material against the current Liquid Glass and responsive-mobile architecture and select the next bounded runtime package from actual code/evidence.
-- Then continue with LG-4 Workouts material convergence.
+- Continue the remaining Progress/exercise secondary-material audit for actual legacy surfaces, duplicate controls, non-semantic colors and brittle geometry.
+- Implement only bounded evidence-backed packages. If the audit finds no material debt, record that conclusion and move to LG-4 Workouts rather than generating cosmetic churn.
 - LG-5 bounded elevated chrome/motion and LG-6 visual QA/stabilization follow later.
 - LG-H3 Steps remains blocked on a reviewed native health/activity capability and permissions. Do not infer steps from workouts.
 - LG-H4 feed retention/ranking remains later; preserve chronological Following semantics.
