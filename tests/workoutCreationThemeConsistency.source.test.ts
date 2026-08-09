@@ -54,7 +54,7 @@ describe('workout creation theme consistency', () => {
     expect(editor).toContain('onRemoveDraftExercise={removeExercise}');
   });
 
-  it('preserves builder and exercise-row actions while making inputs adaptive', () => {
+  it('preserves builder actions with usable wrapping touch targets', () => {
     expect(builder).toContain('<AppCard>');
     expect(builder).toContain('<AppButton');
     expect(builder).toContain('draftExercises.map((exercise, index)');
@@ -62,6 +62,9 @@ describe('workout creation theme consistency', () => {
     expect(exerciseRow).toContain('onPress={() => onMove(exercise.id, 1)}');
     expect(exerciseRow).toContain('onPress={() => onDuplicate(exercise.id)}');
     expect(exerciseRow).toContain('onPress={() => onDelete(exercise.id)}');
+    expect(exerciseRow).toContain("flexWrap: 'wrap'");
+    expect(exerciseRow).toContain('minHeight: 44');
+    expect(exerciseRow).not.toContain('minHeight: 34');
     expect(exerciseRow).toContain('selectionColor={colors.accent}');
   });
 });
