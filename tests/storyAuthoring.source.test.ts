@@ -25,6 +25,7 @@ describe('Story authoring source boundary', () => {
     expect(authoring).toContain('api.createStoryImageUpload');
     expect(authoring).toContain('api.completeMediaUpload');
     expect(authoring).toContain('pollManagedMediaAsset');
+    expect(authoring).toContain('recoverPendingSocialStoryImage');
     expect(authoring).not.toContain('fetch(');
     expect(authoring).not.toContain('XMLHttpRequest');
   });
