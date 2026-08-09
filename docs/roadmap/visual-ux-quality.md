@@ -25,7 +25,8 @@ Updated: 2026-08-09
 - VUX-7A Progress theme consistency PR #493 → `89b7fd36874a189f287388160f13863b726872d7`.
 - VUX-7B Home theme consistency PR #494 → `4baa1f97b2fef5d68e53480e6570de227c5c9c92`.
 - VUX-7C Coach tab theme consistency PR #495 → `e552b55af00fba111050564e89c5d29aeff5a626`.
-- Current visual package: VUX-7D secondary Progress theme/inset consistency on `ui/progress-secondary-theme-consistency`.
+- VUX-7D secondary Progress theme/inset consistency PR #496 → `03e54d7a2d3ba375a9f55bede1acb0db8f4c9be3`.
+- No visual package is active; continue the secondary-surface audit only from concrete source findings.
 - Backend is a separate workstream and remains outside this roadmap execution.
 
 Source/CI completion is not physical-device proof. OTA/EAS publication, native build/install, provider/production activation and store/release actions remain separately authorization-gated.
@@ -120,32 +121,20 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - Coach domain logic, recovery/limitation/safety/combined flows, localization, persistence, sync and backend contracts are unchanged.
 - Exact head `f3fed7aecca16df12df5e3955133632ab6368e42` passed full Mobile CI #1913 before merge.
 
-## VUX-7D — secondary Progress theme and inset consistency
+### VUX-7D — secondary Progress theme and inset consistency — PR #496
 
-**Status: active on `ui/progress-secondary-theme-consistency`.**
-
-Confirmed findings:
-
-- `weight-entry` still hard-coded the dark palette for its screen, label, input, placeholder and error presentation despite the parent Progress flow being theme-aware;
-- `weight-details` still hard-coded the dark palette for its screen, history and typography;
-- `weight-details` retained legacy `safeAreaInsets.bottom + 120` bottom clearance instead of content-driven safe-area spacing;
-- the weight history row lacked bounded shrink ownership under text/localization pressure.
-
-Current bounded remediation:
-
-- resolve both secondary weight screens from `useAppTheme()` through theme style factories;
-- replace the legacy 120 pt clearance with runtime safe-area plus spacing and retain `flexGrow: 1` content reachability;
-- bound history date/value reflow without changing base typography or the existing 44 pt row geometry;
-- preserve weight parsing/conversion, persistence, analytics, units, history ordering, workout-history navigation and routes;
-- extend the existing Progress source-contract guard to cover these secondary surfaces.
-
-**Merge gate:** full exact-head Mobile CI on the final documentation-synchronized head, with no unresolved review threads.
+- Add Weight and Weight Details now resolve their live presentation from `AppThemeProvider` rather than static `Colors.dark`.
+- Weight Details no longer uses the legacy `safeAreaInsets.bottom + 120` clearance; it uses runtime safe-area spacing with `flexGrow: 1` content reachability.
+- Weight history date/value rows have bounded shrink ownership while preserving the existing 44 pt row geometry.
+- Weight parsing/conversion, `addWeightEntry`, analytics, units, recent-entry ordering, workout-history navigation, routes, persistence and sync remain unchanged.
+- The existing Progress source-contract guard now covers both secondary weight surfaces.
+- Exact head `7aa8be9148b75f76510caef1590ffc69b0446b50` passed full Mobile CI #1915 before merge.
 
 ## Remaining hierarchy / validation review order
 
-1. Finish VUX-7D secondary Progress theme/inset consistency and merge only its validated exact head.
-2. Continue the visible-tab audit from concrete source findings only; do not alter intentionally dark product areas without evidence that they are expected to follow app appearance.
-3. Audit remaining secondary surfaces for theme consistency, 44 pt ownership, safe-area/reflow and disabled-state clarity only when a concrete mismatch is found.
+1. Continue the visible-tab and secondary-surface audit from concrete source findings only; do not alter intentionally dark product areas without evidence that they are expected to follow app appearance.
+2. Audit remaining secondary surfaces for theme consistency, 44 pt ownership, safe-area/reflow and disabled-state clarity only when a concrete mismatch is found.
+3. Prefer one bounded package per demonstrated defect cluster rather than speculative visual churn.
 
 For each surface verify one obvious primary action, restrained surface nesting, EN/RU/Dynamic Type resilience, current-theme consistency, consistent interaction states and coherent loading/empty/error/success presentation.
 
@@ -166,7 +155,7 @@ No source/CI result is physical-device evidence.
 
 ## Next execution order
 
-1. Finish VUX-7D and run full exact-head Mobile CI on the final documentation-synchronized head.
-2. Merge only the validated VUX-7D head.
-3. Continue the visible-tab and secondary-surface audit only where source evidence demonstrates a real UI defect.
+1. Audit the next live secondary surface and open a package only when source evidence demonstrates a real UI defect.
+2. Run full exact-head Mobile CI for runtime/code changes and merge only the validated head.
+3. Keep documentation synchronized with actual Git history without triggering unnecessary runtime CI.
 4. Keep backend, OTA/EAS/native/release and production/provider actions out of this autonomous UI sequence unless directly requested.
