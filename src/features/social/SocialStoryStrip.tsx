@@ -1,3 +1,4 @@
+import { Plus } from 'lucide-react-native';
 import { useMemo } from 'react';
 import {
   FlatList,
@@ -18,6 +19,7 @@ import type { SocialStoryCopy } from './socialStoryCopy';
 type SocialStoryStripProps = {
   copy: SocialStoryCopy;
   loadingMore: boolean;
+  onAdd(): void;
   onLoadMore(): void;
   onOpen(storyId: string): void;
   stories: SocialStoryDto[];
@@ -29,6 +31,7 @@ const STORY_ITEM_WIDTH = 72;
 export function SocialStoryStrip({
   copy,
   loadingMore,
+  onAdd,
   onLoadMore,
   onOpen,
   stories,
@@ -41,6 +44,16 @@ export function SocialStoryStrip({
   const styles = useMemo(
     () =>
       StyleSheet.create({
+        addRing: {
+          alignItems: 'center',
+          backgroundColor: glass.controlFill,
+          borderColor: glass.controlBorder,
+          borderRadius: Radii.pill,
+          borderWidth: StyleSheet.hairlineWidth,
+          height: AVATAR_SIZE + 6,
+          justifyContent: 'center',
+          width: AVATAR_SIZE + 6,
+        },
         avatar: {
           borderRadius: Radii.pill,
           height: AVATAR_SIZE,
@@ -89,10 +102,25 @@ export function SocialStoryStrip({
         },
         wrapper: { gap: Spacing.two },
       }),
-    [colors, glass.controlFill],
+    [colors, glass.controlBorder, glass.controlFill],
   );
 
-  if (stories.length === 0) return null;
+  const addStory = (
+    <Pressable
+      accessibilityLabel={copy.addStory}
+      accessibilityRole="button"
+      onPress={onAdd}
+      style={({ pressed }) => [styles.item, pressed && styles.pressed]}
+      testID="home-story-add"
+    >
+      <View style={styles.addRing}>
+        <Plus color={colors.accent} size={24} strokeWidth={2.2} />
+      </View>
+      <Text numberOfLines={1} style={styles.username}>
+        {copy.yourStory}
+      </Text>
+    </Pressable>
+  );
 
   return (
     <View style={styles.wrapper} testID="home-story-strip">
@@ -102,6 +130,7 @@ export function SocialStoryStrip({
         data={stories}
         horizontal
         keyExtractor={(story) => story.id}
+        ListHeaderComponent={addStory}
         onEndReached={onLoadMore}
         onEndReachedThreshold={0.5}
         renderItem={({ item }) => {
@@ -146,7 +175,7 @@ export function SocialStoryStrip({
             </Pressable>
           );
         }}
-        scrollEnabled={stories.length > 1}
+        scrollEnabled={stories.length > 0}
         showsHorizontalScrollIndicator={false}
         testID={loadingMore ? 'home-story-strip-loading-more' : undefined}
       />
