@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Image, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,6 +12,7 @@ import {
 import { AppCard } from '@/components/ui/AppCard';
 import { DestructiveButton } from '@/components/ui/DestructiveButton';
 import { InlineError } from '@/components/ui/InlineError';
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
@@ -19,6 +20,7 @@ import { Spacing } from '@/constants/theme';
 import { useAuthSession } from '@/hooks/useAuthSession';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
 import { SocialPublicProfileStateCard as StateCard } from '../SocialPublicProfileStateCard';
 import { SocialReportModal } from '../SocialReportModal';
@@ -65,13 +67,14 @@ export default function SocialPublicProfileScreen() {
   const params = useLocalSearchParams<{ username?: string | string[] }>();
   const username = readUsername(params.username);
   const insets = useSafeAreaInsets();
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(() => resolveLiquidGlassPalette(resolvedAppearance), [resolvedAppearance]);
   const { locale, t } = useLocalization();
   const copy = getSocialPublicProfileCopy(locale);
   const reportCopy = getSocialReportCopy(locale);
   const postsCopy = getSocialWorkoutPostSurfaceCopy(locale);
   const { isAuthenticated, ready, refresh, session } = useAuthSession();
-  const styles = useMemo(() => createSocialPublicProfileStyles(colors), [colors]);
+  const styles = useMemo(() => createSocialPublicProfileStyles(colors, glass), [colors, glass]);
   const requestSequence = useRef(0);
   const [status, setStatus] = useState<ProfileStatus>('idle');
   const [profileView, setProfileView] = useState<SocialProfileViewDto | null>(null);
@@ -296,13 +299,11 @@ export default function SocialPublicProfileScreen() {
       style={styles.screen}>
       <View style={styles.container}>
         <View style={styles.headerRow}>
-          <Pressable
+          <LiquidGlassIconButton
             accessibilityLabel={t('common.back')}
-            accessibilityRole="button"
+            Icon={ChevronLeft}
             onPress={() => router.back()}
-            style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}>
-            <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
-          </Pressable>
+          />
           <View style={styles.headerCopy}>
             <Text style={styles.eyebrow}>{copy.profileEyebrow}</Text>
             <Text style={styles.title}>@{username}</Text>

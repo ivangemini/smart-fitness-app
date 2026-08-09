@@ -11,6 +11,10 @@ import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
 import { Colors, Radii, Spacing, Typography } from "@/constants/theme";
 import { useAppTheme } from "@/theme/AppThemeProvider";
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from "@/theme/liquidGlass";
 
 import type { SocialManagedAvatarCopy } from "./socialManagedAvatarCopy";
 import {
@@ -34,8 +38,9 @@ export function SocialManagedAvatarCard({
   controller,
   copy,
 }: SocialManagedAvatarCardProps) {
-  const { colors } = useAppTheme();
-  const styles = createStyles(colors);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = resolveLiquidGlassPalette(resolvedAppearance);
+  const styles = createStyles(colors, glass);
   const currentUrl = getApprovedAvatarUrl(controller.currentAsset);
   const status = getSocialManagedAvatarStatusPresentation(
     controller.candidateAsset,
@@ -189,10 +194,13 @@ export function SocialManagedAvatarCard({
   );
 }
 
-const createStyles = (colors: typeof Colors.dark) =>
+const createStyles = (
+  colors: typeof Colors.dark,
+  glass: LiquidGlassPalette,
+) =>
   StyleSheet.create({
     avatar: {
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: glass.controlFill,
       borderRadius: 48,
       height: 96,
       width: 96,
@@ -205,8 +213,8 @@ const createStyles = (colors: typeof Colors.dark) =>
     },
     emptyAvatar: {
       alignItems: "center",
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderRadius: 48,
       borderWidth: StyleSheet.hairlineWidth,
       height: 96,
@@ -243,7 +251,7 @@ const createStyles = (colors: typeof Colors.dark) =>
       height: "100%",
     },
     progressTrack: {
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: glass.controlFill,
       borderRadius: Radii.pill,
       height: 6,
       overflow: "hidden",
@@ -255,8 +263,8 @@ const createStyles = (colors: typeof Colors.dark) =>
       lineHeight: Typography.caption.lineHeight,
     },
     statusBox: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderRadius: Radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
       gap: Spacing.one,

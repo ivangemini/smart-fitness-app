@@ -1,15 +1,19 @@
 import { StyleSheet } from 'react-native';
 
-import { Colors, MaxContentWidth, Radii, Spacing, Typography } from '@/constants/theme';
+import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme';
+import type { LiquidGlassPalette } from '@/theme/liquidGlass';
 
-export const createSocialPublicProfileStyles = (colors: typeof Colors.dark) =>
+export const createSocialPublicProfileStyles = (
+  colors: typeof Colors.dark,
+  glass: LiquidGlassPalette,
+) =>
   StyleSheet.create({
     actionStack: { gap: Spacing.two },
     avatar: { borderRadius: 36, height: 72, width: 72 },
     avatarFallback: {
       alignItems: 'center',
-      backgroundColor: colors.backgroundSelected,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderRadius: 36,
       borderWidth: StyleSheet.hairlineWidth,
       height: 72,
@@ -20,16 +24,6 @@ export const createSocialPublicProfileStyles = (colors: typeof Colors.dark) =>
       color: colors.textPrimary,
       fontSize: 28,
       fontWeight: '800',
-    },
-    backButton: {
-      alignItems: 'center',
-      borderColor: colors.borderSubtle,
-      borderRadius: Radii.large,
-      borderWidth: StyleSheet.hairlineWidth,
-      flexShrink: 0,
-      height: 44,
-      justifyContent: 'center',
-      width: 44,
     },
     bio: {
       color: colors.textSecondary,
@@ -69,7 +63,6 @@ export const createSocialPublicProfileStyles = (colors: typeof Colors.dark) =>
     headerRow: { alignItems: 'flex-start', flexDirection: 'row', gap: Spacing.three },
     identityCopy: { flex: 1, gap: Spacing.one, minWidth: 0 },
     identityRow: { alignItems: 'center', flexDirection: 'row', gap: Spacing.three },
-    pressed: { opacity: 0.72 },
     relationshipLabel: {
       color: colors.textPrimary,
       fontSize: Typography.label.fontSize,
