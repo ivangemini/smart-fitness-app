@@ -7,10 +7,10 @@ This file is the **canonical forward roadmap**. PR-by-PR history and exact valid
 ## Current verified mobile checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current mobile `main`: `4e2df0f2c44137bc1ccc7b9860aaaa29d10dbf21`.
-- Latest runtime merge: `4e2df0f2c44137bc1ccc7b9860aaaa29d10dbf21` (PR #507 — first bounded LG-2B Progress batch).
-- PR #507 exact validated head: `ab06b04624e64108258aba713214d83db480a9fc`; Mobile CI #1937 passed the full required gate.
-- Active package: **Phase 11 / LG-2B Progress + Coach primary surfaces — Safety/Recovery follow-up**.
+- Current mobile `main`: `7355c0aa8b4b94a7cac8a7682acba90808739b77`.
+- Latest runtime merge: `7355c0aa8b4b94a7cac8a7682acba90808739b77` (PR #509 — final LG-2B Safety/Recovery package).
+- PR #509 exact validated head: `ead5df6e598947da6cbaf4d29489efbcbe72cba9`; Mobile CI #1943 passed the full required gate.
+- Active package: **Phase 11 / LG-2C Nutrition primary surfaces**.
 - Backend baseline inspected for dependency awareness: `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`; backend is not part of this package.
 
 Release readiness remains lower than source completeness because staging/provider/physical-device/native-release/production evidence is separately gated.
@@ -138,7 +138,7 @@ Focused execution roadmap: `docs/roadmap/liquid-glass.md`.
 - **LG-1 shared foundation:** complete via PR #501 / Mobile CI #1922.
 - **LG-2A original Home pilot:** complete via PR #503 / Mobile CI #1925.
 - **LG-H1 social-first Home:** complete via PR #505 / exact green head `9f28c198ed75070bcf10484ef09a28a78cbc5571` / Mobile CI #1931.
-- **LG-2B first Progress batch:** complete via PR #507 / exact green head `ab06b04624e64108258aba713214d83db480a9fc` / Mobile CI #1937 / merge `4e2df0f2c44137bc1ccc7b9860aaaa29d10dbf21`.
+- **LG-2B Progress + Coach primary surfaces:** complete across PR #507 / Mobile CI #1937 and PR #509 / exact green head `ead5df6e598947da6cbaf4d29489efbcbe72cba9` / Mobile CI #1943 / merge `7355c0aa8b4b94a7cac8a7682acba90808739b77`.
 
 Home remains a social-first hybrid: compact personal daily metrics → future Stories only after real contracts → existing server-authoritative Following Feed. Do not fabricate Stories or Steps.
 
@@ -148,33 +148,39 @@ Home remains a social-first hybrid: compact personal daily metrics → future St
 - **LG-H3 Steps:** blocked until a reviewed native health/activity source, dependency/permission disclosure, and later separately authorized physical runtime evidence exist.
 - **LG-H4 feed retention:** planned after the base Home feed is stable; preserve current chronological Following semantics unless a separately reviewed ranking contract exists.
 
-## Active LG-2B — Progress + Coach primary surfaces
+## LG-2B — Progress + Coach primary surfaces
 
-Coach primary already uses shared `AppCard` and `AppButton` primitives; avoid meaningless runtime churn.
+**Status: complete for source/CI scope.**
 
-The first bounded Progress batch is merged. It migrated the range selector, body-measurement controls/inputs and shared trend-chart shell to the adaptive Liquid Glass system, with focused source-contract coverage.
+Progress primary surfaces now use shared/adaptive Liquid Glass material for the weight range selector, body-measurement controls and inputs, trend-chart shell, Safety/Recovery period controls, selected-week state/history actions, and selected-week detail owner. Coach primary already used shared `AppCard`/`AppButton` primitives and required no artificial runtime churn.
 
-Remaining LG-2B work is concentrated in nested Progress Safety/Recovery filters and detail/summary surfaces that still use local material recipes. Migrate those as one coherent follow-up while preserving:
+Preserved: Progress analytics, Safety/Recovery comparison semantics, workout-history routing/query parameters, chart data, persistence/sync, localization, accessibility and 44 pt ownership. Native blur is not multiplied across chart/list items.
 
-- 44 pt interaction ownership;
-- Safety/Recovery analytics and period/filter semantics;
-- workout-history routing and query parameters;
-- localization and accessibility;
-- current Progress/Coach domain behavior;
-- the no-per-row/per-item native blur rule.
+## Active LG-2C — Nutrition primary surfaces
 
-LG-2B is complete only after this remaining direct primary-surface material debt is removed and exact-head CI passes.
+Audit and migrate Nutrition's primary material ownership while preserving product behavior.
+
+Requirements:
+
+- prefer shared `AppCard`, `AppButton`, `LiquidGlassSurface` and adaptive glass tokens over direct local card/control recipes;
+- keep dense diary/food rows fast and readable; no native blur per row;
+- preserve calorie/macro calculations, target derivation and date/day semantics;
+- preserve diary grouping, recent/saved/search/add-food flows and meal templates;
+- preserve persistence/sync schemas and routes;
+- preserve keyboard-aware/short-screen reflow, localization, accessibility and 44 pt touch targets;
+- batch adjacent Nutrition surfaces that share one material defect rather than creating one PR per small component.
+
+LG-2C is complete only after remaining direct Nutrition primary-surface material debt is removed and exact-head Mobile CI passes.
 
 ## Remaining Phase 11 execution order
 
-1. Finish remaining LG-2B Safety/Recovery primary-surface material debt.
-2. **LG-2C Nutrition primary surfaces.** Keep dense diary/food rows fast; no blur per row.
-3. **LG-2D Profile primary surfaces.** Preserve completed theme/safe-area behavior.
-4. **LG-3 secondary surfaces.** Batch adjacent Settings/Sync/Social detail/Progress detail/Nutrition detail/Coach detail/exercise surfaces by shared defect.
-5. **LG-4 Workouts:** hub/program cards → library/builder → active workout chrome → set-table states → finish/summary. Preserve session persistence and dense set-table readability.
-6. **LG-5 elevated chrome/motion:** use true blur only for bounded elevated/floating roles.
-7. **LG-6 visual QA/stabilization:** exact-head CI/source guards first; physical cross-device/light-dark/Dynamic Type/keyboard/performance evidence only when separately authorized.
-8. Revisit LG-H2/H3 when their contract/native blockers are actually resolved; do not use placeholders as a substitute.
+1. **LG-2C Nutrition primary surfaces.** Keep dense diary/food rows fast; no blur per row.
+2. **LG-2D Profile primary surfaces.** Preserve completed theme/safe-area behavior.
+3. **LG-3 secondary surfaces.** Batch adjacent Settings/Sync/Social detail/Progress detail/Nutrition detail/Coach detail/exercise surfaces by shared defect.
+4. **LG-4 Workouts:** hub/program cards → library/builder → active workout chrome → set-table states → finish/summary. Preserve session persistence and dense set-table readability.
+5. **LG-5 elevated chrome/motion:** use true blur only for bounded elevated/floating roles.
+6. **LG-6 visual QA/stabilization:** exact-head CI/source guards first; physical cross-device/light-dark/Dynamic Type/keyboard/performance evidence only when separately authorized.
+7. Revisit LG-H2/H3 when their contract/native blockers are actually resolved; do not use placeholders as a substitute.
 
 ---
 
@@ -195,11 +201,11 @@ For docs-only synchronization, verify diff/ancestry; workflows may intentionally
 
 # Current definition of done
 
-The active LG-2B follow-up is done only when:
+The active LG-2C package is done only when:
 
-- remaining Safety/Recovery primary controls/detail surfaces use the shared adaptive material system rather than local surface recipes;
-- Coach primary compliance remains verified without unnecessary runtime churn;
-- analytics/filter/history behavior and accessibility ownership remain unchanged;
+- direct Nutrition primary material recipes are replaced by shared/adaptive material where appropriate without per-row native blur;
+- nutrition calculations, diary/search/saved/template behavior, persistence/sync and navigation remain unchanged;
+- keyboard/reflow, localization, accessibility and touch ownership remain intact;
 - repository line limits, TypeScript, regression tests, model smoke, Expo export and Expo Doctor pass on the exact PR head;
 - roadmap/status/handoff agree with actual Git history;
 - the validated exact head merges without unresolved review blockers.
