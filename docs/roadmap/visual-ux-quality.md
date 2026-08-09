@@ -23,7 +23,8 @@ Updated: 2026-08-09
 - VUX-6C Social workout-post shell hardening PR #491 → `95797bfbcf94d54c9b01da0cf238077bbd990f41`.
 - VUX-6D Social profile/share shell hardening PR #492 → `625371ca7cde8c45178fd8bf21b2bb012bc4ea4f`.
 - VUX-7A Progress theme consistency PR #493 → `89b7fd36874a189f287388160f13863b726872d7`.
-- Active visual branch: `ui/home-theme-consistency` (VUX-7B).
+- VUX-7B Home theme consistency PR #494 → `4baa1f97b2fef5d68e53480e6570de227c5c9c92`.
+- Active visual branch: `ui/coach-theme-consistency` (VUX-7C).
 - Backend is a separate workstream and remains outside this roadmap execution.
 
 Source/CI completion is not physical-device proof. OTA/EAS publication, native build/install, provider/production activation and store/release actions remain separately authorization-gated.
@@ -101,31 +102,38 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - The pre-existing Progress touch-target source guard was made style-factory tolerant after CI exposed a false negative; production geometry itself never regressed.
 - Exact head `6773c6bc268209484d34b1843ba29ea919adf7cf` passed full Mobile CI #1908 before merge.
 
-## VUX-7B — Home theme consistency
+### VUX-7B — Home theme consistency — PR #494
 
-**Status: active on `ui/home-theme-consistency`.**
+- The currently rendered Home tab, Home Summary and Home Snapshot now resolve presentation from `AppThemeProvider` instead of static `Colors.dark`.
+- Home Summary preserves calorie-over-target warning semantics; Home Snapshot preserves neutral/positive/warning tone selection.
+- `QuickActionsCard` was already theme-aware and remained unchanged; legacy Home cards not imported by the current Home entrypoint were intentionally left outside this bounded package.
+- Onboarding redirect, active-workout resume, profile/nutrition/weight routes, nutrition totals, Progress analytics, units and snapshot calculations are unchanged.
+- The Home profile affordance remains 44 × 44.
+- Exact head `f8cec418134d1ca4531d8d6480da6e5c25375137` passed full Mobile CI #1910 before merge.
+
+## VUX-7C — Coach tab theme consistency
+
+**Status: active on `ui/coach-theme-consistency`.**
 
 Confirmed findings:
 
-- the currently rendered Home tab still hard-coded `Colors.dark` for its screen, title, profile affordance and icon despite the app supporting light/dark/system appearance;
-- `HomeSummaryCard` hard-coded dark-only accent/warning/surface/text colors;
-- `HomeSnapshotCard` hard-coded dark-only neutral/positive/warning tile colors;
-- `QuickActionsCard` is already theme-aware and does not require churn;
-- legacy `HomeActivityCard` and `HomeIntelligenceCard` are not imported by the current Home entrypoint, so they are outside this bounded package.
+- the public Coach tab still hard-coded `Colors.dark` for its screen background and card copy despite the app supporting light/dark/system appearance;
+- `AppCard`, `AppButton` and `SectionHeader` already resolve their own presentation from the current theme, so the defect is bounded to the tab shell/copy styles;
+- all Coach destinations are centralized in `COACH_ACTIONS` plus the Profile action and do not need business-logic changes.
 
 Current bounded remediation:
 
-- resolve Home shell/header/profile affordance from `useAppTheme()`;
-- resolve Home Summary accent/warning/metric presentation from the current theme while preserving calorie-over-target semantics;
-- resolve Home Snapshot neutral/positive/warning tile presentation from the current theme while preserving tone selection;
-- preserve the 44 × 44 profile target, floating-tab clearance, onboarding redirect, active-workout resume, profile/nutrition/weight routes, nutrition totals, progress analytics, unit conversions and snapshot calculations;
+- resolve the public Coach shell/body/title presentation from `useAppTheme()` through a theme style factory;
+- preserve floating-tab bottom clearance and scroll growth;
+- preserve all five `COACH_ACTIONS` destinations and the Profile destination exactly;
+- preserve Coach domain logic, recovery/limitation/safety/combined flows, localization, persistence, sync and backend contracts;
 - protect the package with a focused source-contract guard.
 
 **Merge gate:** full exact-head Mobile CI on the final documentation-synchronized head, with no unresolved review threads.
 
 ## Remaining hierarchy / validation review order
 
-1. Finish VUX-7B Home theme consistency and merge only its validated exact head.
+1. Finish VUX-7C Coach tab theme consistency and merge only its validated exact head.
 2. Continue the visible-tab audit from concrete source findings only; do not alter intentionally dark product areas without evidence that they are expected to follow app appearance.
 3. Audit remaining secondary surfaces for theme consistency, 44 pt ownership, safe-area/reflow and disabled-state clarity only when a concrete mismatch is found.
 
@@ -148,7 +156,7 @@ No source/CI result is physical-device evidence.
 
 ## Next execution order
 
-1. Finish VUX-7B and run full exact-head Mobile CI on the final documentation-synchronized head.
-2. Merge only the validated VUX-7B head.
+1. Finish VUX-7C and run full exact-head Mobile CI on the final documentation-synchronized head.
+2. Merge only the validated VUX-7C head.
 3. Continue the visible-tab and secondary-surface audit only where source evidence demonstrates a real UI defect.
 4. Keep backend, OTA/EAS/native/release and production/provider actions out of this autonomous UI sequence unless directly requested.
