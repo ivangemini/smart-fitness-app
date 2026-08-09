@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { ChevronLeft } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { createSocialApi, type SocialWorkoutShareControls } from "@/api/social";
@@ -207,7 +208,10 @@ export default function ShareWorkoutScreen() {
       automaticallyAdjustKeyboardInsets
       contentContainerStyle={[
         styles.content,
-        { paddingBottom: insets.bottom + Spacing.six },
+        {
+          paddingBottom: insets.bottom + Spacing.six,
+          paddingTop: insets.top + Spacing.three,
+        },
       ]}
       keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
       keyboardShouldPersistTaps="handled"
@@ -224,7 +228,7 @@ export default function ShareWorkoutScreen() {
               pressed && styles.pressed,
             ]}
           >
-            <Text style={styles.backLabel}>‹</Text>
+            <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
           </Pressable>
           <View style={styles.headerCopy}>
             <Text style={styles.title}>{copy.title}</Text>
