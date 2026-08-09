@@ -14,37 +14,57 @@ This phase replaces the previous assumption that every surface should remain a f
 
 - Phase 10 responsive source hardening is complete for the current source scope.
 - VUX secondary-surface cleanup is complete through VUX-7F.
-- **LG-1 foundation is active on `ui/liquid-glass-foundation`.**
+- **LG-1 shared foundation is complete:** PR #501, merge `ca11c1a66495ec71832a0abfd54fa4bbef0391c8`, exact-head Mobile CI #1922 passed.
+- **LG-2A Home direct-surface pilot is active on `ui/liquid-glass-home-pilot`.**
 - No OTA/EAS publication, native install/build or physical-device proof is part of autonomous source execution.
 
 ## LG-1 — shared foundation
 
-**Goal:** make the existing bottom navigation the canonical material source instead of an isolated effect.
+**Status: complete.**
 
-Scope:
+Delivered:
 
 - central adaptive Liquid Glass token contract;
-- reusable glass surface primitive;
-- AppCard migration;
-- PrimaryButton / SecondaryButton migration;
-- floating tab bar migration from local hardcoded glass colors to shared tokens;
-- Home Summary and Home Snapshot semantic material migration;
-- source-contract guards for shared glass behavior;
-- document blur/performance rules.
+- reusable `LiquidGlassSurface`;
+- `AppCard` migration;
+- `PrimaryButton` / `SecondaryButton` theme-aware glass states;
+- floating tab bar migration from local hardcoded material values to the shared adaptive token system;
+- initial Home Summary and Home Snapshot semantic material migration;
+- source-contract guards and blur/performance architecture rules.
 
-Exit criteria:
-
-- no shared card/button/tab-bar glass role relies on its own duplicated dark-only token set;
-- shared buttons preserve explicit loading/pressed/disabled states and minimum touch ownership;
-- full exact-head Mobile CI is green.
+The shared foundation deliberately avoids one backdrop blur per card/list row. Content surfaces use translucent material by default; true blur is reserved for bounded elevated/floating roles.
 
 ## LG-2 — primary tabs
 
 **Goal:** remove remaining flat/opaque local presentation from the five public tabs where it conflicts with the shared material system.
 
-Audit/migration targets:
+### LG-2A — Home direct surfaces
 
-- Home direct surfaces not already inherited from AppCard;
+**Active.**
+
+Scope:
+
+- add theme-aware ambient background depth from shared Liquid Glass tokens so bounded blur has material context;
+- use one true-blur elevated surface for the Home hero summary, not per-row blur;
+- replace the remaining flat profile affordance with a shared 44 pt glass icon control;
+- allow existing shared glass action buttons to carry Lucide icons and use them on Home Start/Continue Workout, Add Food and Log Weight;
+- flatten Weekly Snapshot from outer glass-card-plus-inner-tiles into a section heading with independently owned, non-blurred glass metric tiles;
+- make shared `AppSection` copy resolve from `AppThemeProvider` rather than a local dark palette assumption;
+- keep runtime top/bottom safe-area and floating-tab clearance explicit around the ambient backdrop;
+- preserve all Home calculations, active-workout resume, routes, localization and semantic warning/positive states.
+
+Exit criteria:
+
+- no Home direct action/profile surface remains a flat opaque local control when an existing shared glass role applies;
+- only the bounded hero uses backdrop blur;
+- snapshot tiles remain non-blurred content glass;
+- Home remains responsive in short/narrow layouts and owns >=44 pt interaction targets;
+- full exact-head Mobile CI is green.
+
+### LG-2B onward — remaining primary tabs
+
+After LG-2A, audit/migrate coherent batches across:
+
 - Nutrition diary/targets/search/recent/saved/add affordances;
 - Progress trend/measurement/summary direct surfaces;
 - Coach direct action/group surfaces;
@@ -55,7 +75,8 @@ Rules:
 - prefer shared primitives over local `rgba(...)` recipes;
 - preserve semantic success/warning/error meaning;
 - do not create backdrop blur per row in long lists;
-- do not reopen already-correct responsive geometry.
+- do not reopen already-correct responsive geometry;
+- batch adjacent surfaces that share the same material defect rather than returning to one-screen micro-PR churn.
 
 ## LG-3 — secondary surfaces
 
