@@ -24,6 +24,7 @@ Release readiness remains lower than source completeness because staging/provide
 - Follow `docs/architecture/responsive-mobile-ui.md` and `docs/architecture/liquid-glass-ui.md` for mobile UI work.
 - Use shared navigation/safe-area geometry and shared material primitives instead of screen-local magic clearances or duplicate glass recipes.
 - Preserve the reviewed local-state decision in `docs/architecture/local-state-performance-decision.md`; do not replace the current AsyncStorage architecture without new measured evidence and a separately reviewed decision.
+- There is no remaining approved autonomous source-refactor phase for local-state storage; Phase 11 Liquid Glass work does not reopen that decision.
 - Keep analytics/telemetry collection disabled until the P9-C consent/evidence gate is explicitly satisfied.
 - Do not claim provider, production, physical-device, native-release, OTA, or deployment evidence unless it actually ran.
 - Do not perform backend deployment/migrations, provider activation, production data access, OTA/EAS publication, native build/install, credential/DNS changes, destructive production cleanup, HealthKit/Health Connect activation, or store submission without direct authorization.
