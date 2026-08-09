@@ -7,10 +7,10 @@ This file is the **canonical forward roadmap**. PR-by-PR history and exact valid
 ## Current verified mobile checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current mobile `main`: `eaad35aac4733ba7488ae0aa151c285dca3acc38`.
-- Latest runtime merge: `eaad35aac4733ba7488ae0aa151c285dca3acc38` (PR #511 — LG-2C Nutrition primary surfaces).
-- PR #511 exact validated head: `e1dfaed79f45080d06dd2d590a757e5547f4111b`; Mobile CI #1947 passed the full required gate.
-- Active package: **Phase 11 / LG-2D Profile primary surfaces**.
+- Current mobile `main`: `fb5943c1497cf893858d59ca6b41dcab60790da8`.
+- Latest runtime merge: `fb5943c1497cf893858d59ca6b41dcab60790da8` (PR #513 — LG-2D Profile primary surfaces).
+- PR #513 exact validated head: `aa22621db120b523ddab8a04aacb3077aa9f91ed`; Mobile CI #1949 passed the full required gate.
+- Active package: **Phase 11 / LG-3 secondary surfaces**.
 - Backend baseline inspected for dependency awareness: `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`; backend is not part of this package.
 
 Release readiness remains lower than source completeness because staging/provider/physical-device/native-release/production evidence is separately gated.
@@ -111,7 +111,8 @@ Focused execution roadmap: `docs/roadmap/liquid-glass.md`.
 - **LG-2A original Home pilot:** complete via PR #503 / Mobile CI #1925.
 - **LG-H1 social-first Home:** complete via PR #505 / Mobile CI #1931.
 - **LG-2B Progress + Coach primary surfaces:** complete across PR #507 / Mobile CI #1937 and PR #509 / Mobile CI #1943 / merge `7355c0aa8b4b94a7cac8a7682acba90808739b77`.
-- **LG-2C Nutrition primary surfaces:** complete via PR #511 / exact green head `e1dfaed79f45080d06dd2d590a757e5547f4111b` / Mobile CI #1947 / merge `eaad35aac4733ba7488ae0aa151c285dca3acc38`.
+- **LG-2C Nutrition primary surfaces:** complete via PR #511 / Mobile CI #1947 / merge `eaad35aac4733ba7488ae0aa151c285dca3acc38`.
+- **LG-2D Profile primary surfaces:** complete via PR #513 / exact green head `aa22621db120b523ddab8a04aacb3077aa9f91ed` / Mobile CI #1949 / merge `fb5943c1497cf893858d59ca6b41dcab60790da8`.
 
 Home remains a social-first hybrid: compact personal daily metrics → future Stories only after real contracts → existing server-authoritative Following Feed. Do not fabricate Stories or Steps.
 
@@ -123,31 +124,40 @@ Home remains a social-first hybrid: compact personal daily metrics → future St
 
 ## LG-2B — Progress + Coach primary surfaces
 
-**Status: complete for source/CI scope.** Progress primary surfaces use shared/adaptive Liquid Glass material for the weight range selector, body-measurement controls and inputs, trend-chart shell, Safety/Recovery period controls, selected-week state/history actions, and selected-week detail owner. Coach primary already used shared primitives.
+**Status: complete for source/CI scope.** Progress primary surfaces use shared/adaptive Liquid Glass material across weight/body-measurement/trend and Safety/Recovery surfaces. Coach primary already used shared primitives.
 
 ## LG-2C — Nutrition primary surfaces
 
-**Status: complete for source/CI scope.** Primary Nutrition material ownership is migrated to adaptive Liquid Glass tokens while dense diary/food rows remain free of per-row native blur. Calculations, targets, date/day semantics, diary grouping, add/edit routing, persistence/sync, localization/accessibility, SectionList virtualization, keyboard/reflow and touch ownership remain unchanged. Secondary Nutrition flows remain for LG-3.
+**Status: complete for source/CI scope.** Primary Nutrition material ownership is migrated to adaptive Liquid Glass tokens while dense diary/food rows remain free of per-row native blur. Product semantics and persistence/sync behavior remain unchanged. Secondary Nutrition flows remain for LG-3.
 
-## Active LG-2D — Profile primary surfaces
+## LG-2D — Profile primary surfaces
 
-Audit has isolated the remaining primary Profile material debt to a bounded presentation-only package:
+**Status: complete for source/CI scope.** Profile Settings now uses shared `LiquidGlassIconButton`; the goals disclosure uses shared `LiquidGlassSurface` control material with adaptive pressed fill and no blur; Social Profile entry text follows the current theme while retaining its existing shared card/buttons. Profile state, goal validation/save and target recalculation remained unchanged.
 
-- replace the Profile settings icon's local control recipe with the shared Liquid Glass icon control;
-- migrate the goals disclosure surface and pressed state to shared/adaptive control material without blur;
-- remove static `Colors.dark` text ownership from the Social profile entry while preserving its existing shared `AppCard`/`SecondaryButton` structure;
-- preserve Profile state, goal validation/save behavior, nutrition-target recalculation, routes, localization, accessibility, completed safe-area behavior and 44 pt interaction ownership.
+## Active LG-3 — secondary surfaces
 
-LG-2D is complete only after direct Profile primary material debt is removed and exact-head Mobile CI passes.
+Execute secondary surfaces in coherent batches by shared defect rather than route count.
+
+### LG-3A — Settings controls and disclosures
+
+**Status: next bounded package.**
+
+Audit identified a high-leverage shared-material batch:
+
+- replace Settings shell's local 44 pt back control with the shared glass icon control;
+- migrate shared `SegmentedControl` neutral/selected/pressed material from direct `surfaceSecondary` / `surfacePrimary` / `backgroundSelected` values to adaptive glass control/accent tokens while preserving tab roles and 44 pt segment ownership;
+- migrate Personal Details formula radio options to the same adaptive neutral/selected/pressed token language without changing validation/save logic;
+- leave semantic dividers inside existing `AppCard` owners lightweight; do not wrap every row/disclosure in native blur.
+
+Then continue adjacent Settings/account, Sync & Backup, Social detail, Progress detail, Nutrition add/edit/detail, Coach detail, and exercise detail/library surfaces by shared material defect.
 
 ## Remaining Phase 11 execution order
 
-1. **LG-2D Profile primary surfaces.** Preserve completed theme/safe-area and Profile domain behavior.
-2. **LG-3 secondary surfaces.** Batch adjacent Settings/Sync/Social detail/Progress detail/Nutrition detail/Coach detail/exercise surfaces by shared defect.
-3. **LG-4 Workouts:** hub/program cards → library/builder → active workout chrome → set-table states → finish/summary. Preserve session persistence and dense set-table readability.
-4. **LG-5 elevated chrome/motion:** use true blur only for bounded elevated/floating roles.
-5. **LG-6 visual QA/stabilization:** exact-head CI/source guards first; physical cross-device/light-dark/Dynamic Type/keyboard/performance evidence only when separately authorized.
-6. Revisit LG-H2/H3 when their contract/native blockers are actually resolved; do not use placeholders as a substitute.
+1. **LG-3 secondary surfaces**, starting with LG-3A Settings controls/disclosures.
+2. **LG-4 Workouts:** hub/program cards → library/builder → active workout chrome → set-table states → finish/summary. Preserve session persistence and dense set-table readability.
+3. **LG-5 elevated chrome/motion:** use true blur only for bounded elevated/floating roles.
+4. **LG-6 visual QA/stabilization:** exact-head CI/source guards first; physical cross-device/light-dark/Dynamic Type/keyboard/performance evidence only when separately authorized.
+5. Revisit LG-H2/H3 when their contract/native blockers are actually resolved; do not use placeholders as a substitute.
 
 ---
 
@@ -168,11 +178,12 @@ For docs-only synchronization, verify diff/ancestry; workflows may intentionally
 
 # Current definition of done
 
-The active LG-2D package is done only when:
+The active LG-3A package is done only when:
 
-- Profile settings/disclosure direct material recipes are replaced by shared/adaptive material without unnecessary native blur;
-- Social Profile entry text uses the active theme rather than static `Colors.dark` ownership;
-- Profile state, goal validation/save behavior, nutrition-target recalculation, routes, localization, accessibility, safe-area and touch ownership remain intact;
+- Settings shell back control and shared segmented material ownership use shared/adaptive Liquid Glass primitives/tokens;
+- Personal Details formula options use the same adaptive neutral/selected/pressed material language;
+- tab/radio accessibility state, 44 pt ownership, validation/save behavior, Settings routes and preferences remain intact;
+- no per-row native blur is introduced;
 - repository line limits, TypeScript, regression tests, model smoke, Expo export and Expo Doctor pass on the exact PR head;
 - roadmap/status/handoff agree with actual Git history;
 - the validated exact head merges without unresolved review blockers.
