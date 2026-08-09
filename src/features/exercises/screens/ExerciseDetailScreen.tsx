@@ -1,16 +1,18 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, Share, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ProgressTrendChart } from '@/components/progress/ProgressTrendChart';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { MetricCard } from '@/components/ui/MetricCard';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
-import { Colors, MaxContentWidth, Radii, Spacing, Typography } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import { useWorkoutState } from '@/context/AppContext';
 import {
   getExerciseDetailCopy,
@@ -21,33 +23,18 @@ import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import { useUnitPreferences, weightFromKg } from '@/units';
 
+import { ExerciseDetailTextList } from '../components/ExerciseDetailTextList';
 import { ExerciseMediaPreview } from '../components/ExerciseMediaPreview';
 import { MuscleMap } from '../components/MuscleMap';
 import { loadFavoriteExerciseIds, saveFavoriteExerciseIds } from '../favoritesRepository';
 import { selectCompletedSetsByExerciseId } from '../history';
-import { getExerciseMediaUri } from '../media';
 import { buildMuscleHighlights } from '../muscleTaxonomy';
 import { calculateExerciseProgressMetrics } from '../progress';
 import { exerciseRepository, isOssExerciseDbEnabled } from '../repository';
 import type { Exercise } from '../types';
+import { createExerciseDetailStyles } from './ExerciseDetailScreen.styles';
 
 type DetailTab = 'about' | 'history' | 'progress';
-
-function TextList({ emptyLabel, items }: { emptyLabel: string; items: string[] }) {
-  if (items.length === 0) {
-    return <Text style={styles.secondaryText}>{emptyLabel}</Text>;
-  }
-
-  return (
-    <View style={styles.list}>
-      {items.map((item) => (
-        <Text key={item} style={styles.bodyText}>
-          {item}
-        </Text>
-      ))}
-    </View>
-  );
-}
 
 export default function ExerciseDetailScreen() {
   const { exerciseId } = useLocalSearchParams<{ exerciseId?: string }>();
@@ -58,6 +45,7 @@ export default function ExerciseDetailScreen() {
   const { formatWeightValue, weight: weightUnit } = useUnitPreferences();
   const copy = useMemo(() => getExerciseDetailCopy(locale), [locale]);
   const libraryCopy = useMemo(() => getExerciseLibraryCopy(locale), [locale]);
+  const styles = useMemo(() => createExerciseDetailStyles(colors), [colors]);
   const detailTabs = useMemo<Array<{ label: string; value: DetailTab }>>(
     () => [
       { label: copy.tabs.about, value: 'about' },
@@ -142,9 +130,6 @@ export default function ExerciseDetailScreen() {
   );
   const isFavorite = Boolean(exercise && favoriteIds.has(exercise.id));
   const hasAnimation = Boolean(exercise?.media.animationUrl ?? exercise?.media.gifUri);
-  const resolvedMediaUri = exercise
-    ? getExerciseMediaUri(exercise, { playing })
-    : undefined;
   const formatWeight = (valueKg: number) =>
     `${formatWeightValue(valueKg)} ${weightUnit}`;
   const formatVolume = (valueKg: number) =>
@@ -177,7 +162,15 @@ export default function ExerciseDetailScreen() {
   if (errorCode || !exercise) {
     const boundedError = errorCode ?? 'not_found';
     return (
-      <View style={[styles.centeredState, { backgroundColor: colors.background }]}>
+      <View
+        style={[
+          styles.centeredState,
+          {
+            backgroundColor: colors.background,
+            paddingBottom: insets.bottom + Spacing.four,
+            paddingTop: insets.top + Spacing.four,
+          },
+        ]}>
         <EmptyState
           title={copy.errorTitle(boundedError)}
           description={copy.errorDescription}
@@ -200,22 +193,18 @@ export default function ExerciseDetailScreen() {
       style={[styles.screen, { backgroundColor: colors.background }]}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Pressable
-            accessibilityLabel={copy.back}
-            accessibilityRole="button"
-            onPress={() => router.back()}
-            style={styles.headerControl}>
-            <Text style={styles.headerControlText}>{copy.back}</Text>
-          </Pressable>
+          <View style={styles.headerSide}>
+            <LiquidGlassIconButton
+              accessibilityLabel={copy.back}
+              Icon={ChevronLeft}
+              onPress={() => router.back()}
+              testID="exercise-detail-back"
+            />
+          </View>
           <Text numberOfLines={2} style={styles.title}>
             {exercise.name}
           </Text>
-          <Pressable
-            accessibilityLabel={copy.more}
-            accessibilityRole="button"
-            style={styles.headerControl}>
-            <Text style={styles.headerControlText}>{copy.more}</Text>
-          </Pressable>
+          <View style={styles.headerSide} />
         </View>
 
         <SegmentedControl
@@ -237,15 +226,12 @@ export default function ExerciseDetailScreen() {
             style={styles.media}
           />
           {hasAnimation && !mediaFailed ? (
-            <Pressable
-              accessibilityLabel={playing ? copy.pauseMedia : copy.playMedia}
-              accessibilityRole="button"
+            <AppButton
+              label={playing ? copy.pause : copy.play}
               onPress={() => setPlaying((current) => !current)}
-              style={styles.playButton}>
-              <Text style={styles.playButtonText}>
-                {playing ? copy.pause : copy.play}
-              </Text>
-            </Pressable>
+              style={styles.playButton}
+              variant="secondary"
+            />
           ) : null}
         </AppCard>
 
@@ -275,9 +261,17 @@ export default function ExerciseDetailScreen() {
             </View>
             <AppCard>
               <Text style={styles.cardTitle}>{copy.primaryMuscles}</Text>
-              <TextList emptyLabel={copy.noEntries} items={exercise.primaryMuscles} />
+              <ExerciseDetailTextList
+                emptyLabel={copy.noEntries}
+                items={exercise.primaryMuscles}
+                styles={styles}
+              />
               <Text style={styles.cardTitle}>{copy.secondaryMuscles}</Text>
-              <TextList emptyLabel={copy.noEntries} items={exercise.secondaryMuscles} />
+              <ExerciseDetailTextList
+                emptyLabel={copy.noEntries}
+                items={exercise.secondaryMuscles}
+                styles={styles}
+              />
             </AppCard>
             <AppCard>
               <Text style={styles.cardTitle}>{copy.details}</Text>
@@ -294,9 +288,17 @@ export default function ExerciseDetailScreen() {
             </AppCard>
             <AppCard>
               <Text style={styles.cardTitle}>{copy.instructions}</Text>
-              <TextList emptyLabel={copy.noEntries} items={exercise.instructions} />
+              <ExerciseDetailTextList
+                emptyLabel={copy.noEntries}
+                items={exercise.instructions}
+                styles={styles}
+              />
               <Text style={styles.cardTitle}>{copy.coachingTips}</Text>
-              <TextList emptyLabel={copy.noEntries} items={exercise.coachingTips} />
+              <ExerciseDetailTextList
+                emptyLabel={copy.noEntries}
+                items={exercise.coachingTips}
+                styles={styles}
+              />
             </AppCard>
           </View>
         ) : null}
@@ -384,29 +386,3 @@ export default function ExerciseDetailScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  actionButton: { flex: 1 },
-  actionRow: { flexDirection: 'row', gap: Spacing.three },
-  attribution: { color: Colors.dark.textSecondary, fontSize: 11, fontWeight: '700', lineHeight: 16, textAlign: 'center' },
-  bodyText: { color: Colors.dark.textPrimary, fontSize: Typography.body.fontSize, lineHeight: Typography.body.lineHeight },
-  cardTitle: { color: Colors.dark.textPrimary, fontSize: Typography.cardTitle.fontSize, fontWeight: Typography.cardTitle.fontWeight, lineHeight: Typography.cardTitle.lineHeight, marginBottom: Spacing.two },
-  centeredState: { flex: 1, gap: Spacing.four, justifyContent: 'center', padding: Spacing.four },
-  container: { alignSelf: 'center', gap: Spacing.four, maxWidth: MaxContentWidth, width: '100%' },
-  content: { paddingHorizontal: Spacing.four },
-  header: { alignItems: 'center', flexDirection: 'row', gap: Spacing.three },
-  headerControl: { alignItems: 'center', borderColor: Colors.dark.borderSubtle, borderRadius: Radii.pill, borderWidth: StyleSheet.hairlineWidth, justifyContent: 'center', minHeight: 40, minWidth: 64, paddingHorizontal: Spacing.three },
-  headerControlText: { color: Colors.dark.textPrimary, fontSize: Typography.label.fontSize, fontWeight: Typography.label.fontWeight },
-  list: { gap: Spacing.two, marginBottom: Spacing.three },
-  media: { aspectRatio: 1.35, backgroundColor: Colors.dark.surfaceSecondary, borderRadius: Radii.medium, width: '100%' },
-  mediaCard: { padding: Spacing.two },
-  metricsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.three },
-  muscleMaps: { flexDirection: 'row', gap: Spacing.three },
-  playButton: { alignSelf: 'center', backgroundColor: Colors.dark.accent, borderRadius: Radii.pill, marginTop: Spacing.three, paddingHorizontal: Spacing.four, paddingVertical: Spacing.two },
-  playButtonText: { color: Colors.dark.textOnAccent, fontSize: Typography.label.fontSize, fontWeight: Typography.label.fontWeight },
-  screen: { flex: 1 },
-  secondaryText: { color: Colors.dark.textSecondary, fontSize: Typography.callout.fontSize, lineHeight: Typography.callout.lineHeight },
-  setRow: { alignItems: 'center', borderTopColor: Colors.dark.divider, borderTopWidth: StyleSheet.hairlineWidth, flexDirection: 'row', justifyContent: 'space-between', paddingVertical: Spacing.two },
-  stack: { gap: Spacing.four },
-  title: { color: Colors.dark.textPrimary, flex: 1, fontSize: Typography.screenTitle.fontSize, fontWeight: Typography.screenTitle.fontWeight, lineHeight: Typography.screenTitle.lineHeight, textAlign: 'center' },
-});
