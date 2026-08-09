@@ -76,4 +76,21 @@ describe('workout template detail localization', () => {
     expect(screen).toContain('accessibilityHint={copy.startWorkoutHint}');
     expect(screen).toContain('accessibilityState={{ disabled: true }}');
   });
+
+  it('uses responsive shared chrome and measured sticky-footer clearance', () => {
+    const screen = readSource(
+      'src/features/workouts/screens/WorkoutTemplateDetailScreen.tsx',
+    );
+
+    expect(screen).toContain('<LiquidGlassIconButton');
+    expect(screen).toContain('<LiquidGlassSurface');
+    expect(screen).toContain('<PrimaryButton');
+    expect(screen).toContain('const [footerHeight, setFooterHeight] = useState(0)');
+    expect(screen).toContain('paddingBottom: footerHeight + Spacing.three');
+    expect(screen).toContain('setFooterHeight((currentHeight) =>');
+    expect(screen).toContain('minWidth: 96');
+    expect(screen).not.toContain('paddingBottom: insets.bottom + 116');
+    expect(screen).not.toContain('height: 34');
+    expect(screen).not.toContain('bottom: 12');
+  });
 });
