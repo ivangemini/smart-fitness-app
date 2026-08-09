@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BottomTabInset, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import { useAppActions, useWorkoutState } from '@/context/AppContext';
 import {
   RoutineExerciseMenuModal,
@@ -202,7 +202,7 @@ export function NewRoutineScreen() {
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={[
           styles.content,
-          { paddingBottom: insets.bottom + BottomTabInset + Spacing.six },
+          { paddingBottom: insets.bottom + Spacing.six },
         ]}
         keyboardDismissMode="interactive"
         keyboardShouldPersistTaps="handled"
