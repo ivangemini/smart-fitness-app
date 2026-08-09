@@ -15,11 +15,16 @@ const readSource = (relativePath: string) =>
   readFileSync(resolve(projectRoot, relativePath), 'utf8');
 
 describe('social-first Home', () => {
-  it('uses one expandable personal metrics owner before the existing following feed', () => {
+  it('uses one expandable personal metrics owner before Stories and the existing following feed', () => {
     const home = readSource('src/app/(tabs)/index.tsx');
 
-    expect(home).toContain('<HomeDailyMetricsPanel');
-    expect(home).toContain('<FlatList<SocialWorkoutPostDto>');
+    const metricsIndex = home.indexOf('<HomeDailyMetricsPanel');
+    const storiesIndex = home.indexOf('<SocialStoryStrip');
+    const feedIndex = home.indexOf('<FlatList<SocialWorkoutPostDto>');
+    expect(metricsIndex).toBeGreaterThan(-1);
+    expect(storiesIndex).toBeGreaterThan(metricsIndex);
+    expect(feedIndex).toBeGreaterThan(storiesIndex);
+    expect(home).toContain('useSocialStories()');
     expect(home).toContain('useSocialFollowingFeed()');
     expect(home).toContain('<SocialWorkoutPostCard');
     expect(home).not.toContain('<HomeSummaryCard');
@@ -27,15 +32,19 @@ describe('social-first Home', () => {
     expect(home).not.toContain('<HomeSnapshotCard');
   });
 
-  it('uses real program schedule state and does not fabricate steps or stories', () => {
+  it('uses real program schedule state and does not fabricate steps or Story data', () => {
     const home = readSource('src/app/(tabs)/index.tsx');
+    const storyHook = readSource('src/features/social/useSocialStories.ts');
 
     expect(home).toContain('getWorkoutProgramSchedule(currentProgram)');
     expect(home).toContain('programSchedule?.isRestDayToday');
     expect(home).toContain('stepsValue="—"');
     expect(home).not.toMatch(/stepsValue="\d/);
-    expect(home).not.toContain('Story');
-    expect(home).not.toContain('Stories');
+    expect(home).toContain('stories.stories');
+    expect(storyHook).toContain('socialApi.listStories({ limit: PAGE_SIZE })');
+    expect(storyHook).toContain('getDefaultSocialStoryCacheStore()');
+    expect(home).not.toContain('demoStories');
+    expect(home).not.toContain('mockStories');
   });
 
   it('keeps metrics expansion local, accessible and non-persisted', () => {

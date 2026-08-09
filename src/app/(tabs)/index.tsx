@@ -25,9 +25,12 @@ import { useProgressState } from '@/context/ProgressStateContext';
 import { getHomeRecoveryStatusLabel } from '@/features/home/homeLocalization';
 import { getHomeSocialCopy } from '@/features/home/homeSocialCopy';
 import { getSocialFollowingFeedCopy } from '@/features/social/socialFollowingFeedCopy';
+import { SocialStoryStrip } from '@/features/social/SocialStoryStrip';
+import { getSocialStoryCopy } from '@/features/social/socialStoryCopy';
 import { SocialWorkoutPostCard } from '@/features/social/SocialWorkoutPostCard';
 import { getSocialWorkoutPostSurfaceCopy } from '@/features/social/socialWorkoutPostSurfaceCopy';
 import { useSocialFollowingFeed } from '@/features/social/useSocialFollowingFeed';
+import { useSocialStories } from '@/features/social/useSocialStories';
 import { createSocialWorkoutPostSurfaceStyles } from '@/features/social/screens/SocialWorkoutPostSurface.styles';
 import { getCurrentWorkoutStreak } from '@/lib/home';
 import { getRecoveryAdvisor } from '@/lib/intelligence';
@@ -76,8 +79,10 @@ export default function HomeScreen() {
   const safeAreaInsets = useSafeAreaInsets();
   const homeCopy = getHomeSocialCopy(locale);
   const feedCopy = getSocialFollowingFeedCopy(locale);
+  const storyCopy = getSocialStoryCopy(locale);
   const postCopy = getSocialWorkoutPostSurfaceCopy(locale);
   const feed = useSocialFollowingFeed();
+  const stories = useSocialStories();
   const todayKey = formatLocalDate(new Date());
   const [activeDraftReady, setActiveDraftReady] = useState(false);
 
@@ -209,6 +214,11 @@ export default function HomeScreen() {
     router.push({ pathname: '/social/workout-post/[postId]', params: { postId } });
   };
 
+  const openStory = (storyId: string) => {
+    void stories.markViewed(storyId).catch(() => undefined);
+    router.push({ pathname: '/social/story/[storyId]', params: { storyId } });
+  };
+
   if (isRestoringState || !onboardingCompleted) {
     return <View style={styles.screen} />;
   }
@@ -243,6 +253,29 @@ export default function HomeScreen() {
         workoutStatus={workoutStatus}
         workoutTitle={workoutTitle}
       />
+
+      {stories.ready &&
+      stories.isAuthenticated &&
+      stories.status === 'ready' &&
+      stories.stories.length > 0 ? (
+        <SocialStoryStrip
+          copy={storyCopy}
+          loadingMore={stories.loadingMore}
+          onLoadMore={() => void stories.loadMore()}
+          onOpen={openStory}
+          stories={stories.stories}
+        />
+      ) : stories.ready &&
+        stories.isAuthenticated &&
+        stories.status === 'error' ? (
+        <AppCard style={styles.storyErrorCard}>
+          <InlineError message={storyCopy.loadError} />
+          <SecondaryButton
+            label={storyCopy.retry}
+            onPress={() => void stories.loadFirstPage(false)}
+          />
+        </AppCard>
+      ) : null}
 
       <View style={styles.feedHeader}>
         <Text style={styles.feedTitle}>{homeCopy.feedTitle}</Text>
@@ -331,8 +364,13 @@ export default function HomeScreen() {
           feed.ready && feed.isAuthenticated ? (
             <RefreshControl
               accessibilityLabel={feedCopy.refreshing}
-              onRefresh={() => void feed.loadFirstPage(true)}
-              refreshing={feed.refreshing}
+              onRefresh={() =>
+                void Promise.all([
+                  feed.loadFirstPage(true),
+                  stories.loadFirstPage(true),
+                ])
+              }
+              refreshing={feed.refreshing || stories.refreshing}
               tintColor={colors.accent}
             />
           ) : undefined
@@ -396,4 +434,5 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
       minWidth: 0,
     },
     screen: { backgroundColor: glass.backgroundBase, flex: 1 },
+    storyErrorCard: { gap: Spacing.two },
   });

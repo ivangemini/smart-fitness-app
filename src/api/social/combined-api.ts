@@ -16,6 +16,7 @@ import {
   type SocialNotificationApi,
 } from "./notification-api";
 import { createSocialReportApi, type SocialReportApi } from "./report-api";
+import { createSocialStoryApi, type SocialStoryApi } from "./story-api";
 
 const defaultApiClient = createApiClient({
   baseUrl: getMobileApiBaseUrl(),
@@ -27,7 +28,8 @@ export type SocialApi = BaseSocialApi &
   SocialCapabilityApi &
   SocialMediaApi &
   SocialNotificationApi &
-  SocialReportApi;
+  SocialReportApi &
+  SocialStoryApi;
 
 export const createSocialApi = (
   auth: SocialApiAuth,
@@ -38,4 +40,5 @@ export const createSocialApi = (
   ...createSocialMediaApi(auth, apiClient),
   ...createSocialNotificationApi(auth, apiClient),
   ...createSocialReportApi(auth, apiClient),
+  ...createSocialStoryApi(auth, apiClient),
 });
