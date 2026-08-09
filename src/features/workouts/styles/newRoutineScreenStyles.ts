@@ -270,7 +270,8 @@ export const createStyles = (colors: typeof Colors.light) =>
       justifyContent: 'flex-end',
     },
     pickerPanel: {
-      backgroundColor: colors.surfacePrimary,
+      borderBottomLeftRadius: 0,
+      borderBottomRightRadius: 0,
       borderTopLeftRadius: 24,
       borderTopRightRadius: 24,
       maxHeight: '78%',
@@ -361,7 +362,9 @@ export const createStyles = (colors: typeof Colors.light) =>
     },
     textButton: {
       flexShrink: 0,
+      justifyContent: 'center',
       maxWidth: 96,
+      minHeight: 44,
       paddingHorizontal: Spacing.one,
       paddingVertical: Spacing.two,
     },
