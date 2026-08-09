@@ -20,6 +20,10 @@ import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { Colors, MaxContentWidth, Radii, Spacing, Typography } from '@/constants/theme';
 import type { SupportedLocale } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 import { getSocialRateLimitMessage } from './socialRateLimitCopy';
 import { getSocialReportCopy } from './socialReportCopy';
@@ -45,9 +49,13 @@ export function SocialReportModal({
   target,
 }: SocialReportModalProps) {
   const insets = useSafeAreaInsets();
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const copy = getSocialReportCopy(locale);
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const [status, setStatus] = useState<ReportStatus>('editing');
   const [reason, setReason] = useState<SocialReportReasonCode | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -152,7 +160,8 @@ export function SocialReportModal({
                         style={({ pressed }) => [
                           styles.reasonRow,
                           selected && styles.reasonRowSelected,
-                          pressed && styles.pressed,
+                          pressed &&
+                            (selected ? styles.reasonRowSelectedPressed : styles.reasonRowPressed),
                         ]}>
                         <View
                           style={[
@@ -161,7 +170,11 @@ export function SocialReportModal({
                           ]}>
                           {selected ? <View style={styles.radioDot} /> : null}
                         </View>
-                        <Text style={styles.reasonLabel}>
+                        <Text
+                          style={[
+                            styles.reasonLabel,
+                            selected && styles.reasonLabelSelected,
+                          ]}>
                           {copy.reasons[item]}
                         </Text>
                       </Pressable>
@@ -190,7 +203,7 @@ export function SocialReportModal({
   );
 }
 
-const createStyles = (colors: typeof Colors.dark) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     body: {
       color: colors.textSecondary,
@@ -203,10 +216,9 @@ const createStyles = (colors: typeof Colors.dark) =>
       flex: 1,
       justifyContent: 'flex-end',
     },
-    pressed: { opacity: 0.74 },
     radio: {
       alignItems: 'center',
-      borderColor: colors.borderSubtle,
+      borderColor: glass.controlBorder,
       borderRadius: Radii.pill,
       borderWidth: 2,
       height: 22,
@@ -214,14 +226,14 @@ const createStyles = (colors: typeof Colors.dark) =>
       width: 22,
     },
     radioDot: {
-      backgroundColor: colors.textOnAccent,
+      backgroundColor: glass.accentText,
       borderRadius: Radii.pill,
       height: 8,
       width: 8,
     },
     radioSelected: {
-      backgroundColor: colors.accent,
-      borderColor: colors.accent,
+      backgroundColor: glass.accentFill,
+      borderColor: glass.accentBorder,
     },
     reasonLabel: {
       color: colors.textPrimary,
@@ -229,11 +241,14 @@ const createStyles = (colors: typeof Colors.dark) =>
       fontSize: Typography.body.fontSize,
       lineHeight: Typography.body.lineHeight,
     },
+    reasonLabelSelected: {
+      color: glass.accentText,
+    },
     reasonList: { gap: Spacing.two },
     reasonRow: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
@@ -243,9 +258,15 @@ const createStyles = (colors: typeof Colors.dark) =>
       paddingHorizontal: Spacing.three,
       paddingVertical: Spacing.two,
     },
+    reasonRowPressed: {
+      backgroundColor: glass.controlPressedFill,
+    },
     reasonRowSelected: {
-      backgroundColor: colors.accentSoft,
-      borderColor: colors.accent,
+      backgroundColor: glass.accentFill,
+      borderColor: glass.accentBorder,
+    },
+    reasonRowSelectedPressed: {
+      backgroundColor: glass.accentPressedFill,
     },
     reasonTitle: {
       color: colors.textSecondary,
@@ -256,9 +277,12 @@ const createStyles = (colors: typeof Colors.dark) =>
     section: { gap: Spacing.two },
     sheet: {
       alignSelf: 'center',
-      backgroundColor: colors.surfacePrimary,
+      backgroundColor: glass.elevatedFill,
+      borderColor: glass.cardBorder,
+      borderCurve: 'continuous',
       borderTopLeftRadius: Radii.xlarge,
       borderTopRightRadius: Radii.xlarge,
+      borderTopWidth: StyleSheet.hairlineWidth,
       maxHeight: '88%',
       maxWidth: MaxContentWidth,
       overflow: 'hidden',

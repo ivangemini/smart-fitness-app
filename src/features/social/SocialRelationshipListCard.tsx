@@ -44,7 +44,7 @@ export function SocialRelationshipListCard({
         accessibilityLabel={`${copy.openProfile}: ${profile.displayName}`}
         accessibilityRole="button"
         onPress={() => onOpen(profile.username)}
-        style={({ pressed }) => [styles.profileLink, pressed && styles.pressed]}>
+        style={({ pressed }) => [styles.profileLink, pressed && styles.profilePressed]}>
         <View style={styles.identityRow}>
           {profile.avatarUrl && !avatarFailed ? (
             <Image
