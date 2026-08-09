@@ -41,6 +41,7 @@ import {
   hydrateActiveWorkoutSessionDraft,
 } from '@/lib/workouts';
 import { formatPlural, useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import {
   formatEnergyValue,
   formatWeightValue,
@@ -49,6 +50,7 @@ import {
 } from '@/units';
 
 export default function HomeScreen() {
+  const { colors } = useAppTheme();
   const { bodyMeasurements, weightHistory } = useProgressState();
   const { exercises, workoutSessions, workouts } = useWorkoutState();
   const { foodEntries, nutritionTargets } = useNutritionState();
@@ -56,6 +58,7 @@ export default function HomeScreen() {
   const { isRestoringState } = useAppInfrastructure();
   const { formatNumber, locale, t } = useLocalization();
   const { energy: energyUnit, weight: weightUnit } = useUnitPreferences();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const safeAreaInsets = useSafeAreaInsets();
   const todayKey = formatLocalDate(new Date());
   const [activeDraftReady, setActiveDraftReady] = useState(false);
@@ -271,7 +274,7 @@ export default function HomeScreen() {
             accessibilityRole="button"
             onPress={() => router.push('/(tabs)/profile')}
             style={({ pressed }) => [styles.profileButton, pressed && styles.pressed]}>
-            <User color={Colors.dark.textPrimary} size={22} strokeWidth={2} />
+            <User color={colors.textPrimary} size={22} strokeWidth={2} />
           </Pressable>
         </View>
         <HomeSummaryCard
@@ -322,34 +325,35 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  content: { alignItems: 'center', flexGrow: 1, padding: Spacing.three },
-  container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
-  headerRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: Spacing.two,
-    justifyContent: 'space-between',
-  },
-  headerTitle: {
-    color: Colors.dark.textPrimary,
-    flexShrink: 1,
-    fontSize: Typography.screenTitle.fontSize,
-    fontWeight: Typography.screenTitle.fontWeight,
-    lineHeight: Typography.screenTitle.lineHeight,
-    minWidth: 0,
-  },
-  pressed: { opacity: 0.72 },
-  profileButton: {
-    alignItems: 'center',
-    backgroundColor: Colors.dark.surfacePrimary,
-    borderColor: Colors.dark.borderSubtle,
-    borderRadius: 22,
-    borderWidth: StyleSheet.hairlineWidth,
-    flexShrink: 0,
-    height: 44,
-    justifyContent: 'center',
-    width: 44,
-  },
-  screen: { backgroundColor: Colors.dark.background, flex: 1 },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    content: { alignItems: 'center', flexGrow: 1, padding: Spacing.three },
+    container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
+    headerRow: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: Spacing.two,
+      justifyContent: 'space-between',
+    },
+    headerTitle: {
+      color: colors.textPrimary,
+      flexShrink: 1,
+      fontSize: Typography.screenTitle.fontSize,
+      fontWeight: Typography.screenTitle.fontWeight,
+      lineHeight: Typography.screenTitle.lineHeight,
+      minWidth: 0,
+    },
+    pressed: { opacity: 0.72 },
+    profileButton: {
+      alignItems: 'center',
+      backgroundColor: colors.surfacePrimary,
+      borderColor: colors.borderSubtle,
+      borderRadius: 22,
+      borderWidth: StyleSheet.hairlineWidth,
+      flexShrink: 0,
+      height: 44,
+      justifyContent: 'center',
+      width: 44,
+    },
+    screen: { backgroundColor: colors.background, flex: 1 },
+  });
