@@ -24,6 +24,11 @@ import { useProfileState } from '@/context/ProfileStateContext';
 import { useProgressState } from '@/context/ProgressStateContext';
 import { getHomeRecoveryStatusLabel } from '@/features/home/homeLocalization';
 import { getHomeSocialCopy } from '@/features/home/homeSocialCopy';
+import { getSocialFollowingFeedCopy } from '@/features/social/socialFollowingFeedCopy';
+import { SocialWorkoutPostCard } from '@/features/social/SocialWorkoutPostCard';
+import { getSocialWorkoutPostSurfaceCopy } from '@/features/social/socialWorkoutPostSurfaceCopy';
+import { useSocialFollowingFeed } from '@/features/social/useSocialFollowingFeed';
+import { createSocialWorkoutPostSurfaceStyles } from '@/features/social/screens/SocialWorkoutPostSurface.styles';
 import { getCurrentWorkoutStreak } from '@/lib/home';
 import { getRecoveryAdvisor } from '@/lib/intelligence';
 import { formatLocalDate } from '@/lib';
@@ -36,11 +41,6 @@ import {
   hydrateActiveWorkoutSessionDraft,
 } from '@/lib/workouts';
 import { formatPlural, useLocalization } from '@/localization';
-import { getSocialFollowingFeedCopy } from '@/features/social/socialFollowingFeedCopy';
-import { SocialWorkoutPostCard } from '@/features/social/SocialWorkoutPostCard';
-import { getSocialWorkoutPostSurfaceCopy } from '@/features/social/socialWorkoutPostSurfaceCopy';
-import { useSocialFollowingFeed } from '@/features/social/useSocialFollowingFeed';
-import { createSocialWorkoutPostSurfaceStyles } from '@/features/social/screens/SocialWorkoutPostSurface.styles';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import {
   resolveLiquidGlassPalette,
@@ -230,6 +230,7 @@ export default function HomeScreen() {
         caloriesProgress={progressRatio(todaysNutrition.calories, nutritionTargets.calories)}
         caloriesTarget={caloriesTarget}
         copy={homeCopy}
+        energyUnitLabel={energyUnit}
         macros={macroMetrics}
         onAddFood={() => router.push('/(tabs)/nutrition')}
         onLogWeight={() => router.push('/weight-entry')}
