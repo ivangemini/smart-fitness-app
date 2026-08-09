@@ -20,6 +20,9 @@ describe('Coach tab theme consistency', () => {
   it('resolves the public Coach shell from AppThemeProvider', () => {
     expect(coachSource).toContain('useAppTheme');
     expect(coachSource).toContain('createStyles(colors)');
+    expect(coachSource).toContain(
+      'const createStyles = (colors: typeof Colors.light)',
+    );
     expect(coachSource).not.toContain('Colors.dark.');
   });
 
