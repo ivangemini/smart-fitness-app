@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
-  Pressable,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -21,9 +20,10 @@ import {
 import type { AuthSessionSummary } from '@/auth/types';
 import { AppCard } from '@/components/ui/AppCard';
 import { InlineError } from '@/components/ui/InlineError';
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
-import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useAuthSession } from '@/hooks/useAuthSession';
 import { useLocalization } from '@/localization';
 import { localizeSessionManagementMessage } from '@/localization/authCopy';
@@ -156,13 +156,11 @@ export default function SessionsScreen() {
       }
       style={styles.screen}>
       <View style={styles.headerRow}>
-        <Pressable
+        <LiquidGlassIconButton
           accessibilityLabel={t('common.back')}
-          accessibilityRole="button"
+          Icon={ChevronLeft}
           onPress={() => router.back()}
-          style={styles.backButton}>
-          <ChevronLeft color={colors.textPrimary} size={22} strokeWidth={2.4} />
-        </Pressable>
+        />
         <View style={styles.headerCopy}>
           <Text style={styles.eyebrow}>{t('sessions.eyebrow')}</Text>
           <Text style={styles.title}>{t('sessions.title')}</Text>
@@ -237,15 +235,6 @@ export default function SessionsScreen() {
 
 const createStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
-    backButton: {
-      alignItems: 'center',
-      borderColor: colors.borderSubtle,
-      borderRadius: Radii.large,
-      borderWidth: StyleSheet.hairlineWidth,
-      height: 44,
-      justifyContent: 'center',
-      width: 44,
-    },
     content: {
       flexGrow: 1,
       gap: Spacing.three,
