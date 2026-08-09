@@ -8,15 +8,16 @@ Architecture contract: `docs/architecture/liquid-glass-ui.md`.
 
 Converge the Smart Fitness mobile UI on the Liquid Glass material language already established by the floating bottom navigation while preserving responsive/safe-area rules, accessibility, localization, business logic, persistence, synchronization and backend contracts.
 
-This phase replaces the previous assumption that every surface should remain a flat dark card. Dark mode remains a primary visual reference, but the implementation must remain coherent in light and system appearance.
+The Home product role is now explicitly **social-first hybrid**: personal fitness context stays immediately visible, but the continuously updating Social feed becomes the main scroll surface and retention loop.
 
 ## Status
 
 - Phase 10 responsive source hardening is complete for the current source scope.
 - VUX secondary-surface cleanup is complete through VUX-7F.
 - **LG-1 shared foundation is complete:** PR #501, merge `ca11c1a66495ec71832a0abfd54fa4bbef0391c8`, exact-head Mobile CI #1922 passed.
-- **LG-2A Home direct-surface pilot is complete:** PR #503, exact head `e93bbbdfe27b3c6858c3e17402d138751e98e9e5`, Mobile CI #1925 passed, merge `5ad7bd047b89878243d8cf7923c70d3fe7b7787e`.
-- No Liquid Glass runtime package is currently active; next priority is the Progress + Coach primary-surface audit.
+- **LG-2A original Home Liquid Glass pilot is complete:** PR #503, exact head `e93bbbdfe27b3c6858c3e17402d138751e98e9e5`, Mobile CI #1925 passed, merge `5ad7bd047b89878243d8cf7923c70d3fe7b7787e`.
+- **LG-H1 social-first Home redesign is the active priority.** It supersedes the previously queued Progress + Coach migration.
+- Stale overlapping PR #502 is closed and must not be revived.
 - No OTA/EAS publication, native install/build or physical-device proof is part of autonomous source execution.
 
 ## LG-1 — shared foundation
@@ -30,41 +31,104 @@ Delivered:
 - `AppCard` migration;
 - `PrimaryButton` / `SecondaryButton` theme-aware glass states;
 - floating tab bar migration from local hardcoded material values to the shared adaptive token system;
-- initial Home Summary and Home Snapshot semantic material migration;
+- initial Home semantic material migration;
 - source-contract guards and blur/performance architecture rules.
 
 The shared foundation deliberately avoids one backdrop blur per card/list row. Content surfaces use translucent material by default; true blur is reserved for bounded elevated/floating roles.
 
-## LG-2 — primary tabs
+## LG-H — social-first Home
 
-**Goal:** remove remaining flat/opaque local presentation from the five public tabs where it conflicts with the shared material system.
+### LG-H1 — expandable daily metrics + existing Social feed
 
-### LG-2A — Home direct surfaces
+**Status: active.**
 
-**Status: complete.**
+Goal: replace the large dashboard stack with one compact expandable personal-status surface followed directly by the existing following feed.
 
-Delivered:
+Collapsed Home hierarchy:
 
-- theme-aware ambient background depth from shared Liquid Glass tokens;
-- one bounded true-blur elevated Home hero surface;
-- shared 44 pt Liquid Glass profile icon control with scale/haptic feedback rather than opacity feedback;
-- optional Lucide icon support in shared Primary/Secondary buttons and Home Quick Actions;
-- Start/Continue Workout, Add Food and Log Weight now carry the approved action icons;
-- Weekly Snapshot no longer nests metric tiles inside another owning card; tiles are independently owned non-blurred glass surfaces;
-- shared `AppSection` copy resolves from `AppThemeProvider` instead of a local dark palette assumption;
-- explicit Home top safe-area and shared floating-tab bottom clearance around the ambient backdrop;
-- Home calculations, active-workout resume, routes, localization and semantic warning/positive states remain unchanged.
+1. Home header + Profile action;
+2. compact Liquid Glass daily metrics surface;
+3. Stories slot only when a real server contract exists;
+4. chronological Social workout feed.
 
-Validation:
+Collapsed metrics must prioritize:
 
-- exact head `e93bbbdfe27b3c6858c3e17402d138751e98e9e5` passed Mobile CI #1925 on the first PR run;
-- repository/changed-file line audits, TypeScript, full regression suite, expanded model smoke, Expo export and Expo Doctor all passed;
-- PR #503 merged as `5ad7bd047b89878243d8cf7923c70d3fe7b7787e`;
-- EAS update on merge was skipped; no publication occurred.
+- calories consumed / target;
+- protein / fat / carbohydrates;
+- steps slot;
+- active workout or program-scheduled workout/rest-day state.
+
+Expanded metrics reveal more personal context without navigating away from Home:
+
+- macro progress and targets;
+- workout action;
+- current weight;
+- recovery status;
+- workout streak;
+- lightweight Add Food / Log Weight actions where useful.
+
+Implementation rules:
+
+- use one expandable Liquid Glass owner instead of several stacked dashboard cards;
+- preserve explicit 44 pt interaction ownership;
+- keep expansion state presentation-only and non-persisted;
+- use `getWorkoutProgramSchedule` for real program-day state rather than inventing a schedule;
+- do not fabricate step values: render the unavailable state until a real step provider exists;
+- reuse the existing server-authoritative following-feed API/cache/contracts and workout-post card;
+- keep feed pagination/refresh and block/privacy/moderation enforcement unchanged;
+- do not move Social data into private `AppState` synchronization;
+- Home remains useful while signed out/offline: personal metrics stay available and Social renders an explicit bounded state;
+- Stories are not represented as fake local content.
+
+Exit criteria:
+
+- old Home Summary / Quick Actions / Weekly Snapshot are no longer the primary Home hierarchy;
+- compact personal metrics occupy substantially less vertical space when collapsed;
+- metrics expand/collapse in place and remain short-screen reachable;
+- existing Following Feed is visible directly on Home for authenticated users;
+- no duplicate Social privacy or cache architecture is introduced;
+- full exact-head Mobile CI is green.
+
+### LG-H2 — Stories contracts and rail
+
+**Status: planned; requires real Social contracts before UI activation.**
+
+Stories belong **between personal metrics and feed**, never above the personal metrics block. The target hierarchy is therefore `personal status → stories → feed`, not `stories → fitness → feed`.
+
+Before implementation define:
+
+- story DTO/schema versions and expiry semantics;
+- author/follow/block/private-profile enforcement;
+- image/video media state and moderation reuse boundaries;
+- viewed/unviewed state and bounded retention;
+- create/delete ownership and account-deletion behavior;
+- pagination/bounded rail loading;
+- privacy-safe cache policy if any.
+
+Do not add story placeholders that look like real user content before these contracts exist.
+
+### LG-H3 — real steps / activity source
+
+**Status: planned.**
+
+The daily metrics component reserves a steps role, but a real value requires a reviewed device-health/activity source. Do not infer steps from workouts or fabricate data. Any HealthKit/Health Connect/native dependency, permission disclosure and native build evidence remain separately approval-gated.
+
+### LG-H4 — feed retention refinement
+
+**Status: planned after Home feed integration is stable.**
+
+Potential work:
+
+- improve workout-native post hierarchy, PR/milestone presentation and reactions/comments visibility;
+- discovery/creator content only through explicit server-authoritative contracts;
+- keep retention aligned with useful fitness actions rather than generic infinite-scroll engagement;
+- preserve chronological Following semantics until a separately reviewed ranking contract exists.
+
+## LG-2 — remaining primary tabs
+
+Resume only after LG-H1 is merged and the Home hierarchy is stable.
 
 ### LG-2B — Progress + Coach primary surfaces
-
-**Next priority.**
 
 Audit/migrate one coherent batch covering direct, visible Progress and Coach surfaces that still bypass the shared Liquid Glass material system.
 
@@ -89,21 +153,13 @@ After Nutrition, converge Profile goals/settings/actions onto the proven shared 
 
 **Goal:** converge child routes after the primary visual language is stable.
 
-Targets include:
-
-- Settings and account;
-- Sync & Backup;
-- Social surfaces;
-- Progress weight/history detail;
-- Nutrition add/edit/detail flows;
-- Coach review/proposal/history/recovery/limitations flows;
-- Exercise detail/library surfaces outside the active workout logger.
+Targets include Settings/account, Sync & Backup, Social detail surfaces, Progress weight/history detail, Nutrition add/edit/detail, Coach review/proposal/history/recovery/limitations, and exercise detail/library surfaces outside the active workout logger.
 
 Batch adjacent screens that share the same material defect instead of creating one PR per screen.
 
 ## LG-4 — Workouts system
 
-**Goal:** migrate the intentionally dark Lyfta-like workout experience without sacrificing dense logger ergonomics.
+**Goal:** migrate the intentionally dense workout experience without sacrificing logger ergonomics.
 
 Order:
 
@@ -122,16 +178,7 @@ Constraints:
 
 ## LG-5 — elevated chrome and motion
 
-**Goal:** extend the strongest Liquid Glass effect only to surfaces where it adds hierarchy.
-
-Candidates:
-
-- sticky action bars;
-- modal/sheet headers;
-- compact floating selectors;
-- bounded context controls.
-
-Use true blur selectively. Reuse spring/haptic language where interaction semantics justify it; do not animate static content gratuitously.
+Use true blur selectively for sticky action bars, modal/sheet headers, compact floating selectors and other bounded context controls. Reuse spring/haptic language where interaction semantics justify it; do not animate static content gratuitously.
 
 ## LG-6 — visual QA and stabilization
 
@@ -147,10 +194,10 @@ Physical validation when separately authorized:
 - Android inset/blur fallback;
 - light/dark/system;
 - EN/RU and large Dynamic Type;
-- keyboard-open forms;
+- keyboard-open states;
 - populated/empty/loading/error/success/disabled states;
-- scroll and animation performance on list-heavy screens.
+- scroll and animation performance on feed/list-heavy screens.
 
 ## Execution rule
 
-Prefer **larger coherent migration batches** over one-screen micro-PRs. A batch may cover shared primitives plus several adjacent visible surfaces when they share the same material contract, provided exact-head CI validates the complete change and domain behavior remains untouched.
+Prefer coherent migration batches over one-screen micro-PRs. Home/social integration must reuse existing Social authority rather than duplicate it. Exact current Git history and source contracts override stale roadmap prose.
