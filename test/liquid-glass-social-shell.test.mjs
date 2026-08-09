@@ -37,4 +37,20 @@ describe('LG-3D Social shell Liquid Glass controls', () => {
     expect(source).not.toContain('pressed: { opacity:');
     expect(source).not.toContain('BlurView');
   });
+
+  it('keeps Community Guidelines content intact while moving back navigation to the shared control', () => {
+    const source = readSource('src/features/social/screens/SocialCommunityGuidelinesScreen.tsx');
+
+    expect(source).toContain('LiquidGlassIconButton');
+    expect(source).toContain('Icon={ChevronLeft}');
+    expect(source).toContain("accessibilityLabel={t('common.back')}");
+    expect(source).toContain('onPress={() => router.back()}');
+    expect(source).toContain('copy.sections.map');
+    expect(source).toContain('copy.emergencyNote');
+    expect(source).toContain('<AppCard>');
+    expect(source).not.toContain('styles.backButton');
+    expect(source).not.toContain('pressed: { opacity:');
+    expect(source).not.toContain('Pressable');
+    expect(source).not.toContain('BlurView');
+  });
 });
