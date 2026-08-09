@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -17,6 +16,7 @@ import { useCapabilityGate } from "@/capabilities";
 import { AppCard } from "@/components/ui/AppCard";
 import { FormField } from "@/components/ui/FormField";
 import { InlineError } from "@/components/ui/InlineError";
+import { LiquidGlassIconButton } from "@/components/ui/LiquidGlassIconButton";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
@@ -24,7 +24,6 @@ import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import {
   Colors,
   MaxContentWidth,
-  Radii,
   Spacing,
   Typography,
 } from "@/constants/theme";
@@ -221,17 +220,11 @@ export default function SocialProfileEditorScreen() {
     >
       <View style={styles.container}>
         <View style={styles.headerRow}>
-          <Pressable
+          <LiquidGlassIconButton
             accessibilityLabel={t("common.back")}
-            accessibilityRole="button"
+            Icon={ChevronLeft}
             onPress={() => router.back()}
-            style={({ pressed }) => [
-              styles.backButton,
-              pressed && styles.pressed,
-            ]}
-          >
-            <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
-          </Pressable>
+          />
           <View style={styles.headerCopy}>
             <Text style={styles.eyebrow}>{copy.eyebrow}</Text>
             <Text style={styles.title}>{copy.title}</Text>
@@ -330,16 +323,6 @@ export default function SocialProfileEditorScreen() {
 
 const createStyles = (colors: typeof Colors.dark) =>
   StyleSheet.create({
-    backButton: {
-      alignItems: "center",
-      borderColor: colors.borderSubtle,
-      borderRadius: Radii.large,
-      borderWidth: StyleSheet.hairlineWidth,
-      flexShrink: 0,
-      height: 44,
-      justifyContent: "center",
-      width: 44,
-    },
     body: {
       color: colors.textSecondary,
       fontSize: Typography.body.fontSize,
@@ -382,7 +365,6 @@ const createStyles = (colors: typeof Colors.dark) =>
       lineHeight: Typography.label.lineHeight,
     },
     multilineInput: { minHeight: 112 },
-    pressed: { opacity: 0.72 },
     privacyNote: {
       color: colors.textMuted,
       fontSize: Typography.caption.fontSize,
