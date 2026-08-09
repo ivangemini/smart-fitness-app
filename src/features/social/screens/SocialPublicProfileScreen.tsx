@@ -68,19 +68,13 @@ export default function SocialPublicProfileScreen() {
   const username = readUsername(params.username);
   const insets = useSafeAreaInsets();
   const { colors, resolvedAppearance } = useAppTheme();
-  const glass = useMemo(
-    () => resolveLiquidGlassPalette(resolvedAppearance),
-    [resolvedAppearance],
-  );
+  const glass = useMemo(() => resolveLiquidGlassPalette(resolvedAppearance), [resolvedAppearance]);
   const { locale, t } = useLocalization();
   const copy = getSocialPublicProfileCopy(locale);
   const reportCopy = getSocialReportCopy(locale);
   const postsCopy = getSocialWorkoutPostSurfaceCopy(locale);
   const { isAuthenticated, ready, refresh, session } = useAuthSession();
-  const styles = useMemo(
-    () => createSocialPublicProfileStyles(colors, glass),
-    [colors, glass],
-  );
+  const styles = useMemo(() => createSocialPublicProfileStyles(colors, glass), [colors, glass]);
   const requestSequence = useRef(0);
   const [status, setStatus] = useState<ProfileStatus>('idle');
   const [profileView, setProfileView] = useState<SocialProfileViewDto | null>(null);
