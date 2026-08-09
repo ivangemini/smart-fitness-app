@@ -127,4 +127,16 @@ describe('program and routine localization', () => {
     expect(pickerPanel).not.toContain('backgroundColor');
     expect(styles).toMatch(/textButton:\s*\{[\s\S]*?minHeight:\s*44/);
   });
+
+  it('uses stack-screen safe-area clearance for new routine content', () => {
+    const routine = readSource(
+      'src/features/workouts/screens/NewRoutineScreen.tsx',
+    );
+    const rootLayout = readSource('src/app/_layout.tsx');
+
+    expect(rootLayout).toContain('name="workouts/routine/new"');
+    expect(rootLayout).toContain('options={{ headerShown: false }}');
+    expect(routine).toContain('{ paddingBottom: insets.bottom + Spacing.six }');
+    expect(routine).not.toContain('BottomTabInset');
+  });
 });
