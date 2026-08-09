@@ -1,18 +1,23 @@
+import { X } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
+import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
+import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { Colors, Spacing } from '@/constants/theme';
 import { createWorkoutDraftFromWorkout } from '@/features/workouts/programEditorModel';
 import { useLocalization } from '@/localization';
 import { getWorkoutBuilderCopy } from '@/localization/workoutBuilderCopy';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import type { Workout } from '@/types';
 
 import { WorkoutBuilderCard } from './WorkoutBuilderCard';
@@ -35,8 +40,11 @@ export function ProgramWorkoutEditorModal({
   onClose,
   onSaveWorkout,
 }: ProgramWorkoutEditorModalProps) {
+  const { colors } = useAppTheme();
   const { locale } = useLocalization();
+  const insets = useSafeAreaInsets();
   const copy = getWorkoutBuilderCopy(locale);
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const initialDraft = useMemo(() => createWorkoutDraftFromWorkout(workout), [workout]);
   const [workoutTitle, setWorkoutTitle] = useState(initialDraft.title);
   const [workoutDescription, setWorkoutDescription] = useState(initialDraft.description);
@@ -127,11 +135,18 @@ export function ProgramWorkoutEditorModal({
   };
 
   return (
-    <View style={styles.overlay}>
+    <View
+      style={[
+        styles.overlay,
+        {
+          paddingBottom: insets.bottom + Spacing.three,
+          paddingTop: insets.top + Spacing.three,
+        },
+      ]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.fill}>
-        <View style={styles.panel}>
+        <LiquidGlassSurface radius={28} style={styles.panel} variant="elevated">
           <View style={styles.header}>
             <View style={styles.headerCopy}>
               <Text style={styles.title}>
@@ -140,30 +155,17 @@ export function ProgramWorkoutEditorModal({
               <Text style={styles.subtitle}>{copy.editorSubtitle}</Text>
             </View>
             <View style={styles.headerActions}>
-              <Pressable
+              <LiquidGlassIconButton
                 accessibilityLabel={workout ? copy.back : copy.cancel}
-                accessibilityRole="button"
+                Icon={X}
                 onPress={onClose}
-                style={({ pressed }) => [styles.closeButton, pressed && styles.pressed]}>
-                <Text numberOfLines={2} style={styles.closeLabel}>
-                  {workout ? copy.back : copy.cancel}
-                </Text>
-              </Pressable>
-              <Pressable
-                accessibilityLabel={copy.save}
-                accessibilityRole="button"
-                accessibilityState={{ disabled: saveDisabled }}
+              />
+              <PrimaryButton
                 disabled={saveDisabled}
+                label={copy.save}
                 onPress={saveWorkout}
-                style={({ pressed }) => [
-                  styles.saveButton,
-                  saveDisabled && styles.saveButtonDisabled,
-                  pressed && !saveDisabled && styles.pressed,
-                ]}>
-                <Text numberOfLines={2} style={styles.saveLabel}>
-                  {copy.save}
-                </Text>
-              </Pressable>
+                style={styles.saveAction}
+              />
             </View>
           </View>
 
@@ -194,109 +196,70 @@ export function ProgramWorkoutEditorModal({
               workoutTitle={workoutTitle}
             />
           </ScrollView>
-        </View>
+        </LiquidGlassSurface>
       </KeyboardAvoidingView>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  closeButton: {
-    alignItems: 'center',
-    backgroundColor: Colors.dark.surfaceSecondary,
-    borderCurve: 'continuous',
-    borderRadius: 16,
-    flexShrink: 0,
-    justifyContent: 'center',
-    maxWidth: 110,
-    minHeight: 40,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: 10,
-  },
-  closeLabel: {
-    color: Colors.dark.text,
-    flexShrink: 1,
-    fontSize: 14,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
-  fill: {
-    flex: 1,
-    width: '100%',
-  },
-  header: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.two,
-    justifyContent: 'space-between',
-    marginBottom: Spacing.two,
-  },
-  headerActions: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    flexShrink: 0,
-    gap: Spacing.one,
-  },
-  headerCopy: {
-    flex: 1,
-    gap: 4,
-    minWidth: 180,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFill,
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.74)',
-    justifyContent: 'center',
-    padding: Spacing.three,
-  },
-  panel: {
-    backgroundColor: Colors.dark.background,
-    borderCurve: 'continuous',
-    borderRadius: 28,
-    maxHeight: '94%',
-    maxWidth: 560,
-    padding: Spacing.three,
-    width: '100%',
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-  saveButton: {
-    alignItems: 'center',
-    backgroundColor: Colors.dark.accent,
-    borderCurve: 'continuous',
-    borderRadius: 16,
-    flexShrink: 0,
-    justifyContent: 'center',
-    maxWidth: 100,
-    minHeight: 40,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: 10,
-  },
-  saveButtonDisabled: {
-    opacity: 0.38,
-  },
-  saveLabel: {
-    color: Colors.dark.background,
-    flexShrink: 1,
-    fontSize: 14,
-    fontWeight: '900',
-    textAlign: 'center',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingBottom: Spacing.two,
-  },
-  subtitle: {
-    color: Colors.dark.textSecondary,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  title: {
-    color: Colors.dark.text,
-    flexShrink: 1,
-    fontSize: 22,
-    fontWeight: '900',
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    fill: {
+      alignItems: 'center',
+      flex: 1,
+      justifyContent: 'center',
+      width: '100%',
+    },
+    header: {
+      alignItems: 'flex-start',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: Spacing.two,
+      justifyContent: 'space-between',
+      marginBottom: Spacing.two,
+    },
+    headerActions: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      flexShrink: 0,
+      gap: Spacing.one,
+    },
+    headerCopy: {
+      flex: 1,
+      gap: Spacing.half,
+      minWidth: 180,
+    },
+    overlay: {
+      ...StyleSheet.absoluteFill,
+      alignItems: 'center',
+      backgroundColor: colors.overlay,
+      justifyContent: 'center',
+      paddingHorizontal: Spacing.three,
+    },
+    panel: {
+      maxHeight: '94%',
+      maxWidth: 560,
+      overflow: 'hidden',
+      padding: Spacing.three,
+      width: '100%',
+    },
+    saveAction: {
+      alignSelf: 'auto',
+      minWidth: 88,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      paddingBottom: Spacing.two,
+    },
+    subtitle: {
+      color: colors.textSecondary,
+      fontSize: 13,
+      lineHeight: 18,
+    },
+    title: {
+      color: colors.textPrimary,
+      flexShrink: 1,
+      fontSize: 22,
+      fontWeight: '900',
+    },
+  });
