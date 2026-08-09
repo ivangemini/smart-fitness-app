@@ -3,6 +3,9 @@ import { Dumbbell, Heart, Plus } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { Modal, Pressable, Text, TextInput, View } from 'react-native';
 
+import { AppCard } from '@/components/ui/AppCard';
+import { PrimaryButton } from '@/components/ui/PrimaryButton';
+import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import type {
   WorkoutProgramSummary,
   WorkoutTemplateSummary,
@@ -204,7 +207,7 @@ export function CreateProgramModal({
   return (
     <Modal animationType="fade" transparent visible={visible} onRequestClose={onClose}>
       <View style={styles.overlay}>
-        <View style={styles.panel}>
+        <AppCard style={styles.panel}>
           <Text style={styles.title}>{t('workouts.createProgramTitle')}</Text>
           <TextInput
             autoCapitalize="words"
@@ -229,26 +232,19 @@ export function CreateProgramModal({
             </Text>
           ) : null}
           <View style={styles.actions}>
-            <Pressable
+            <SecondaryButton
+              label={t('common.cancel')}
               onPress={onClose}
-              style={({ pressed }) => [styles.cancelButton, pressed && styles.pressed]}>
-              <Text style={styles.cancelLabel}>{t('common.cancel')}</Text>
-            </Pressable>
-            <Pressable
-              accessibilityState={{ disabled: !canCreate }}
+              style={styles.modalAction}
+            />
+            <PrimaryButton
               disabled={!canCreate}
+              label={t('workouts.create')}
               onPress={() => onCreate(name)}
-              style={({ pressed }) => [
-                styles.createButton,
-                !canCreate && styles.disabledButton,
-                pressed && canCreate && styles.pressed,
-              ]}>
-              <Text style={[styles.createLabel, !canCreate && styles.disabledLabel]}>
-                {t('workouts.create')}
-              </Text>
-            </Pressable>
+              style={styles.modalAction}
+            />
           </View>
-        </View>
+        </AppCard>
       </View>
     </Modal>
   );

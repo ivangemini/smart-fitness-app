@@ -9,6 +9,7 @@ import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import { LiquidGlassSurface } from './LiquidGlassSurface';
 
 type LiquidGlassIconButtonProps = {
+  accessibilityHint?: string;
   accessibilityLabel: string;
   Icon: LucideIcon;
   onPress: () => void;
@@ -17,6 +18,7 @@ type LiquidGlassIconButtonProps = {
 };
 
 export function LiquidGlassIconButton({
+  accessibilityHint,
   accessibilityLabel,
   Icon,
   onPress,
@@ -36,6 +38,7 @@ export function LiquidGlassIconButton({
 
   return (
     <Pressable
+      accessibilityHint={accessibilityHint}
       accessibilityLabel={accessibilityLabel}
       accessibilityRole="button"
       onPress={handlePress}

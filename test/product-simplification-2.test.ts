@@ -19,14 +19,19 @@ describe('product simplification 2.0', () => {
   test('workouts screen keeps the start-now section order and one visible create action', () => {
     const screen = readSource('src/features/workouts/screens/WorkoutsScreen.tsx');
     const source = readWorkoutsSource();
-    const startNowBlock = screen.slice(screen.indexOf("activeTab === 'start-now'"), screen.indexOf('<View style={styles.programList}>'));
-    const programsBlock = screen.slice(screen.indexOf('<View style={styles.programList}>'), screen.indexOf('</View>', screen.indexOf('<View style={styles.programList}>')));
+    const startNowBlock = screen.slice(screen.indexOf("activeTab === 'start-now'"), screen.indexOf('<FlatList'));
+    const listHeaderIndex = screen.indexOf('ListHeaderComponent=');
+    const addProgramIndex = screen.indexOf("t('workouts.addProgram')", listHeaderIndex);
+    const renderItemIndex = screen.indexOf('renderItem=', listHeaderIndex);
     expect(startNowBlock).toContain('suggested.map');
     expect(startNowBlock).toContain("t('workouts.recentlyAdded')");
-    expect(programsBlock).not.toContain('title="Programs"');
-    expect(programsBlock).toContain("t('workouts.addProgram')");
-    expect(programsBlock.indexOf("t('workouts.addProgram')")).toBeLessThan(programsBlock.indexOf('visibleProgramSummaries.map'));
-    expect(programsBlock).toContain('icon="add"');
+    expect(screen).toContain('data={visibleProgramSummaries}');
+    expect(listHeaderIndex).toBeGreaterThan(-1);
+    expect(addProgramIndex).toBeGreaterThan(listHeaderIndex);
+    expect(addProgramIndex).toBeLessThan(renderItemIndex);
+    expect(count(screen, "t('workouts.addProgram')")).toBe(1);
+    expect(screen.slice(listHeaderIndex, renderItemIndex)).not.toContain('title="Programs"');
+    expect(screen.slice(listHeaderIndex, renderItemIndex)).toContain('icon="add"');
     expect(source).toContain('CreateProgramModal');
     expect(source).toContain('ProgramRow');
     expect(source).not.toContain('addProgramActionLabel');

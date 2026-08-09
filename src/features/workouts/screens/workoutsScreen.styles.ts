@@ -111,49 +111,6 @@ export const createModalStyles = (colors: typeof Colors.light) =>
       flexDirection: 'row',
       flexWrap: 'wrap',
       gap: Spacing.two,
-      justifyContent: 'flex-end',
-    },
-    cancelButton: {
-      alignItems: 'center',
-      minHeight: 44,
-      justifyContent: 'center',
-      paddingHorizontal: Spacing.three,
-    },
-    cancelLabel: {
-      color: colors.textSecondary,
-      flexShrink: 1,
-      fontSize: 16,
-      fontWeight: '800',
-    },
-    createButton: {
-      alignItems: 'center',
-      backgroundColor: colors.accent,
-      borderCurve: 'continuous',
-      borderRadius: 14,
-      minHeight: 44,
-      justifyContent: 'center',
-      paddingHorizontal: Spacing.four,
-    },
-    createLabel: {
-      color: colors.textOnAccent,
-      flexShrink: 1,
-      fontSize: 16,
-      fontWeight: '900',
-    },
-    disabledButton: {
-      backgroundColor: colors.backgroundSecondary,
-      borderColor: colors.borderSubtle,
-      borderWidth: StyleSheet.hairlineWidth,
-    },
-    disabledLabel: {
-      color: colors.textMuted,
-    },
-    modalHelperText: {
-      color: colors.textMuted,
-      flexShrink: 1,
-      fontSize: 14,
-      fontWeight: '700',
-      lineHeight: 19,
     },
     input: {
       backgroundColor: colors.backgroundSecondary,
@@ -167,6 +124,17 @@ export const createModalStyles = (colors: typeof Colors.light) =>
       minHeight: 52,
       paddingHorizontal: Spacing.three,
     },
+    modalAction: {
+      flexBasis: 140,
+      flexGrow: 1,
+    },
+    modalHelperText: {
+      color: colors.textMuted,
+      flexShrink: 1,
+      fontSize: 14,
+      fontWeight: '700',
+      lineHeight: 19,
+    },
     overlay: {
       ...StyleSheet.absoluteFill,
       alignItems: 'center',
@@ -175,16 +143,10 @@ export const createModalStyles = (colors: typeof Colors.light) =>
       padding: Spacing.three,
     },
     panel: {
-      backgroundColor: colors.surfacePrimary,
-      borderCurve: 'continuous',
-      borderRadius: 24,
       gap: Spacing.three,
       maxWidth: 520,
       padding: Spacing.four,
       width: '100%',
-    },
-    pressed: {
-      opacity: 0.72,
     },
     title: {
       color: colors.textPrimary,
@@ -207,34 +169,6 @@ export const createWorkoutsScreenStyles = (colors: typeof Colors.light) =>
       paddingHorizontal: Spacing.three,
       paddingTop: Spacing.two,
     },
-    footer: {
-      left: 0,
-      paddingHorizontal: Spacing.three,
-      position: 'absolute',
-      right: 0,
-    },
-    footerButton: {
-      alignItems: 'center',
-      alignSelf: 'flex-end',
-      backgroundColor: colors.accent,
-      borderCurve: 'continuous',
-      borderRadius: 16,
-      flexDirection: 'row',
-      gap: Spacing.two,
-      justifyContent: 'center',
-      maxWidth: 360,
-      minHeight: 48,
-      minWidth: 0,
-      paddingHorizontal: Spacing.three,
-      width: '100%',
-    },
-    footerLabel: {
-      color: colors.textOnAccent,
-      flexShrink: 1,
-      fontSize: 15,
-      fontWeight: '900',
-      textAlign: 'center',
-    },
     emptyProgramText: {
       color: colors.textMuted,
       flexShrink: 1,
@@ -242,6 +176,17 @@ export const createWorkoutsScreenStyles = (colors: typeof Colors.light) =>
       fontWeight: '700',
       lineHeight: 20,
       paddingVertical: Spacing.one,
+    },
+    footer: {
+      left: 0,
+      paddingHorizontal: Spacing.three,
+      position: 'absolute',
+      right: 0,
+    },
+    footerButton: {
+      alignSelf: 'flex-end',
+      maxWidth: 360,
+      width: '100%',
     },
     grid: {
       flexDirection: 'row',
@@ -271,22 +216,12 @@ export const createWorkoutsScreenStyles = (colors: typeof Colors.light) =>
       alignItems: 'center',
       justifyContent: 'center',
     },
-    pressed: {
-      opacity: 0.72,
-    },
     programList: {
       gap: Spacing.two,
     },
     screen: {
       backgroundColor: colors.background,
       flex: 1,
-    },
-    searchButton: {
-      alignItems: 'center',
-      flexShrink: 0,
-      height: 44,
-      justifyContent: 'center',
-      width: 44,
     },
     sectionStack: {
       gap: Spacing.four,
