@@ -1,8 +1,12 @@
 import { StyleSheet } from 'react-native';
 
 import { Colors, MaxContentWidth, Radii, Spacing } from '@/constants/theme';
+import type { LiquidGlassPalette } from '@/theme/liquidGlass';
 
-export const createAddFoodSheetStyles = (colors: typeof Colors.dark) =>
+export const createAddFoodSheetStyles = (
+  colors: typeof Colors.light,
+  glass: LiquidGlassPalette,
+) =>
   StyleSheet.create({
     sheet: {
       gap: Spacing.two,
@@ -20,8 +24,8 @@ export const createAddFoodSheetStyles = (colors: typeof Colors.dark) =>
     },
     sheetClose: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 999,
       borderWidth: StyleSheet.hairlineWidth,
@@ -33,8 +37,8 @@ export const createAddFoodSheetStyles = (colors: typeof Colors.dark) =>
       gap: Spacing.one,
     },
     sheetFrame: {
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.cardFill,
+      borderColor: glass.cardBorder,
       borderCurve: 'continuous',
       borderTopLeftRadius: Radii.xlarge,
       borderTopRightRadius: Radii.xlarge,
@@ -69,8 +73,8 @@ export const createAddFoodSheetStyles = (colors: typeof Colors.dark) =>
       lineHeight: 16,
     },
     sheetInput: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
@@ -106,8 +110,8 @@ export const createAddFoodSheetStyles = (colors: typeof Colors.dark) =>
       fontWeight: '800',
     },
     sheetTotals: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,

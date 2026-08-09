@@ -11,6 +11,10 @@ import { getLoggedFoodDates } from '@/lib/nutrition';
 import { useLocalization } from '@/localization';
 import { getNutritionCalendarCopy } from '@/localization/nutritionCalendarCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 const getMonthGridStart = (year: number, monthIndex: number) => {
   const firstOfMonth = new Date(year, monthIndex, 1, 12, 0, 0);
@@ -20,10 +24,14 @@ const getMonthGridStart = (year: number, monthIndex: number) => {
 };
 
 export default function NutritionDatePickerScreen() {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { formatDate, locale } = useLocalization();
   const copy = getNutritionCalendarCopy(locale);
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const insets = useSafeAreaInsets();
   const { foodEntries } = useNutritionState();
   const params = useLocalSearchParams<{ date?: string }>();
@@ -111,7 +119,10 @@ export default function NutritionDatePickerScreen() {
               accessibilityLabel={copy.cancel}
               hitSlop={10}
               onPress={() => router.back()}
-              style={styles.headerButton}>
+              style={({ pressed }) => [
+                styles.headerButton,
+                pressed && styles.controlPressed,
+              ]}>
               <Text style={styles.headerButtonText}>{copy.cancel}</Text>
             </Pressable>
             <View style={styles.headerCopy}>
@@ -122,7 +133,10 @@ export default function NutritionDatePickerScreen() {
               accessibilityLabel={copy.done}
               hitSlop={10}
               onPress={confirmDate}
-              style={styles.headerButton}>
+              style={({ pressed }) => [
+                styles.headerButton,
+                pressed && styles.controlPressed,
+              ]}>
               <Text style={styles.headerButtonText}>{copy.done}</Text>
             </Pressable>
           </View>
@@ -133,7 +147,10 @@ export default function NutritionDatePickerScreen() {
                 accessibilityLabel={copy.previousMonth}
                 hitSlop={10}
                 onPress={goToPreviousMonth}
-                style={styles.monthNavButton}>
+                style={({ pressed }) => [
+                  styles.monthNavButton,
+                  pressed && styles.controlPressed,
+                ]}>
                 <Text style={styles.monthNavText}>‹</Text>
               </Pressable>
               <Text selectable style={styles.monthTitle}>{monthTitle}</Text>
@@ -141,7 +158,10 @@ export default function NutritionDatePickerScreen() {
                 accessibilityLabel={copy.nextMonth}
                 hitSlop={10}
                 onPress={goToNextMonth}
-                style={styles.monthNavButton}>
+                style={({ pressed }) => [
+                  styles.monthNavButton,
+                  pressed && styles.controlPressed,
+                ]}>
                 <Text style={styles.monthNavText}>›</Text>
               </Pressable>
             </View>
@@ -167,12 +187,13 @@ export default function NutritionDatePickerScreen() {
                     accessibilityState={{ selected: day.isSelected }}
                     hitSlop={4}
                     onPress={() => applyDate(day.dateKey)}
-                    style={[
+                    style={({ pressed }) => [
                       styles.dayCell,
                       !day.inMonth && styles.dayCellMuted,
                       day.isLogged && styles.dayCellLogged,
                       day.isToday && !day.isLogged && styles.dayCellToday,
                       day.isSelected && styles.dayCellSelected,
+                      pressed && (day.isSelected ? styles.accentPressed : styles.controlPressed),
                     ]}>
                     <Text
                       selectable
@@ -211,8 +232,11 @@ export default function NutritionDatePickerScreen() {
   );
 }
 
-const createStyles = (colors: typeof Colors.dark) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
+    accentPressed: {
+      backgroundColor: glass.accentPressedFill,
+    },
     calendarCard: {
       borderRadius: Radii.medium,
       gap: Spacing.two,
@@ -227,10 +251,13 @@ const createStyles = (colors: typeof Colors.dark) =>
       maxWidth: MaxContentWidth,
       width: '100%',
     },
+    controlPressed: {
+      backgroundColor: glass.controlPressedFill,
+    },
     dayCell: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 999,
       borderWidth: StyleSheet.hairlineWidth,
@@ -243,8 +270,8 @@ const createStyles = (colors: typeof Colors.dark) =>
       opacity: 0.5,
     },
     dayCellSelected: {
-      backgroundColor: colors.accent,
-      borderColor: colors.accent,
+      backgroundColor: glass.accentFill,
+      borderColor: glass.accentBorder,
       opacity: 1,
     },
     dayCellText: {
@@ -258,7 +285,7 @@ const createStyles = (colors: typeof Colors.dark) =>
       color: colors.textSecondary,
     },
     dayCellTextSelected: {
-      color: colors.textOnAccent,
+      color: glass.accentText,
     },
     dayCellCheck: {
       color: colors.accent,
@@ -268,14 +295,14 @@ const createStyles = (colors: typeof Colors.dark) =>
       textAlign: 'center',
     },
     dayCellCheckSelected: {
-      color: colors.textOnAccent,
+      color: glass.accentText,
     },
     dayCellLogged: {
-      borderColor: colors.accentSoft,
+      borderColor: glass.accentBorder,
       borderWidth: 1,
     },
     dayCellToday: {
-      borderColor: colors.accent,
+      borderColor: glass.accentBorder,
     },
     daySlot: {
       alignItems: 'center',
@@ -289,8 +316,8 @@ const createStyles = (colors: typeof Colors.dark) =>
     },
     headerButton: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 999,
       borderWidth: StyleSheet.hairlineWidth,
@@ -316,8 +343,8 @@ const createStyles = (colors: typeof Colors.dark) =>
     },
     monthNavButton: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 999,
       borderWidth: StyleSheet.hairlineWidth,
@@ -364,7 +391,7 @@ const createStyles = (colors: typeof Colors.dark) =>
       width: 4,
     },
     todayDotSelected: {
-      backgroundColor: colors.textOnAccent,
+      backgroundColor: glass.accentText,
     },
     weekHeader: {
       flexDirection: 'row',
