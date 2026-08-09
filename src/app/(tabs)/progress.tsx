@@ -15,6 +15,7 @@ import { WeeklyWorkoutVolumeCard } from '@/components/progress/WeeklyWorkoutVolu
 import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useAppActions, useWorkoutState } from '@/context/AppContext';
@@ -36,11 +37,13 @@ import {
 } from '@/lib/progress';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import type { BodyMeasurementMetric, BodyMeasurementUnit } from '@/types';
 import { weightFromKg, useUnitPreferences } from '@/units';
 
 const weightTrendRanges: WeightTrendRange[] = [7, 30, 90];
 
+type GlassPalette = ReturnType<typeof resolveLiquidGlassPalette>;
 type ProgressStyles = ReturnType<typeof createStyles>;
 
 const SectionRow = memo(function SectionRow({
@@ -66,7 +69,7 @@ const SectionRow = memo(function SectionRow({
 });
 
 export default function ProgressScreen() {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { addBodyMeasurement } = useAppActions();
   const { bodyMeasurements, weightHistory } = useProgressState();
   const { exercises, workoutSessions } = useWorkoutState();
@@ -77,7 +80,11 @@ export default function ProgressScreen() {
     length: lengthUnit,
     weight: weightUnit,
   } = useUnitPreferences();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const safeAreaInsets = useSafeAreaInsets();
   const [measurementDraft, setMeasurementDraft] = useState(() =>
     createBodyMeasurementDraft(lengthUnit),
@@ -217,26 +224,28 @@ export default function ProgressScreen() {
               variant="secondary"
             />
           </View>
-          <View accessibilityRole="tablist" style={styles.rangeTabs}>
-            {weightTrendRanges.map((range) => {
-              const selected = weightTrendRange === range;
-              return (
-                <Pressable
-                  key={range}
-                  accessibilityRole="tab"
-                  accessibilityState={{ selected }}
-                  onPress={() => setWeightTrendRange(range)}
-                  style={({ pressed }) => [
-                    styles.rangeTab,
-                    selected && styles.rangeTabSelected,
-                    pressed && styles.rangeTabPressed,
-                  ]}>
-                  <Text style={[styles.rangeTabLabel, selected && styles.rangeTabLabelSelected]}>
-                    {range}D
-                  </Text>
-                </Pressable>
-              );
-            })}
+          <View accessibilityRole="tablist">
+            <LiquidGlassSurface radius={12} style={styles.rangeTabs} variant="control">
+              {weightTrendRanges.map((range) => {
+                const selected = weightTrendRange === range;
+                return (
+                  <Pressable
+                    key={range}
+                    accessibilityRole="tab"
+                    accessibilityState={{ selected }}
+                    onPress={() => setWeightTrendRange(range)}
+                    style={({ pressed }) => [
+                      styles.rangeTab,
+                      selected && styles.rangeTabSelected,
+                      pressed && styles.rangeTabPressed,
+                    ]}>
+                    <Text style={[styles.rangeTabLabel, selected && styles.rangeTabLabelSelected]}>
+                      {range}D
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </LiquidGlassSurface>
           </View>
           {hasWeightChart ? (
             <View style={styles.chartWrap}>
@@ -331,14 +340,16 @@ export default function ProgressScreen() {
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: GlassPalette) =>
   StyleSheet.create({
     chartWrap: { marginBottom: Spacing.three },
     container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
     content: { alignItems: 'center', flexGrow: 1, padding: Spacing.three },
     rangeTab: {
       alignItems: 'center',
+      borderColor: 'transparent',
       borderRadius: 10,
+      borderWidth: StyleSheet.hairlineWidth,
       flex: 1,
       justifyContent: 'center',
       minHeight: 44,
@@ -351,17 +362,18 @@ const createStyles = (colors: typeof Colors.light) =>
       fontSize: 13,
       fontWeight: '800',
     },
-    rangeTabLabelSelected: { color: colors.textPrimary },
-    rangeTabPressed: { opacity: 0.72 },
+    rangeTabLabelSelected: { color: colors.accent },
+    rangeTabPressed: { backgroundColor: glass.controlPressedFill },
     rangeTabs: {
-      backgroundColor: colors.surfaceSecondary,
-      borderRadius: 12,
       flexDirection: 'row',
       gap: 4,
       marginBottom: Spacing.three,
       padding: 3,
     },
-    rangeTabSelected: { backgroundColor: colors.surfacePrimary },
+    rangeTabSelected: {
+      backgroundColor: glass.semanticAccentFill,
+      borderColor: glass.accentBorder,
+    },
     rowDetail: {
       color: colors.textSecondary,
       flexShrink: 1,
