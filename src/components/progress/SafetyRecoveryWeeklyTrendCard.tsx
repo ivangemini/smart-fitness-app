@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { AppCard } from '@/components/ui/AppCard';
+import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { Colors } from '@/constants/theme';
 import type { SafetyRecoveryProgressPeriod } from '@/features/progress/safetyRecoveryProgressAnalytics';
 import {
@@ -16,6 +17,7 @@ import {
 import { useLocalization } from '@/localization';
 import type { Translate } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import type { WorkoutSafetyReviewStatus, WorkoutSession } from '@/types';
 
 import { createSafetyRecoveryWeeklyTrendStyles } from './SafetyRecoveryWeeklyTrendCard.styles';
@@ -87,9 +89,16 @@ function WeeklyColumn({
   point: SafetyRecoveryWeeklyTrendPoint;
   selected: boolean;
 }) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { formatDate, t } = useLocalization();
-  const styles = useMemo(() => createSafetyRecoveryWeeklyTrendStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(
+    () => createSafetyRecoveryWeeklyTrendStyles(colors, glass),
+    [colors, glass],
+  );
   const pointLabel = formatDate(point.startAt, {
     day: 'numeric',
     month: 'short',
@@ -156,9 +165,16 @@ export function SafetyRecoveryWeeklyTrendCard({
   onOpenHistory,
   sessions,
 }: SafetyRecoveryWeeklyTrendCardProps) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { formatDate, formatNumber, t } = useLocalization();
-  const styles = useMemo(() => createSafetyRecoveryWeeklyTrendStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(
+    () => createSafetyRecoveryWeeklyTrendStyles(colors, glass),
+    [colors, glass],
+  );
   const [period, setPeriod] = useState<SafetyRecoveryProgressPeriod>('90d');
   const [selectedPointKey, setSelectedPointKey] = useState<string | null>(null);
   const trend = useMemo(
@@ -279,7 +295,7 @@ export function SafetyRecoveryWeeklyTrendCard({
       )}
 
       {selectedPoint ? (
-        <View style={styles.detailCard}>
+        <LiquidGlassSurface style={styles.detailCard} variant="control">
           <View style={styles.detailHeader}>
             <Text selectable style={styles.detailTitle}>{selectedRange}</Text>
             <Text selectable style={styles.detailLabel}>
@@ -319,7 +335,7 @@ export function SafetyRecoveryWeeklyTrendCard({
               )}
             </View>
           ) : null}
-        </View>
+        </LiquidGlassSurface>
       ) : null}
 
       <Text selectable style={styles.chartHelp}>{t('safety.chartHelp')}</Text>
