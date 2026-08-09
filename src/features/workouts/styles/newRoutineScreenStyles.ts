@@ -216,11 +216,12 @@ export const createStyles = (colors: typeof Colors.light) =>
       paddingHorizontal: Spacing.three,
     },
     menuPanel: {
-      backgroundColor: colors.surfacePrimary,
-      borderCurve: 'continuous',
-      borderRadius: 22,
       gap: Spacing.one,
       padding: Spacing.three,
+    },
+    menuPanelHitArea: {
+      borderCurve: 'continuous',
+      borderRadius: 22,
     },
     menuTitle: {
       color: colors.textPrimary,
