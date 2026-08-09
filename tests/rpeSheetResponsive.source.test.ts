@@ -31,6 +31,8 @@ describe('RPE sheet responsive contract', () => {
     expect(source).toContain('minHeight: 44');
     expect(source).toContain('minWidth: 44');
     expect(source).toContain('accessibilityState={{ selected }}');
+    expect(source).toContain("t('workouts.session.trackRpe')");
+    expect(source).not.toContain('accessibilityLabel={`RPE ${value}`}');
     expect(source).not.toContain('height: 36');
     expect(source).not.toContain('minHeight: 30');
     expect(source).not.toContain("flexWrap: 'nowrap'");
