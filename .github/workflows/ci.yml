@@ -48,9 +48,6 @@ jobs:
       - name: TypeScript
         run: npx tsc --noEmit
 
-      - name: Diagnose full regression failure
-        run: node scripts/diagnose-vitest-failures.mjs
-
       - name: Full regression suite
         run: npm test
 
