@@ -4,14 +4,14 @@ Reusable project-specific lessons and current constraints.
 
 ## Architecture
 
-- The production backend is `hon4olo/smart-fitness-backend`; do not introduce Supabase or a parallel backend.
+- The production backend is `ivangemini/smart-fitness-backend`; do not introduce Supabase or a parallel backend.
 - Production API traffic uses `src/api/config.ts`, defaulting to `https://api.peptonio.com`.
 - Shared user state goes through `src/context/AppContext.tsx`.
 - Synchronization orchestration goes through `src/context/SyncContext.tsx` and `src/cloud/`.
 - The app is offline-first. Preserve local mutations and extend synchronization through entity-specific adapters, revisions, idempotency, tombstones, and explicit conflict handling.
 - The cross-repository execution plan is `docs/implementation-plan.md`.
 - Avoid mixing demo data with user-created state.
-- Do not add lab analysis, pharmacology logic, payments, social features, or marketplace functionality without explicit approval.
+- Do not add lab analysis, pharmacology logic, payments, marketplace functionality, or unreviewed Social domains without explicit approval.
 
 ## Current synchronization coverage
 
@@ -115,6 +115,19 @@ Automatic application remains prohibited. Do not invent a client-only compensati
 - Repository write failures must reject; logging and resolving creates false-success navigation.
 - Push and pull share the authenticated request boundary; a 401 refresh retry must preserve the exact request body and idempotency identity.
 
+## Social and Stories
+
+- Social, Stories, and managed media are server-authoritative domains. Do not place them inside private revisioned `AppState` synchronization.
+- Reuse the existing Social auth, profile/follow/block/restriction, moderation, managed-media, retention, and account-deletion authority instead of creating parallel client or backend systems.
+- Story v1 is one owned approved `story_image`, image-only, with server-derived 24-hour expiry. Do not add arbitrary URLs, client-authored expiry, caption/text overlay, or video without a reviewed contract.
+- Mobile Story parsing is strict: exact DTO keys, UUIDs, managed descriptor validation, exact lifecycle invariant, bounded unique pages, and stable error mapping.
+- A short-lived first-page cache is only a responsiveness layer. It must be account-scoped, bounded, re-parsed, drop expired Stories, and be immediately revalidated against the backend.
+- Keep Story state separate from Following feed state. Home can refresh both concurrently without making one surface authoritative for the other.
+- Seen/unseen state comes from server `viewed`; a local mark is only a post-success responsiveness update or best-effort UI hint, not the source of truth.
+- Expired/deleted/private/blocked/restricted Stories must fail closed through the backend rather than being inferred from UI state.
+- When a previously blocked feature becomes real, update stale source guards to assert the new authoritative contract. Do not weaken them into no-op tests: preserve the original anti-fabrication intent. PR #533 exposed this with the old Home guard that banned the words `Story`/`Stories`; the replacement requires `useSocialStories` and still rejects mock/demo Story data.
+- Temporary CI diagnostics must be removed before merge and the permanent workflow restored exactly. Use diagnostics to identify a blocker, not as a permanent bypass.
+
 ## Data readiness
 
 - Workout analytics use normalized sessions and sets with canonical `exerciseId` values.
@@ -194,6 +207,7 @@ Mobile CI is blocking for:
 - TypeScript;
 - Coach and sync contracts;
 - the complete regression suite;
+- expanded model smoke;
 - Expo export;
 - Expo Doctor.
 
