@@ -15,7 +15,8 @@ This phase replaces the previous assumption that every surface should remain a f
 - Phase 10 responsive source hardening is complete for the current source scope.
 - VUX secondary-surface cleanup is complete through VUX-7F.
 - **LG-1 shared foundation is complete:** PR #501, merge `ca11c1a66495ec71832a0abfd54fa4bbef0391c8`, exact-head Mobile CI #1922 passed.
-- **LG-2A Home direct-surface pilot is active on `ui/liquid-glass-home-pilot`.**
+- **LG-2A Home direct-surface pilot is complete:** PR #503, exact head `e93bbbdfe27b3c6858c3e17402d138751e98e9e5`, Mobile CI #1925 passed, merge `5ad7bd047b89878243d8cf7923c70d3fe7b7787e`.
+- No Liquid Glass runtime package is currently active; next priority is the Progress + Coach primary-surface audit.
 - No OTA/EAS publication, native install/build or physical-device proof is part of autonomous source execution.
 
 ## LG-1 — shared foundation
@@ -40,43 +41,49 @@ The shared foundation deliberately avoids one backdrop blur per card/list row. C
 
 ### LG-2A — Home direct surfaces
 
-**Active.**
+**Status: complete.**
 
-Scope:
+Delivered:
 
-- add theme-aware ambient background depth from shared Liquid Glass tokens so bounded blur has material context;
-- use one true-blur elevated surface for the Home hero summary, not per-row blur;
-- replace the remaining flat profile affordance with a shared 44 pt glass icon control;
-- allow existing shared glass action buttons to carry Lucide icons and use them on Home Start/Continue Workout, Add Food and Log Weight;
-- flatten Weekly Snapshot from outer glass-card-plus-inner-tiles into a section heading with independently owned, non-blurred glass metric tiles;
-- make shared `AppSection` copy resolve from `AppThemeProvider` rather than a local dark palette assumption;
-- keep runtime top/bottom safe-area and floating-tab clearance explicit around the ambient backdrop;
-- preserve all Home calculations, active-workout resume, routes, localization and semantic warning/positive states.
+- theme-aware ambient background depth from shared Liquid Glass tokens;
+- one bounded true-blur elevated Home hero surface;
+- shared 44 pt Liquid Glass profile icon control with scale/haptic feedback rather than opacity feedback;
+- optional Lucide icon support in shared Primary/Secondary buttons and Home Quick Actions;
+- Start/Continue Workout, Add Food and Log Weight now carry the approved action icons;
+- Weekly Snapshot no longer nests metric tiles inside another owning card; tiles are independently owned non-blurred glass surfaces;
+- shared `AppSection` copy resolves from `AppThemeProvider` instead of a local dark palette assumption;
+- explicit Home top safe-area and shared floating-tab bottom clearance around the ambient backdrop;
+- Home calculations, active-workout resume, routes, localization and semantic warning/positive states remain unchanged.
 
-Exit criteria:
+Validation:
 
-- no Home direct action/profile surface remains a flat opaque local control when an existing shared glass role applies;
-- only the bounded hero uses backdrop blur;
-- snapshot tiles remain non-blurred content glass;
-- Home remains responsive in short/narrow layouts and owns >=44 pt interaction targets;
-- full exact-head Mobile CI is green.
+- exact head `e93bbbdfe27b3c6858c3e17402d138751e98e9e5` passed Mobile CI #1925 on the first PR run;
+- repository/changed-file line audits, TypeScript, full regression suite, expanded model smoke, Expo export and Expo Doctor all passed;
+- PR #503 merged as `5ad7bd047b89878243d8cf7923c70d3fe7b7787e`;
+- EAS update on merge was skipped; no publication occurred.
 
-### LG-2B onward — remaining primary tabs
+### LG-2B — Progress + Coach primary surfaces
 
-After LG-2A, audit/migrate coherent batches across:
+**Next priority.**
 
-- Nutrition diary/targets/search/recent/saved/add affordances;
-- Progress trend/measurement/summary direct surfaces;
-- Coach direct action/group surfaces;
-- Profile goal/settings/action surfaces.
+Audit/migrate one coherent batch covering direct, visible Progress and Coach surfaces that still bypass the shared Liquid Glass material system.
 
 Rules:
 
+- keep charts, dense metrics and structured Coach output readable rather than placing blur behind every row;
 - prefer shared primitives over local `rgba(...)` recipes;
 - preserve semantic success/warning/error meaning;
-- do not create backdrop blur per row in long lists;
+- preserve existing Progress analytics and Coach domain behavior;
 - do not reopen already-correct responsive geometry;
-- batch adjacent surfaces that share the same material defect rather than returning to one-screen micro-PR churn.
+- use true blur only for bounded elevated/priority chrome where it materially improves hierarchy.
+
+### LG-2C — Nutrition primary surfaces
+
+After Progress + Coach, migrate diary summaries, section ownership and actions while keeping dense food rows fast and legible. Do not create a blur view per food row.
+
+### LG-2D — Profile primary surfaces
+
+After Nutrition, converge Profile goals/settings/actions onto the proven shared material system while preserving the theme/safe-area work already completed.
 
 ## LG-3 — secondary surfaces
 
