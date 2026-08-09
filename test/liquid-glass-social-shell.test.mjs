@@ -53,4 +53,21 @@ describe('LG-3D Social shell Liquid Glass controls', () => {
     expect(source).not.toContain('Pressable');
     expect(source).not.toContain('BlurView');
   });
+
+  it('keeps Social Profile Editor validation and save flow on the shared back control', () => {
+    const source = readSource('src/features/social/screens/SocialProfileEditorScreen.tsx');
+
+    expect(source).toContain('LiquidGlassIconButton');
+    expect(source).toContain('Icon={ChevronLeft}');
+    expect(source).toContain('onPress={() => router.back()}');
+    expect(source).toContain('validateSocialProfileForm(values)');
+    expect(source).toContain('buildSocialProfileInput(values)');
+    expect(source).toContain('socialApi.upsertOwnProfile');
+    expect(source).toContain('automaticallyAdjustKeyboardInsets');
+    expect(source).not.toContain('styles.backButton');
+    expect(source).not.toContain('backButton:');
+    expect(source).not.toContain('Pressable');
+    expect(source).not.toContain('pressed: { opacity:');
+    expect(source).not.toContain('BlurView');
+  });
 });
