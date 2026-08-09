@@ -31,6 +31,7 @@ type HomeDailyMetricsPanelProps = {
   caloriesProgress: number;
   caloriesTarget: string;
   copy: HomeSocialCopy;
+  energyUnitLabel: string;
   macros: MacroMetric[];
   onAddFood: () => void;
   onLogWeight: () => void;
@@ -57,6 +58,8 @@ function ProgressLine({
   styles: ReturnType<typeof createStyles>;
   value: string;
 }) {
+  const width = `${Math.round(clampProgress(progress) * 100)}%` as `${number}%`;
+
   return (
     <View style={styles.progressBlock}>
       <View style={styles.progressHeader}>
@@ -64,12 +67,7 @@ function ProgressLine({
         <Text style={styles.detailValue}>{value}</Text>
       </View>
       <View style={styles.progressTrack}>
-        <View
-          style={[
-            styles.progressFill,
-            { width: `${Math.round(clampProgress(progress) * 100)}%` },
-          ]}
-        />
+        <View style={[styles.progressFill, { width }]} />
       </View>
     </View>
   );
@@ -80,6 +78,7 @@ export function HomeDailyMetricsPanel({
   caloriesProgress,
   caloriesTarget,
   copy,
+  energyUnitLabel,
   macros,
   onAddFood,
   onLogWeight,
@@ -124,7 +123,7 @@ export function HomeDailyMetricsPanel({
           <View style={styles.calorieMetric}>
             <Text style={styles.heroValue}>{caloriesCurrent}</Text>
             <Text style={styles.heroLabel}>
-              {copy.calories} · {caloriesTarget}
+              {energyUnitLabel} · {caloriesTarget}
             </Text>
           </View>
           <View style={styles.macroStrip}>
@@ -160,7 +159,7 @@ export function HomeDailyMetricsPanel({
             label={copy.calories}
             progress={caloriesProgress}
             styles={styles}
-            value={`${caloriesCurrent} / ${caloriesTarget}`}
+            value={`${caloriesCurrent} / ${caloriesTarget} ${energyUnitLabel}`}
           />
 
           <Text style={styles.sectionLabel}>{copy.macros}</Text>
@@ -171,7 +170,7 @@ export function HomeDailyMetricsPanel({
                 label={macro.label}
                 progress={macro.progress}
                 styles={styles}
-                value={`${macro.current} / ${macro.target}`}
+                value={`${macro.current} / ${macro.target} g`}
               />
             ))}
           </View>
@@ -192,19 +191,19 @@ export function HomeDailyMetricsPanel({
           </View>
 
           <PrimaryButton
-            Icon={Dumbbell}
+            icon={Dumbbell}
             label={workoutActionLabel}
             onPress={onWorkoutPress}
           />
           <View style={styles.secondaryActions}>
             <SecondaryButton
-              Icon={Utensils}
+              icon={Utensils}
               label={copy.addFood}
               onPress={onAddFood}
               style={styles.secondaryButton}
             />
             <SecondaryButton
-              Icon={Scale}
+              icon={Scale}
               label={copy.logWeight}
               onPress={onLogWeight}
               style={styles.secondaryButton}
@@ -298,7 +297,11 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
       fontWeight: Typography.label.fontWeight,
     },
     separator: { backgroundColor: glass.controlBorder, height: StyleSheet.hairlineWidth },
-    statusDivider: { alignSelf: 'stretch', backgroundColor: glass.controlBorder, width: StyleSheet.hairlineWidth },
+    statusDivider: {
+      alignSelf: 'stretch',
+      backgroundColor: glass.controlBorder,
+      width: StyleSheet.hairlineWidth,
+    },
     statusItem: { gap: 2, minWidth: 64 },
     statusLabel: {
       color: colors.textSecondary,
