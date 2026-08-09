@@ -10,18 +10,6 @@ import {
 
 export const createSafetyRecoveryCoachStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
-    backButton: {
-      alignItems: 'center',
-      height: 44,
-      justifyContent: 'center',
-      width: 44,
-    },
-    backLabel: {
-      color: colors.textPrimary,
-      fontSize: 42,
-      fontWeight: '300',
-      lineHeight: 42,
-    },
     badgeRow: {
       alignItems: 'center',
       flexDirection: 'row',
