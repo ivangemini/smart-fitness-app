@@ -70,4 +70,31 @@ describe('LG-3D Social shell Liquid Glass controls', () => {
     expect(source).not.toContain('pressed: { opacity:');
     expect(source).not.toContain('BlurView');
   });
+
+  it('keeps workout-post feed/list/detail shells on shared glass backs without changing domain ownership', () => {
+    const feed = readSource('src/features/social/screens/SocialFollowingFeedScreen.tsx');
+    const profilePosts = readSource(
+      'src/features/social/screens/SocialProfileWorkoutPostsScreen.tsx',
+    );
+    const detail = readSource('src/features/social/screens/SocialWorkoutPostDetailScreen.tsx');
+    const styles = readSource('src/features/social/screens/SocialWorkoutPostSurface.styles.ts');
+
+    for (const source of [feed, profilePosts, detail]) {
+      expect(source).toContain('LiquidGlassIconButton');
+      expect(source).toContain('Icon={ChevronLeft}');
+      expect(source).toContain('onPress={() => router.back()}');
+      expect(source).not.toContain('styles.backButton');
+      expect(source).not.toContain('BlurView');
+    }
+
+    expect(feed).toContain('useSocialFollowingFeed()');
+    expect(profilePosts).toContain('socialApi.listWorkoutPosts(username');
+    expect(detail).toContain('socialApi.getWorkoutPost(postId)');
+    expect(detail).toContain('socialApi.deleteWorkoutPost(postId)');
+    expect(detail).toContain('<SocialWorkoutCommentsCard');
+    expect(detail).toContain('<SocialReportModal');
+    expect(styles).not.toContain('backButton:');
+    expect(styles).toContain('pressed: { opacity: 0.72 }');
+    expect(styles).not.toContain('BlurView');
+  });
 });
