@@ -18,6 +18,7 @@ import {
 } from '@/features/progress/progressLocalization';
 import { formatPlural, useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import type { WorkoutSafetyReviewStatus, WorkoutSession } from '@/types';
 
 import { createSafetyRecoveryProgressCardStyles } from './SafetyRecoveryProgressCard.styles';
@@ -45,9 +46,16 @@ export function SafetyRecoveryProgressCard({
   onOpenHistory,
   sessions,
 }: SafetyRecoveryProgressCardProps) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { formatNumber, locale, t } = useLocalization();
-  const styles = useMemo(() => createSafetyRecoveryProgressCardStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(
+    () => createSafetyRecoveryProgressCardStyles(colors, glass),
+    [colors, glass],
+  );
   const [period, setPeriod] = useState<SafetyRecoveryProgressPeriod>('30d');
   const analytics = useMemo(
     () => buildSafetyRecoveryProgressAnalytics(sessions, period),
