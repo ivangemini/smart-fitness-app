@@ -5,11 +5,12 @@ Updated: 2026-08-09
 ## Verified mobile baseline
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
+- Current `main` baseline for this package: `8fe97589d652a48ad45b295c2e460a145439b5c5`.
 - Current runtime merge: `9c9e67a929d10e9f91475c92ba0b579bbadbb805` (PR #505 — LG-H1 social-first Home).
 - PR #505 exact validated head: `9f28c198ed75070bcf10484ef09a28a78cbc5571`; Mobile CI #1931 passed the full required gate.
 - Stale overlapping PR #502 was closed unmerged and must not be revived.
-- Backend baseline last inspected for this package: `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`; backend remained out of scope.
-- No Liquid Glass runtime package is currently active.
+- Backend baseline inspected for this package: `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`; backend remains out of scope.
+- Active source package: **LG-2B Progress + Coach primary surfaces**, branch `ui/lg2b-progress-coach-primary`.
 
 Exact code, tests, and current Git history override this checkpoint if it becomes stale.
 
@@ -32,44 +33,43 @@ The approved live Home hierarchy is:
 3. Stories only after real Social contracts exist;
 4. existing server-authoritative Following Feed.
 
-LG-H1 now delivers:
-
-- one expandable Liquid Glass daily metrics owner instead of the old large Summary / Quick Actions / Weekly Snapshot stack;
-- calorie and P/F/C totals/targets;
-- real active/program-scheduled/rest/next-workout context from existing workout state;
-- expanded weight, recovery, streak, workout, Add Food, and Log Weight actions;
-- Steps slot with unavailable state rather than fabricated data;
-- existing chronological Following Feed directly on Home;
-- one reusable feed hook shared by Home and the standalone Social feed route;
-- existing pull refresh, bounded first-page account cache, cursor pagination, auth/error/empty states, block/private-profile enforcement, moderation boundaries, and server authority;
-- Social remains separate from private revisioned `AppState` synchronization;
-- no fake Stories and no second Social feed store/API.
+LG-H1 delivers one expandable daily-metrics owner, calorie/macros, real workout/program context, weight/recovery/streak actions, unavailable Steps instead of fabricated data, and the existing chronological Following Feed directly on Home. Social remains server-authoritative and separate from private revisioned `AppState` synchronization.
 
 Focused roadmap: `docs/roadmap/liquid-glass.md`.
 Social authority/privacy roadmap: `docs/roadmap/social-network.md`.
 
-## Validation record
+## Active LG-2B package
 
-PR #505 first reached TypeScript/line-audit success but exposed four stale source-contract tests asserting the superseded Home/screen-local feed structure. Those guards were updated without reverting runtime behavior.
+The next autonomously executable Liquid Glass package is Progress + Coach because:
 
-Exact head `9f28c198ed75070bcf10484ef09a28a78cbc5571` then passed:
+- LG-H2 Stories remains gated on real DTO/lifecycle/privacy/media/moderation/view-state/cache contracts;
+- LG-H3 Steps remains gated on a reviewed native health/activity source, permissions, dependencies, and later physical runtime evidence;
+- Coach primary already uses shared `AppCard` and `AppButton` primitives, so no artificial runtime diff is needed there.
 
-- repository file line audit;
-- changed-file line limit;
-- TypeScript;
-- full regression suite;
-- expanded sync/model smoke;
-- Expo export;
-- Expo Doctor.
+Current bounded Progress batch migrates:
 
-There were no unresolved review threads before merge. The merge-triggered EAS Update workflow was skipped; no OTA publication occurred.
+- the 7D/30D/90D weight-range selector to `LiquidGlassSurface` plus adaptive glass selection/pressed tokens;
+- body-measurement metric/unit choices and text inputs to adaptive glass control tokens;
+- the shared Progress trend-chart shell to `LiquidGlassSurface` without per-chart native blur;
+- a source-contract regression guard covering these migrated surfaces and the already-compliant Coach primary screen.
+
+Progress analytics, navigation, persistence, localization, accessibility roles/states, chart data, and Coach domain behavior remain unchanged. Safety/Recovery nested filters/detail surfaces are intentionally still remaining LG-2B work; this first batch does **not** mark LG-2B complete.
+
+## Validation state
+
+For this package local repository execution is unavailable because the working container cannot resolve GitHub for a clone. The authoritative validation gate is therefore exact-head Mobile CI on the PR; do not claim TypeScript/tests/export/doctor green until that run completes.
+
+Previous LG-H1 validation remains recorded at exact head `9f28c198ed75070bcf10484ef09a28a78cbc5571` / Mobile CI #1931.
 
 ## Planned follow-up
 
-- **LG-H2:** Stories contracts and rail. Requires reviewed server DTO/expiry/privacy/media/moderation/view-state contracts before UI activation.
-- **LG-H3:** real steps/activity source. Do not infer/demo steps; native health permissions/dependencies and physical runtime evidence remain approval-gated.
+- Finish the remaining coherent LG-2B Progress/Coach primary-surface audit, especially local Safety/Recovery nested material recipes, after this bounded batch is validated/merged.
+- **LG-H2:** Stories contracts and rail only after reviewed server contracts exist.
+- **LG-H3:** real steps/activity source only after separately approved native dependency/permission work.
 - **LG-H4:** workout-native feed retention refinement after the base Home feed is stable.
-- Then resume remaining primary-tab Liquid Glass migration: Progress/Coach, Nutrition, Profile, and later Workouts.
+- **LG-2C:** Nutrition primary surfaces.
+- **LG-2D:** Profile primary surfaces.
+- Workouts Liquid Glass migration follows its dedicated staged order later.
 
 ## Release / provider boundary
 
