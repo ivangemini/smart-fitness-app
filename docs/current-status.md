@@ -2,88 +2,86 @@
 
 Updated: 2026-08-09
 
-## Verified mobile baseline
+## Verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current runtime `main`: `7ca5aba37dd0e994739f52a88afd8601bed5794a`.
-- Latest runtime merge: PR #531 — LG-3I Coach secondary shared navigation.
-- PR #531 exact validated head: `3d5255b6545bbb8d3fe8aa5972c9c984ce060394`; Mobile CI #1974 passed the full required gate.
-- Backend dependency-awareness baseline: `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`.
-- Active product/source priority: **Home / LG-H2 Stories contracts and implementation**.
-- **Coach material is deferred by explicit product priority.**
+- Current runtime `main`: `89bae8d1085ffd72131142700c1d625d6fa91f40`.
+- Latest runtime merge: PR #533 — server-backed Stories on Home.
+- PR #533 exact validated head: `6fde319be2c932620ecec177e3c7e4b7e7e0032a`; Mobile CI #1984 passed the full required gate.
+- Backend repo: `ivangemini/smart-fitness-backend`.
+- Current Stories backend baseline: merge `2339f6ce…` from backend PR #214; exact validated head `9a5af3aba1f4470f261eb9ea00a6e2f2f8979bfe`.
+- Active product/source priority: **LG-H2 Stories authoring lifecycle — managed `story_image` upload → approval → create → owner delete**.
+- **Coach material remains deferred by explicit product priority.**
 
 Exact code, tests and current Git history override this checkpoint if it becomes stale.
 
-## Completed UI foundation
+## Liquid Glass / Home status
 
-Responsive mobile source hardening is complete for the current source scope. Safe-area, keyboard, reflow, touch-target, floating-tab clearance and secondary-surface theme work are established and must not be regressed.
+Completed milestones through LG-3I remain unchanged. PR #533 additionally completes the first real LG-H2 mobile consumption package.
 
-Liquid Glass milestones:
+Home is now a social-first hybrid:
 
-- PR #501 shared foundation / Mobile CI #1922.
-- PR #503 initial Home pilot / Mobile CI #1925.
-- PR #505 LG-H1 social-first Home / Mobile CI #1931.
-- PR #507 + #509 LG-2B Progress + Coach primary / Mobile CI #1937 + #1943.
-- PR #511 LG-2C Nutrition primary / Mobile CI #1947.
-- PR #513 LG-2D Profile primary / Mobile CI #1949.
-- PR #515 LG-3A Settings controls/disclosures / Mobile CI #1951.
-- PR #517 LG-3B Nutrition secondary / Mobile CI #1953.
-- PR #519 LG-3C Social interaction controls / Mobile CI #1955.
-- PR #521 + #525 LG-3D Social shell/notifications + Guidelines / Mobile CI #1957 + #1963.
-- PR #523 LG-3E Share Workout / Mobile CI #1960.
-- PR #526 LG-3F Account Sessions + Social Profile Editor navigation / Mobile CI #1965.
-- PR #528 LG-3G Social workout-post shell navigation / Mobile CI #1967.
-- PR #529 LG-3H Social profile/avatar material / Mobile CI #1970.
-- PR #531 LG-3I Coach secondary shared navigation / Mobile CI #1974.
+1. compact personal daily metrics;
+2. server-authoritative Stories;
+3. existing server-authoritative Following Feed.
 
-## Home boundaries
+### Stories backend — complete for v1 source scope
 
-Home is a social-first hybrid: compact personal daily metrics → Stories → existing server-authoritative Following Feed.
+Backend PR #214 established:
 
-### Stories
-
-LG-H2 is now the active implementation priority. The old “blocked” state means UI must not be fabricated ahead of contracts; it no longer means the work is postponed. Backend contracts come first.
-
-Required source contract:
-
-- versioned Story DTOs and stable errors;
-- authenticated ownership and idempotent creation;
-- server-authoritative expiry and active-story filtering;
+- strict versioned image-only Story contracts;
+- 24-hour server-authoritative expiry;
+- authenticated/idempotent creation;
 - owner deletion and account-deletion cascade;
-- Following/private-profile/block/moderation-restriction enforcement;
-- reuse of existing managed-media upload/moderation/delivery authority;
-- idempotent viewed/unviewed state;
-- bounded ordering/pagination/loading semantics;
-- retention/cleanup semantics;
-- strict mobile parsing and bounded privacy-safe cache after backend merge.
+- Following/self visibility, private-profile, block and moderation restriction enforcement;
+- reuse of the existing managed-media moderation/delivery/cleanup pipeline via `story_image`;
+- idempotent viewed state;
+- bounded pagination/order;
+- retention cleanup to `retention_expired`;
+- privacy/data inventory and complete Social export coverage;
+- PostgreSQL lifecycle/privacy/export evidence in CI.
 
-The first coherent scope should be image-only and reference an approved owned managed-media asset. Do not add a second media pipeline.
+No backend deployment or production migration was performed.
 
-### Steps
+### Stories mobile read/view — complete
 
-LG-H3 remains blocked on a reviewed native health/activity source and permissions. Do not infer steps from workouts.
+Mobile PR #533 added:
 
-### Feed retention
+- strict Story DTO/parser/error contracts and authenticated API client;
+- bounded account-scoped short-lived Story cache with immediate server revalidation;
+- separate `useSocialStories` state so Following feed ownership remains unchanged;
+- horizontal Home Story strip between daily metrics and Following;
+- backend order and server `viewed` state;
+- safe-area, content-driven Story viewer;
+- idempotent viewed-state acknowledgement;
+- localized loading/error/retry copy;
+- regression guards for strict parsing, cache expiry/account isolation, Home ordering and Liquid Glass/safe-area ownership.
 
-LG-H4 remains later. Preserve chronological Following semantics until a separately reviewed ranking contract exists.
+The CI investigation exposed one stale source guard in `tests/homeSocialFirst.source.test.ts` that still prohibited the word `Story` from the pre-contract era. It was updated to require real `useSocialStories`/server state while continuing to reject fabricated steps and mock/demo Stories. Temporary diagnostic CI changes were fully removed before merge.
 
-## LG-3I complete — Coach secondary shared navigation
+## Active LG-H2 remainder — Story authoring
 
-PR #531 migrated local back-control ownership in:
+Next coherent mobile package:
 
-- `CombinedCoachScreen`;
-- `RecoveryCheckInScreen`;
-- `SafetyRecoveryCoachScreen`;
-- `UserLimitationScreen`;
-- `CoachRunHistoryScreen`.
+- extend managed-media mobile contracts/parsers to `story_image` rather than adding another upload path;
+- create signed `story_image` uploads with the existing object-storage upload client;
+- expose upload/quarantine/processing/review/approved/rejected/failed states;
+- call Story creation only from an owned **approved** asset and its exact `stateVersion`;
+- refresh Home Stories after successful creation;
+- support owner deletion through the merged server endpoint;
+- keep arbitrary image URLs, caption/text overlay and a second media pipeline out of v1;
+- keep all new UI safe-area/responsive/localized and use shared material primitives.
 
-All five use shared `LiquidGlassIconButton`. Existing score/lookback/choice/filter/row pressed states and all Coach/recovery/history domain behavior were preserved.
+## Steps / later work
 
-The first exact head exposed four stale touch-target assertions that still expected local `backButton` styles. Only those source-contract assertions were updated to verify the shared 44×44 primitive; runtime scope did not expand.
+- LG-H3 Steps remains blocked on a reviewed native health/activity capability and permissions. Do not infer steps from workouts.
+- LG-H4 feed retention/ranking remains later; preserve chronological Following semantics.
+- Coach material remains intentionally deferred.
+- Remaining Progress/exercise secondary material can be reassessed after Stories is stable.
 
 ## Validation state
 
-PR #531 exact head `3d5255b6545bbb8d3fe8aa5972c9c984ce060394` passed Mobile CI #1974:
+PR #533 exact head `6fde319be2c932620ecec177e3c7e4b7e7e0032a` passed Mobile CI #1984:
 
 - repository and changed-file line audits;
 - TypeScript;
@@ -93,20 +91,6 @@ PR #531 exact head `3d5255b6545bbb8d3fe8aa5972c9c984ce060394` passed Mobile CI #
 - Expo Doctor.
 
 Source/CI validation is not physical-device or release proof.
-
-## Current UI/material scope
-
-`SyncBackupScreen`, `DataRecoveryCard`, `SyncConflictReviewCard`, and `SupportDiagnosticsCard` already use shared `AppCard`/`AppButton` ownership; their remaining borders are structural dividers.
-
-Coach material debt still exists in recovery scores/inputs, limitation choices, Safety lookback controls, history filters, Combined domain/result cards and related surfaces, but **it is intentionally deferred**. Do not resume it as the automatic next package.
-
-## Planned follow-up
-
-1. Backend Stories contract/persistence/API source package.
-2. Mobile strict Stories contracts/API integration.
-3. Home Stories strip/viewer/creation flow on the merged server contract.
-4. Reassess remaining Progress/exercise secondary material after Home Stories is stable.
-5. LG-H3 Steps only after native provider/permissions authorization.
 
 ## Release / provider boundary
 
