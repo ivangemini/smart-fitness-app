@@ -47,10 +47,37 @@ describe('Home theme consistency', () => {
     expect(snapshot).toContain("tone === 'warning' && styles.tileWarning");
   });
 
-  it('keeps the Home profile action at 44 pt ownership', () => {
-    const source = readSource('src/app/(tabs)/index.tsx');
-    expect(source).toMatch(
-      /profileButton:[\s\S]*?height:\s*44[\s\S]*?width:\s*44/,
+  it('keeps the Home profile action at 44 pt ownership without opacity feedback', () => {
+    const home = readSource('src/app/(tabs)/index.tsx');
+    const iconButton = readSource('src/components/ui/LiquidGlassIconButton.tsx');
+
+    expect(home).toContain('<LiquidGlassIconButton');
+    expect(iconButton).toMatch(
+      /pressable:\s*\{[\s\S]*?height:\s*44,[\s\S]*?width:\s*44,/,
     );
+    expect(iconButton).toContain('transform: [{ scale: 0.96 }]');
+    expect(iconButton).not.toContain('opacity:');
+  });
+
+  it('owns Home safe areas and floating-tab clearance around the ambient backdrop', () => {
+    const source = readSource('src/app/(tabs)/index.tsx');
+
+    expect(source).toContain('<HomeLiquidBackdrop />');
+    expect(source).toContain('contentInsetAdjustmentBehavior="never"');
+    expect(source).toContain('paddingTop: safeAreaInsets.top + Spacing.three');
+    expect(source).toContain('getFloatingTabBarBottomClearance(safeAreaInsets.bottom)');
+    expect(source).toContain('flexGrow: 1');
+  });
+
+  it('uses one bounded hero blur and keeps weekly tiles as non-blurred glass surfaces', () => {
+    const summary = readSource('src/components/home/HomeSummaryCard.tsx');
+    const snapshot = readSource('src/components/home/HomeSnapshotCard.tsx');
+
+    expect(summary).toContain('<LiquidGlassSurface');
+    expect(summary).toContain('blur');
+    expect(summary).toContain('variant="elevated"');
+    expect(snapshot).toContain('<LiquidGlassSurface');
+    expect(snapshot).toContain('variant="control"');
+    expect(snapshot).not.toContain('<AppCard');
   });
 });
