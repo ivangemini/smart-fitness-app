@@ -17,8 +17,9 @@ Home is explicitly **social-first hybrid**: personal fitness context stays immed
 - **LG-1 shared foundation complete:** PR #501, merge `ca11c1a66495ec71832a0abfd54fa4bbef0391c8`, Mobile CI #1922.
 - **LG-2A original Home Liquid Glass pilot complete:** PR #503, merge `5ad7bd047b89878243d8cf7923c70d3fe7b7787e`, Mobile CI #1925.
 - **LG-H1 social-first Home complete:** PR #505, exact green head `9f28c198ed75070bcf10484ef09a28a78cbc5571`, Mobile CI #1931, merge `9c9e67a929d10e9f91475c92ba0b579bbadbb805`.
-- **LG-2B Progress + Coach primary surfaces complete:** PR #507 / Mobile CI #1937 plus PR #509, exact green head `ead5df6e598947da6cbaf4d29489efbcbe72cba9`, Mobile CI #1943, merge `7355c0aa8b4b94a7cac8a7682acba90808739b77`.
-- **LG-2C Nutrition primary surfaces is active.**
+- **LG-2B Progress + Coach primary surfaces complete:** PR #507 / Mobile CI #1937 plus PR #509 / Mobile CI #1943, merge `7355c0aa8b4b94a7cac8a7682acba90808739b77`.
+- **LG-2C Nutrition primary surfaces complete:** PR #511, exact green head `e1dfaed79f45080d06dd2d590a757e5547f4111b`, Mobile CI #1947, merge `eaad35aac4733ba7488ae0aa151c285dca3acc38`.
+- **LG-2D Profile primary surfaces is active.**
 - LG-H2 Stories and LG-H3 Steps remain blocked by required server/native contracts and must not be faked to unblock UI work.
 - No OTA/EAS publication, native install/build, or physical-device proof is implied by these source changes.
 
@@ -44,16 +45,7 @@ Delivered one compact expandable Liquid Glass daily-metrics owner, real workout/
 
 Stories belong **between personal metrics and feed**, so the target hierarchy remains `personal status → stories → feed`.
 
-Before implementation define and review:
-
-- story DTO/schema versions and expiry semantics;
-- create/delete ownership;
-- author/follow/block/private-profile enforcement;
-- image/video media lifecycle and moderation reuse boundaries;
-- viewed/unviewed state;
-- bounded retention and account-deletion behavior;
-- rail pagination/loading;
-- privacy-safe cache policy.
+Before implementation define and review story DTO/schema versions and expiry semantics; create/delete ownership; author/follow/block/private-profile enforcement; image/video lifecycle and moderation boundaries; viewed state; bounded retention/account deletion; rail pagination/loading; and privacy-safe cache policy.
 
 Do not add story placeholders that look like real user content before these contracts exist.
 
@@ -67,12 +59,7 @@ The daily metrics panel reserves a Steps role, but a real value requires a revie
 
 **Status: planned after the base Home feed is stable.**
 
-Potential work:
-
-- strengthen workout-native post hierarchy, PR/milestone presentation, reactions, and comments visibility;
-- add discovery/creator content only through explicit server-authoritative contracts;
-- optimize retention toward useful fitness actions rather than generic infinite-scroll engagement;
-- preserve chronological Following semantics until a separately reviewed ranking contract exists.
+Potential work includes stronger workout-native post hierarchy and action visibility, explicit-contract discovery/creator content, and useful fitness retention improvements. Preserve chronological Following semantics until a separately reviewed ranking contract exists.
 
 ## LG-2 — remaining primary tabs
 
@@ -80,34 +67,35 @@ Potential work:
 
 **Status: complete for source/CI scope.**
 
-PR #507 migrated the Progress weight-range selector, body-measurement controls/inputs, and reusable trend-chart shell to the shared/adaptive Liquid Glass system. PR #509 migrated the remaining Safety/Recovery period controls, selected-week state, history-filter actions, and selected-week detail owner; the detail owner uses shared `LiquidGlassSurface` without native blur.
-
-Coach primary already used shared `AppCard` and `AppButton` primitives and required no artificial runtime diff.
-
-Exact head `ead5df6e598947da6cbaf4d29489efbcbe72cba9` passed repository/changed-file line audits, TypeScript, full regression, expanded model smoke, Expo export, and Expo Doctor in Mobile CI #1943; merge `7355c0aa8b4b94a7cac8a7682acba90808739b77`.
+PR #507 migrated the Progress weight-range selector, body-measurement controls/inputs, and reusable trend-chart shell to the shared/adaptive Liquid Glass system. PR #509 migrated the remaining Safety/Recovery period controls, selected-week state, history-filter actions, and selected-week detail owner. Coach primary already used shared `AppCard` and `AppButton` primitives.
 
 ### LG-2C — Nutrition primary surfaces
 
-**Status: active.**
+**Status: complete for source/CI scope.**
 
-Audit Nutrition before editing. Migrate direct primary material ownership in coherent batches while preserving product semantics.
+PR #511 migrated the primary Nutrition tab to adaptive Liquid Glass material ownership: header controls, streak/today controls, week-day states, macro summary, meal groups, meal summary strips, diary row shell, and meal action controls now use adaptive glass tokens rather than direct `surfacePrimary` / `surfaceSecondary` / `accentSoft` recipes.
 
-Requirements:
+Dense diary and food rows remain ordinary `View`/`Pressable` content without per-row native blur. Calorie/macro calculations, target derivation, date/week navigation, diary grouping, meal expansion/add-edit routing, persistence/sync schemas and IDs, localization/accessibility, SectionList virtualization, keyboard/reflow behavior, and existing touch ownership were preserved.
 
-- use shared `AppCard`, `AppButton`, `LiquidGlassSurface`, and adaptive glass tokens where they own card/control material;
-- do **not** create native blur per diary/food/search row;
-- preserve calorie/macro calculations, target derivation, date navigation and diary grouping;
-- preserve search/recent/saved/add-food and meal-template flows;
-- preserve persistence/sync schemas, routes and IDs;
-- preserve keyboard-aware and short-screen reflow, localization, accessibility and 44 pt touch ownership;
-- keep dense rows compact and readable;
-- extend focused source guards only for durable material contracts, not decorative pixel details.
+Exact head `e1dfaed79f45080d06dd2d590a757e5547f4111b` passed repository/changed-file line audits, TypeScript, full regression (1508 tests), expanded model smoke, Expo export, and Expo Doctor in Mobile CI #1947; merge `eaad35aac4733ba7488ae0aa151c285dca3acc38`.
 
-LG-2C is complete only after the remaining direct Nutrition primary-surface material debt is removed and exact-head Mobile CI passes.
+Secondary Nutrition add-food/search/editor surfaces remain intentionally deferred to LG-3.
 
 ### LG-2D — Profile primary surfaces
 
+**Status: active.**
+
 Converge Profile goals/settings/actions onto the shared material system while preserving completed theme/safe-area work.
+
+Current audited scope is bounded to direct primary-surface debt:
+
+- replace the Profile settings icon's local surface recipe with the shared Liquid Glass icon control;
+- migrate the goals disclosure owner from direct `surfacePrimary`/`borderSubtle` material to adaptive shared control material with an explicit pressed fill;
+- remove static `Colors.dark` text ownership from the Social profile entry while preserving its existing `AppCard`/`SecondaryButton` structure;
+- preserve Profile state, goal validation/save behavior, nutrition-target recalculation, routes, localization, accessibility, and 44 pt interaction ownership;
+- do not add native blur to the disclosure/card content.
+
+LG-2D is complete only after direct Profile primary material debt is removed and exact-head Mobile CI passes.
 
 ## LG-3 — secondary surfaces
 
@@ -137,15 +125,7 @@ Source/CI checks:
 - line limits, TypeScript, full regression, model smoke, Expo export, and Expo Doctor green;
 - source guards preserve 44 pt ownership and explicit disabled states.
 
-Physical validation when separately authorized:
-
-- short/tall iPhones;
-- Android inset/blur fallback;
-- light/dark/system;
-- EN/RU and large Dynamic Type;
-- keyboard-open states;
-- populated/empty/loading/error/success/disabled states;
-- feed/list scroll and animation performance.
+Physical validation when separately authorized covers short/tall iPhones, Android fallback, light/dark/system, EN/RU, Dynamic Type, keyboard states, populated/empty/loading/error/success/disabled states, and list/animation performance.
 
 ## Execution rule
 
