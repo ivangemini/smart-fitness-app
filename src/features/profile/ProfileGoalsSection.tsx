@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ProfileGoalsCard } from '@/components/profile/ProfileGoalsCard';
-import { Colors, Radii, Spacing } from '@/constants/theme';
+import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
+import { Colors, Spacing } from '@/constants/theme';
 import { useAppActions } from '@/context/AppContext';
 import { useProfileState } from '@/context/ProfileStateContext';
 import { useProgressState } from '@/context/ProgressStateContext';
@@ -10,6 +11,10 @@ import { getGoalTypeLabel } from '@/features/progress/progressLocalization';
 import { useLocalization } from '@/localization';
 import { getProfileGoalsValidationCopy } from '@/localization/profileGoalsValidationCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 import {
   formatWeightValue,
   parseDisplayNumber,
@@ -24,8 +29,12 @@ import {
 } from './profilePlan';
 
 export function ProfileGoalsSection() {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const { profile } = useProfileState();
   const { weightHistory } = useProgressState();
   const { updateNutritionTargets, updateProfileGoals } = useAppActions();
@@ -118,18 +127,24 @@ export function ProfileGoalsSection() {
         accessibilityRole="button"
         accessibilityState={{ expanded }}
         onPress={() => setExpanded((current) => !current)}
-        style={({ pressed }) => [styles.disclosure, pressed && styles.pressed]}>
-        <View style={styles.copy}>
-          <Text style={styles.title}>{t('goals.sectionTitle')}</Text>
-          <Text style={styles.subtitle}>
-            {t('goals.sectionSubtitle', {
-              goal: getGoalTypeLabel(t, profile.goalType),
-              weight: formatWeightValue(profile.targetWeight, weightUnit),
-              unit: weightUnit,
-            })}
-          </Text>
-        </View>
-        <Text style={styles.chevron}>{expanded ? '−' : '+'}</Text>
+        style={styles.disclosurePressable}>
+        {({ pressed }) => (
+          <LiquidGlassSurface
+            style={[styles.disclosure, pressed && styles.disclosurePressed]}
+            variant="control">
+            <View style={styles.copy}>
+              <Text style={styles.title}>{t('goals.sectionTitle')}</Text>
+              <Text style={styles.subtitle}>
+                {t('goals.sectionSubtitle', {
+                  goal: getGoalTypeLabel(t, profile.goalType),
+                  weight: formatWeightValue(profile.targetWeight, weightUnit),
+                  unit: weightUnit,
+                })}
+              </Text>
+            </View>
+            <Text style={styles.chevron}>{expanded ? '−' : '+'}</Text>
+          </LiquidGlassSurface>
+        )}
       </Pressable>
       {expanded ? (
         <ProfileGoalsCard
@@ -151,23 +166,21 @@ export function ProfileGoalsSection() {
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     chevron: { color: colors.textPrimary, fontSize: 24, fontWeight: '600', lineHeight: 26 },
     copy: { flex: 1, gap: 4 },
     disclosure: {
       alignItems: 'center',
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.borderSubtle,
-      borderRadius: Radii.large,
-      borderWidth: StyleSheet.hairlineWidth,
       flexDirection: 'row',
       gap: Spacing.two,
       justifyContent: 'space-between',
       minHeight: 68,
       padding: Spacing.three,
+      width: '100%',
     },
-    pressed: { opacity: 0.78 },
+    disclosurePressed: { backgroundColor: glass.controlPressedFill },
+    disclosurePressable: { width: '100%' },
     section: { gap: Spacing.two },
     subtitle: { color: colors.textSecondary, fontSize: 13, lineHeight: 18 },
     title: { color: colors.textPrimary, fontSize: 18, fontWeight: '800' },

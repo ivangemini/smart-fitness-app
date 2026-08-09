@@ -18,6 +18,7 @@ const presentationFiles = [
   'src/app/(tabs)/profile.tsx',
   'src/features/profile/ProfileGoalsSection.tsx',
   'src/components/profile/ProfileGoalsCard.tsx',
+  'src/features/social/SocialProfileEntryCard.tsx',
 ] as const;
 
 describe('Profile theme consistency', () => {
@@ -28,8 +29,10 @@ describe('Profile theme consistency', () => {
     expect(source).not.toContain('Colors.dark');
   });
 
-  it('keeps the Profile Settings icon bound to the current theme', () => {
+  it('keeps the Profile Settings action on the shared adaptive glass control', () => {
     const source = readSource('src/app/(tabs)/profile.tsx');
-    expect(source).toContain('<Settings color={colors.textPrimary}');
+    expect(source).toContain('LiquidGlassIconButton');
+    expect(source).toContain('Icon={Settings}');
+    expect(source).toContain("router.push('/settings')");
   });
 });
