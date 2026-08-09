@@ -7,10 +7,10 @@ This file is the **canonical forward roadmap**. PR-by-PR history and exact valid
 ## Current verified mobile checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current mobile `main`: `8f7df7507c3a833cdfa82b636820080106b15b9c`.
-- Latest runtime merge: `8f7df7507c3a833cdfa82b636820080106b15b9c` (PR #517 — LG-3B Nutrition secondary surfaces).
-- PR #517 exact validated head: `f3d4a2a6977e96ba3672a1d6b663145509aa0bc5`; Mobile CI #1953 passed the full required gate.
-- Active package: **Phase 11 / LG-3C Social interaction controls**.
+- Current mobile `main`: `7a9274d910c0e2dfc8bd270d0d1dc332989d6863`.
+- Latest runtime merge: `7a9274d910c0e2dfc8bd270d0d1dc332989d6863` (PR #519 — LG-3C Social interaction controls).
+- PR #519 exact validated head: `d739a5406490e38773e9acc91e69605a21184c98`; Mobile CI #1955 passed the full required gate.
+- Active package: **Phase 11 / LG-3D Social shell + notification controls**.
 - Backend baseline inspected for dependency awareness: `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`; backend is not part of this package.
 
 Release readiness remains lower than source completeness because staging/provider/physical-device/native-release/production evidence is separately gated.
@@ -107,14 +107,15 @@ Focused execution roadmap: `docs/roadmap/liquid-glass.md`.
 
 ## Completed milestones
 
-- **LG-1 shared foundation:** PR #501 / Mobile CI #1922.
+- **LG-1 foundation:** PR #501 / Mobile CI #1922.
 - **LG-2A Home pilot:** PR #503 / Mobile CI #1925.
 - **LG-H1 social-first Home:** PR #505 / Mobile CI #1931.
 - **LG-2B Progress + Coach primary:** PR #507 + #509 / Mobile CI #1937 + #1943.
-- **LG-2C Nutrition primary:** PR #511 / Mobile CI #1947 / merge `eaad35aac4733ba7488ae0aa151c285dca3acc38`.
-- **LG-2D Profile primary:** PR #513 / Mobile CI #1949 / merge `fb5943c1497cf893858d59ca6b41dcab60790da8`.
-- **LG-3A Settings controls/disclosures:** PR #515 / Mobile CI #1951 / merge `be332729c070bbdf5050536d038b270656a5f0e8`.
-- **LG-3B Nutrition secondary surfaces:** PR #517 / exact green head `f3d4a2a6977e96ba3672a1d6b663145509aa0bc5` / Mobile CI #1953 / merge `8f7df7507c3a833cdfa82b636820080106b15b9c`.
+- **LG-2C Nutrition primary:** PR #511 / Mobile CI #1947.
+- **LG-2D Profile primary:** PR #513 / Mobile CI #1949.
+- **LG-3A Settings controls/disclosures:** PR #515 / Mobile CI #1951.
+- **LG-3B Nutrition secondary:** PR #517 / Mobile CI #1953.
+- **LG-3C Social interaction controls:** PR #519 / exact green head `d739a5406490e38773e9acc91e69605a21184c98` / Mobile CI #1955 / merge `7a9274d910c0e2dfc8bd270d0d1dc332989d6863`.
 
 Home remains a social-first hybrid: compact personal daily metrics → future Stories only after real contracts → existing server-authoritative Following Feed. Do not fabricate Stories or Steps.
 
@@ -124,37 +125,28 @@ Home remains a social-first hybrid: compact personal daily metrics → future St
 - **LG-H3 Steps:** blocked until a reviewed native health/activity source, dependency/permission disclosure, and later separately authorized physical runtime evidence exist.
 - **LG-H4 feed retention:** planned after the base Home feed is stable; preserve current chronological Following semantics unless a separately reviewed ranking contract exists.
 
-## Completed primary migration
-
-LG-2B Progress + Coach, LG-2C Nutrition primary, and LG-2D Profile primary are complete for source/CI scope. Product/domain semantics, persistence/sync contracts, localization, accessibility and responsive ownership were preserved.
-
 ## LG-3 — secondary surfaces
 
-### LG-3A — Settings controls and disclosures
+LG-3A Settings and LG-3B Nutrition secondary are complete. LG-3C Social interaction controls is complete for source/CI scope: report option material, relationship back navigation, tabs and avatar fallback are adaptive while moderation/relationship domain behavior and Social API authority remain unchanged.
 
-**Status: complete.** Shared/adaptive back navigation, segmented controls and Personal Details formula radios are in source with explicit pressed material states.
-
-### LG-3B — Nutrition secondary surfaces
-
-**Status: complete.** Nutrition calendar and centralized Add Food base/sheet/scanner material now use adaptive card/control/accent tokens. Add Food orchestration, search/templates/persistence/scanner logic and existing camera permission behavior were not changed.
-
-### LG-3C — Social interaction controls
+### LG-3D — Social shell + notification controls
 
 **Status: active.**
 
 Bounded package:
 
-- migrate `SocialReportModal` sheet/reason/radio material from legacy direct surfaces and opacity press feedback to adaptive elevated/card/control/accent tokens with explicit neutral/selected pressed states;
-- replace `SocialRelationshipListsScreen` local back action with shared `LiquidGlassIconButton` and migrate relationship tabs to adaptive neutral/selected/pressed states;
-- migrate relationship-list avatar fallback material while retaining existing `AppCard` rows and lightweight profile-link feedback;
-- preserve Social report moderation reason/submit/error/rate-limit semantics, API authority, relationship paging/stale-request protection, follow/request actions, privacy/visibility rules and cache semantics;
-- no native blur per report option/list item.
+- `SocialNotificationScreen`: use shared `LiquidGlassIconButton` for back navigation; migrate notification-card/avatar material and pressed feedback to adaptive card/control tokens while preserving optimistic read, mark-read API call and profile/post routing;
+- `SocialCommunityGuidelinesScreen`: migrate only the local back control; retain existing shared `AppCard` content ownership;
+- `SocialProfileLookupScreen`: migrate only the local back control; preserve username normalization/validation, keyboard/safe-area behavior, sign-in route and public-profile navigation;
+- update stale Social shell/profile-lookup source guards with the runtime change;
+- Share Workout is explicitly deferred to a later LG-3 package because publishing/media form material has broader domain risk;
+- no native blur per notification card or shell control.
 
-After LG-3C, continue remaining Settings/account, Sync & Backup, Social detail, Progress detail, Coach detail and exercise detail/library surfaces by shared defect.
+After LG-3D, continue remaining Settings/account, Sync & Backup, Social publishing/detail, Progress detail, Coach detail and exercise detail/library surfaces by shared defect.
 
 ## Remaining Phase 11 execution order
 
-1. **LG-3 secondary surfaces**, currently LG-3C Social interaction controls.
+1. **LG-3 secondary surfaces**, currently LG-3D Social shell + notification controls.
 2. **LG-4 Workouts:** hub/program cards → library/builder → active workout chrome → set-table states → finish/summary.
 3. **LG-5 elevated chrome/motion:** true blur only for bounded elevated/floating roles.
 4. **LG-6 visual QA/stabilization:** exact-head CI/source guards first; physical evidence only when separately authorized.
@@ -170,6 +162,6 @@ Docs-only synchronization uses diff/ancestry verification; workflows may intenti
 
 # Current definition of done
 
-LG-3C is done only when Social report and relationship-list interaction material uses adaptive shared tokens/primitives, Social authority/domain behavior is unchanged, no per-option/list native blur is introduced, exact-head Mobile CI is green, docs agree with Git history, and the validated head merges without unresolved review blockers.
+LG-3D is done only when the audited Social shell/back and notification-card material uses adaptive shared primitives/tokens, notification/profile lookup/domain behavior is unchanged, no per-card native blur is introduced, exact-head Mobile CI is green, docs agree with Git history, and the validated head merges without unresolved review blockers.
 
 Physical-device, OTA/EAS, native-release, provider, production and store evidence remain separate gates and must not be inferred from source/CI completion.
