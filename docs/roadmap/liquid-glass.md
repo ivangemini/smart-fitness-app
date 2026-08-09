@@ -20,7 +20,8 @@ Home is explicitly **social-first hybrid**: personal fitness context stays immed
 - **LG-2B Progress + Coach primary surfaces complete:** PR #507 / Mobile CI #1937 plus PR #509 / Mobile CI #1943, merge `7355c0aa8b4b94a7cac8a7682acba90808739b77`.
 - **LG-2C Nutrition primary surfaces complete:** PR #511, exact green head `e1dfaed79f45080d06dd2d590a757e5547f4111b`, Mobile CI #1947, merge `eaad35aac4733ba7488ae0aa151c285dca3acc38`.
 - **LG-2D Profile primary surfaces complete:** PR #513, exact green head `aa22621db120b523ddab8a04aacb3077aa9f91ed`, Mobile CI #1949, merge `fb5943c1497cf893858d59ca6b41dcab60790da8`.
-- **LG-3 secondary surfaces is active.**
+- **LG-3A Settings controls/disclosures complete:** PR #515, exact green head `cf12f4c62eacce618a6c7832163d438514dd7f1d`, Mobile CI #1951, merge `be332729c070bbdf5050536d038b270656a5f0e8`.
+- **LG-3B Nutrition secondary surfaces is active.**
 - LG-H2 Stories and LG-H3 Steps remain blocked by required server/native contracts and must not be faked to unblock UI work.
 - No OTA/EAS publication, native install/build, or physical-device proof is implied by these source changes.
 
@@ -62,18 +63,7 @@ Delivered one compact expandable Liquid Glass daily-metrics owner, real workout/
 
 ### LG-2D — Profile primary surfaces
 
-**Status: complete for source/CI scope.**
-
-PR #513 completed the bounded Profile primary migration:
-
-- Profile Settings uses shared 44 pt `LiquidGlassIconButton` rather than a screen-local material recipe;
-- goals disclosure uses shared `LiquidGlassSurface` `variant="control"` with adaptive `controlPressedFill` and no native blur;
-- `SocialProfileEntryCard` retains shared `AppCard`/`SecondaryButton` structure while text follows the active app theme rather than static `Colors.dark` values;
-- source guards cover shared material ownership and theme adaptation.
-
-Profile state, goal validation/save behavior, nutrition-target recalculation, routes, localization, accessibility, safe-area/scroll behavior, and interaction ownership were unchanged.
-
-Exact head `aa22621db120b523ddab8a04aacb3077aa9f91ed` passed repository/changed-file line audits, TypeScript, full regression, expanded model smoke, Expo export, and Expo Doctor in Mobile CI #1949; merge `fb5943c1497cf893858d59ca6b41dcab60790da8`.
+**Status: complete for source/CI scope.** PR #513 migrated the Profile Settings action, goals disclosure material, and Social Profile entry theme ownership without changing Profile state, goal validation/save behavior, nutrition-target recalculation, routes, localization, accessibility, safe-area/scroll behavior, or interaction ownership.
 
 ## LG-3 — secondary surfaces
 
@@ -81,15 +71,36 @@ Exact head `aa22621db120b523ddab8a04aacb3077aa9f91ed` passed repository/changed-
 
 Converge Settings/account, Sync & Backup, Social detail, Progress detail, Nutrition add/edit/detail, Coach detail, and exercise detail/library surfaces. Batch adjacent surfaces sharing the same material defect rather than creating one PR per screen.
 
-First audited package: **Settings controls and disclosures**.
+### LG-3A — Settings controls and disclosures
 
-- `src/app/settings/index.tsx` is already largely composed from `AppCard`, `SecondaryButton`, and `SegmentedControl`; replace the remaining local 44 pt back-control material with the shared glass icon control.
-- `src/components/ui/SegmentedControl.tsx` is a shared secondary-surface defect: container/selected/pressed states still use direct `surfaceSecondary` / `surfacePrimary` / `backgroundSelected`. Migrate the shared control itself to adaptive glass tokens while preserving tab roles and 44 pt segments.
-- `src/features/settings/PersonalDetailsSettingsCard.tsx` formula options still own direct local `surfaceSecondary` / selected material; migrate those radio controls to the same adaptive control/accent token language without touching validation/save behavior.
-- Settings privacy/about/sync rows already live inside shared `AppCard`; divider-only semantic separators do not need artificial card/blur wrappers.
-- Do not add native blur per setting row or disclosure.
+**Status: complete for source/CI scope.**
 
-After the first Settings batch, continue through adjacent secondary surfaces by shared material defect, not route count.
+PR #515 delivered the first secondary-surface batch:
+
+- Settings shell back navigation now reuses shared 44 pt `LiquidGlassIconButton`;
+- shared `SegmentedControl` neutral/selected/pressed material now uses adaptive `control*` / `accent*` glass tokens while preserving `tablist`/`tab` roles and 44 pt segments;
+- Personal Details formula radio options use the same adaptive neutral/selected/pressed material while preserving `radio`/checked accessibility, date/formula validation, save behavior, and Profile mutation flow;
+- existing `AppCard` ownership and lightweight semantic dividers remain unchanged; no per-row native blur was added.
+
+Exact head `cf12f4c62eacce618a6c7832163d438514dd7f1d` passed repository/changed-file line audits, TypeScript, full regression, expanded model smoke, Expo export, and Expo Doctor in Mobile CI #1951; merge `be332729c070bbdf5050536d038b270656a5f0e8`.
+
+### LG-3B — Nutrition secondary surfaces
+
+**Status: active.**
+
+Migrate the Nutrition date picker plus the centralized Add Food material style factories without changing food/search/template/scanner domain behavior.
+
+Audited scope:
+
+- `src/app/nutrition/date-picker.tsx`: migrate day cells, selected/logged/today states, header actions, and month navigation to adaptive glass control/accent tokens while preserving 42-cell calendar logic, localized date semantics, logged-day markers, routing, and effective touch ownership;
+- `src/app/nutrition/add-food.tsx`: resolve the active Liquid Glass palette and pass it into the existing centralized Add Food style factory; keep search/library/templates/entry mutation logic unchanged;
+- `src/features/nutrition/styles/addFoodStyles.ts` and its base/sheet/scanner factories: replace direct `surfacePrimary` / `surfaceSecondary` / `borderSubtle` material recipes with adaptive card/control/accent tokens;
+- keep the modal sheet, scanner camera, permission/status/manual cards, inputs, summary/status surfaces, action controls and selected unit states material-adaptive without adding native blur;
+- preserve existing `expo-camera` dependency/permission behavior; LG-3B is presentation-only and does not authorize native/provider changes.
+
+LG-3B is complete only when old direct material ownership is removed from the audited factories/date picker and exact-head Mobile CI passes.
+
+After LG-3B, continue through adjacent Settings/account, Sync & Backup, Social detail, Progress detail, Coach detail, and exercise detail/library surfaces by shared material defect.
 
 ## LG-4 — Workouts system
 
