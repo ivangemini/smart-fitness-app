@@ -186,7 +186,7 @@ export const createWorkoutSessionFinishStyles = (colors: typeof Colors.light) =>
       alignItems: 'center',
       flex: 1,
       flexDirection: 'row',
-      minHeight: 36,
+      minHeight: 44,
       minWidth: 0,
     },
     resumeChevron: {
@@ -204,54 +204,12 @@ export const createWorkoutSessionFinishStyles = (colors: typeof Colors.light) =>
       lineHeight: 20,
       minWidth: 0,
     },
-    saveButton: {
-      alignItems: 'center',
-      backgroundColor: colors.textPrimary,
-      borderCurve: 'continuous',
-      borderRadius: 999,
-      justifyContent: 'center',
-      minHeight: 56,
-      paddingHorizontal: Spacing.three,
-    },
-    saveButtonDisabled: {
-      opacity: 0.45,
-    },
-    saveButtonLabel: {
-      color: colors.background,
-      flexShrink: 1,
-      fontSize: 18,
-      fontWeight: '900',
-      textAlign: 'center',
-    },
-    saveButtonLabelDisabled: {
-      color: colors.textMuted,
-    },
     screen: {
       backgroundColor: colors.background,
       flex: 1,
     },
     scrollView: {
       flex: 1,
-    },
-    shareButton: {
-      alignItems: 'center',
-      borderColor: colors.accent,
-      borderCurve: 'continuous',
-      borderRadius: 999,
-      borderWidth: 1,
-      justifyContent: 'center',
-      minHeight: 48,
-      paddingHorizontal: Spacing.three,
-    },
-    shareButtonDisabled: {
-      opacity: 0.45,
-    },
-    shareButtonLabel: {
-      color: colors.accent,
-      flexShrink: 1,
-      fontSize: 16,
-      fontWeight: '800',
-      textAlign: 'center',
     },
     singleLineField: {
       alignItems: 'center',
