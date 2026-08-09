@@ -153,7 +153,7 @@ const createStyles = (colors: typeof Colors.light, glass: GlassPalette) =>
     choiceLabelSelected: { color: colors.accent },
     choicePressed: { backgroundColor: glass.controlPressedFill },
     choiceSelected: { backgroundColor: glass.semanticAccentFill, borderColor: colors.accent },
-    choiceSelectedPressed: { backgroundColor: glass.accentPressedFill },
+    choiceSelectedPressed: { backgroundColor: glass.controlPressedFill },
     editor: {
       borderTopColor: glass.controlBorder,
       borderTopWidth: StyleSheet.hairlineWidth,
