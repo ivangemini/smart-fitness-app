@@ -19,20 +19,6 @@ export const createStyles = (colors: typeof Colors.light) =>
       fontSize: 16,
       fontWeight: '700',
     },
-    addExerciseFooterButton: {
-      alignItems: 'center',
-      backgroundColor: colors.textPrimary,
-      borderCurve: 'continuous',
-      borderRadius: 999,
-      justifyContent: 'center',
-      minHeight: 52,
-      marginTop: 38,
-    },
-    addExerciseFooterLabel: {
-      color: colors.background,
-      fontSize: 16,
-      fontWeight: '700',
-    },
     container: {
       maxWidth: MaxContentWidth,
       width: '100%',
@@ -213,6 +199,11 @@ export const createStyles = (colors: typeof Colors.light) =>
     scrollView: {
       flex: 1,
     },
+    sessionFooterActions: {
+      gap: Spacing.two,
+      paddingVertical: Spacing.six,
+      width: '100%',
+    },
     testGifButton: {
       alignItems: 'center',
       backgroundColor: colors.surfaceSecondary,
@@ -222,18 +213,6 @@ export const createStyles = (colors: typeof Colors.light) =>
       borderWidth: StyleSheet.hairlineWidth,
       justifyContent: 'center',
       minHeight: 44,
-      paddingHorizontal: Spacing.three,
-    },
-    testGifFooterButton: {
-      alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
-      borderCurve: 'continuous',
-      borderRadius: 999,
-      borderWidth: StyleSheet.hairlineWidth,
-      justifyContent: 'center',
-      minHeight: 44,
-      marginTop: Spacing.two,
       paddingHorizontal: Spacing.three,
     },
     testGifLabel: {
