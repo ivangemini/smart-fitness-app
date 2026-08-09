@@ -18,15 +18,15 @@ This file is stable orientation context. Mutable execution state belongs in `doc
 
 The mobile application currently contains:
 
-- social-first Home with personal daily fitness context and the Social workout feed;
+- social-first Home with compact personal daily fitness context, server-backed Stories, and the Social workout feed;
 - Workouts and active workout logging;
 - Nutrition diary, targets, reusable meals, and saved library items;
 - Progress and measurements;
 - Profile, authentication, Data & Sync, and privacy-facing controls;
 - Nutrition, Strength, Safety & Recovery, and Combined Coach surfaces;
-- Social profiles, relationships, workout posts, following feed, reactions, comments, notifications, reporting/moderation surfaces, and managed-media contracts.
+- Social profiles, relationships, Stories, workout posts, following feed, reactions, comments, notifications, reporting/moderation surfaces, and managed-media contracts.
 
-Approved planned Home extensions are tracked in `docs/roadmap/liquid-glass.md`. Stories are a product direction, not an implemented contract: do not fabricate them before server/privacy/media/expiry/view-state contracts exist. Real steps likewise require a reviewed device-health/activity source rather than inferred or demo values.
+Home Stories are a real server-authoritative domain. The current merged read/view package uses strict Story contracts, 24-hour server expiry, viewed state, Following/privacy enforcement and managed-media delivery. Owner authoring remains the active extension and must reuse the existing `story_image` managed-media pipeline rather than inventing arbitrary URLs or a parallel upload path. Real steps likewise require a reviewed device-health/activity source rather than inferred or demo values.
 
 Excluded unless explicitly approved:
 
@@ -48,7 +48,7 @@ Excluded unless explicitly approved:
 - Synchronization orchestration lives in `src/context/SyncContext.tsx` and `src/cloud/`.
 - Presentation uses the adaptive Liquid Glass system documented in `docs/architecture/liquid-glass-ui.md`.
 
-The accepted local architecture remains a single persisted `AppState` snapshot. SQLite is not an approved migration without new measured evidence.
+Local AsyncStorage remains the active storage strategy; architecture-only design options are not implementation authorization.
 
 ## Backend authority
 
@@ -59,7 +59,7 @@ The backend is the only server authority for:
 - synchronized conflicts and tombstones;
 - Coach orchestration and confirmation;
 - provider access and secrets;
-- Social and managed-media authority;
+- Social, Stories, and managed-media authority;
 - privacy, retention, deletion, and export source controls.
 
 Mobile must not call food, model, moderation, classifier, OCR, storage, email, or other providers directly.
@@ -124,13 +124,15 @@ Implemented user-facing categories:
 
 Automatic application is prohibited. Hidden chain-of-thought is not stored.
 
-## Social, media, and private state
+## Social, Stories, media, and private state
 
 Private fitness state uses revisioned synchronization.
 
-Social and managed media are separate server-authoritative domains and must not be inserted into private `AppState` synchronization. The Home feed reuses this same Social authority, following-feed cache, pagination, block/private-profile enforcement, and moderation boundaries.
+Social, Stories, and managed media are separate server-authoritative domains and must not be inserted into private `AppState` synchronization. The Home feed and Story strip reuse this Social authority, account-scoped caches, pagination, block/private-profile enforcement, and moderation boundaries.
 
-A shared workout remains an immutable bounded public snapshot created only through the explicit Social sharing flow. Home does not make private workout/nutrition/progress data public merely by displaying personal metrics next to the feed.
+Stories are image-only in the current v1 contract. The backend owns authenticated creation, 24-hour expiry, active-only reads, Following/private/block/restriction visibility, viewed state, owner deletion, account-deletion cascade, retention cleanup, and the `story_image` managed-media lifecycle. Mobile must consume those contracts strictly and revalidate cached first-page data against the backend.
+
+A shared workout remains an immutable bounded public snapshot created only through the explicit Social sharing flow. Home does not make private workout/nutrition/progress data public merely by displaying personal metrics next to Social content.
 
 Provider-backed capabilities remain disabled or fail closed until configuration, policy, infrastructure, deployment, and evidence requirements are explicitly satisfied.
 
