@@ -1,11 +1,13 @@
-import { Text, View } from 'react-native';
-
-import type { ExerciseDetailStyles } from '../screens/ExerciseDetailScreen.styles';
+import { Text, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 
 type ExerciseDetailTextListProps = {
   emptyLabel: string;
   items: string[];
-  styles: ExerciseDetailStyles;
+  styles: {
+    bodyText: StyleProp<TextStyle>;
+    list: StyleProp<ViewStyle>;
+    secondaryText: StyleProp<TextStyle>;
+  };
 };
 
 export function ExerciseDetailTextList({
