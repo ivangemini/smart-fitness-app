@@ -16,6 +16,7 @@ import {
 } from './socialStoryMediaDraftStore';
 import {
   prepareSocialStoryImage,
+  recoverPendingSocialStoryImage,
   selectSocialStoryImage,
   type SelectedSocialStoryImage,
 } from './socialStoryImage';
@@ -53,6 +54,7 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
   const accountId = session?.user.id ?? null;
   const sequence = useRef(0);
   const abortController = useRef<AbortController | null>(null);
+  const recoveredPendingAccount = useRef<string | null>(null);
   const [asset, setAsset] = useState<SocialMediaOwnerAssetDto | null>(null);
   const [previewUri, setPreviewUri] = useState<string | null>(null);
   const [operation, setOperation] = useState<SocialStoryMediaOperation>('loading');
@@ -222,18 +224,10 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
     [accountId, api, copy, isAuthenticated, isCurrent, pollAsset],
   );
 
-  const chooseImage = useCallback(async () => {
-    if (!accountId || !isAuthenticated || operation !== 'idle') return;
-    const requestSequence = sequence.current;
-    const previousAsset = asset;
-    setErrorMessage(null);
-    setOperation('selecting');
-    try {
-      const selected = await selectSocialStoryImage();
-      if (!selected || !isCurrent(requestSequence)) {
-        if (isCurrent(requestSequence)) setOperation('idle');
-        return;
-      }
+  const replaceWithSelected = useCallback(
+    async (selected: SelectedSocialStoryImage): Promise<void> => {
+      const requestSequence = sequence.current;
+      const previousAsset = asset;
       if (previousAsset && previousAsset.state !== 'deleted') {
         setOperation('deleting');
         await api.deleteMediaAsset(previousAsset.assetId, previousAsset.stateVersion);
@@ -242,13 +236,50 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
         if (!isCurrent(requestSequence)) return;
       }
       await uploadSelected(selected);
+    },
+    [api, asset, clearDraft, isCurrent, uploadSelected],
+  );
+
+  const chooseImage = useCallback(async () => {
+    if (!accountId || !isAuthenticated || operation !== 'idle') return;
+    const requestSequence = sequence.current;
+    setErrorMessage(null);
+    setOperation('selecting');
+    try {
+      const selected = await selectSocialStoryImage();
+      if (!selected || !isCurrent(requestSequence)) {
+        if (isCurrent(requestSequence)) setOperation('idle');
+        return;
+      }
+      await replaceWithSelected(selected);
     } catch (error) {
       if (isCurrent(requestSequence)) {
         setErrorMessage(getSocialStoryMediaErrorMessage(error, copy));
         setOperation('idle');
       }
     }
-  }, [accountId, api, asset, clearDraft, copy, isAuthenticated, isCurrent, operation, uploadSelected]);
+  }, [accountId, copy, isAuthenticated, isCurrent, operation, replaceWithSelected]);
+
+  useEffect(() => {
+    if (!accountId || !isAuthenticated) {
+      recoveredPendingAccount.current = null;
+      return;
+    }
+    if (operation !== 'idle' || recoveredPendingAccount.current === accountId) return;
+    recoveredPendingAccount.current = accountId;
+    const requestSequence = sequence.current;
+    void recoverPendingSocialStoryImage()
+      .then((selected) => {
+        if (selected && isCurrent(requestSequence)) {
+          void replaceWithSelected(selected);
+        }
+      })
+      .catch((error: unknown) => {
+        if (isCurrent(requestSequence)) {
+          setErrorMessage(getSocialStoryMediaErrorMessage(error, copy));
+        }
+      });
+  }, [accountId, copy, isAuthenticated, isCurrent, operation, replaceWithSelected]);
 
   const refreshStatus = useCallback(async () => {
     if (operation !== 'idle' || !asset) return;
