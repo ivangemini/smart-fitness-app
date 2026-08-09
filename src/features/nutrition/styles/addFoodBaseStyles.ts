@@ -1,8 +1,12 @@
 import { StyleSheet } from 'react-native';
 
 import { Colors, MaxContentWidth, Radii, Spacing, Typography } from '@/constants/theme';
+import type { LiquidGlassPalette } from '@/theme/liquidGlass';
 
-export const createAddFoodBaseStyles = (colors: typeof Colors.dark) =>
+export const createAddFoodBaseStyles = (
+  colors: typeof Colors.light,
+  glass: LiquidGlassPalette,
+) =>
   StyleSheet.create({
     backButton: {
       alignItems: 'flex-start',
@@ -85,8 +89,8 @@ export const createAddFoodBaseStyles = (colors: typeof Colors.dark) =>
     },
     quietActionButton: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 999,
       borderWidth: StyleSheet.hairlineWidth,
@@ -112,7 +116,8 @@ export const createAddFoodBaseStyles = (colors: typeof Colors.dark) =>
     },
     iconButton: {
       alignItems: 'center',
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 999,
       borderWidth: StyleSheet.hairlineWidth,
@@ -121,8 +126,8 @@ export const createAddFoodBaseStyles = (colors: typeof Colors.dark) =>
       width: 44,
     },
     input: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
@@ -139,8 +144,8 @@ export const createAddFoodBaseStyles = (colors: typeof Colors.dark) =>
       gap: Spacing.two,
     },
     messageBanner: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
@@ -158,8 +163,8 @@ export const createAddFoodBaseStyles = (colors: typeof Colors.dark) =>
     },
     scanButton: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
@@ -179,8 +184,8 @@ export const createAddFoodBaseStyles = (colors: typeof Colors.dark) =>
       paddingTop: Spacing.one,
     },
     searchInput: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
@@ -237,8 +242,8 @@ export const createAddFoodBaseStyles = (colors: typeof Colors.dark) =>
     },
     summaryPill: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
@@ -254,8 +259,8 @@ export const createAddFoodBaseStyles = (colors: typeof Colors.dark) =>
       fontWeight: '800',
     },
     suggestionChip: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
@@ -286,8 +291,8 @@ export const createAddFoodBaseStyles = (colors: typeof Colors.dark) =>
       fontWeight: '900',
     },
     unitToggle: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
@@ -303,7 +308,7 @@ export const createAddFoodBaseStyles = (colors: typeof Colors.dark) =>
       minHeight: 40,
     },
     unitToggleOptionActive: {
-      backgroundColor: colors.accent,
+      backgroundColor: glass.accentFill,
     },
     unitToggleText: {
       color: colors.textSecondary,
@@ -311,6 +316,6 @@ export const createAddFoodBaseStyles = (colors: typeof Colors.dark) =>
       fontWeight: '800',
     },
     unitToggleTextActive: {
-      color: colors.textOnAccent,
+      color: glass.accentText,
     },
   });
