@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -8,6 +9,7 @@ import { AppCard } from '@/components/ui/AppCard';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme';
 import { useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 
 const COACH_ACTIONS = [
   {
@@ -33,8 +35,10 @@ const COACH_ACTIONS = [
 ] as const;
 
 export default function CoachScreen() {
+  const { colors } = useAppTheme();
   const { t } = useLocalization();
   const safeAreaInsets = useSafeAreaInsets();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   return (
     <ScrollView
@@ -75,22 +79,23 @@ export default function CoachScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  actions: { gap: Spacing.two, marginTop: Spacing.two },
-  body: {
-    color: Colors.dark.textSecondary,
-    flexShrink: 1,
-    fontSize: Typography.body.fontSize,
-    lineHeight: Typography.body.lineHeight,
-  },
-  container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
-  content: { alignItems: 'center', flexGrow: 1, padding: Spacing.three },
-  screen: { backgroundColor: Colors.dark.background, flex: 1 },
-  title: {
-    color: Colors.dark.textPrimary,
-    flexShrink: 1,
-    fontSize: Typography.cardTitle.fontSize,
-    fontWeight: Typography.cardTitle.fontWeight,
-    lineHeight: Typography.cardTitle.lineHeight,
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    actions: { gap: Spacing.two, marginTop: Spacing.two },
+    body: {
+      color: colors.textSecondary,
+      flexShrink: 1,
+      fontSize: Typography.body.fontSize,
+      lineHeight: Typography.body.lineHeight,
+    },
+    container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
+    content: { alignItems: 'center', flexGrow: 1, padding: Spacing.three },
+    screen: { backgroundColor: colors.background, flex: 1 },
+    title: {
+      color: colors.textPrimary,
+      flexShrink: 1,
+      fontSize: Typography.cardTitle.fontSize,
+      fontWeight: Typography.cardTitle.fontWeight,
+      lineHeight: Typography.cardTitle.lineHeight,
+    },
+  });
