@@ -1,28 +1,23 @@
 import { StyleSheet } from "react-native";
 
-import { Colors, MaxContentWidth, Spacing } from "@/constants/theme";
+import { Colors, MaxContentWidth, Radii, Spacing } from "@/constants/theme";
+import type { LiquidGlassPalette } from "@/theme/liquidGlass";
 
-export const createShareWorkoutStyles = (colors: typeof Colors.light) =>
+export const createShareWorkoutStyles = (
+  colors: typeof Colors.light,
+  glass: LiquidGlassPalette,
+) =>
   StyleSheet.create({
-    backButton: {
-      alignItems: "center",
-      borderColor: colors.borderSubtle,
-      borderRadius: 999,
-      borderWidth: StyleSheet.hairlineWidth,
-      flexShrink: 0,
-      height: 44,
-      justifyContent: "center",
-      width: 44,
-    },
     body: {
       color: colors.textSecondary,
-      flexShrink: 1,
       fontSize: 15,
       lineHeight: 21,
     },
     captionInput: {
-      borderColor: colors.borderSubtle,
-      borderRadius: 12,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
+      borderCurve: "continuous",
+      borderRadius: Radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
       color: colors.textPrimary,
       fontSize: 15,
@@ -31,10 +26,8 @@ export const createShareWorkoutStyles = (colors: typeof Colors.light) =>
     },
     cardTitle: {
       color: colors.textPrimary,
-      flexShrink: 1,
-      fontSize: 17,
+      fontSize: 18,
       fontWeight: "800",
-      lineHeight: 22,
     },
     container: {
       gap: Spacing.three,
@@ -49,9 +42,9 @@ export const createShareWorkoutStyles = (colors: typeof Colors.light) =>
     fieldLabel: {
       color: colors.textPrimary,
       flex: 1,
-      flexShrink: 1,
-      fontSize: 15,
+      fontSize: 14,
       fontWeight: "700",
+      lineHeight: 19,
       minWidth: 0,
     },
     fieldRow: {
@@ -60,83 +53,69 @@ export const createShareWorkoutStyles = (colors: typeof Colors.light) =>
       borderBottomWidth: StyleSheet.hairlineWidth,
       flexDirection: "row",
       gap: Spacing.two,
-      minHeight: 52,
+      justifyContent: "space-between",
+      minHeight: 48,
       paddingVertical: Spacing.one,
     },
     header: {
-      alignItems: "center",
+      alignItems: "flex-start",
       flexDirection: "row",
-      gap: Spacing.two,
+      gap: Spacing.three,
     },
     headerCopy: {
       flex: 1,
-      gap: 2,
+      gap: Spacing.one,
       minWidth: 0,
     },
     label: {
       color: colors.textSecondary,
       fontSize: 13,
-      fontWeight: "700",
-      letterSpacing: 0.4,
-      textTransform: "uppercase",
-    },
-    mediaHeader: {
-      alignItems: "flex-start",
-      flexDirection: "row",
-      gap: Spacing.two,
-    },
-    mediaHeaderCopy: {
-      flex: 1,
-      gap: 2,
-      minWidth: 0,
+      fontWeight: "800",
     },
     mediaPreview: {
       aspectRatio: 4 / 3,
-      backgroundColor: colors.surfaceSecondary,
-      borderRadius: 12,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
+      borderCurve: "continuous",
+      borderRadius: Radii.medium,
+      borderWidth: StyleSheet.hairlineWidth,
       width: "100%",
     },
-    mediaWarning: {
-      color: colors.warning,
-      flexShrink: 1,
-      fontSize: 14,
-      fontWeight: "700",
-      lineHeight: 20,
-    },
-    pressed: {
-      opacity: 0.72,
+    mediaStatus: {
+      color: colors.textSecondary,
+      fontSize: 13,
+      lineHeight: 18,
     },
     previewGrid: {
       flexDirection: "row",
       flexWrap: "wrap",
-      gap: Spacing.one,
+      gap: Spacing.two,
     },
     previewItem: {
-      backgroundColor: colors.surfaceSecondary,
-      borderRadius: 10,
-      flexGrow: 1,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
+      borderCurve: "continuous",
+      borderRadius: Radii.medium,
+      borderWidth: StyleSheet.hairlineWidth,
       gap: 2,
-      minWidth: "47%",
+      minWidth: 112,
       padding: Spacing.two,
     },
     previewLabel: {
-      color: colors.textMuted,
-      flexShrink: 1,
+      color: colors.textSecondary,
       fontSize: 12,
       fontWeight: "700",
     },
     previewTitle: {
       color: colors.textPrimary,
-      flexShrink: 1,
-      fontSize: 17,
+      fontSize: 16,
       fontWeight: "800",
-      lineHeight: 22,
     },
     previewValue: {
       color: colors.textPrimary,
-      flexShrink: 1,
       fontSize: 15,
-      fontWeight: "800",
+      fontWeight: "900",
+      fontVariant: ["tabular-nums"],
     },
     progressFill: {
       backgroundColor: colors.accent,
@@ -144,11 +123,12 @@ export const createShareWorkoutStyles = (colors: typeof Colors.light) =>
       height: "100%",
     },
     progressTrack: {
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderRadius: 999,
+      borderWidth: StyleSheet.hairlineWidth,
       height: 8,
       overflow: "hidden",
-      width: "100%",
     },
     screen: {
       backgroundColor: colors.background,
@@ -158,21 +138,19 @@ export const createShareWorkoutStyles = (colors: typeof Colors.light) =>
       gap: Spacing.two,
     },
     successMark: {
-      color: colors.accent,
-      fontSize: 34,
+      color: colors.success,
+      fontSize: 32,
       fontWeight: "900",
-      textAlign: "center",
+      lineHeight: 38,
     },
     switchControl: {
       flexShrink: 0,
-      transform: [{ scaleX: 0.86 }, { scaleY: 0.86 }],
     },
     title: {
       color: colors.textPrimary,
-      flexShrink: 1,
       fontSize: 24,
       fontWeight: "900",
-      lineHeight: 29,
+      lineHeight: 30,
     },
   });
 
