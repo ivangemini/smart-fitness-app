@@ -1,10 +1,16 @@
+import { X } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
+import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
+import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { Colors, Spacing } from '@/constants/theme';
 import { getWorkoutsHubWorkoutTitle } from '@/features/workouts/workoutsHubLocalization';
 import { useLocalization } from '@/localization';
 import { getWorkoutBuilderCopy } from '@/localization/workoutBuilderCopy';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import type { Workout } from '@/types';
 
 type ProgramWorkoutPickerModalProps = {
@@ -22,8 +28,11 @@ export function ProgramWorkoutPickerModal({
   onClose,
   onCreateNew,
 }: ProgramWorkoutPickerModalProps) {
+  const { colors } = useAppTheme();
   const { formatNumber, locale, t } = useLocalization();
+  const insets = useSafeAreaInsets();
   const copy = getWorkoutBuilderCopy(locale);
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [mode, setMode] = useState<'choice' | 'existing'>('choice');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const selectedCount = useMemo(() => selectedIds.length, [selectedIds]);
@@ -53,22 +62,25 @@ export function ProgramWorkoutPickerModal({
       : copy.addSelected;
 
   return (
-    <View style={styles.overlay}>
-      <View style={styles.panel}>
+    <View
+      style={[
+        styles.overlay,
+        {
+          paddingBottom: insets.bottom + Spacing.three,
+          paddingTop: insets.top + Spacing.three,
+        },
+      ]}>
+      <LiquidGlassSurface radius={28} style={styles.panel} variant="elevated">
         <View style={styles.header}>
           <View style={styles.headerCopy}>
             <Text style={styles.title}>{copy.addWorkout}</Text>
             <Text style={styles.subtitle}>{copy.addWorkoutSubtitle}</Text>
           </View>
-          <Pressable
+          <LiquidGlassIconButton
             accessibilityLabel={copy.cancel}
-            accessibilityRole="button"
+            Icon={X}
             onPress={onClose}
-            style={({ pressed }) => [styles.closeButton, pressed && styles.pressed]}>
-            <Text numberOfLines={2} style={styles.closeLabel}>
-              {copy.cancel}
-            </Text>
-          </Pressable>
+          />
         </View>
 
         {mode === 'choice' ? (
@@ -153,217 +165,176 @@ export function ProgramWorkoutPickerModal({
             )}
 
             <View style={styles.footer}>
-              <Pressable
-                accessibilityLabel={addLabel}
-                accessibilityRole="button"
-                accessibilityState={{ disabled: selectedCount === 0 }}
+              <PrimaryButton
                 disabled={selectedCount === 0}
+                label={addLabel}
                 onPress={() => {
                   onAddWorkouts(selectedIds);
                   onClose();
                 }}
-                style={({ pressed }) => [
-                  styles.primaryButton,
-                  selectedCount === 0 && styles.disabledButton,
-                  pressed && selectedCount > 0 && styles.pressed,
-                ]}>
-                <Text numberOfLines={2} style={styles.primaryLabel}>
-                  {addLabel}
-                </Text>
-              </Pressable>
+              />
             </View>
           </View>
         )}
-      </View>
+      </LiquidGlassSurface>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  backButton: {
-    alignSelf: 'flex-start',
-    paddingVertical: 8,
-  },
-  backLabel: {
-    color: Colors.dark.accent,
-    fontSize: 14,
-    fontWeight: '800',
-  },
-  checkmark: {
-    color: Colors.dark.accent,
-    flexShrink: 0,
-    fontSize: 18,
-    fontWeight: '900',
-    minWidth: 18,
-    textAlign: 'right',
-  },
-  choiceButton: {
-    backgroundColor: Colors.dark.surfaceSecondary,
-    borderCurve: 'continuous',
-    borderRadius: 18,
-    gap: 4,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: 16,
-  },
-  choiceGroup: {
-    gap: Spacing.two,
-  },
-  choiceSubtitle: {
-    color: Colors.dark.textSecondary,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  choiceTitle: {
-    color: Colors.dark.text,
-    fontSize: 16,
-    fontWeight: '900',
-  },
-  closeButton: {
-    alignItems: 'center',
-    backgroundColor: Colors.dark.surfaceSecondary,
-    borderCurve: 'continuous',
-    borderRadius: 16,
-    flexShrink: 0,
-    justifyContent: 'center',
-    maxWidth: 120,
-    minHeight: 40,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: 8,
-  },
-  closeLabel: {
-    color: Colors.dark.text,
-    flexShrink: 1,
-    fontSize: 14,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
-  disabledButton: {
-    opacity: 0.45,
-  },
-  emptyState: {
-    backgroundColor: Colors.dark.surfaceSecondary,
-    borderCurve: 'continuous',
-    borderRadius: 18,
-    gap: 4,
-    padding: Spacing.three,
-  },
-  emptySubtitle: {
-    color: Colors.dark.textSecondary,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  emptyTitle: {
-    color: Colors.dark.text,
-    fontSize: 15,
-    fontWeight: '800',
-  },
-  existingGroup: {
-    flex: 1,
-    gap: Spacing.two,
-    minHeight: 0,
-  },
-  footer: {
-    flexShrink: 0,
-    paddingTop: Spacing.one,
-  },
-  header: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    gap: Spacing.two,
-    justifyContent: 'space-between',
-    marginBottom: Spacing.two,
-  },
-  headerCopy: {
-    flex: 1,
-    gap: 4,
-    minWidth: 0,
-  },
-  list: {
-    flex: 1,
-    minHeight: 0,
-  },
-  listContent: {
-    gap: Spacing.two,
-    paddingBottom: Spacing.one,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFill,
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.74)',
-    justifyContent: 'center',
-    padding: Spacing.three,
-  },
-  panel: {
-    backgroundColor: Colors.dark.background,
-    borderCurve: 'continuous',
-    borderRadius: 28,
-    maxHeight: '92%',
-    maxWidth: 540,
-    padding: Spacing.three,
-    width: '100%',
-  },
-  primaryButton: {
-    alignItems: 'center',
-    backgroundColor: Colors.dark.accent,
-    borderCurve: 'continuous',
-    borderRadius: 18,
-    justifyContent: 'center',
-    minHeight: 48,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: 10,
-  },
-  primaryLabel: {
-    color: Colors.dark.background,
-    flexShrink: 1,
-    fontSize: 15,
-    fontWeight: '900',
-    textAlign: 'center',
-  },
-  pressed: {
-    opacity: 0.72,
-  },
-  row: {
-    alignItems: 'center',
-    backgroundColor: Colors.dark.surfaceSecondary,
-    borderCurve: 'continuous',
-    borderRadius: 18,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    minHeight: 64,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: 12,
-  },
-  rowCopy: {
-    flex: 1,
-    minWidth: 0,
-    paddingRight: Spacing.two,
-  },
-  rowMeta: {
-    color: Colors.dark.textSecondary,
-    flexShrink: 1,
-    fontSize: 12,
-    fontWeight: '700',
-    marginTop: 4,
-  },
-  rowSelected: {
-    borderColor: Colors.dark.accent,
-    borderWidth: StyleSheet.hairlineWidth,
-  },
-  rowTitle: {
-    color: Colors.dark.text,
-    flexShrink: 1,
-    fontSize: 15,
-    fontWeight: '800',
-  },
-  subtitle: {
-    color: Colors.dark.textSecondary,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  title: {
-    color: Colors.dark.text,
-    flexShrink: 1,
-    fontSize: 22,
-    fontWeight: '900',
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    backButton: {
+      alignSelf: 'flex-start',
+      minHeight: 44,
+      justifyContent: 'center',
+      paddingHorizontal: Spacing.one,
+      paddingVertical: Spacing.one,
+    },
+    backLabel: {
+      color: colors.accent,
+      fontSize: 14,
+      fontWeight: '800',
+    },
+    checkmark: {
+      color: colors.accent,
+      flexShrink: 0,
+      fontSize: 18,
+      fontWeight: '900',
+      minWidth: 18,
+      textAlign: 'right',
+    },
+    choiceButton: {
+      backgroundColor: colors.surfaceSecondary,
+      borderColor: colors.borderSubtle,
+      borderCurve: 'continuous',
+      borderRadius: 18,
+      borderWidth: StyleSheet.hairlineWidth,
+      gap: Spacing.half,
+      paddingHorizontal: Spacing.three,
+      paddingVertical: Spacing.four,
+    },
+    choiceGroup: {
+      gap: Spacing.two,
+    },
+    choiceSubtitle: {
+      color: colors.textSecondary,
+      fontSize: 13,
+      lineHeight: 18,
+    },
+    choiceTitle: {
+      color: colors.textPrimary,
+      fontSize: 16,
+      fontWeight: '900',
+    },
+    emptyState: {
+      backgroundColor: colors.surfaceSecondary,
+      borderColor: colors.borderSubtle,
+      borderCurve: 'continuous',
+      borderRadius: 18,
+      borderWidth: StyleSheet.hairlineWidth,
+      gap: Spacing.half,
+      padding: Spacing.three,
+    },
+    emptySubtitle: {
+      color: colors.textSecondary,
+      fontSize: 13,
+      lineHeight: 18,
+    },
+    emptyTitle: {
+      color: colors.textPrimary,
+      fontSize: 15,
+      fontWeight: '800',
+    },
+    existingGroup: {
+      flex: 1,
+      gap: Spacing.two,
+      minHeight: 0,
+    },
+    footer: {
+      flexShrink: 0,
+      paddingTop: Spacing.one,
+    },
+    header: {
+      alignItems: 'flex-start',
+      flexDirection: 'row',
+      gap: Spacing.two,
+      justifyContent: 'space-between',
+      marginBottom: Spacing.two,
+    },
+    headerCopy: {
+      flex: 1,
+      gap: Spacing.half,
+      minWidth: 0,
+    },
+    list: {
+      flex: 1,
+      minHeight: 0,
+    },
+    listContent: {
+      gap: Spacing.two,
+      paddingBottom: Spacing.one,
+    },
+    overlay: {
+      ...StyleSheet.absoluteFill,
+      alignItems: 'center',
+      backgroundColor: colors.overlay,
+      justifyContent: 'center',
+      paddingHorizontal: Spacing.three,
+    },
+    panel: {
+      maxHeight: '92%',
+      maxWidth: 540,
+      overflow: 'hidden',
+      padding: Spacing.three,
+      width: '100%',
+    },
+    pressed: {
+      opacity: 0.72,
+    },
+    row: {
+      alignItems: 'center',
+      backgroundColor: colors.surfaceSecondary,
+      borderColor: colors.borderSubtle,
+      borderCurve: 'continuous',
+      borderRadius: 18,
+      borderWidth: StyleSheet.hairlineWidth,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      minHeight: 64,
+      paddingHorizontal: Spacing.three,
+      paddingVertical: Spacing.three,
+    },
+    rowCopy: {
+      flex: 1,
+      minWidth: 0,
+      paddingRight: Spacing.two,
+    },
+    rowMeta: {
+      color: colors.textSecondary,
+      flexShrink: 1,
+      fontSize: 12,
+      fontWeight: '700',
+      marginTop: Spacing.half,
+    },
+    rowSelected: {
+      borderColor: colors.accent,
+      borderWidth: 1,
+    },
+    rowTitle: {
+      color: colors.textPrimary,
+      flexShrink: 1,
+      fontSize: 15,
+      fontWeight: '800',
+    },
+    subtitle: {
+      color: colors.textSecondary,
+      fontSize: 13,
+      lineHeight: 18,
+    },
+    title: {
+      color: colors.textPrimary,
+      flexShrink: 1,
+      fontSize: 22,
+      fontWeight: '900',
+    },
+  });
