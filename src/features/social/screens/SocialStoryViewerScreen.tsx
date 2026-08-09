@@ -65,10 +65,9 @@ export default function SocialStoryViewerScreen() {
           borderColor: glass.controlBorder,
           borderRadius: 24,
           borderWidth: StyleSheet.hairlineWidth,
-          flex: 1,
           justifyContent: 'center',
-          minHeight: 320,
           overflow: 'hidden',
+          width: '100%',
         },
         screen: { backgroundColor: glass.backgroundBase, flex: 1 },
         storyImage: { height: '100%', width: '100%' },
@@ -162,7 +161,12 @@ export default function SocialStoryViewerScreen() {
             <SecondaryButton label={copy.retry} onPress={() => void loadStory()} />
           </AppCard>
         ) : story && variant ? (
-          <View style={[styles.mediaArea, { backgroundColor }]}>
+          <View
+            style={[
+              styles.mediaArea,
+              { aspectRatio: story.image.aspectRatio, backgroundColor },
+            ]}
+          >
             <Image
               accessibilityLabel={`${copy.openStory}: ${story.author.displayName}`}
               resizeMode="contain"
