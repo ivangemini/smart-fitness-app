@@ -15,59 +15,37 @@ Home remains a social-first hybrid: compact personal metrics → server-authorit
 - Phase 10 responsive source hardening: complete for current source scope.
 - LG-1 foundation through LG-3I approved packages: complete.
 - LG-H1 social-first Home: complete.
-- **LG-H2 Stories backend foundation:** complete via backend PR #214 (`2339f6ce…`).
-- **LG-H2 Home read/view package:** complete via mobile PR #533 / exact head `6fde319be2c932620ecec177e3c7e4b7e7e0032a` / Mobile CI #1984 / merge `89bae8d1085ffd72131142700c1d625d6fa91f40`.
-- **Active LG-H2 package:** managed `story_image` upload/approval/create/owner-delete authoring.
+- **LG-H2 Stories:** complete for the current image-only v1 source scope.
+  - backend foundation: PR #214 / merge `2339f6ce…`;
+  - mobile read/view: PR #533 / merge `89bae8d1085ffd72131142700c1d625d6fa91f40`;
+  - mobile authoring/delete: PR #535 / exact head `8045e96c07cb2f1fac6113b56d0061cb1547f4ee` / Mobile CI #1990 / merge `ad17cc9d8be896cf9610027a63018c07119b5b01`.
+- **Progress/exercise secondary-material reassessment:** active.
+  - first bounded package complete via PR #537 / exact head `5ee5a3dfb1cf3591168821c3b4275b26e597aca4` / Mobile CI #1992 / merge `279a09e4b73e067a2cb0c1d836b8da809ce0b6b1`.
 - Coach material remains explicitly deferred.
 - LG-H3 Steps remains blocked by real native capability/permissions and must not be faked.
 - No OTA/EAS publication, native install/build, backend deployment, migration execution, or physical-device proof is implied by source/CI completion.
 
-## LG-H2 — Stories
+## LG-H2 — Stories complete
 
-### Complete server contract
+The merged backend owns the image-only v1 lifecycle/privacy contract: approved owned `story_image`, authenticated/idempotent create, server-derived 24-hour expiry, active-only reads, owner delete, account-deletion cascade, Following/self visibility, private/block/moderation enforcement, managed-media moderation/delivery/cleanup, viewed state, bounded ordering/pagination, retention cleanup and Social export/privacy coverage.
 
-The merged backend owns Story lifecycle and privacy:
+The merged mobile surface consumes that authority with strict parsing/API errors, bounded account-scoped cache/revalidation, separate Story state, Home strip, safe-area viewer, viewed acknowledgement, managed `story_image` upload/finalize/polling reuse, restart-safe draft recovery, exact approved `stateVersion` creation, deterministic idempotency, authoritative refresh after create/delete and owner deletion.
 
-- image-only v1, one approved owned `story_image`;
-- strict DTOs/errors and authenticated ownership;
-- idempotent creation;
-- 24-hour server expiry and active-only reads;
-- owner delete and account-deletion cascade;
-- Following/self, private-profile, symmetric block and moderation restriction enforcement;
-- existing managed-media upload/moderation/delivery/cleanup authority;
-- idempotent viewed state;
-- bounded ordering/pagination;
-- retention cleanup and Social export/privacy inventory.
+No placeholder/demo Story data is authorized. V1 remains image-only: no caption/text overlay/video/arbitrary URL/client-authored expiry.
 
-### Complete mobile read/view package
+## Progress/exercise secondary material — active reassessment
 
-PR #533 provides:
+PR #537 closed the first concrete post-Stories debt:
 
-- strict mobile parsing/API error mapping;
-- bounded account-scoped first-page cache with immediate backend revalidation and expiry filtering;
-- separate Story state from Following feed state;
-- Home horizontal strip between metrics and Following;
-- server `viewed` seen/unseen state;
-- safe-area/content-driven viewer;
-- idempotent viewed acknowledgement;
-- exact-head regression/type/export/doctor validation.
+- Exercise Detail now uses active semantic theme colors rather than hardcoded dark tokens;
+- `MuscleMap` is theme-adaptive;
+- shared `StatChip` is theme-adaptive across secondary cards;
+- Exercise Detail back chrome uses shared `LiquidGlassIconButton`;
+- the inert unimplemented More affordance was removed;
+- existing media, favorites, sharing, history/progress calculations, navigation and safe-area behavior were preserved;
+- source guards protect this boundary.
 
-No placeholder/demo Story data is authorized.
-
-### Active authoring package
-
-Implement next:
-
-- extend the **existing** mobile managed-media contracts/parsers to accept `story_image`;
-- reuse signed upload, private storage, finalization and moderation/delivery polling;
-- create a Story only from an owned `approved` asset using the exact current `stateVersion`;
-- expose upload/processing/review/rejected/failed states with localized UI;
-- refresh authoritative Home Stories after success;
-- expose owner delete;
-- keep v1 image-only — no caption/text overlay/video/arbitrary URL;
-- no repeated native blur in dense/repeated controls; use shared adaptive material primitives.
-
-LG-H2 is complete only when this owner authoring/deletion loop is merged and exact-head green.
+Continue auditing for other evidence-backed material/responsive debt: local legacy surfaces, duplicate control implementations, non-semantic colors, repeated blur/material boundaries or brittle fixed geometry. Do not churn already-correct shared primitives. If no material bounded debt remains, close the reassessment and advance to LG-4 Workouts.
 
 ## LG-H3 — Steps
 
@@ -75,21 +53,20 @@ LG-H2 is complete only when this owner authoring/deletion loop is merged and exa
 
 ## LG-H4 — feed retention
 
-Planned after Stories stability. Preserve chronological Following semantics unless a separately reviewed ranking contract exists.
+Later. Preserve chronological Following semantics unless a separately reviewed ranking contract exists.
 
-## Deferred secondary material
+## Deferred material
 
-Remaining Progress/exercise secondary material can resume after Stories. Coach recovery/input/lookback/history/domain material remains deferred unless explicitly reprioritized.
+Coach recovery/input/lookback/history/domain material remains deferred unless explicitly reprioritized.
 
 ## Later execution
 
-1. Finish LG-H2 Story authoring/deletion.
-2. Reassess remaining Progress/exercise secondary material.
-3. LG-4 Workouts material convergence.
-4. LG-5 bounded elevated chrome/motion.
-5. LG-6 visual QA/stabilization; physical evidence only when separately authorized.
-6. LG-H3 Steps only after native capability review/authorization.
+1. Finish the evidence-based Progress/exercise secondary-material audit.
+2. LG-4 Workouts material convergence.
+3. LG-5 bounded elevated chrome/motion.
+4. LG-6 visual QA/stabilization; physical evidence only when separately authorized.
+5. LG-H3 Steps only after native capability review/authorization.
 
 ## Execution rule
 
-Prefer coherent packages over micro-PRs. Home/Social integration must reuse existing Social and managed-media authority rather than duplicate it. Exact code, tests, current Git history and explicit product priority override stale roadmap prose.
+Prefer coherent packages over micro-PRs. Reuse existing adaptive material/navigation primitives instead of duplicating them. Exact code, tests, current Git history and explicit product priority override stale roadmap prose.

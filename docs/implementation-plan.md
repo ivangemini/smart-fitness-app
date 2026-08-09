@@ -7,12 +7,13 @@ This file is the **canonical forward roadmap**. Detailed current evidence belong
 ## Current verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current runtime mobile `main`: `ad17cc9d8be896cf9610027a63018c07119b5b01`.
-- Latest runtime merge: PR #535 — managed Story authoring lifecycle.
-- PR #535 exact validated head: `8045e96c07cb2f1fac6113b56d0061cb1547f4ee`; Mobile CI #1990 passed the full required gate.
+- Current runtime mobile `main`: `279a09e4b73e067a2cb0c1d836b8da809ce0b6b1`.
+- Latest runtime merge: PR #537 — Exercise Detail / shared secondary-material theme convergence.
+- PR #537 exact validated head: `5ee5a3dfb1cf3591168821c3b4275b26e597aca4`; Mobile CI #1992 passed the full required gate.
 - Backend Stories foundation: PR #214 merged as `2339f6ce…`; exact validated head `9a5af3aba1f4470f261eb9ea00a6e2f2f8979bfe`.
 - **LG-H2 Stories is complete for the current image-only v1 source scope.**
-- Active next product/source priority: **reassess remaining Progress/exercise secondary material before LG-4 Workouts material convergence**.
+- Progress/exercise reassessment has completed one bounded package: Exercise Detail, `MuscleMap`, and shared `StatChip` now use the active theme rather than hardcoded dark tokens.
+- Active product/source priority: **continue the remaining Progress/exercise secondary-material audit; move to LG-4 Workouts when no material bounded debt remains.**
 - **Coach material is deferred by explicit product priority.**
 
 Release readiness remains lower than source completeness because physical-device/native-release/production/provider evidence is separately gated.
@@ -44,7 +45,7 @@ Release readiness remains lower than source completeness because physical-device
 - **Phase 8 privacy/security hardening:** substantially complete for current source scope; environment/provider evidence remains external.
 - **Phase 9 release/privacy/data-access evidence:** separate cross-repository/release program, not implicitly activated by product work.
 - **Phase 10 Responsive Mobile UI Hardening:** complete for current source/CI scope.
-- **Phase 11 Liquid Glass + Home convergence:** active; LG-H2 Stories is complete and remaining Progress/exercise material is next for reassessment.
+- **Phase 11 Liquid Glass + Home convergence:** active; LG-H2 Stories is complete and Progress/exercise secondary-material reassessment is active.
 
 ---
 
@@ -97,7 +98,7 @@ The pre-contract `homeSocialFirst` guard was updated from “Stories must not ex
 
 Mobile PR #535 completed the owner lifecycle on top of the existing managed-media authority:
 
-- managed-media contracts/API/parsers now support `story_image` without a second uploader;
+- managed-media contracts/API/parsers support `story_image` without a second uploader;
 - Story image selection/preparation reuses the existing image pipeline, including pending picker-result recovery after Android activity destruction;
 - unfinished unbound Story media is stored only as an account-scoped restart-safe draft containing the server asset ID and local preview URI;
 - signed upload, finalize and bounded server polling reuse the existing managed-media composition;
@@ -129,13 +130,25 @@ Later. Preserve chronological Following semantics until a separately reviewed ra
 
 ## Active reassessment — Progress/exercise secondary material
 
-With LG-H2 source scope complete, reassess the remaining Progress/exercise secondary material against the current Liquid Glass and responsive-mobile architecture before selecting the next bounded runtime package. Do not reopen deferred Coach material implicitly.
+PR #537 closed the first concrete debt found in this reassessment:
+
+- `ExerciseDetailScreen` no longer owns a hardcoded dark palette and now consumes the active application theme through extracted adaptive styles;
+- `MuscleMap` now renders its SVG/background/border/text from active semantic theme colors;
+- shared `StatChip` now follows the active theme, improving secondary cards wherever the primitive is reused;
+- Exercise Detail back navigation now uses the shared `LiquidGlassIconButton`;
+- the inert unimplemented “More” button affordance was removed rather than exposing a false interactive control;
+- media, favorites, sharing, history/progress calculations, navigation, persistence and safe-area/content-driven behavior were preserved;
+- a source guard prevents hardcoded `Colors.dark` from returning to this boundary.
+
+PR #537 exact validated head `5ee5a3dfb1cf3591168821c3b4275b26e597aca4` passed Mobile CI #1992: repository and changed-file line audits, TypeScript, full regression suite, expanded model smoke, Expo export and Expo Doctor. It merged as `279a09e4b73e067a2cb0c1d836b8da809ce0b6b1`; no review blockers remained.
+
+Continue auditing remaining Progress/exercise secondary surfaces for actual material/responsive debt such as local legacy surface styling, duplicate controls, non-semantic colors or layout geometry. Do not create cosmetic churn when shared primitives and current architecture are already correct. If no meaningful bounded debt remains, record that conclusion and move to LG-4 Workouts.
 
 Coach recovery scores/inputs, limitation choices, Safety lookback controls, history filters and Combined domain/result material remain explicitly deferred unless reprioritized.
 
 ## Later Phase 11 execution
 
-1. Reassess remaining Progress/exercise secondary material and select the next bounded package from current code/evidence.
+1. Finish the remaining Progress/exercise secondary-material audit and only implement evidence-backed bounded packages.
 2. LG-4 Workouts material convergence.
 3. LG-5 bounded elevated chrome/motion.
 4. LG-6 visual QA/stabilization; physical evidence only when separately authorized.

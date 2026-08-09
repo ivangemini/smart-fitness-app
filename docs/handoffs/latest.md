@@ -5,60 +5,56 @@ Updated: 2026-08-09
 ## Checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current runtime `main`: `ad17cc9d8be896cf9610027a63018c07119b5b01`.
-- Latest runtime merge: PR #535 `Add managed Story authoring lifecycle`.
-- PR #535 exact validated head: `8045e96c07cb2f1fac6113b56d0061cb1547f4ee`; Mobile CI #1990 passed the full required gate.
+- Current runtime `main`: `279a09e4b73e067a2cb0c1d836b8da809ce0b6b1`.
+- Latest runtime merge: PR #537 `Converge exercise detail theme materials`.
+- PR #537 exact validated head: `5ee5a3dfb1cf3591168821c3b4275b26e597aca4`; Mobile CI #1992 passed the full required gate.
 - Backend repo: `ivangemini/smart-fitness-backend`.
 - Stories backend foundation: PR #214 merged as `2339f6ce…`; exact validated head `9a5af3aba1f4470f261eb9ea00a6e2f2f8979bfe`.
 - **LG-H2 Stories is complete for the current image-only v1 source scope.**
-- Active priority: **reassess remaining Progress/exercise secondary material, then continue to LG-4 Workouts material convergence**.
+- Active priority: **continue the remaining Progress/exercise secondary-material audit; move to LG-4 Workouts when no meaningful bounded debt remains**.
 - **Coach material remains deferred.**
 
 ## Stories completed
 
 Backend v1 is real and server-authoritative: image-only Stories, 24-hour expiry, Following/self visibility, private/block/moderation enforcement, viewed state, idempotent create, owner delete, account-deletion cascade, retention cleanup and privacy/export coverage all exist in merged source and PostgreSQL CI.
 
-Mobile PR #533 consumes the read/view contract with:
+Mobile PR #533 consumes the read/view contract with strict parsing/API boundaries, bounded account-scoped cache and revalidation, separate Story state, Home Story strip, server `viewed` state, safe-area viewer and idempotent viewed acknowledgement.
 
-- strict DTO/media/lifecycle parsing and Story error mapping;
-- authenticated Story API boundary;
-- account-scoped two-minute bounded cache with expiry filtering and backend revalidation;
-- separate `useSocialStories` ownership;
-- Home order: daily metrics → Stories → Following;
-- seen/unseen ring from server `viewed` state;
-- safe-area/content-driven Story viewer using shared `LiquidGlassIconButton`;
-- pull-to-refresh of both Stories and Following without coupling their state.
+Mobile PR #535 completes owner authoring/delete through the existing managed-media authority: `story_image`, signed upload/finalize/polling reuse, restart-safe account-scoped draft state, pending picker recovery, exact approved `stateVersion` create gate, deterministic idempotency, authoritative Home refresh and owner delete. Story v1 remains image-only.
 
-Mobile PR #535 completes owner authoring/delete with:
+PR #535 exact head `8045e96c07cb2f1fac6113b56d0061cb1547f4ee` passed Mobile CI #1990 and merged as `ad17cc9d8be896cf9610027a63018c07119b5b01`.
 
-- `story_image` support through the existing managed-media contracts/parser/API;
-- reuse of the existing image preparation, signed upload, finalize and polling pipeline — no second uploader;
-- account-scoped restart-safe unbound-media draft state;
-- recovery of pending ImagePicker results after Android activity destruction;
-- localized pending/processing/review/approved/rejected/failed/deleted states;
-- create gated on an owned `approved` asset with its exact current `stateVersion`;
-- deterministic asset-scoped create idempotency;
-- authoritative Home Story revalidation after create and delete;
-- `Your story` authoring entry even for an empty server Story list;
-- owner delete surfaced only after resolving the current server Social profile;
-- image-only v1 boundaries preserved: no arbitrary URL, caption, text overlay, video or client-authored expiry.
+## Progress / exercise reassessment
 
-PR #535 exact head `8045e96c07cb2f1fac6113b56d0061cb1547f4ee` passed Mobile CI #1990: line audits, TypeScript, **1560/1560 regression tests**, expanded model smoke, Expo export and Expo Doctor. No review blockers remained. It merged as `ad17cc9d8be896cf9610027a63018c07119b5b01`.
+The first evidence-backed package is complete in mobile PR #537:
 
-Validation also repaired a hidden docs-only regression from PR #534: the canonical local-state decision link and the explicit “no remaining approved autonomous source-refactor phase” marker had been removed while Markdown-only workflow filters skipped Mobile CI. The source guard remains intact; do not remove those markers accidentally in future roadmap rewrites.
+- `ExerciseDetailScreen` uses the active application theme via extracted adaptive styles instead of hardcoded `Colors.dark`;
+- `MuscleMap` derives its SVG and shell colors from active semantic theme colors;
+- shared `StatChip` is theme-adaptive wherever reused;
+- Exercise Detail back navigation uses `LiquidGlassIconButton`;
+- the inert unimplemented More affordance was removed;
+- media play/pause uses the shared button boundary;
+- domain behavior, media/GIF behavior, favorites, share, history/progress calculations, navigation and safe-area geometry were preserved;
+- a source guard prevents hardcoded dark palette regression in this boundary.
+
+PR #537 exact head `5ee5a3dfb1cf3591168821c3b4275b26e597aca4` passed Mobile CI #1992: line audits, TypeScript, full regression suite, expanded model smoke, Expo export and Expo Doctor. No review blockers remained. It merged as `279a09e4b73e067a2cb0c1d836b8da809ce0b6b1`.
+
+A repository search after the package found no remaining indexed `Colors.dark` occurrences. This does **not** prove the whole Progress/exercise material audit is finished; inspect other debt classes before choosing another package.
 
 ## Next package selection
 
-Do not invent the next runtime package from stale handoff text. Start by inspecting the current Progress/exercise secondary surfaces against:
+Continue inspection of current Progress/exercise secondary surfaces against:
 
 - `docs/implementation-plan.md`;
 - `docs/architecture/responsive-mobile-ui.md`;
 - `docs/architecture/liquid-glass-ui.md`;
 - current source/tests and actual Git history.
 
-Select one bounded coherent Progress/exercise material package from actual remaining debt, preserve existing domain logic and run exact-head Mobile CI before merge.
+Look for actual legacy surface styling, duplicate controls, non-semantic colors, fixed/magic geometry or repeated material implementations. Preserve domain logic. Do not touch deferred Coach material. If no meaningful bounded debt remains, document that and continue to LG-4 Workouts rather than inventing a refactor.
 
-After that, continue to LG-4 Workouts material convergence unless the canonical roadmap is explicitly reprioritized.
+## Durable documentation / CI lesson
+
+Markdown-only workflow filters can skip Mobile CI even when source tests assert literal canonical documentation markers. Keep the reviewed local-state decision link and the explicit `There is no remaining approved autonomous source-refactor phase` marker in `docs/implementation-plan.md` unless the underlying contract is deliberately changed.
 
 ## Boundaries
 
