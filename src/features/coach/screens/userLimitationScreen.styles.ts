@@ -106,18 +106,6 @@ export const styles = StyleSheet.create({
 
 export const createUserLimitationScreenStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
-    backButton: {
-      alignItems: 'center',
-      height: 44,
-      justifyContent: 'center',
-      width: 44,
-    },
-    backLabel: {
-      color: colors.textPrimary,
-      fontSize: 42,
-      fontWeight: '300',
-      lineHeight: 42,
-    },
     bodyText: {
       color: colors.textSecondary,
       fontSize: Typography.body.fontSize,
