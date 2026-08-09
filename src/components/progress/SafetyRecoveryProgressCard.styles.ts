@@ -106,6 +106,9 @@ export const createSafetyRecoveryProgressCardStyles = (
       backgroundColor: glass.semanticAccentFill,
       borderColor: glass.accentBorder,
     },
+    periodChipSelectedPressed: {
+      backgroundColor: glass.accentPressedFill,
+    },
     periodHelp: {
       color: colors.textMuted,
       fontSize: 12,
