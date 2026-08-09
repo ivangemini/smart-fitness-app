@@ -19,25 +19,28 @@ const styleBlock = (source: string, name: string) => {
   return match?.[1] ?? '';
 };
 
+const sharedBack = readSource('src/components/ui/LiquidGlassIconButton.tsx');
+
 describe('Coach input touch targets', () => {
-  it('keeps Recovery score, clear and back controls at 44 pt minimum', () => {
+  it('keeps Recovery score, clear and shared back controls at 44 pt minimum', () => {
     const picker = readSource('src/features/coach/components/RecoveryScorePicker.tsx');
-    const screenStyles = readSource(
-      'src/features/coach/screens/recoveryCheckInScreen.styles.ts',
-    );
+    const screen = readSource('src/features/coach/screens/RecoveryCheckInScreen.tsx');
 
     expect(styleBlock(picker, 'scoreButton')).toContain('minHeight: 44');
     expect(styleBlock(picker, 'clearButton')).toContain('minHeight: 44');
     expect(picker).toContain('accessibilityState={{ disabled: value === null }}');
-    expect(styleBlock(screenStyles, 'backButton')).toContain('height: 44');
-    expect(styleBlock(screenStyles, 'backButton')).toContain('width: 44');
+    expect(screen).toContain('LiquidGlassIconButton');
+    expect(styleBlock(sharedBack, 'pressable')).toContain('height: 44');
+    expect(styleBlock(sharedBack, 'pressable')).toContain('width: 44');
   });
 
-  it('keeps Limitation movement and back controls at 44 pt minimum', () => {
-    const source = readSource('src/features/coach/screens/userLimitationScreen.styles.ts');
+  it('keeps Limitation movement and shared back controls at 44 pt minimum', () => {
+    const styles = readSource('src/features/coach/screens/userLimitationScreen.styles.ts');
+    const screen = readSource('src/features/coach/screens/UserLimitationScreen.tsx');
 
-    expect(styleBlock(source, 'movementChoice')).toContain('minHeight: 44');
-    expect(styleBlock(source, 'backButton')).toContain('height: 44');
-    expect(styleBlock(source, 'backButton')).toContain('width: 44');
+    expect(styleBlock(styles, 'movementChoice')).toContain('minHeight: 44');
+    expect(screen).toContain('LiquidGlassIconButton');
+    expect(styleBlock(sharedBack, 'pressable')).toContain('height: 44');
+    expect(styleBlock(sharedBack, 'pressable')).toContain('width: 44');
   });
 });

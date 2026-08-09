@@ -19,21 +19,26 @@ const styleBlock = (source: string, name: string) => {
   return match?.[1] ?? '';
 };
 
+const sharedBack = readSource('src/components/ui/LiquidGlassIconButton.tsx');
+
 describe('Coach review touch targets', () => {
   it('keeps Safety & Recovery review navigation and period controls at 44 pt minimum', () => {
-    const source = readSource(
+    const screen = readSource('src/features/coach/screens/SafetyRecoveryCoachScreen.tsx');
+    const styles = readSource(
       'src/features/coach/screens/safetyRecoveryCoachScreen.styles.ts',
     );
 
-    expect(styleBlock(source, 'backButton')).toContain('height: 44');
-    expect(styleBlock(source, 'backButton')).toContain('width: 44');
-    expect(styleBlock(source, 'periodButton')).toContain('minHeight: 44');
+    expect(screen).toContain('LiquidGlassIconButton');
+    expect(styleBlock(sharedBack, 'pressable')).toContain('height: 44');
+    expect(styleBlock(sharedBack, 'pressable')).toContain('width: 44');
+    expect(styleBlock(styles, 'periodButton')).toContain('minHeight: 44');
   });
 
-  it('keeps Combined review back navigation at 44 pt', () => {
-    const source = readSource('src/features/coach/screens/combinedCoachScreenStyles.ts');
+  it('keeps Combined review shared back navigation at 44 pt', () => {
+    const screen = readSource('src/features/coach/screens/CombinedCoachScreen.tsx');
 
-    expect(styleBlock(source, 'backButton')).toContain('height: 44');
-    expect(styleBlock(source, 'backButton')).toContain('width: 44');
+    expect(screen).toContain('LiquidGlassIconButton');
+    expect(styleBlock(sharedBack, 'pressable')).toContain('height: 44');
+    expect(styleBlock(sharedBack, 'pressable')).toContain('width: 44');
   });
 });

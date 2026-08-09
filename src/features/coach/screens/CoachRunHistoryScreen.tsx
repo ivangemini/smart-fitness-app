@@ -7,8 +7,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { createCoachHistoryApi, type CoachRunHistoryItem } from '@/api/coach/history';
 import type { CoachDomain, CoachRunStatus } from '@/api/coach';
 import { AppCard } from '@/components/ui/AppCard';
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
-import { Colors, MaxContentWidth, Radii, Spacing, Typography } from '@/constants/theme';
+import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme';
 import { useAuthSession } from '@/hooks/useAuthSession';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
@@ -79,13 +80,11 @@ export default function CoachRunHistoryScreen() {
   return (
     <View style={styles.screen}>
       <View style={[styles.header, { paddingTop: insets.top + Spacing.two }]}> 
-        <Pressable
+        <LiquidGlassIconButton
           accessibilityLabel={t('common.back')}
-          accessibilityRole="button"
+          Icon={ChevronLeft}
           onPress={() => router.back()}
-          style={styles.backButton}>
-          <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
-        </Pressable>
+        />
         <View style={styles.headerCopy}>
           <Text style={styles.title}>{copy.title}</Text>
           <Text style={styles.subtitle}>{copy.subtitle}</Text>
@@ -198,8 +197,6 @@ const stylesStatic = StyleSheet.create({
 });
 
 const createStyles = (colors: typeof Colors.light) => StyleSheet.create({
-  backButton: { alignItems: 'center', borderColor: colors.borderSubtle, borderRadius: Radii.large, borderWidth: 1, height: 44, justifyContent: 'center', width: 44 },
-  backLabel: { color: colors.textPrimary, fontSize: 32, lineHeight: 34 },
   body: { color: colors.textSecondary, fontSize: Typography.body.fontSize, lineHeight: Typography.body.lineHeight },
   cardHeader: { alignItems: 'center', flexDirection: 'row', gap: Spacing.two, justifyContent: 'space-between' },
   cardTitle: { color: colors.textPrimary, fontSize: Typography.cardTitle.fontSize, fontWeight: Typography.cardTitle.fontWeight },

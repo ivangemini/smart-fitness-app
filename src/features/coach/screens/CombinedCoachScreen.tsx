@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,6 +10,7 @@ import {
   type CoachRunEnvelope,
 } from '@/api/coach';
 import { AppCard } from '@/components/ui/AppCard';
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { Colors, Spacing } from '@/constants/theme';
@@ -334,13 +335,11 @@ export default function CombinedCoachScreen() {
   return (
     <View style={themedStyles.screen}>
       <View style={[themedStyles.header, { paddingTop: insets.top + Spacing.two }]}>
-        <Pressable
+        <LiquidGlassIconButton
           accessibilityLabel={copy.back}
-          accessibilityRole="button"
+          Icon={ChevronLeft}
           onPress={() => router.back()}
-          style={({ pressed }) => [themedStyles.backButton, pressed && styles.pressed]}>
-          <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
-        </Pressable>
+        />
         <View style={styles.flexCopy}>
           <Text style={themedStyles.title}>{copy.title}</Text>
           <Text style={themedStyles.subtitle}>{copy.subtitle}</Text>

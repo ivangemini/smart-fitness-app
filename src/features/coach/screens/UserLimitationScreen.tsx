@@ -1,10 +1,11 @@
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
-import { Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Platform, ScrollView, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppCard } from '@/components/ui/AppCard';
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { Spacing } from '@/constants/theme';
@@ -174,13 +175,11 @@ export default function UserLimitationScreen() {
   return (
     <View style={themedStyles.screen}>
       <View style={[themedStyles.header, { paddingTop: insets.top + Spacing.two }]}>
-        <Pressable
+        <LiquidGlassIconButton
           accessibilityLabel={copy.back}
-          accessibilityRole="button"
+          Icon={ChevronLeft}
           onPress={() => router.back()}
-          style={({ pressed }) => [themedStyles.backButton, pressed && styles.pressed]}>
-          <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
-        </Pressable>
+        />
         <View style={styles.rowCopy}>
           <Text style={themedStyles.title}>{copy.title}</Text>
           <Text style={themedStyles.subtitle}>{copy.subtitle}</Text>

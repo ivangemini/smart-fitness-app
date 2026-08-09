@@ -19,16 +19,19 @@ const screens = [
   'src/features/coach/screens/RecoveryCheckInScreen.tsx',
   'src/features/coach/screens/SafetyRecoveryCoachScreen.tsx',
   'src/features/coach/screens/UserLimitationScreen.tsx',
+  'src/features/coach/screens/CoachRunHistoryScreen.tsx',
 ] as const;
 
 describe('secondary Coach back icon language', () => {
-  it.each(screens)('%s uses the Lucide ChevronLeft action icon', (path) => {
+  it.each(screens)('%s uses the shared Liquid Glass ChevronLeft action', (path) => {
     const source = readSource(path);
 
     expect(source).toContain("import { ChevronLeft } from 'lucide-react-native';");
-    expect(source).toContain(
-      '<ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />',
-    );
+    expect(source).toContain('LiquidGlassIconButton');
+    expect(source).toContain('Icon={ChevronLeft}');
+    expect(source).toContain('onPress={() => router.back()}');
+    expect(source).not.toContain('styles.backButton');
+    expect(source).not.toContain('themedStyles.backButton');
     expect(source).not.toContain('>‹</Text>');
   });
 });
