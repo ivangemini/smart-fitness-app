@@ -12,16 +12,6 @@ export const createSocialWorkoutPostSurfaceStyles = (
   colors: typeof Colors.dark,
 ) =>
   StyleSheet.create({
-    backButton: {
-      alignItems: "center",
-      borderColor: colors.borderSubtle,
-      borderRadius: Radii.large,
-      borderWidth: StyleSheet.hairlineWidth,
-      flexShrink: 0,
-      height: 44,
-      justifyContent: "center",
-      width: 44,
-    },
     body: {
       color: colors.textSecondary,
       flexShrink: 1,
