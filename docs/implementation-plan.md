@@ -7,10 +7,10 @@ This file is the **canonical forward roadmap**. PR-by-PR history and exact valid
 ## Current verified mobile checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current mobile `main`: `be332729c070bbdf5050536d038b270656a5f0e8`.
-- Latest runtime merge: `be332729c070bbdf5050536d038b270656a5f0e8` (PR #515 — LG-3A Settings controls/disclosures).
-- PR #515 exact validated head: `cf12f4c62eacce618a6c7832163d438514dd7f1d`; Mobile CI #1951 passed the full required gate.
-- Active package: **Phase 11 / LG-3B Nutrition secondary surfaces**.
+- Current mobile `main`: `8f7df7507c3a833cdfa82b636820080106b15b9c`.
+- Latest runtime merge: `8f7df7507c3a833cdfa82b636820080106b15b9c` (PR #517 — LG-3B Nutrition secondary surfaces).
+- PR #517 exact validated head: `f3d4a2a6977e96ba3672a1d6b663145509aa0bc5`; Mobile CI #1953 passed the full required gate.
+- Active package: **Phase 11 / LG-3C Social interaction controls**.
 - Backend baseline inspected for dependency awareness: `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`; backend is not part of this package.
 
 Release readiness remains lower than source completeness because staging/provider/physical-device/native-release/production evidence is separately gated.
@@ -107,13 +107,14 @@ Focused execution roadmap: `docs/roadmap/liquid-glass.md`.
 
 ## Completed milestones
 
-- **LG-1 shared foundation:** complete via PR #501 / Mobile CI #1922.
-- **LG-2A original Home pilot:** complete via PR #503 / Mobile CI #1925.
-- **LG-H1 social-first Home:** complete via PR #505 / Mobile CI #1931.
-- **LG-2B Progress + Coach primary surfaces:** complete across PR #507 / Mobile CI #1937 and PR #509 / Mobile CI #1943 / merge `7355c0aa8b4b94a7cac8a7682acba90808739b77`.
-- **LG-2C Nutrition primary surfaces:** complete via PR #511 / Mobile CI #1947 / merge `eaad35aac4733ba7488ae0aa151c285dca3acc38`.
-- **LG-2D Profile primary surfaces:** complete via PR #513 / Mobile CI #1949 / merge `fb5943c1497cf893858d59ca6b41dcab60790da8`.
-- **LG-3A Settings controls/disclosures:** complete via PR #515 / exact green head `cf12f4c62eacce618a6c7832163d438514dd7f1d` / Mobile CI #1951 / merge `be332729c070bbdf5050536d038b270656a5f0e8`.
+- **LG-1 shared foundation:** PR #501 / Mobile CI #1922.
+- **LG-2A Home pilot:** PR #503 / Mobile CI #1925.
+- **LG-H1 social-first Home:** PR #505 / Mobile CI #1931.
+- **LG-2B Progress + Coach primary:** PR #507 + #509 / Mobile CI #1937 + #1943.
+- **LG-2C Nutrition primary:** PR #511 / Mobile CI #1947 / merge `eaad35aac4733ba7488ae0aa151c285dca3acc38`.
+- **LG-2D Profile primary:** PR #513 / Mobile CI #1949 / merge `fb5943c1497cf893858d59ca6b41dcab60790da8`.
+- **LG-3A Settings controls/disclosures:** PR #515 / Mobile CI #1951 / merge `be332729c070bbdf5050536d038b270656a5f0e8`.
+- **LG-3B Nutrition secondary surfaces:** PR #517 / exact green head `f3d4a2a6977e96ba3672a1d6b663145509aa0bc5` / Mobile CI #1953 / merge `8f7df7507c3a833cdfa82b636820080106b15b9c`.
 
 Home remains a social-first hybrid: compact personal daily metrics → future Stories only after real contracts → existing server-authoritative Following Feed. Do not fabricate Stories or Steps.
 
@@ -129,60 +130,46 @@ LG-2B Progress + Coach, LG-2C Nutrition primary, and LG-2D Profile primary are c
 
 ## LG-3 — secondary surfaces
 
-Execute secondary surfaces in coherent batches by shared defect rather than route count.
-
 ### LG-3A — Settings controls and disclosures
 
-**Status: complete for source/CI scope.** Settings back navigation, shared `SegmentedControl`, and Personal Details formula radios now use shared/adaptive Liquid Glass controls with explicit neutral/selected pressed states. Existing AppCard/divider ownership, validation/save behavior, accessibility roles/states, safe-area and keyboard behavior remain intact.
+**Status: complete.** Shared/adaptive back navigation, segmented controls and Personal Details formula radios are in source with explicit pressed material states.
 
 ### LG-3B — Nutrition secondary surfaces
 
+**Status: complete.** Nutrition calendar and centralized Add Food base/sheet/scanner material now use adaptive card/control/accent tokens. Add Food orchestration, search/templates/persistence/scanner logic and existing camera permission behavior were not changed.
+
+### LG-3C — Social interaction controls
+
 **Status: active.**
 
-Audited bounded scope:
+Bounded package:
 
-- migrate Nutrition date-picker day/header/month controls to adaptive glass tokens while preserving calendar/date/routing semantics and touch ownership;
-- pass the active Liquid Glass palette through the existing Add Food route/style factory;
-- migrate Add Food base/sheet/scanner style factories from direct `surfacePrimary` / `surfaceSecondary` / `borderSubtle` material to adaptive card/control/accent tokens;
-- do not change food search/provider results, favorites, meal templates, food entry mutation/persistence, barcode lookup/manual-food behavior, localization, keyboard/reflow, or existing `expo-camera` permission/dependency behavior;
-- do not add native blur to dense Add Food rows, modal sheet content, scanner camera/status cards, or controls.
+- migrate `SocialReportModal` sheet/reason/radio material from legacy direct surfaces and opacity press feedback to adaptive elevated/card/control/accent tokens with explicit neutral/selected pressed states;
+- replace `SocialRelationshipListsScreen` local back action with shared `LiquidGlassIconButton` and migrate relationship tabs to adaptive neutral/selected/pressed states;
+- migrate relationship-list avatar fallback material while retaining existing `AppCard` rows and lightweight profile-link feedback;
+- preserve Social report moderation reason/submit/error/rate-limit semantics, API authority, relationship paging/stale-request protection, follow/request actions, privacy/visibility rules and cache semantics;
+- no native blur per report option/list item.
 
-After LG-3B, continue Settings/account, Sync & Backup, Social detail, Progress detail, Coach detail, and exercise detail/library surfaces by shared defect.
+After LG-3C, continue remaining Settings/account, Sync & Backup, Social detail, Progress detail, Coach detail and exercise detail/library surfaces by shared defect.
 
 ## Remaining Phase 11 execution order
 
-1. **LG-3 secondary surfaces**, currently LG-3B Nutrition secondary surfaces.
-2. **LG-4 Workouts:** hub/program cards → library/builder → active workout chrome → set-table states → finish/summary. Preserve session persistence and dense set-table readability.
-3. **LG-5 elevated chrome/motion:** use true blur only for bounded elevated/floating roles.
-4. **LG-6 visual QA/stabilization:** exact-head CI/source guards first; physical cross-device/light-dark/Dynamic Type/keyboard/performance evidence only when separately authorized.
-5. Revisit LG-H2/H3 when their contract/native blockers are actually resolved; do not use placeholders as a substitute.
+1. **LG-3 secondary surfaces**, currently LG-3C Social interaction controls.
+2. **LG-4 Workouts:** hub/program cards → library/builder → active workout chrome → set-table states → finish/summary.
+3. **LG-5 elevated chrome/motion:** true blur only for bounded elevated/floating roles.
+4. **LG-6 visual QA/stabilization:** exact-head CI/source guards first; physical evidence only when separately authorized.
+5. Revisit LG-H2/H3 only when blockers are genuinely resolved.
 
 ---
 
 # Validation policy
 
-For runtime/code PRs, use repository-required exact-head Mobile CI:
+Runtime/code PRs require exact-head Mobile CI: repository and changed-file line limits, TypeScript, full regression, expanded model smoke, Expo export and Expo Doctor. Responsive/Liquid Glass packages must also follow their canonical architecture documents. CI does not substitute for physical-device evidence.
 
-- repository and changed-file line limits;
-- TypeScript;
-- full regression suite and relevant source contracts;
-- expanded sync/model smoke;
-- Expo export;
-- Expo Doctor.
-
-Responsive and Liquid Glass UI packages must also be reviewed against their canonical architecture documents. CI does not substitute for physical-device evidence.
-
-For docs-only synchronization, verify diff/ancestry; workflows may intentionally ignore Markdown-only changes.
+Docs-only synchronization uses diff/ancestry verification; workflows may intentionally ignore Markdown-only changes.
 
 # Current definition of done
 
-The active LG-3B package is done only when:
-
-- audited Nutrition date-picker and Add Food style factories use adaptive Liquid Glass card/control/accent tokens instead of direct legacy surface recipes;
-- product/search/template/scanner behavior, localization, persistence, routing, keyboard/reflow and touch ownership remain intact;
-- no native blur is added to dense or camera-backed secondary surfaces;
-- repository line limits, TypeScript, regression tests, model smoke, Expo export and Expo Doctor pass on the exact PR head;
-- roadmap/status/handoff agree with actual Git history;
-- the validated exact head merges without unresolved review blockers.
+LG-3C is done only when Social report and relationship-list interaction material uses adaptive shared tokens/primitives, Social authority/domain behavior is unchanged, no per-option/list native blur is introduced, exact-head Mobile CI is green, docs agree with Git history, and the validated head merges without unresolved review blockers.
 
 Physical-device, OTA/EAS, native-release, provider, production and store evidence remain separate gates and must not be inferred from source/CI completion.
