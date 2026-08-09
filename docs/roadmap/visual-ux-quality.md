@@ -26,6 +26,8 @@ Updated: 2026-08-09
 - VUX-7B Home theme consistency PR #494 → `4baa1f97b2fef5d68e53480e6570de227c5c9c92`.
 - VUX-7C Coach tab theme consistency PR #495 → `e552b55af00fba111050564e89c5d29aeff5a626`.
 - VUX-7D secondary Progress theme/inset consistency PR #496 → `03e54d7a2d3ba375a9f55bede1acb0db8f4c9be3`.
+- VUX-7E Sync & Backup theme/safe-area consistency PR #498 → `7907f7684fcb409fb83fa03c4c2cbb7e71382cf9`.
+- VUX-7F Account Sessions shell/theme hardening PR #499 → `7f1bf913e2c74df9abaec4cd2209c71a501f824d`.
 - No visual package is active; continue the secondary-surface audit only from concrete source findings.
 - Backend is a separate workstream and remains outside this roadmap execution.
 
@@ -129,6 +131,22 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - Weight parsing/conversion, `addWeightEntry`, analytics, units, recent-entry ordering, workout-history navigation, routes, persistence and sync remain unchanged.
 - The existing Progress source-contract guard now covers both secondary weight surfaces.
 - Exact head `7aa8be9148b75f76510caef1590ffc69b0446b50` passed full Mobile CI #1915 before merge.
+
+### VUX-7E — Sync & Backup theme and safe-area consistency — PR #498
+
+- Sync & Backup now resolves screen, copy, rows and dividers from `AppThemeProvider` instead of static `Colors.dark`.
+- The legacy `safeAreaInsets.bottom + 120` clearance was replaced with runtime safe-area spacing and `flexGrow: 1` content reachability.
+- Sync status, `syncNow`, recovery, conflict review, diagnostics, localization, persistence and sync contracts remain unchanged.
+- Exact head `1f8ea170aa69cd18eae49eab732263b2b177ceef` passed full Mobile CI #1917 before merge.
+
+### VUX-7F — Account Sessions shell and theme hardening — PR #499
+
+- Account Sessions now resolves presentation from `AppThemeProvider` instead of static `Colors.dark`.
+- The hidden-header route owns runtime top/bottom safe areas and `flexGrow: 1` content reachability.
+- The raw `‹` back glyph was replaced with Lucide `ChevronLeft` while preserving the existing 44 × 44 back target and localized accessibility label.
+- Header/session rows now have bounded shrink ownership for localized and larger-text pressure.
+- Session loading/refresh, listing, single-session revoke, revoke-other-sessions, confirmations, auth gating and error localization remain unchanged.
+- Exact head `10264567b6fca99ab4677414e3f28c3fa24b6c45` passed full Mobile CI #1919 before merge.
 
 ## Remaining hierarchy / validation review order
 
