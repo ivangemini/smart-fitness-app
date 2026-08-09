@@ -1,7 +1,8 @@
-import { Alert, FlatList, Modal, Pressable, Text, View } from 'react-native';
 import { useMemo } from 'react';
+import { Alert, FlatList, Modal, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { Spacing } from '@/constants/theme';
 import { createStyles } from '@/features/workouts/styles/newRoutineScreenStyles';
 import type { ProgramRoutineCopy } from '@/localization/programRoutineCopy';
@@ -33,8 +34,8 @@ export function RoutineExercisePickerModal({
   selectedExerciseIds: Set<string>;
 }) {
   const { colors } = useAppTheme();
+  const insets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(colors), [colors]);
-  const visibleExercises = useMemo(() => exercises.slice(0, 100), [exercises]);
 
   return (
     <Modal
@@ -43,7 +44,10 @@ export function RoutineExercisePickerModal({
       visible={Boolean(mode)}
       onRequestClose={onClose}>
       <View style={styles.pickerOverlay}>
-        <View style={styles.pickerPanel}>
+        <LiquidGlassSurface
+          radius={24}
+          style={[styles.pickerPanel, { paddingBottom: insets.bottom + Spacing.three }]}
+          variant="elevated">
           <View style={styles.pickerHeader}>
             <Text style={styles.pickerTitle}>
               {mode?.type === 'replace' ? copy.replaceExercise : copy.addExercises}
@@ -59,7 +63,7 @@ export function RoutineExercisePickerModal({
             </Pressable>
           </View>
           <FlatList
-            data={visibleExercises}
+            data={exercises}
             initialNumToRender={8}
             keyExtractor={(exercise) => exercise.id}
             maxToRenderPerBatch={8}
@@ -97,7 +101,7 @@ export function RoutineExercisePickerModal({
             style={styles.pickerList}
             windowSize={5}
           />
-        </View>
+        </LiquidGlassSurface>
       </View>
     </Modal>
   );
