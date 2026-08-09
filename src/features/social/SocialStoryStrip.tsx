@@ -62,7 +62,6 @@ export function SocialStoryStrip({
         item: {
           alignItems: 'center',
           gap: Spacing.one,
-          minHeight: 84,
           paddingVertical: Spacing.one,
           width: STORY_ITEM_WIDTH,
         },
