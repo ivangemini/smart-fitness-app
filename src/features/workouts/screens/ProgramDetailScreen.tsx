@@ -1,8 +1,10 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { ChevronLeft, Ellipsis } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { Spacing } from '@/constants/theme';
 import {
   useAppActions,
@@ -175,20 +177,16 @@ export default function ProgramDetailScreen() {
         <View style={styles.container}>
           <View style={styles.hero}>
             <View style={styles.navRow}>
-              <Pressable
+              <LiquidGlassIconButton
                 accessibilityLabel={copy.back}
-                accessibilityRole="button"
+                Icon={ChevronLeft}
                 onPress={() => router.back()}
-                style={({ pressed }) => [styles.circleButton, pressed && styles.pressed]}>
-                <Text style={styles.backLabel}>‹</Text>
-              </Pressable>
-              <Pressable
+              />
+              <LiquidGlassIconButton
                 accessibilityLabel={copy.moreOptions}
-                accessibilityRole="button"
+                Icon={Ellipsis}
                 onPress={openMenu}
-                style={({ pressed }) => [styles.circleButton, pressed && styles.pressed]}>
-                <Text style={styles.moreNavLabel}>⋮</Text>
-              </Pressable>
+              />
             </View>
 
             <View style={styles.coverStage}>
