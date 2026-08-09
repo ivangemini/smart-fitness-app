@@ -48,6 +48,20 @@ jobs:
       - name: TypeScript
         run: npx tsc --noEmit
 
+      - name: Diagnose Story unit regression
+        run: npx vitest run test/social-stories-mobile.test.ts
+
+      - name: Diagnose Story source regression
+        run: npx vitest run test/liquid-glass-home-stories.test.mjs
+
+      - name: Diagnose Home compatibility regression
+        run: >-
+          npx vitest run
+          test/home-focused-state-boundary.test.ts
+          test/responsive-mobile-ui-contract.test.ts
+          test/product-simplification-2.test.ts
+          test/list-virtualization-guards.test.ts
+
       - name: Full regression suite
         run: npm test
 
