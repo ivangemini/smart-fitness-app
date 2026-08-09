@@ -14,6 +14,21 @@ describe('LG-3A Settings secondary Liquid Glass controls', () => {
     expect(source).not.toContain('styles.backButton');
   });
 
+  it('keeps Account Sessions on shared glass navigation without changing session actions', () => {
+    const source = readSource('src/app/account/sessions.tsx');
+
+    expect(source).toContain('LiquidGlassIconButton');
+    expect(source).toContain('Icon={ChevronLeft}');
+    expect(source).toContain("accessibilityLabel={t('common.back')}");
+    expect(source).toContain('onPress={() => router.back()}');
+    expect(source).toContain('listAuthSessions(accessToken)');
+    expect(source).toContain('revokeAuthSession(accessToken, target.id)');
+    expect(source).toContain('revokeOtherAuthSessions(accessToken)');
+    expect(source).not.toContain('styles.backButton');
+    expect(source).not.toContain('backButton:');
+    expect(source).not.toContain('BlurView');
+  });
+
   it('keeps SegmentedControl adaptive with explicit neutral and selected press states', () => {
     const source = readSource('src/components/ui/SegmentedControl.tsx');
 
