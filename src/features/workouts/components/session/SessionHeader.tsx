@@ -3,6 +3,7 @@ import { memo, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { Colors, Spacing } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
@@ -41,30 +42,25 @@ export const SessionHeader = memo(function SessionHeader({
   const finishDisabledReason = t('workouts.session.finishRequiresCompletedSet');
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 4 }]}>
+    <View style={[styles.container, { paddingTop: insets.top + Spacing.one }]}>
       <View style={[styles.topRow, { borderBottomColor: colors.borderSubtle }]}>
-        <Pressable
+        <LiquidGlassIconButton
           accessibilityLabel={t('workouts.session.backAccessibility')}
-          accessibilityRole="button"
+          Icon={ChevronDown}
           onPress={onBack}
-          style={({ pressed }) => [styles.flatIconButton, pressed && styles.pressed]}>
-          <ChevronDown color={colors.textPrimary} size={24} strokeWidth={2} />
-        </Pressable>
+        />
         <View
           accessibilityLabel={t('workouts.session.timerAccessibility')}
           accessibilityRole="image"
-          style={styles.flatIconButton}>
+          style={styles.timerIcon}>
           <Timer color={colors.textPrimary} size={22} strokeWidth={2} />
         </View>
         <View style={styles.topSpacer} />
-        <Pressable
+        <LiquidGlassIconButton
           accessibilityLabel={t('workouts.session.moreActions')}
-          accessibilityRole="button"
-          hitSlop={12}
+          Icon={Ellipsis}
           onPress={onOverflow}
-          style={({ pressed }) => [styles.overflowButton, pressed && styles.pressed]}>
-          <Ellipsis color={colors.accent} size={24} strokeWidth={2.2} />
-        </Pressable>
+        />
         <Pressable
           accessibilityHint={finishDisabled ? finishDisabledReason : undefined}
           accessibilityLabel={t('workouts.session.finish')}
@@ -89,23 +85,25 @@ export const SessionHeader = memo(function SessionHeader({
         </Text>
       ) : null}
 
-      {sets > 0 ? (
-        <View style={styles.statsRow}>
-          <Stat
-            label={t('workouts.session.sets')}
-            value={formatNumber(sets, { maximumFractionDigits: 0 })}
-          />
-          <Stat
-            label={t('workouts.session.reps')}
-            value={formatNumber(reps, { maximumFractionDigits: 0 })}
-          />
-          <Stat label={t('workouts.session.volume')} value={formattedVolume} />
-        </View>
-      ) : null}
+      <View style={styles.summaryStack}>
+        {sets > 0 ? (
+          <View style={styles.statsRow}>
+            <Stat
+              label={t('workouts.session.sets')}
+              value={formatNumber(sets, { maximumFractionDigits: 0 })}
+            />
+            <Stat
+              label={t('workouts.session.reps')}
+              value={formatNumber(reps, { maximumFractionDigits: 0 })}
+            />
+            <Stat label={t('workouts.session.volume')} value={formattedVolume} />
+          </View>
+        ) : null}
 
-      <Text selectable style={styles.timer}>
-        {elapsedLabel}
-      </Text>
+        <Text selectable style={styles.timer}>
+          {elapsedLabel}
+        </Text>
+      </View>
     </View>
   );
 });
@@ -131,7 +129,6 @@ const createStyles = (colors: typeof Colors.light) =>
     container: {
       alignSelf: 'stretch',
       backgroundColor: colors.background,
-      paddingBottom: 52,
     },
     finishButton: {
       alignItems: 'center',
@@ -173,26 +170,10 @@ const createStyles = (colors: typeof Colors.light) =>
     finishLabelDisabled: {
       color: colors.textMuted,
     },
-    flatIconButton: {
-      alignItems: 'center',
-      height: 50,
-      justifyContent: 'center',
-      width: 44,
-    },
-    overflowButton: {
-      alignItems: 'center',
-      flexShrink: 0,
-      height: 44,
-      justifyContent: 'center',
-      width: 44,
-    },
-    pressed: {
-      opacity: 0.72,
-    },
     stat: {
       alignItems: 'center',
       flex: 1,
-      gap: 2,
+      gap: Spacing.half,
       minWidth: 0,
     },
     statLabel: {
@@ -205,7 +186,6 @@ const createStyles = (colors: typeof Colors.light) =>
     statsRow: {
       flexDirection: 'row',
       paddingHorizontal: Spacing.four,
-      paddingTop: Spacing.four,
     },
     statValue: {
       color: colors.textPrimary,
@@ -215,23 +195,32 @@ const createStyles = (colors: typeof Colors.light) =>
       lineHeight: 22,
       textAlign: 'center',
     },
+    summaryStack: {
+      gap: Spacing.four,
+      paddingBottom: Spacing.six,
+      paddingTop: Spacing.four,
+    },
     timer: {
       color: colors.textPrimary,
       fontSize: 32,
       fontVariant: ['tabular-nums'],
       fontWeight: '700',
       lineHeight: 40,
-      marginTop: 48,
       textAlign: 'center',
+    },
+    timerIcon: {
+      alignItems: 'center',
+      flexShrink: 0,
+      justifyContent: 'center',
+      paddingHorizontal: Spacing.one,
     },
     topRow: {
       alignItems: 'center',
       borderBottomWidth: StyleSheet.hairlineWidth,
       flexDirection: 'row',
-      gap: Spacing.three,
-      minHeight: 50,
-      paddingLeft: 8,
-      paddingRight: 16,
+      gap: Spacing.two,
+      paddingHorizontal: Spacing.two,
+      paddingVertical: Spacing.one,
     },
     topSpacer: {
       flex: 1,
