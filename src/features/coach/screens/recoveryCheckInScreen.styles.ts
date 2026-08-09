@@ -4,18 +4,6 @@ import { Colors, MaxContentWidth, Radii, Spacing, Typography } from '@/constants
 
 export const createRecoveryCheckInScreenStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
-    backButton: {
-      alignItems: 'center',
-      height: 44,
-      justifyContent: 'center',
-      width: 44,
-    },
-    backLabel: {
-      color: colors.textPrimary,
-      fontSize: 42,
-      fontWeight: '300',
-      lineHeight: 42,
-    },
     bodyText: {
       color: colors.textSecondary,
       fontSize: Typography.body.fontSize,
@@ -74,7 +62,6 @@ export const createRecoveryCheckInScreenStyles = (colors: typeof Colors.light) =
       fontSize: Typography.caption.fontSize,
       lineHeight: Typography.caption.lineHeight,
     },
-    pressed: { opacity: 0.68 },
     screen: { backgroundColor: colors.background, flex: 1 },
     subtitle: {
       color: colors.textSecondary,
