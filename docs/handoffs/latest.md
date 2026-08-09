@@ -27,7 +27,7 @@ The first bounded Progress batch changes only:
 - `src/app/(tabs)/progress.tsx` — the 7D/30D/90D range selector now uses shared `LiquidGlassSurface` and adaptive selected/pressed glass tokens while preserving 44 pt ownership;
 - `src/components/progress/AddBodyMeasurementCard.tsx` — metric/unit choices and text inputs now use the adaptive control palette;
 - `src/components/progress/ProgressTrendChart.tsx` — the reusable chart shell now uses `LiquidGlassSurface` `variant="control"` with no per-chart native blur;
-- `test/liquid-glass-progress-primary.test.ts` — source-contract guards prevent these primary surfaces from regressing to local `surfacePrimary/surfaceSecondary` recipes and verify Coach primary remains on shared primitives.
+- `test/liquid-glass-progress-primary.test.mjs` — source-contract guards prevent these primary surfaces from regressing to local `surfacePrimary/surfaceSecondary` recipes and verify Coach primary remains on shared primitives.
 
 Progress analytics, chart data, navigation, persistence, localization, accessibility roles/states, and Coach domain behavior are unchanged.
 
