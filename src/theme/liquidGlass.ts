@@ -5,6 +5,10 @@ export type LiquidGlassPalette = {
   accentFill: string;
   accentPressedFill: string;
   accentText: string;
+  backgroundBase: string;
+  backgroundGlowPrimary: string;
+  backgroundGlowSecondary: string;
+  backgroundGlowTertiary: string;
   blurTint: 'systemMaterialDark' | 'systemMaterialLight';
   cardBorder: string;
   cardFill: string;
@@ -40,6 +44,10 @@ const darkGlass: LiquidGlassPalette = {
   accentFill: 'rgba(10, 132, 255, 0.82)',
   accentPressedFill: 'rgba(10, 132, 255, 0.96)',
   accentText: '#FFFFFF',
+  backgroundBase: '#030507',
+  backgroundGlowPrimary: 'rgba(10, 132, 255, 0.20)',
+  backgroundGlowSecondary: 'rgba(52, 199, 89, 0.09)',
+  backgroundGlowTertiary: 'rgba(94, 92, 230, 0.10)',
   blurTint: 'systemMaterialDark',
   cardBorder: 'rgba(255, 255, 255, 0.14)',
   cardFill: 'rgba(22, 22, 28, 0.62)',
@@ -75,6 +83,10 @@ const lightGlass: LiquidGlassPalette = {
   accentFill: 'rgba(27, 138, 122, 0.84)',
   accentPressedFill: 'rgba(22, 114, 102, 0.94)',
   accentText: '#FFFFFF',
+  backgroundBase: '#F3F7FA',
+  backgroundGlowPrimary: 'rgba(27, 138, 122, 0.16)',
+  backgroundGlowSecondary: 'rgba(10, 132, 255, 0.11)',
+  backgroundGlowTertiary: 'rgba(94, 92, 230, 0.07)',
   blurTint: 'systemMaterialLight',
   cardBorder: 'rgba(17, 24, 39, 0.10)',
   cardFill: 'rgba(255, 255, 255, 0.66)',
