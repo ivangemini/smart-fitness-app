@@ -1,7 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
@@ -20,6 +20,7 @@ import { useAppTheme } from '@/theme/AppThemeProvider';
 import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
 import { getSocialStoryCopy } from '../socialStoryCopy';
+import { requestSocialStoryRefresh } from '../socialStoryRefreshSignal';
 import { getSocialStoryLoadError } from '../socialStorySurfaceModel';
 
 export default function SocialStoryViewerScreen() {
@@ -84,12 +85,15 @@ export default function SocialStoryViewerScreen() {
   const socialApi = useMemo(() => createSocialApi(auth), [auth]);
   const [story, setStory] = useState<SocialStoryDto | null>(null);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
+  const [canDelete, setCanDelete] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const loadStory = useCallback(async () => {
     if (!ready) return;
     if (!isAuthenticated || !storyId) {
       setStory(null);
+      setCanDelete(false);
       setLoading(false);
       setErrorMessage(copy.storyUnavailable);
       return;
@@ -97,8 +101,12 @@ export default function SocialStoryViewerScreen() {
     setLoading(true);
     setErrorMessage(null);
     try {
-      const nextStory = await socialApi.getStory(storyId);
+      const [nextStory, ownProfile] = await Promise.all([
+        socialApi.getStory(storyId),
+        socialApi.getOwnProfile().catch(() => null),
+      ]);
       setStory(nextStory);
+      setCanDelete(ownProfile?.username === nextStory.author.username);
       setLoading(false);
       try {
         await socialApi.markStoryViewed(storyId);
@@ -107,6 +115,7 @@ export default function SocialStoryViewerScreen() {
       }
     } catch (error) {
       setStory(null);
+      setCanDelete(false);
       setLoading(false);
       const mapped = getSocialStoryLoadError(error);
       setErrorMessage(
@@ -118,6 +127,31 @@ export default function SocialStoryViewerScreen() {
   useEffect(() => {
     void loadStory();
   }, [loadStory]);
+
+  const deleteStory = useCallback(async () => {
+    if (!storyId || deleting) return;
+    setDeleting(true);
+    setErrorMessage(null);
+    try {
+      await socialApi.deleteStory(storyId);
+      requestSocialStoryRefresh();
+      router.back();
+    } catch {
+      setErrorMessage(copy.deleteFailed);
+      setDeleting(false);
+    }
+  }, [copy.deleteFailed, deleting, socialApi, storyId]);
+
+  const confirmDelete = useCallback(() => {
+    Alert.alert(copy.deleteStoryTitle, copy.deleteStoryBody, [
+      { text: copy.cancel, style: 'cancel' },
+      {
+        text: copy.deleteStory,
+        style: 'destructive',
+        onPress: () => void deleteStory(),
+      },
+    ]);
+  }, [copy.cancel, copy.deleteStory, copy.deleteStoryBody, copy.deleteStoryTitle, deleteStory]);
 
   const variant =
     story?.image.variants.post_1080 ??
@@ -155,25 +189,35 @@ export default function SocialStoryViewerScreen() {
 
         {loading ? (
           <LoadingState label={copy.loading} />
-        ) : errorMessage ? (
+        ) : errorMessage && !story ? (
           <AppCard style={styles.errorCard}>
             <InlineError message={errorMessage} />
             <SecondaryButton label={copy.retry} onPress={() => void loadStory()} />
           </AppCard>
         ) : story && variant ? (
-          <View
-            style={[
-              styles.mediaArea,
-              { aspectRatio: story.image.aspectRatio, backgroundColor },
-            ]}
-          >
-            <Image
-              accessibilityLabel={`${copy.openStory}: ${story.author.displayName}`}
-              resizeMode="contain"
-              source={{ uri: variant.url }}
-              style={styles.storyImage}
-            />
-          </View>
+          <>
+            <View
+              style={[
+                styles.mediaArea,
+                { aspectRatio: story.image.aspectRatio, backgroundColor },
+              ]}
+            >
+              <Image
+                accessibilityLabel={`${copy.openStory}: ${story.author.displayName}`}
+                resizeMode="contain"
+                source={{ uri: variant.url }}
+                style={styles.storyImage}
+              />
+            </View>
+            {errorMessage ? <InlineError message={errorMessage} /> : null}
+            {canDelete ? (
+              <SecondaryButton
+                label={copy.deleteStory}
+                loading={deleting}
+                onPress={confirmDelete}
+              />
+            ) : null}
+          </>
         ) : (
           <InlineError message={copy.storyUnavailable} />
         )}
