@@ -12,6 +12,7 @@ import {
   type BindSocialManagedAvatarResult,
   type CreateSocialMediaUploadResult,
   type SignedSocialMediaUploadDto,
+  type SocialMediaAssetType,
   type SocialMediaOwnerAssetDto,
   type SocialMediaOwnerModerationDto,
   type SocialMediaPublicDescriptorDto,
@@ -118,6 +119,10 @@ const isPositiveInteger = (value: unknown, maximum: number): value is number =>
   Number.isSafeInteger(value) &&
   value > 0 &&
   value <= maximum;
+const isAssetType = (value: unknown): value is SocialMediaAssetType =>
+  value === "avatar" ||
+  value === "workout_post_image" ||
+  value === "story_image";
 
 const parseVariant = (
   value: unknown,
@@ -190,8 +195,7 @@ export const parseSocialMediaPublicDescriptorDto = (
     value.schemaVersion !== SOCIAL_MEDIA_SCHEMA_VERSION ||
     typeof value.assetId !== "string" ||
     !UUID_PATTERN.test(value.assetId) ||
-    (value.assetType !== "avatar" &&
-      value.assetType !== "workout_post_image") ||
+    !isAssetType(value.assetType) ||
     !isPositiveInteger(value.width, 4096) ||
     !isPositiveInteger(value.height, 4096) ||
     typeof value.aspectRatio !== "number" ||
@@ -280,8 +284,7 @@ export const parseSocialMediaOwnerAssetDto = (
     value.schemaVersion !== SOCIAL_MEDIA_SCHEMA_VERSION ||
     typeof value.assetId !== "string" ||
     !UUID_PATTERN.test(value.assetId) ||
-    (value.assetType !== "avatar" &&
-      value.assetType !== "workout_post_image") ||
+    !isAssetType(value.assetType) ||
     typeof value.state !== "string" ||
     !stateSet.has(value.state) ||
     !isPositiveInteger(value.stateVersion, Number.MAX_SAFE_INTEGER) ||

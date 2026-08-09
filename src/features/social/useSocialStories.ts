@@ -4,6 +4,7 @@ import { createSocialApi, type SocialStoryDto } from '@/api/social';
 import { useAuthSession } from '@/hooks/useAuthSession';
 
 import { getDefaultSocialStoryCacheStore } from './socialStoryCache';
+import { subscribeSocialStoryRefresh } from './socialStoryRefreshSignal';
 import {
   getSocialStoryLoadError,
   markSocialStoryViewed,
@@ -147,6 +148,14 @@ export function useSocialStories() {
       requestSequence.current += 1;
     };
   }, [accountId, isAuthenticated, ready, socialApi]);
+
+  useEffect(
+    () =>
+      subscribeSocialStoryRefresh(() => {
+        if (ready && isAuthenticated && accountId) void loadFirstPage(true);
+      }),
+    [accountId, isAuthenticated, loadFirstPage, ready],
+  );
 
   return {
     isAuthenticated,

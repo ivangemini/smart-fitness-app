@@ -254,13 +254,11 @@ export default function HomeScreen() {
         workoutTitle={workoutTitle}
       />
 
-      {stories.ready &&
-      stories.isAuthenticated &&
-      stories.status === 'ready' &&
-      stories.stories.length > 0 ? (
+      {stories.ready && stories.isAuthenticated && stories.status === 'ready' ? (
         <SocialStoryStrip
           copy={storyCopy}
           loadingMore={stories.loadingMore}
+          onAdd={() => router.push('/social/story/new')}
           onLoadMore={() => void stories.loadMore()}
           onOpen={openStory}
           stories={stories.stories}

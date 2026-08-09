@@ -105,10 +105,15 @@ export type SocialMediaVariantDto = {
   url: string;
 };
 
+export type SocialMediaAssetType =
+  | "avatar"
+  | "workout_post_image"
+  | "story_image";
+
 export type SocialMediaPublicDescriptorDto = {
   schemaVersion: typeof SOCIAL_MEDIA_SCHEMA_VERSION;
   assetId: string;
-  assetType: "avatar" | "workout_post_image";
+  assetType: SocialMediaAssetType;
   width: number;
   height: number;
   aspectRatio: number;
@@ -142,7 +147,7 @@ export type SocialMediaOwnerModerationDto = {
 export type SocialMediaOwnerAssetDto = {
   schemaVersion: typeof SOCIAL_MEDIA_SCHEMA_VERSION;
   assetId: string;
-  assetType: "avatar" | "workout_post_image";
+  assetType: SocialMediaAssetType;
   state: SocialMediaState;
   stateVersion: number;
   stateReasonCode: SocialMediaStateReasonCode | null;
@@ -167,8 +172,6 @@ export type SignedSocialMediaUploadDto = {
   expiresAt: string;
 };
 
-export type SocialMediaAssetType = "avatar" | "workout_post_image";
-
 export type CreateSocialMediaUploadInput = {
   schemaVersion: typeof SOCIAL_MEDIA_UPLOAD_SCHEMA_VERSION;
   assetType: SocialMediaAssetType;
@@ -185,6 +188,10 @@ export type CreateSocialWorkoutPostImageUploadInput =
   CreateSocialMediaUploadInput & {
     assetType: "workout_post_image";
   };
+
+export type CreateSocialStoryImageUploadInput = CreateSocialMediaUploadInput & {
+  assetType: "story_image";
+};
 
 export type CreateSocialMediaUploadResult = {
   asset: SocialMediaOwnerAssetDto;

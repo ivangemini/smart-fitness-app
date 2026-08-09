@@ -12,6 +12,7 @@ import type {
   CreateSocialAvatarUploadInput,
   CreateSocialMediaUploadInput,
   CreateSocialMediaUploadResult,
+  CreateSocialStoryImageUploadInput,
   CreateSocialWorkoutPostImageUploadInput,
   SocialMediaOwnerAssetDto,
 } from "./media-contracts";
@@ -40,6 +41,9 @@ export type SocialMediaApi = {
   ): Promise<CreateSocialMediaUploadResult>;
   createWorkoutPostImageUpload(
     input: CreateSocialWorkoutPostImageUploadInput,
+  ): Promise<CreateSocialMediaUploadResult>;
+  createStoryImageUpload(
+    input: CreateSocialStoryImageUploadInput,
   ): Promise<CreateSocialMediaUploadResult>;
   completeMediaUpload(
     assetId: string,
@@ -70,7 +74,8 @@ const validateCreateUploadInput = (
   if (
     input.schemaVersion !== 1 ||
     (input.assetType !== "avatar" &&
-      input.assetType !== "workout_post_image") ||
+      input.assetType !== "workout_post_image" &&
+      input.assetType !== "story_image") ||
     !Number.isSafeInteger(input.byteSize) ||
     input.byteSize < 1 ||
     input.byteSize > 8 * 1024 * 1024 ||
@@ -107,6 +112,10 @@ export const createSocialMediaApi = (
     },
 
     async createWorkoutPostImageUpload(input) {
+      return createMediaUpload(input);
+    },
+
+    async createStoryImageUpload(input) {
       return createMediaUpload(input);
     },
 

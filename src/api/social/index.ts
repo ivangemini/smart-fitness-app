@@ -135,6 +135,7 @@ export {
   type CreateSocialAvatarUploadInput,
   type CreateSocialMediaUploadInput,
   type CreateSocialMediaUploadResult,
+  type CreateSocialStoryImageUploadInput,
   type CreateSocialWorkoutPostImageUploadInput,
   type SignedSocialMediaUploadDto,
   type SocialMediaApiErrorCode,
