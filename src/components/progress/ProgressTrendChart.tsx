@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 
 export type ProgressTrendPoint = {
   key: string;
@@ -23,13 +24,16 @@ const PLOT_HEIGHT = 168;
 const MIN_BAR_HEIGHT = 18;
 
 export const ProgressTrendChart = memo(function ProgressTrendChart({
-  barColor = Colors.dark.chartPrimary,
+  barColor,
   emptyLabel,
   maxLabel,
   minLabel,
   points,
 }: ProgressTrendChartProps) {
+  const { colors } = useAppTheme();
   const { formatNumber, t } = useLocalization();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const resolvedBarColor = barColor ?? colors.chartPrimary;
   const chartMetrics = useMemo(() => {
     if (points.length < 2) return null;
 
@@ -90,7 +94,7 @@ export const ProgressTrendChart = memo(function ProgressTrendChart({
                     style={[
                       styles.bar,
                       {
-                        backgroundColor: barColor,
+                        backgroundColor: resolvedBarColor,
                         height: point.height,
                         opacity: index === chartMetrics.bars.length - 1 ? 1 : 0.72,
                       },
@@ -124,95 +128,96 @@ export const ProgressTrendChart = memo(function ProgressTrendChart({
   );
 });
 
-const styles = StyleSheet.create({
-  axis: {
-    height: PLOT_HEIGHT,
-    justifyContent: 'space-between',
-    paddingLeft: Spacing.two,
-    width: 58,
-  },
-  axisLabel: {
-    color: Colors.dark.textMuted,
-    fontSize: Typography.caption.fontSize,
-    fontVariant: ['tabular-nums'],
-    textAlign: 'right',
-  },
-  axisSpacer: { width: 58 },
-  bar: {
-    borderRadius: 4,
-    minHeight: MIN_BAR_HEIGHT,
-    width: 18,
-  },
-  barTrack: {
-    alignItems: 'center',
-    height: PLOT_HEIGHT,
-    justifyContent: 'flex-end',
-    width: '100%',
-  },
-  barsRow: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  chartShell: {
-    backgroundColor: Colors.dark.surfaceSecondary,
-    borderColor: Colors.dark.borderSubtle,
-    borderRadius: 18,
-    borderWidth: StyleSheet.hairlineWidth,
-    gap: Spacing.one,
-    overflow: 'hidden',
-    padding: Spacing.three,
-  },
-  column: {
-    flex: 1,
-    position: 'relative',
-  },
-  emptyText: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.callout.fontSize,
-    lineHeight: Typography.callout.lineHeight,
-  },
-  gridBottom: { bottom: 0 },
-  gridMiddle: { top: PLOT_HEIGHT / 2 },
-  gridTop: { top: 0 },
-  horizontalGrid: {
-    backgroundColor: Colors.dark.textMuted,
-    height: StyleSheet.hairlineWidth,
-    left: 0,
-    opacity: 0.42,
-    position: 'absolute',
-    right: 0,
-  },
-  labelsRow: {
-    flexDirection: 'row',
-  },
-  latestValue: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.caption.fontSize,
-    fontVariant: ['tabular-nums'],
-    fontWeight: Typography.label.fontWeight,
-    textAlign: 'right',
-  },
-  plot: {
-    flex: 1,
-    height: PLOT_HEIGHT,
-    position: 'relative',
-  },
-  plotRow: {
-    flexDirection: 'row',
-  },
-  verticalGrid: {
-    borderLeftColor: Colors.dark.textMuted,
-    borderLeftWidth: StyleSheet.hairlineWidth,
-    bottom: 0,
-    left: 0,
-    opacity: 0.32,
-    position: 'absolute',
-    top: 0,
-  },
-  xLabel: {
-    color: Colors.dark.textSecondary,
-    flex: 1,
-    fontSize: Typography.caption.fontSize,
-    textAlign: 'center',
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    axis: {
+      height: PLOT_HEIGHT,
+      justifyContent: 'space-between',
+      paddingLeft: Spacing.two,
+      width: 58,
+    },
+    axisLabel: {
+      color: colors.textMuted,
+      fontSize: Typography.caption.fontSize,
+      fontVariant: ['tabular-nums'],
+      textAlign: 'right',
+    },
+    axisSpacer: { width: 58 },
+    bar: {
+      borderRadius: 4,
+      minHeight: MIN_BAR_HEIGHT,
+      width: 18,
+    },
+    barTrack: {
+      alignItems: 'center',
+      height: PLOT_HEIGHT,
+      justifyContent: 'flex-end',
+      width: '100%',
+    },
+    barsRow: {
+      flex: 1,
+      flexDirection: 'row',
+    },
+    chartShell: {
+      backgroundColor: colors.surfaceSecondary,
+      borderColor: colors.borderSubtle,
+      borderRadius: 18,
+      borderWidth: StyleSheet.hairlineWidth,
+      gap: Spacing.one,
+      overflow: 'hidden',
+      padding: Spacing.three,
+    },
+    column: {
+      flex: 1,
+      position: 'relative',
+    },
+    emptyText: {
+      color: colors.textSecondary,
+      fontSize: Typography.callout.fontSize,
+      lineHeight: Typography.callout.lineHeight,
+    },
+    gridBottom: { bottom: 0 },
+    gridMiddle: { top: PLOT_HEIGHT / 2 },
+    gridTop: { top: 0 },
+    horizontalGrid: {
+      backgroundColor: colors.textMuted,
+      height: StyleSheet.hairlineWidth,
+      left: 0,
+      opacity: 0.42,
+      position: 'absolute',
+      right: 0,
+    },
+    labelsRow: {
+      flexDirection: 'row',
+    },
+    latestValue: {
+      color: colors.textSecondary,
+      fontSize: Typography.caption.fontSize,
+      fontVariant: ['tabular-nums'],
+      fontWeight: Typography.label.fontWeight,
+      textAlign: 'right',
+    },
+    plot: {
+      flex: 1,
+      height: PLOT_HEIGHT,
+      position: 'relative',
+    },
+    plotRow: {
+      flexDirection: 'row',
+    },
+    verticalGrid: {
+      borderLeftColor: colors.textMuted,
+      borderLeftWidth: StyleSheet.hairlineWidth,
+      bottom: 0,
+      left: 0,
+      opacity: 0.32,
+      position: 'absolute',
+      top: 0,
+    },
+    xLabel: {
+      color: colors.textSecondary,
+      flex: 1,
+      fontSize: Typography.caption.fontSize,
+      textAlign: 'center',
+    },
+  });

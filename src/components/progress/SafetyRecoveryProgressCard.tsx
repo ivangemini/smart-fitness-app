@@ -17,9 +17,10 @@ import {
   getSafetyWindowLabel,
 } from '@/features/progress/progressLocalization';
 import { formatPlural, useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import type { WorkoutSafetyReviewStatus, WorkoutSession } from '@/types';
 
-import { safetyRecoveryProgressCardStyles as styles } from './SafetyRecoveryProgressCard.styles';
+import { createSafetyRecoveryProgressCardStyles } from './SafetyRecoveryProgressCard.styles';
 
 type SafetyRecoveryProgressCardProps = {
   sessions: WorkoutSession[];
@@ -28,11 +29,14 @@ type SafetyRecoveryProgressCardProps = {
 
 const PERIOD_IDS: SafetyRecoveryProgressPeriod[] = ['30d', '90d', 'all'];
 
-const getStatusColor = (status: WorkoutSafetyReviewStatus): string => {
-  if (status === 'ready') return Colors.dark.success;
-  if (status === 'modify') return Colors.dark.warning;
-  if (status === 'blocked') return Colors.dark.error;
-  return Colors.dark.accent;
+const getStatusColor = (
+  colors: typeof Colors.light,
+  status: WorkoutSafetyReviewStatus,
+): string => {
+  if (status === 'ready') return colors.success;
+  if (status === 'modify') return colors.warning;
+  if (status === 'blocked') return colors.error;
+  return colors.accent;
 };
 
 const formatSignedValue = (value: number): string => (value > 0 ? `+${value}` : `${value}`);
@@ -41,7 +45,9 @@ export function SafetyRecoveryProgressCard({
   onOpenHistory,
   sessions,
 }: SafetyRecoveryProgressCardProps) {
+  const { colors } = useAppTheme();
   const { formatNumber, locale, t } = useLocalization();
+  const styles = useMemo(() => createSafetyRecoveryProgressCardStyles(colors), [colors]);
   const [period, setPeriod] = useState<SafetyRecoveryProgressPeriod>('30d');
   const analytics = useMemo(
     () => buildSafetyRecoveryProgressAnalytics(sessions, period),
@@ -203,7 +209,7 @@ export function SafetyRecoveryProgressCard({
                   <View
                     style={[
                       styles.statusDot,
-                      { backgroundColor: getStatusColor(metric.status) },
+                      { backgroundColor: getStatusColor(colors, metric.status) },
                     ]}
                   />
                   <Text selectable style={styles.statusLabel}>

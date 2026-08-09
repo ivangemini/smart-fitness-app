@@ -15,9 +15,10 @@ import {
 } from '@/features/progress/safetyRecoveryWeeklyTrend';
 import { useLocalization } from '@/localization';
 import type { Translate } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import type { WorkoutSafetyReviewStatus, WorkoutSession } from '@/types';
 
-import { safetyRecoveryWeeklyTrendStyles as styles } from './SafetyRecoveryWeeklyTrendCard.styles';
+import { createSafetyRecoveryWeeklyTrendStyles } from './SafetyRecoveryWeeklyTrendCard.styles';
 
 export type SafetyRecoveryWeeklyHistoryTarget = {
   startAt: string;
@@ -39,11 +40,14 @@ const STATUS_ORDER: WorkoutSafetyReviewStatus[] = [
   'ready',
 ];
 
-const getStatusColor = (status: WorkoutSafetyReviewStatus): string => {
-  if (status === 'ready') return Colors.dark.success;
-  if (status === 'modify') return Colors.dark.warning;
-  if (status === 'blocked') return Colors.dark.error;
-  return Colors.dark.accent;
+const getStatusColor = (
+  colors: typeof Colors.light,
+  status: WorkoutSafetyReviewStatus,
+): string => {
+  if (status === 'ready') return colors.success;
+  if (status === 'modify') return colors.warning;
+  if (status === 'blocked') return colors.error;
+  return colors.accent;
 };
 
 const buildPointAccessibilityLabel = (
@@ -83,7 +87,9 @@ function WeeklyColumn({
   point: SafetyRecoveryWeeklyTrendPoint;
   selected: boolean;
 }) {
+  const { colors } = useAppTheme();
   const { formatDate, t } = useLocalization();
+  const styles = useMemo(() => createSafetyRecoveryWeeklyTrendStyles(colors), [colors]);
   const pointLabel = formatDate(point.startAt, {
     day: 'numeric',
     month: 'short',
@@ -116,7 +122,7 @@ function WeeklyColumn({
                   key={status}
                   style={[
                     styles.statusSegment,
-                    { backgroundColor: getStatusColor(status), flex: count },
+                    { backgroundColor: getStatusColor(colors, status), flex: count },
                   ]}
                 />
               );
@@ -150,7 +156,9 @@ export function SafetyRecoveryWeeklyTrendCard({
   onOpenHistory,
   sessions,
 }: SafetyRecoveryWeeklyTrendCardProps) {
+  const { colors } = useAppTheme();
   const { formatDate, formatNumber, t } = useLocalization();
+  const styles = useMemo(() => createSafetyRecoveryWeeklyTrendStyles(colors), [colors]);
   const [period, setPeriod] = useState<SafetyRecoveryProgressPeriod>('90d');
   const [selectedPointKey, setSelectedPointKey] = useState<string | null>(null);
   const trend = useMemo(
@@ -241,7 +249,7 @@ export function SafetyRecoveryWeeklyTrendCard({
       <View style={styles.legend}>
         {STATUS_ORDER.slice().reverse().map((status) => (
           <View key={status} style={styles.legendItem}>
-            <View style={[styles.legendDot, { backgroundColor: getStatusColor(status) }]} />
+            <View style={[styles.legendDot, { backgroundColor: getStatusColor(colors, status) }]} />
             <Text style={styles.legendLabel}>{getSafetyStatusLabel(t, status)}</Text>
           </View>
         ))}

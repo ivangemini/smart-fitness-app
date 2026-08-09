@@ -30,7 +30,8 @@ Updated: 2026-08-09
 - VUX-6A Social Profile Lookup shell/input hardening PR #489 → `46829390a5215b453ac5a054e1fdc40edba4ca27`.
 - VUX-6B Social information/list shell hardening PR #490 → `e152fc7bb693b1fe40980d3b8a60a035302a4e9c`.
 - VUX-6C Social workout-post shell hardening PR #491 → `95797bfbcf94d54c9b01da0cf238077bbd990f41`.
-- Active visual branch: `ui/social-profile-share-shell-ux` (VUX-6D).
+- VUX-6D Social profile/share shell hardening PR #492 → `625371ca7cde8c45178fd8bf21b2bb012bc4ea4f`.
+- Active visual branch: `ui/progress-theme-consistency` (VUX-7A).
 - Backend is a separate workstream and remains outside this roadmap execution.
 
 Source/CI completion is not physical-device proof. OTA/EAS publication, native build/install, provider/production activation and store/release actions remain separately authorization-gated.
@@ -45,6 +46,7 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - Prefer one clear owning surface over decorative card-within-card nesting.
 - Give each destination/action one clear owner inside a surface; do not duplicate the same route under different labels.
 - Preserve EN/RU localization, Dynamic Type/reflow, routes, persistence, sync, calculations and backend contracts during visual work.
+- Presentation colors must resolve from `AppThemeProvider`; avoid local `Colors.dark` assumptions on theme-aware product surfaces.
 
 ## Completed visual packages
 
@@ -89,7 +91,6 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - Meal Add / expand-collapse glyphs → Lucide Plus / ChevronDown / ChevronRight.
 - Today has an explicit disabled background/border/text state instead of opacity-only treatment.
 - Week-strip accessibility labels are localized in EN/RU.
-- Retired glyph/disabled styles were removed and the diary source contract was updated.
 - Diary data, date selection, meal expansion, Add Food routing, calculations and SectionList behavior are unchanged.
 
 ### VUX-4B — Add Food action icon consistency — PR #474
@@ -99,8 +100,6 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - Quick-add controls → Lucide Plus.
 - Saved Meal delete → Lucide Trash2.
 - Existing 44 pt control geometry/hit slop and localized labels are preserved.
-- Clear localized text actions such as Scan/Cancel remain text.
-- Retired glyph-only styles were removed and a focused source-contract guard was added.
 - Search/provider behavior, food data, favorites, meal templates, portion logic, routes, persistence and sync are unchanged.
 
 ### VUX-3C — Progress body-measurement hierarchy — PR #475
@@ -108,7 +107,6 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - Body Measurements keeps one owning `AppCard`; the editor is flat content inside it.
 - A quiet hairline divider separates the editor instead of a nested raised/bordered card.
 - Metric radio choices explicitly own a 44 pt minimum touch height; unit controls remain 48 pt.
-- A focused source-contract guard protects hierarchy/touch ownership.
 - Measurement model, supported units/ranges, analytics, persistence and sync remain unchanged.
 
 ### VUX-3D — Progress weight action ownership — PR #476
@@ -116,7 +114,6 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - `Weight details` beside the weight hero is the sole `/weight-details` owner on the Progress screen.
 - The duplicate `Training details` button was removed.
 - `Add weight` remains the only bottom action under the weight chart.
-- A focused source-contract guard requires exactly one `/weight-details` push.
 - Weight analytics, chart/range behavior, routes, persistence and sync remain unchanged.
 
 ### VUX-3E — Progress compact selector touch targets — PR #477
@@ -125,7 +122,6 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - Safety & Recovery period chips in both historical Progress surfaces now own a 44 pt minimum height.
 - Weekly Safety selected-history filter chips now own a 44 pt minimum height.
 - Selection/history semantics, period definitions, chart data and routes are unchanged.
-- A focused source-contract guard protects the compact control geometry.
 
 ### VUX-4C — Coach input touch targets — PR #478
 
@@ -134,7 +130,6 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - Recovery and Limitations back controls now use 44 × 44 geometry.
 - Limitation movement chips explicitly own a 44 pt minimum height.
 - Recovery scoring, required signals, limitation state transitions, routes, persistence and sync remain unchanged.
-- A focused source-contract guard protects the interaction geometry.
 
 ### VUX-4D — Coach review touch targets — PR #479
 
@@ -142,138 +137,108 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - Safety & Recovery review period controls now own a 44 pt minimum height.
 - Combined review back navigation now owns 44 × 44 geometry.
 - Review calculations, period semantics, generation behavior, routes, persistence and sync remain unchanged.
-- A focused source-contract guard protects the review interaction geometry.
 
 ### VUX-4E — Coach history filter accessibility — PR #480
 
 - Coach History domain/status pills now own a 44 pt minimum interaction height.
 - Active domain/status filters expose `accessibilityState.selected` instead of relying on visual state alone.
 - Filter values, query construction, loading/error behavior, routes and backend contracts remain unchanged.
-- A focused source-contract guard protects filter geometry and selected state.
 
 ### VUX-4F — remaining Coach back touch targets — PR #481
 
-- Safety Recovery Preflight back navigation now owns 44 × 44 geometry.
-- Combined Proposal back navigation now owns 44 × 44 geometry.
+- Safety Recovery Preflight and Combined Proposal back navigation now own 44 × 44 geometry.
 - Localized accessibility labels and existing `router.back()` behavior are preserved.
 - Preflight gating, combined proposal generation/confirmation, sync and persistence remain unchanged.
-- A focused source-contract guard protects the final audited Coach back geometry findings.
 
-### VUX-4G — Coach strategy back icon language — PR #482
+### VUX-4G / VUX-4H / VUX-4I — complete Coach back icon language — PRs #482–#484
 
-- Strength Coach, Nutrition Coach and Nutrition Target Proposal now use Lucide `ChevronLeft` instead of raw text `‹` for the back action.
-- Existing Pressable geometry, 44 pt touch ownership, pressed states, localized accessibility labels and `router.back()` behavior are preserved.
-- Coach generation/review/confirmation logic, period selection, sync, persistence and routes remain unchanged.
-- A focused source-contract guard protects the strategy/review navigation icon language.
-
-### VUX-4H — secondary Coach back icon language — PR #483
-
-- Combined Review, Recovery Check-in, Safety Recovery Review and User Limitations now use Lucide `ChevronLeft` instead of raw text `‹` for the back action.
-- Existing Pressable geometry, 44 pt ownership, pressed states, localized accessibility labels and `router.back()` behavior are preserved.
-- Combined/recovery/limitation models, forms, review generation, sync, persistence and routes remain unchanged.
-- A focused source-contract guard protects the secondary navigation icon language.
-
-### VUX-4I — complete Coach back navigation language — PR #484
-
-- Coach History, Coach History Detail, Safety Recovery Preflight and Combined Proposal now use Lucide `ChevronLeft` instead of raw text `‹` for the back action.
-- Coach History and Coach History Detail now expose the localized `common.back` accessibility label.
-- Existing 44 pt geometry, history/filter behavior, preflight gating, combined proposal behavior, sync and persistence are unchanged.
-- A directory-level source guard prevents raw `‹` action glyphs from returning anywhere under `src/features/coach/screens`.
+- Coach strategy/review/history/preflight/proposal surfaces now use Lucide `ChevronLeft` instead of raw text `‹`.
+- Existing Pressable geometry, localized accessibility labels, routing and Coach domain behavior are preserved.
+- A directory-level source guard prevents raw `‹` action glyphs from returning under `src/features/coach/screens`.
 
 ### VUX-5A — Settings shell hardening — PR #485
 
-- Settings now owns top/bottom safe-area padding while its native stack header remains intentionally hidden.
+- Settings owns top/bottom safe-area padding while its native stack header remains intentionally hidden.
 - The parent scroll is keyboard-aware so Personal Details inputs and actions remain reachable.
-- Settings back navigation now uses Lucide `ChevronLeft` with the existing 44 pt target and localized label.
-- Settings section/block copy now resolves from the current app theme instead of static `Colors.dark` text colors.
-- Header copy owns narrow/large-text reflow through `minWidth: 0` / `flexShrink`.
-- Preferences, account/session behavior, unit semantics, Personal Details validation, sync, OTA developer actions and persistence remain unchanged.
-- A focused source-contract guard protects the shell contracts.
+- Back navigation uses Lucide `ChevronLeft` with 44 pt ownership.
+- Settings copy resolves from the current app theme and header copy owns narrow/large-text reflow.
+- Preferences, account/session behavior, unit semantics, validation, sync and OTA developer actions are unchanged.
 
 ### VUX-5B — Profile theme consistency — PR #486
 
-- Profile shell background, headings and Settings affordance now resolve from `useAppTheme()` instead of static `Colors.dark`.
-- Profile Goals disclosure surface/border/text now resolve from the current theme.
-- Profile Goals card title/label now resolve from the current theme.
-- Existing safe-area/floating-tab clearance, keyboard behavior, goal validation, confirmation, nutrition-target recalculation, persistence, routes and Social entry behavior are unchanged.
-- A focused source-contract guard rejects `Colors.dark` in the three audited Profile presentation files.
+- Profile shell, headings, Settings affordance and Profile Goals presentation resolve from `useAppTheme()` instead of static `Colors.dark`.
+- Existing safe-area/floating-tab clearance, goal validation, nutrition-target recalculation, persistence, routes and Social entry behavior are unchanged.
 
 ### VUX-5C — Settings child theme and affordances — PR #487
 
-- Personal Details copy, radio controls and selected states now resolve from `useAppTheme()` instead of static `Colors.dark`.
+- Personal Details copy, radio controls and selected states resolve from `useAppTheme()`.
 - Existing DOB/formula validation and 46 pt option geometry are preserved.
-- About Settings Coach History navigation now uses Lucide `ChevronRight` instead of a raw `›` glyph.
-- Profile persistence, Coach History routing, diagnostics data, sync and auth behavior remain unchanged.
-- A focused source-contract guard protects the child-theme and disclosure-icon contracts.
+- About Settings Coach History disclosure uses Lucide `ChevronRight`.
 
 ### VUX-5D — Settings support/developer theme consistency — PR #488
 
-- `ProfileActionsCard`, `ProfileRuntimeInfoCard` and `LocalPerformanceDiagnosticsCard` now resolve presentation colors from the current app theme instead of static `Colors.dark` assumptions.
-- Existing developer preview/reset routes, OTA check/fetch/reload behavior and diagnostics recorder/storage behavior are unchanged.
-- `SupportDiagnosticsCard`, `DataRecoveryCard` and `SyncConflictReviewCard` were audited and already used current-theme colors, so they were not churned.
-- A focused source-contract guard protects the support-theme boundaries.
+- `ProfileActionsCard`, `ProfileRuntimeInfoCard` and `LocalPerformanceDiagnosticsCard` resolve presentation colors from the current app theme.
+- Developer preview/reset routes, OTA behavior and diagnostics behavior are unchanged.
 - Exact head `8aa052b8ae8f73b83fc2f56d2d29d55d64eb9d83` passed full Mobile CI #1895 before merge.
 
 ### VUX-6A — Social Profile Lookup shell/input hardening — PR #489
 
-- Social Profile Lookup now owns runtime top/bottom safe-area spacing while its native header remains intentionally hidden.
-- The username form uses automatic keyboard insets with platform-appropriate dismissal for short-height reachability.
-- Back navigation uses Lucide `ChevronLeft` on the existing 44 pt Pressable.
-- Header title/subtitle copy now has bounded shrink ownership for narrow widths, EN/RU and Dynamic Type pressure.
+- Runtime top/bottom safe-area spacing, keyboard-aware username form, Lucide back and bounded header reflow.
 - Username validation/normalization, auth gating and route targets are unchanged.
-- A focused source-contract guard protects the shell and route semantics.
 - Exact head `6ae33cb32ac1b70ac0fb53bde6a5f4333632ceb2` passed full Mobile CI #1898 before merge.
 
 ### VUX-6B — Social information/list shell hardening — PR #490
 
-- Community Guidelines, Notifications and Relationship Lists now own runtime top/bottom safe-area spacing while their native headers remain intentionally hidden.
-- Raw back glyphs were replaced with Lucide `ChevronLeft` while preserving localized labels, `router.back()` and 44 pt back ownership.
-- Header copy now owns bounded shrink/reflow and the list scroll surfaces explicitly own `flexGrow: 1`.
-- Relationship List tabs now own the shared 44 pt minimum interaction height instead of 42 pt.
-- Notification optimistic-read/navigation behavior, relationship API actions/filter kinds, guideline content, auth/session behavior, routes, persistence, sync and backend contracts are unchanged.
-- A focused source-contract guard protects these contracts.
+- Community Guidelines, Notifications and Relationship Lists own runtime safe-area spacing and Lucide back navigation.
+- Header/list reflow is bounded and Relationship List tabs own 44 pt targets.
+- Notification/relationship API behavior, auth/session, routes, persistence, sync and backend contracts are unchanged.
 - Exact head `ff5760526751ce90d3e51c249d5dca9b831f4378` passed full Mobile CI #1901 before merge.
 
 ### VUX-6C — Social workout-post shell hardening — PR #491
 
-- Following Feed, Profile Workout Posts and Workout Post Detail now own runtime top/bottom safe-area spacing while their native stack headers remain hidden.
-- Raw back glyphs were replaced with Lucide `ChevronLeft` while preserving localized labels, `router.back()` and existing 44 pt geometry.
-- The obsolete shared `backLabel` and fixed top-padding styles were removed.
-- Comment Report/Delete actions now own the shared 44 pt minimum target instead of 32 pt.
-- Following-feed cache/pagination, profile-post lookup/pagination, post detail loading/deletion, comments, reactions, reports, auth/session behavior, routes, persistence, sync and backend contracts are unchanged.
-- A focused source-contract guard protects the package.
+- Following Feed, Profile Workout Posts and Workout Post Detail own runtime safe-area spacing and Lucide back navigation.
+- Shared fixed top/back-label styles were removed and comment Report/Delete actions own 44 pt targets.
+- Feed cache/pagination, post loading/deletion, comments, reactions, reports and routes are unchanged.
 - Exact head `e1d04baea8b60bd932f1e896afb97de79d37e82e` passed full Mobile CI #1903 before merge.
 
-## VUX-6D — Social profile/share shell hardening
+### VUX-6D — Social profile/share shell hardening — PR #492
 
-**Status: active on `ui/social-profile-share-shell-ux`.**
+- Social Public Profile, Social Profile Editor and Share Workout own runtime top/bottom safe-area spacing with Lucide `ChevronLeft` navigation.
+- Share Workout back ownership is 44 × 44 instead of 40 × 40.
+- Public Profile reflow now owns `flexGrow`/bounded shrink where missing.
+- Public Profile relationship/report behavior, Profile Editor validation/avatar/save behavior, and Share Workout sync/idempotency/media/moderation/publish behavior are unchanged.
+- A focused source-contract guard protects the package.
+- Exact head `fae691fec350ae81d637c9edadeee2b868ca4cdd` passed full Mobile CI #1905 before merge.
+
+## VUX-7A — Progress theme consistency
+
+**Status: active on `ui/progress-theme-consistency`.**
 
 Confirmed findings:
 
-- Social Public Profile, Social Profile Editor and Share Workout all use hidden native headers but previously combined runtime bottom inset with fixed top padding;
-- all three still used raw `‹` back glyphs instead of the shared Lucide navigation language;
-- Share Workout's back control was 40 × 40 instead of the 44 × 44 interaction target;
-- Social Public Profile scroll content did not explicitly own `flexGrow: 1`, and its header/identity copy lacked bounded `minWidth` ownership for narrow widths and Dynamic Type;
-- Social Profile Editor and Share Workout already had keyboard-aware scroll/reflow contracts that should be preserved.
+- `AppThemeProvider` resolves a real light/dark/system palette, while the Progress tab still hard-coded `Colors.dark` for its own shell, weight/measurement copy and controls;
+- the shared Progress trend chart and Weekly Workout Volume card also hard-coded dark-only surfaces/text;
+- both visible Safety & Recovery Progress cards hard-coded `Colors.dark` in their style modules and status/chart colors;
+- the body-measurement editor used static dark input, border, text and placeholder colors;
+- Workouts and Nutrition audits did not reveal a higher-priority interaction defect: compact Nutrition actions already expand ownership through `hitSlop`, and audited Workouts actions already own 44 pt targets.
 
 Current bounded remediation:
 
-- move top spacing to runtime `insets.top` on all three screens while preserving existing runtime bottom insets and keyboard behavior;
-- replace raw back glyphs with Lucide `ChevronLeft` while preserving localized accessibility labels and `router.back()` semantics;
-- raise Share Workout back ownership from 40 × 40 to 44 × 44;
-- add `flexGrow`/bounded shrink ownership only to the Public Profile presentation boundaries that were missing it;
-- preserve Public Profile follow/request/block/report behavior, Profile Editor validation/avatar/save behavior, and Share Workout `syncNow`, idempotency, media/moderation and publish behavior;
-- protect the package with a focused source-contract guard.
+- resolve the Progress tab, body-measurement editor, trend chart, weekly volume and both Safety/Recovery cards from `useAppTheme()`;
+- convert the two Safety/Recovery style modules to theme factories and derive status/chart colors from the active palette;
+- preserve existing 44/48 pt interaction geometry, selected accessibility state and floating-tab clearance;
+- preserve weight/body-measurement analytics, Safety/Recovery analytics, trend/range semantics, workout history parameters, units, routes, persistence and sync contracts;
+- protect the package with a focused source-contract guard that rejects `Colors.dark.` in the touched Progress presentation files.
 
 **Merge gate:** full exact-head Mobile CI on the final documentation-synchronized head, with no unresolved review threads.
 
 ## Remaining hierarchy / validation review order
 
-1. Finish VUX-6D Social profile/share shell hardening and merge only its validated exact head.
-2. Audit remaining Social routes/components for concrete 44 pt, safe-area, icon-language and reflow defects; do not create cosmetic churn without a demonstrated defect.
-3. Return to Workouts/Nutrition/Progress only for concrete audited defects.
+1. Finish VUX-7A Progress theme consistency and merge only its validated exact head.
+2. Continue Workouts/Nutrition/Progress audit only from concrete source findings; do not create cosmetic churn without a demonstrated defect.
+3. Revisit remaining secondary surfaces for theme consistency, 44 pt ownership, safe-area/reflow and disabled-state clarity only when a concrete mismatch is found.
 
-For each surface verify one obvious primary action, restrained surface nesting, EN/RU/Dynamic Type resilience, consistent interaction states and coherent loading/empty/error/success presentation.
+For each surface verify one obvious primary action, restrained surface nesting, EN/RU/Dynamic Type resilience, current-theme consistency, consistent interaction states and coherent loading/empty/error/success presentation.
 
 ## Validation matrix
 
@@ -286,14 +251,13 @@ Runtime UI PRs require exact-head:
 - Expo export;
 - Expo Doctor.
 
-Physical/release evidence remains separately authorization-gated: narrow/short phones, large text, EN/RU, keyboard-open states, iPhone safe areas, Android system insets, and populated/empty/disabled/loading/error/success states.
+Physical/release evidence remains separately authorization-gated: narrow/short phones, large text, EN/RU, keyboard-open states, iPhone safe areas, Android system insets, light/dark/system appearance, and populated/empty/disabled/loading/error/success states.
 
 No source/CI result is physical-device evidence.
 
 ## Next execution order
 
-1. Finish VUX-6D and run full exact-head Mobile CI on the final documentation-synchronized head.
-2. Merge only the validated VUX-6D head.
-3. Continue the remaining Social audit from concrete source findings.
-4. Return to Workouts/Nutrition/Progress only for concrete audited defects.
-5. Keep backend, OTA/EAS/native/release and production/provider actions out of this autonomous UI sequence unless directly requested.
+1. Finish VUX-7A and run full exact-head Mobile CI on the final documentation-synchronized head.
+2. Merge only the validated VUX-7A head.
+3. Continue the audited Workouts/Nutrition/Progress sequence only where source evidence demonstrates a real UI defect.
+4. Keep backend, OTA/EAS/native/release and production/provider actions out of this autonomous UI sequence unless directly requested.
