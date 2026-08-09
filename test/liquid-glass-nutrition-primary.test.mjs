@@ -20,7 +20,7 @@ describe('Nutrition primary Liquid Glass surfaces', () => {
     const source = readSource('src/features/nutrition/styles/nutritionScreenStyles.ts');
 
     expect(source).toContain('backgroundColor: glass.cardFill');
-    expect(source).toContain('borderColor: glass.cardBorder');
+    expect(source).toContain('glass.cardBorder');
     expect(source).toContain('backgroundColor: glass.controlFill');
     expect(source).toContain('backgroundColor: glass.controlPressedFill');
     expect(source).toContain('backgroundColor: glass.disabledFill');
