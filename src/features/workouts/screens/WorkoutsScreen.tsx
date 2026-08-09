@@ -1,13 +1,15 @@
 import { router, useFocusEffect } from 'expo-router';
 import { Play, Search } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
+import { FlatList, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   getFloatingTabBarBottomClearance,
   getFloatingTabBarStickyActionContentPadding,
 } from '@/components/navigation/floatingTabBarLayout';
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
+import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import {
   useAppActions,
   useAppInfrastructure,
@@ -130,14 +132,13 @@ export default function WorkoutsScreen() {
   const header = (
     <View style={styles.header}>
       <TopTabs activeTab={activeTab} onChange={setActiveTab} />
-      <Pressable
+      <LiquidGlassIconButton
         accessibilityHint={t('workouts.searchExercisesHint')}
         accessibilityLabel={t('workouts.searchExercisesAccessibility')}
-        accessibilityRole="button"
+        Icon={Search}
         onPress={() => router.push('/workouts/exercise-library')}
-        style={({ pressed }) => [styles.searchButton, pressed && styles.pressed]}>
-        <Search color={colors.textPrimary} size={24} strokeWidth={2.2} />
-      </Pressable>
+        testID="workouts-search-glass-button"
+      />
     </View>
   );
 
@@ -198,7 +199,6 @@ export default function WorkoutsScreen() {
                   workoutCount={0}
                   onPress={() => setCreateProgramOpen(true)}
                 />
-                {/* FlatList replaces visibleProgramSummaries.map while preserving row order. */}
                 <ProgramRow
                   favoriteMode={favoritesOnly ? 'show-all' : 'show-favorites'}
                   icon="favorite"
@@ -232,25 +232,20 @@ export default function WorkoutsScreen() {
         />
       )}
 
-      <View
-        pointerEvents="box-none"
-        style={[styles.footer, { bottom: floatingTabBarClearance }]}>
+      <View pointerEvents="box-none" style={[styles.footer, { bottom: floatingTabBarClearance }]}>
         <View style={styles.container}>
-          <Pressable
+          <PrimaryButton
             accessibilityHint={t(
               activeDraft ? 'workouts.resumeWorkoutHint' : 'workouts.startEmptyWorkoutHint',
             )}
             accessibilityLabel={t(
               activeDraft ? 'workouts.resumeWorkout' : 'workouts.startEmptyWorkout',
             )}
-            accessibilityRole="button"
+            icon={Play}
+            label={t(activeDraft ? 'workouts.resumeWorkout' : 'workouts.startEmptyWorkout')}
             onPress={activeDraft ? resumeWorkout : startEmptyWorkout}
-            style={({ pressed }) => [styles.footerButton, pressed && styles.pressed]}>
-            <Play color={colors.textOnAccent} size={17} strokeWidth={2.4} />
-            <Text style={styles.footerLabel}>
-              {activeDraft ? t('workouts.resumeWorkout') : t('workouts.startEmptyWorkout')}
-            </Text>
-          </Pressable>
+            style={styles.footerButton}
+          />
         </View>
       </View>
 
