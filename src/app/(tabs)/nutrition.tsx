@@ -17,15 +17,20 @@ import { formatNumber as formatNutritionNumber } from '@/lib/nutrition';
 import { useLocalization } from '@/localization';
 import { getNutritionDiaryCopy } from '@/localization/nutritionDiaryCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import type { FoodEntry, MealType } from '@/types';
 import { formatEnergyValue, useUnitPreferences } from '@/units';
 
 export default function NutritionScreen() {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { energy } = useUnitPreferences();
   const { formatDate, formatNumber, locale } = useLocalization();
   const copy = getNutritionDiaryCopy(locale);
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const insets = useSafeAreaInsets();
   const { foodEntries, nutritionTargets } = useNutritionState();
   const params = useLocalSearchParams<{ date?: string; openMeal?: MealType }>();
@@ -126,7 +131,7 @@ export default function NutritionScreen() {
           accessibilityRole="button"
           hitSlop={10}
           onPress={openCalendar}
-          style={styles.calendarButton}>
+          style={({ pressed }) => [styles.calendarButton, pressed && styles.controlPressed]}>
           <CalendarDays color={colors.textPrimary} size={21} strokeWidth={2} />
         </Pressable>
       </View>
@@ -148,17 +153,15 @@ export default function NutritionScreen() {
           disabled={selectedDateIsToday}
           hitSlop={10}
           onPress={() => updateSelectedDate(todayKey)}
-          style={[
+          style={({ pressed }) => [
             styles.todayButton,
-            selectedDateIsToday && {
-              backgroundColor: colors.backgroundSecondary,
-              borderColor: colors.divider,
-            },
+            selectedDateIsToday && styles.todayButtonDisabled,
+            pressed && styles.controlPressed,
           ]}>
           <Text
             style={[
               styles.todayButtonText,
-              selectedDateIsToday && { color: colors.textMuted },
+              selectedDateIsToday && styles.todayButtonTextDisabled,
             ]}>
             {copy.today}
           </Text>

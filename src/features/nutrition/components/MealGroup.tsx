@@ -66,7 +66,7 @@ export function MealGroup({
         accessibilityState={{ expanded }}
         hitSlop={12}
         onPress={() => onToggleMealExpansion(mealType)}
-        style={styles.mealHeader}>
+        style={({ pressed }) => [styles.mealHeader, pressed && styles.controlPressed]}>
         <View style={styles.mealHeaderLeft}>
           <Text style={styles.mealIcon}>{mealIcon}</Text>
           <View style={styles.mealHeaderCopy}>
@@ -87,7 +87,7 @@ export function MealGroup({
               event.stopPropagation();
               onOpenMealPicker(mealType);
             }}
-            style={styles.mealActionButton}>
+            style={({ pressed }) => [styles.mealActionButton, pressed && styles.controlPressed]}>
             <Plus color={colors.textPrimary} size={20} strokeWidth={2.2} />
           </Pressable>
           <ExpandIcon color={colors.textSecondary} size={20} strokeWidth={2} />
