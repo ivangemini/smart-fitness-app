@@ -4,28 +4,6 @@ import { Colors, MaxContentWidth, Radii, Spacing } from '@/constants/theme';
 
 export const createStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
-    addButton: {
-      alignItems: 'center',
-      backgroundColor: colors.accent,
-      borderCurve: 'continuous',
-      borderRadius: 18,
-      justifyContent: 'center',
-      minHeight: 52,
-      paddingHorizontal: Spacing.three,
-    },
-    addButtonDisabled: {
-      opacity: 0.45,
-    },
-    addButtonLabel: {
-      color: colors.background,
-      flexShrink: 1,
-      fontSize: 15,
-      fontWeight: '900',
-      textAlign: 'center',
-    },
-    addButtonPressed: {
-      opacity: 0.88,
-    },
     attribution: {
       color: colors.textSecondary,
       fontSize: 11,
@@ -44,23 +22,6 @@ export const createStyles = (colors: typeof Colors.light) =>
     diagnosticBlock: {
       gap: 1,
       marginTop: Spacing.one,
-    },
-    backButton: {
-      alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderCurve: 'continuous',
-      borderRadius: 999,
-      flexShrink: 0,
-      height: 34,
-      justifyContent: 'center',
-      width: 34,
-    },
-    backLabel: {
-      color: colors.textPrimary,
-      fontSize: 22,
-      fontWeight: '700',
-      lineHeight: 22,
-      marginTop: -1,
     },
     container: {
       maxWidth: MaxContentWidth,
@@ -102,9 +63,12 @@ export const createStyles = (colors: typeof Colors.light) =>
       opacity: 0.72,
     },
     retryButton: {
+      alignItems: 'center',
       backgroundColor: colors.accent,
       borderCurve: 'continuous',
       borderRadius: 14,
+      justifyContent: 'center',
+      minHeight: 44,
       paddingHorizontal: Spacing.three,
       paddingVertical: Spacing.two,
     },
@@ -207,7 +171,7 @@ export const createRowStyles = (colors: typeof Colors.light) =>
       borderWidth: StyleSheet.hairlineWidth,
       flexShrink: 0,
       justifyContent: 'center',
-      minHeight: 40,
+      minHeight: 44,
       maxWidth: 82,
       paddingHorizontal: Spacing.two,
     },
@@ -298,7 +262,7 @@ export const createFilterStyles = (colors: typeof Colors.light) =>
       borderRadius: 999,
       borderWidth: StyleSheet.hairlineWidth,
       justifyContent: 'center',
-      minHeight: 34,
+      minHeight: 44,
       paddingHorizontal: Spacing.three,
       paddingVertical: 8,
     },
@@ -321,7 +285,7 @@ export const createFilterStyles = (colors: typeof Colors.light) =>
       paddingRight: Spacing.three,
     },
     chipScroll: {
-      maxHeight: 38,
+      maxHeight: 48,
     },
     label: {
       color: colors.textPrimary,
