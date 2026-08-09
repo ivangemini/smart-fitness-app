@@ -104,6 +104,7 @@ export function SafetyRecoveryProgressCard({
                   styles.periodChip,
                   selected && styles.periodChipSelected,
                   pressed && styles.pressed,
+                  selected && pressed && styles.periodChipSelectedPressed,
                 ]}>
                 <Text style={[styles.periodChipLabel, selected && styles.periodChipLabelSelected]}>
                   {getSafetyPeriodLabel(t, option)}
