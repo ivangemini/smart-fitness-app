@@ -1,12 +1,14 @@
 import { router } from 'expo-router';
-import { User } from 'lucide-react-native';
+import { Dumbbell, Scale, User, Utensils } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { HomeLiquidBackdrop } from '@/components/home/HomeLiquidBackdrop';
 import { HomeSnapshotCard } from '@/components/home/HomeSnapshotCard';
 import { HomeSummaryCard } from '@/components/home/HomeSummaryCard';
 import { getFloatingTabBarBottomClearance } from '@/components/navigation/floatingTabBarLayout';
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { QuickActionsCard } from '@/components/ui/QuickActionsCard';
 import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme';
 import {
@@ -43,6 +45,10 @@ import {
 import { formatPlural, useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
+import {
   formatEnergyValue,
   formatWeightValue,
   useUnitPreferences,
@@ -50,7 +56,11 @@ import {
 } from '@/units';
 
 export default function HomeScreen() {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const { bodyMeasurements, weightHistory } = useProgressState();
   const { exercises, workoutSessions, workouts } = useWorkoutState();
   const { foodEntries, nutritionTargets } = useNutritionState();
@@ -58,7 +68,7 @@ export default function HomeScreen() {
   const { isRestoringState } = useAppInfrastructure();
   const { formatNumber, locale, t } = useLocalization();
   const { energy: energyUnit, weight: weightUnit } = useUnitPreferences();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const safeAreaInsets = useSafeAreaInsets();
   const todayKey = formatLocalDate(new Date());
   const [activeDraftReady, setActiveDraftReady] = useState(false);
@@ -258,77 +268,89 @@ export default function HomeScreen() {
   }
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={[
-        styles.content,
-        { paddingBottom: getFloatingTabBarBottomClearance(safeAreaInsets.bottom) },
-      ]}
-      showsVerticalScrollIndicator={false}
-      style={styles.screen}>
-      <View style={styles.container}>
-        <View style={styles.headerRow}>
-          <Text style={styles.headerTitle}>{t('tabs.home')}</Text>
-          <Pressable
-            accessibilityLabel={t('home.openProfile')}
-            accessibilityRole="button"
-            onPress={() => router.push('/(tabs)/profile')}
-            style={({ pressed }) => [styles.profileButton, pressed && styles.pressed]}>
-            <User color={colors.textPrimary} size={22} strokeWidth={2} />
-          </Pressable>
+    <View style={styles.screen}>
+      <HomeLiquidBackdrop />
+      <ScrollView
+        contentInsetAdjustmentBehavior="never"
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingBottom: getFloatingTabBarBottomClearance(safeAreaInsets.bottom),
+            paddingTop: safeAreaInsets.top + Spacing.three,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+        style={styles.scroll}>
+        <View style={styles.container}>
+          <View style={styles.headerRow}>
+            <Text style={styles.headerTitle}>{t('tabs.home')}</Text>
+            <LiquidGlassIconButton
+              accessibilityLabel={t('home.openProfile')}
+              Icon={User}
+              onPress={() => router.push('/(tabs)/profile')}
+              testID="home-profile-glass-button"
+            />
+          </View>
+          <HomeSummaryCard
+            caloriesLabel={t('home.calories')}
+            caloriesRemainingLabel={caloriesRemainingLabel}
+            currentWeightLabel={currentWeightLabel}
+            currentWeightTitle={t('home.currentWeight')}
+            isCaloriesOverTarget={caloriesRemaining < 0}
+            motivation={getHomeMotivationLabel(t, motivation)}
+            streakLabel={
+              currentWorkoutStreak
+                ? formatPlural(locale, currentWorkoutStreak.days, {
+                    one: t('home.streak.one'),
+                    few: t('home.streak.few'),
+                    many: t('home.streak.many'),
+                    other: t('home.streak.other'),
+                  })
+                : undefined
+            }
+            streakTitle={t('home.streak')}
+            title={t('home.mattersNow')}
+            todayLabel={t('home.today')}
+          />
+          <QuickActionsCard
+            primaryAction={{
+              icon: Dumbbell,
+              label: primaryWorkoutLabel,
+              onPress: () => router.push(primaryWorkoutRoute),
+            }}
+            secondaryActions={[
+              {
+                icon: Utensils,
+                label: t('home.addFood'),
+                onPress: () => router.push('/(tabs)/nutrition'),
+              },
+              {
+                icon: Scale,
+                label: t('home.logWeight'),
+                onPress: () => router.push('/weight-entry'),
+              },
+            ]}
+            title={t('home.nextAction')}
+          />
+          <HomeSnapshotCard
+            items={snapshotItems}
+            subtitle={t('home.weeklySubtitle')}
+            title={t('home.weeklySnapshot')}
+          />
         </View>
-        <HomeSummaryCard
-          caloriesLabel={t('home.calories')}
-          caloriesRemainingLabel={caloriesRemainingLabel}
-          currentWeightLabel={currentWeightLabel}
-          currentWeightTitle={t('home.currentWeight')}
-          isCaloriesOverTarget={caloriesRemaining < 0}
-          motivation={getHomeMotivationLabel(t, motivation)}
-          streakLabel={
-            currentWorkoutStreak
-              ? formatPlural(locale, currentWorkoutStreak.days, {
-                  one: t('home.streak.one'),
-                  few: t('home.streak.few'),
-                  many: t('home.streak.many'),
-                  other: t('home.streak.other'),
-                })
-              : undefined
-          }
-          streakTitle={t('home.streak')}
-          title={t('home.mattersNow')}
-          todayLabel={t('home.today')}
-        />
-        <QuickActionsCard
-          primaryAction={{
-            label: primaryWorkoutLabel,
-            onPress: () => router.push(primaryWorkoutRoute),
-          }}
-          secondaryActions={[
-            {
-              label: t('home.addFood'),
-              onPress: () => router.push('/(tabs)/nutrition'),
-            },
-            {
-              label: t('home.logWeight'),
-              onPress: () => router.push('/weight-entry'),
-            },
-          ]}
-          title={t('home.nextAction')}
-        />
-        <HomeSnapshotCard
-          items={snapshotItems}
-          subtitle={t('home.weeklySubtitle')}
-          title={t('home.weeklySnapshot')}
-        />
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
-    content: { alignItems: 'center', flexGrow: 1, padding: Spacing.three },
-    container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
+    container: { gap: Spacing.four, maxWidth: MaxContentWidth, width: '100%' },
+    content: {
+      alignItems: 'center',
+      flexGrow: 1,
+      paddingHorizontal: Spacing.three,
+    },
     headerRow: {
       alignItems: 'center',
       flexDirection: 'row',
@@ -343,17 +365,6 @@ const createStyles = (colors: typeof Colors.light) =>
       lineHeight: Typography.screenTitle.lineHeight,
       minWidth: 0,
     },
-    pressed: { opacity: 0.72 },
-    profileButton: {
-      alignItems: 'center',
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.borderSubtle,
-      borderRadius: 22,
-      borderWidth: StyleSheet.hairlineWidth,
-      flexShrink: 0,
-      height: 44,
-      justifyContent: 'center',
-      width: 44,
-    },
-    screen: { backgroundColor: colors.background, flex: 1 },
+    screen: { backgroundColor: glass.backgroundBase, flex: 1 },
+    scroll: { flex: 1 },
   });
