@@ -48,13 +48,8 @@ jobs:
       - name: TypeScript
         run: npx tsc --noEmit
 
-      - name: Diagnose test directory
-        continue-on-error: true
-        run: npx vitest run test
-
-      - name: Diagnose tests directory
-        continue-on-error: true
-        run: npx vitest run tests
+      - name: Diagnose serial full regression
+        run: npx vitest run --no-file-parallelism
 
       - name: Full regression suite
         run: npm test
