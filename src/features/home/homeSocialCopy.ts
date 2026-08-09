@@ -26,7 +26,7 @@ export type HomeSocialCopy = {
 const copy: Record<SupportedLocale, HomeSocialCopy> = {
   en: {
     addFood: 'Add food',
-    calories: 'kcal',
+    calories: 'Calories',
     carbsShort: 'C',
     collapseMetrics: 'Collapse today details',
     currentWeight: 'Weight',
@@ -48,7 +48,7 @@ const copy: Record<SupportedLocale, HomeSocialCopy> = {
   },
   ru: {
     addFood: 'Добавить еду',
-    calories: 'ккал',
+    calories: 'Калории',
     carbsShort: 'У',
     collapseMetrics: 'Свернуть показатели за сегодня',
     currentWeight: 'Вес',
