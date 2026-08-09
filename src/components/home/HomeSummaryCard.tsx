@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { AppCard } from '@/components/ui/AppCard';
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
+import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import {
   resolveLiquidGlassPalette,
@@ -65,7 +65,11 @@ export function HomeSummaryCard({
   const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   return (
-    <AppCard style={[styles.card, isCaloriesOverTarget && styles.cardWarning]}>
+    <LiquidGlassSurface
+      blur
+      radius={Radii.xlarge}
+      style={[styles.card, isCaloriesOverTarget && styles.cardWarning]}
+      variant="elevated">
       <View style={styles.hero}>
         <View style={styles.headerCopy}>
           <Text selectable style={styles.kicker}>
@@ -97,7 +101,7 @@ export function HomeSummaryCard({
         <Metric label={currentWeightTitle} styles={styles} value={currentWeightLabel} />
         <Metric label={streakTitle} styles={styles} value={streakLabel ?? '—'} />
       </View>
-    </AppCard>
+    </LiquidGlassSurface>
   );
 }
 
@@ -130,6 +134,7 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
     card: {
       backgroundColor: glass.semanticAccentFill,
       gap: Spacing.three,
+      padding: Spacing.four,
     },
     cardWarning: {
       backgroundColor: glass.semanticWarningFill,

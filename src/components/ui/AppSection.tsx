@@ -1,8 +1,9 @@
-import { PropsWithChildren, ReactNode } from 'react';
+import { PropsWithChildren, ReactNode, useMemo } from 'react';
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import { AppCard } from '@/components/ui/AppCard';
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 
 type AppSectionProps = PropsWithChildren<{
   accessory?: ReactNode;
@@ -12,7 +13,17 @@ type AppSectionProps = PropsWithChildren<{
   title: string;
 }>;
 
-export function AppSection({ accessory, bodyStyle, children, style, subtitle, title }: AppSectionProps) {
+export function AppSection({
+  accessory,
+  bodyStyle,
+  children,
+  style,
+  subtitle,
+  title,
+}: AppSectionProps) {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <AppCard style={style}>
       <View style={styles.header}>
@@ -29,27 +40,28 @@ export function AppSection({ accessory, bodyStyle, children, style, subtitle, ti
   );
 }
 
-const styles = StyleSheet.create({
-  copy: {
-    flex: 1,
-    gap: 2,
-    minWidth: 0,
-  },
-  header: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    gap: Spacing.two,
-    justifyContent: 'space-between',
-  },
-  subtitle: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.callout.fontSize,
-    lineHeight: Typography.callout.lineHeight,
-  },
-  title: {
-    color: Colors.dark.textPrimary,
-    fontSize: Typography.cardTitle.fontSize,
-    fontWeight: Typography.cardTitle.fontWeight,
-    lineHeight: Typography.cardTitle.lineHeight,
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    copy: {
+      flex: 1,
+      gap: 2,
+      minWidth: 0,
+    },
+    header: {
+      alignItems: 'flex-start',
+      flexDirection: 'row',
+      gap: Spacing.two,
+      justifyContent: 'space-between',
+    },
+    subtitle: {
+      color: colors.textSecondary,
+      fontSize: Typography.callout.fontSize,
+      lineHeight: Typography.callout.lineHeight,
+    },
+    title: {
+      color: colors.textPrimary,
+      fontSize: Typography.cardTitle.fontSize,
+      fontWeight: Typography.cardTitle.fontWeight,
+      lineHeight: Typography.cardTitle.lineHeight,
+    },
+  });

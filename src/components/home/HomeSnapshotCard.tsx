@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { AppCard } from '@/components/ui/AppCard';
+import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import type { HomeSnapshotItem } from '@/lib/home';
 import { useAppTheme } from '@/theme/AppThemeProvider';
@@ -26,12 +26,14 @@ function SnapshotTile({
   value,
 }: HomeSnapshotItem & { styles: HomeSnapshotStyles }) {
   return (
-    <View
+    <LiquidGlassSurface
+      radius={Radii.medium}
       style={[
         styles.tile,
         tone === 'positive' && styles.tilePositive,
         tone === 'warning' && styles.tileWarning,
-      ]}>
+      ]}
+      variant="control">
       <Text selectable style={styles.tileLabel}>
         {label}
       </Text>
@@ -41,7 +43,7 @@ function SnapshotTile({
       <Text selectable style={styles.tileDetail}>
         {detail}
       </Text>
-    </View>
+    </LiquidGlassSurface>
   );
 }
 
@@ -54,7 +56,7 @@ export function HomeSnapshotCard({ items, subtitle, title }: HomeSnapshotCardPro
   const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   return (
-    <AppCard>
+    <View style={styles.section}>
       <View style={styles.header}>
         <Text selectable style={styles.title}>
           {title}
@@ -69,14 +71,15 @@ export function HomeSnapshotCard({ items, subtitle, title }: HomeSnapshotCardPro
           <SnapshotTile key={item.id} {...item} styles={styles} />
         ))}
       </View>
-    </AppCard>
+    </View>
   );
 }
 
 const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     grid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
-    header: { gap: 4, marginBottom: Spacing.two },
+    header: { gap: 4 },
+    section: { gap: Spacing.three },
     subtitle: {
       color: colors.textSecondary,
       flexShrink: 1,
@@ -84,15 +87,9 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
       lineHeight: Typography.callout.lineHeight,
     },
     tile: {
-      backgroundColor: glass.controlFill,
-      borderColor: glass.controlBorder,
-      borderCurve: 'continuous',
-      borderRadius: Radii.medium,
-      borderTopColor: glass.cardHighlight,
-      borderTopWidth: 1,
-      borderWidth: StyleSheet.hairlineWidth,
       flexGrow: 1,
       gap: 2,
+      minHeight: 104,
       minWidth: 150,
       padding: Spacing.three,
     },

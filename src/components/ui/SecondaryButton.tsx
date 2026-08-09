@@ -1,3 +1,4 @@
+import type { LucideIcon } from 'lucide-react-native';
 import { useMemo } from 'react';
 import {
   ActivityIndicator,
@@ -22,6 +23,7 @@ type SecondaryButtonProps = {
   accessibilityHint?: string;
   accessibilityLabel?: string;
   disabled?: boolean;
+  icon?: LucideIcon;
   label: string;
   loading?: boolean;
   onPress?: () => void;
@@ -32,6 +34,7 @@ export function SecondaryButton({
   accessibilityHint,
   accessibilityLabel,
   disabled,
+  icon: Icon,
   label,
   loading,
   onPress,
@@ -62,6 +65,13 @@ export function SecondaryButton({
       ]}>
       <View style={styles.content}>
         {state.loading ? <ActivityIndicator color={colors.textPrimary} /> : null}
+        {!state.loading && Icon ? (
+          <Icon
+            color={visuallyDisabled ? colors.textMuted : colors.textPrimary}
+            size={20}
+            strokeWidth={2.1}
+          />
+        ) : null}
         <Text style={[styles.label, visuallyDisabled && styles.disabledLabel]}>
           {state.loading ? `${label}…` : label}
         </Text>
@@ -108,9 +118,12 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
     },
     label: {
       color: colors.textPrimary,
+      flexShrink: 1,
       fontSize: Typography.button.fontSize,
       fontWeight: Typography.button.fontWeight,
       lineHeight: Typography.button.lineHeight,
+      minWidth: 0,
+      textAlign: 'center',
     },
     pressed: {
       backgroundColor: glass.controlPressedFill,

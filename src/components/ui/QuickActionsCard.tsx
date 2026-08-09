@@ -1,3 +1,4 @@
+import type { LucideIcon } from 'lucide-react-native';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { AppSection } from '@/components/ui/AppSection';
@@ -7,6 +8,7 @@ import { Spacing } from '@/constants/theme';
 
 type QuickAction = {
   disabled?: boolean;
+  icon?: LucideIcon;
   label: string;
   onPress: () => void;
 };
@@ -19,17 +21,35 @@ type QuickActionsCardProps = {
   title: string;
 };
 
-export function QuickActionsCard({ primaryAction, secondaryActions = [], style, subtitle, title }: QuickActionsCardProps) {
+export function QuickActionsCard({
+  primaryAction,
+  secondaryActions = [],
+  style,
+  subtitle,
+  title,
+}: QuickActionsCardProps) {
   return (
     <AppSection bodyStyle={styles.body} style={style} subtitle={subtitle} title={title}>
       {primaryAction ? (
-        <PrimaryButton disabled={primaryAction.disabled} label={primaryAction.label} onPress={primaryAction.onPress} />
+        <PrimaryButton
+          disabled={primaryAction.disabled}
+          icon={primaryAction.icon}
+          label={primaryAction.label}
+          onPress={primaryAction.onPress}
+        />
       ) : null}
 
       {secondaryActions.length > 0 ? (
         <View style={styles.secondaryActions}>
           {secondaryActions.map((action) => (
-            <SecondaryButton key={action.label} disabled={action.disabled} label={action.label} onPress={action.onPress} style={styles.secondaryButton} />
+            <SecondaryButton
+              disabled={action.disabled}
+              icon={action.icon}
+              key={action.label}
+              label={action.label}
+              onPress={action.onPress}
+              style={styles.secondaryButton}
+            />
           ))}
         </View>
       ) : null}
