@@ -17,15 +17,20 @@ import { formatNumber as formatNutritionNumber } from '@/lib/nutrition';
 import { useLocalization } from '@/localization';
 import { getNutritionDiaryCopy } from '@/localization/nutritionDiaryCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import type { FoodEntry, MealType } from '@/types';
 import { formatEnergyValue, useUnitPreferences } from '@/units';
 
 export default function NutritionScreen() {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const { energy } = useUnitPreferences();
   const { formatDate, formatNumber, locale } = useLocalization();
   const copy = getNutritionDiaryCopy(locale);
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const insets = useSafeAreaInsets();
   const { foodEntries, nutritionTargets } = useNutritionState();
   const params = useLocalSearchParams<{ date?: string; openMeal?: MealType }>();
@@ -151,8 +156,9 @@ export default function NutritionScreen() {
           style={[
             styles.todayButton,
             selectedDateIsToday && {
-              backgroundColor: colors.backgroundSecondary,
-              borderColor: colors.divider,
+              backgroundColor: glass.disabledFill,
+              borderColor: glass.disabledBorder,
+              borderTopColor: glass.disabledBorder,
             },
           ]}>
           <Text
