@@ -5,36 +5,41 @@ Updated: 2026-08-09
 ## Checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current `main`: `b2333891a86bf5010a9e8e3db787fea2d1f3fa28`.
-- Latest runtime merge: `b2333891a86bf5010a9e8e3db787fea2d1f3fa28` — PR #526 `Migrate Account and Social Profile shell backs to Liquid Glass`.
-- PR #526 exact validated head: `5d136c044519f0afa570e8f8ebc6d77bc4932947`; Mobile CI #1965 passed the full required gate.
-- LG-3D final residual: PR #525 / exact head `197a79e2d9b83ef5ec0374b76e0dc0d96a943277` / Mobile CI #1963 / merge `8272b862200c7a2a1585bd61030a5ca2f8d9a0d8`.
-- Current roadmap package: **LG-3G Social workout-post shell navigation**.
+- Current `main`: `2f85aea5a1f7f009e427663ee3278f0f78197978`.
+- Latest runtime merge: `2f85aea5a1f7f009e427663ee3278f0f78197978` — PR #529 `Migrate Social profile avatar surfaces to Liquid Glass`.
+- PR #529 exact validated head: `2b11a671d45ff868980ce82440aff393228bf83d`; Mobile CI #1970 passed the full required gate.
+- Previous LG-3G: PR #528 / exact head `9ac58b6ed86287bbff5b198e88849f862e5b127d` / Mobile CI #1967 / merge `e26ccebe2efa57a7a67d0e15018f59ac53ca7d1e`.
+- Current roadmap package: **LG-3I Coach secondary shared navigation**.
 - Backend remains untouched; last dependency-awareness baseline was `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`.
 
-## LG-3D complete
+## LG-3G complete
 
-PR #525 closed the Community Guidelines residual:
+PR #528 delivered shared `LiquidGlassIconButton` back navigation in:
 
-- `SocialCommunityGuidelinesScreen` now uses shared `LiquidGlassIconButton` for back navigation;
-- local bordered `Pressable`, local back style and generic opacity ownership were removed;
-- existing `AppCard` content, warning note, routing, copy, localization/accessibility and safe-area geometry were preserved;
-- canonical and focused source guards now assert the shared-control contract.
+- `SocialFollowingFeedScreen`;
+- `SocialProfileWorkoutPostsScreen`;
+- `SocialWorkoutPostDetailScreen`.
 
-## LG-3F complete
+Only the obsolete `backButton` recipe was removed from `SocialWorkoutPostSurface.styles.ts`. Existing `styles.pressed` remains because interactive workout-post/card content still owns it.
 
-PR #526 delivered:
+Preserved: feed cache/refresh/pagination, profile-post privacy/error/pagination behavior, detail load/delete/report/reactions/comments, safe-area/keyboard geometry, localization/accessibility and Social API authority.
 
-- shared `LiquidGlassIconButton` back navigation in Account Sessions;
-- shared `LiquidGlassIconButton` back navigation in Social Profile Editor;
-- removal of obsolete local bordered-back/pressed style ownership and unused `Pressable`/`Radii` imports;
-- canonical plus focused Liquid Glass guards for both shells.
+## LG-3H complete
 
-Preserved: session listing/refresh/revoke/confirmation behavior, localized session errors, Social profile loading/validation/managed-avatar/visibility/save behavior, `socialApi.upsertOwnProfile`, keyboard/safe-area geometry, localization and accessibility. No native blur was added.
+PR #529 delivered:
+
+- shared Public Profile back navigation;
+- adaptive Public Profile avatar fallback using `controlFill/controlBorder`;
+- adaptive Managed Avatar image/empty preview, status-box and progress-track material;
+- focused canonical/Liquid Glass guards for these contracts.
+
+Preserved: public-profile relationship/privacy/report behavior, posts/edit navigation, managed-avatar capability gating, choose/refresh/remove lifecycle, approved/candidate asset handling and progress semantics. No native blur was added.
+
+The first LG-3H exact head made `SocialPublicProfileScreen.tsx` 501 lines and failed the repository line audit. The final fix compacted formatting only; exact head `2b11a671d45ff868980ce82440aff393228bf83d` then passed the full Mobile CI #1970 gate.
 
 ## Exact validation
 
-PR #526 exact head `5d136c044519f0afa570e8f8ebc6d77bc4932947` passed Mobile CI #1965:
+PR #529 exact head passed:
 
 - repository file line audit;
 - changed-file line audit;
@@ -48,20 +53,23 @@ No physical-device/release evidence is implied.
 
 ## Audit note — Sync & Backup
 
-`src/app/sync-backup.tsx`, `DataRecoveryCard`, `SyncConflictReviewCard`, and `SupportDiagnosticsCard` already use shared `AppCard`/`AppButton` material. Remaining `borderSubtle` usage in that surface is structural row separation, not a reason to churn the screen.
+`src/app/sync-backup.tsx`, `DataRecoveryCard`, `SyncConflictReviewCard`, and `SupportDiagnosticsCard` already use shared `AppCard`/`AppButton` material. Remaining `borderSubtle` usage is structural row separation, not a migration target by itself.
 
-## Next package — LG-3G Social workout-post shell navigation
+## Next package — LG-3I Coach secondary shared navigation
 
-Target only the shared back-control defect in:
+Audited local back ownership exists in:
 
-- `SocialFollowingFeedScreen.tsx`;
-- `SocialProfileWorkoutPostsScreen.tsx`;
-- `SocialWorkoutPostDetailScreen.tsx`;
-- `SocialWorkoutPostSurface.styles.ts` for deletion of the obsolete shared local `backButton` recipe.
+- `CombinedCoachScreen`;
+- `RecoveryCheckInScreen`;
+- `SafetyRecoveryCoachScreen`;
+- `UserLimitationScreen`;
+- `CoachRunHistoryScreen`.
 
-Use `LiquidGlassIconButton`, preserve safe-area geometry and all feed/list/detail API/state semantics, and retain `styles.pressed` because it still belongs to interactive workout-post/card content. Update `tests/socialWorkoutPostShellUx.source.test.ts` and extend the existing Liquid Glass Social shell guard. Do not mix comment/metric material redesign into this navigation-only batch.
+Replace only those local back actions with shared `LiquidGlassIconButton` and remove obsolete back-style recipes. Preserve safe-area geometry and every Coach/recovery/history data contract. Do not remove generic `pressed` styles where they are still used by period pickers, choices, filters, rows or other interactive controls. Update `tests/coach-secondary-back-icons.test.ts` and add/extend a focused Liquid Glass Coach shell guard.
 
-After LG-3G, continue Social public-profile material, Progress detail, Coach detail and exercise detail/library by shared defect.
+Do not mix the navigation package with Coach filters, recovery inputs, lookback buttons, history filter pills, domain cards or result material. Those belong to a later bounded material pass.
+
+After LG-3I, continue remaining Progress detail, Coach material and exercise detail/library surfaces by shared defect.
 
 ## Blocked Home follow-ups
 
@@ -69,7 +77,7 @@ LG-H2 Stories remains blocked until real Social DTO/lifecycle/privacy/media/mode
 
 ## Next sequence
 
-1. LG-3G Social workout-post shell navigation; then remaining LG-3 secondary material batches.
+1. LG-3I Coach secondary shared navigation; then remaining LG-3 material batches.
 2. LG-4 Workouts staged migration.
 3. LG-5 elevated chrome/motion.
 4. LG-6 visual QA/stabilization.
