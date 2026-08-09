@@ -24,7 +24,8 @@ Updated: 2026-08-09
 - VUX-6D Social profile/share shell hardening PR #492 → `625371ca7cde8c45178fd8bf21b2bb012bc4ea4f`.
 - VUX-7A Progress theme consistency PR #493 → `89b7fd36874a189f287388160f13863b726872d7`.
 - VUX-7B Home theme consistency PR #494 → `4baa1f97b2fef5d68e53480e6570de227c5c9c92`.
-- Active visual branch: `ui/coach-theme-consistency` (VUX-7C).
+- VUX-7C Coach tab theme consistency PR #495 → `e552b55af00fba111050564e89c5d29aeff5a626`.
+- Current visual package: VUX-7D secondary Progress theme/inset consistency on `ui/progress-secondary-theme-consistency`.
 - Backend is a separate workstream and remains outside this roadmap execution.
 
 Source/CI completion is not physical-device proof. OTA/EAS publication, native build/install, provider/production activation and store/release actions remain separately authorization-gated.
@@ -111,29 +112,38 @@ Source/CI completion is not physical-device proof. OTA/EAS publication, native b
 - The Home profile affordance remains 44 × 44.
 - Exact head `f8cec418134d1ca4531d8d6480da6e5c25375137` passed full Mobile CI #1910 before merge.
 
-## VUX-7C — Coach tab theme consistency
+### VUX-7C — Coach tab theme consistency — PR #495
 
-**Status: active on `ui/coach-theme-consistency`.**
+- The public Coach shell/body/title now resolve presentation from `AppThemeProvider` through a theme style factory.
+- `AppCard`, `AppButton` and `SectionHeader` continue to own their existing theme behavior.
+- Floating-tab clearance and all five `COACH_ACTIONS` destinations plus the Profile destination are unchanged.
+- Coach domain logic, recovery/limitation/safety/combined flows, localization, persistence, sync and backend contracts are unchanged.
+- Exact head `f3fed7aecca16df12df5e3955133632ab6368e42` passed full Mobile CI #1913 before merge.
+
+## VUX-7D — secondary Progress theme and inset consistency
+
+**Status: active on `ui/progress-secondary-theme-consistency`.**
 
 Confirmed findings:
 
-- the public Coach tab still hard-coded `Colors.dark` for its screen background and card copy despite the app supporting light/dark/system appearance;
-- `AppCard`, `AppButton` and `SectionHeader` already resolve their own presentation from the current theme, so the defect is bounded to the tab shell/copy styles;
-- all Coach destinations are centralized in `COACH_ACTIONS` plus the Profile action and do not need business-logic changes.
+- `weight-entry` still hard-coded the dark palette for its screen, label, input, placeholder and error presentation despite the parent Progress flow being theme-aware;
+- `weight-details` still hard-coded the dark palette for its screen, history and typography;
+- `weight-details` retained legacy `safeAreaInsets.bottom + 120` bottom clearance instead of content-driven safe-area spacing;
+- the weight history row lacked bounded shrink ownership under text/localization pressure.
 
 Current bounded remediation:
 
-- resolve the public Coach shell/body/title presentation from `useAppTheme()` through a theme style factory;
-- preserve floating-tab bottom clearance and scroll growth;
-- preserve all five `COACH_ACTIONS` destinations and the Profile destination exactly;
-- preserve Coach domain logic, recovery/limitation/safety/combined flows, localization, persistence, sync and backend contracts;
-- protect the package with a focused source-contract guard.
+- resolve both secondary weight screens from `useAppTheme()` through theme style factories;
+- replace the legacy 120 pt clearance with runtime safe-area plus spacing and retain `flexGrow: 1` content reachability;
+- bound history date/value reflow without changing base typography or the existing 44 pt row geometry;
+- preserve weight parsing/conversion, persistence, analytics, units, history ordering, workout-history navigation and routes;
+- extend the existing Progress source-contract guard to cover these secondary surfaces.
 
 **Merge gate:** full exact-head Mobile CI on the final documentation-synchronized head, with no unresolved review threads.
 
 ## Remaining hierarchy / validation review order
 
-1. Finish VUX-7C Coach tab theme consistency and merge only its validated exact head.
+1. Finish VUX-7D secondary Progress theme/inset consistency and merge only its validated exact head.
 2. Continue the visible-tab audit from concrete source findings only; do not alter intentionally dark product areas without evidence that they are expected to follow app appearance.
 3. Audit remaining secondary surfaces for theme consistency, 44 pt ownership, safe-area/reflow and disabled-state clarity only when a concrete mismatch is found.
 
@@ -156,7 +166,7 @@ No source/CI result is physical-device evidence.
 
 ## Next execution order
 
-1. Finish VUX-7C and run full exact-head Mobile CI on the final documentation-synchronized head.
-2. Merge only the validated VUX-7C head.
+1. Finish VUX-7D and run full exact-head Mobile CI on the final documentation-synchronized head.
+2. Merge only the validated VUX-7D head.
 3. Continue the visible-tab and secondary-surface audit only where source evidence demonstrates a real UI defect.
 4. Keep backend, OTA/EAS/native/release and production/provider actions out of this autonomous UI sequence unless directly requested.
