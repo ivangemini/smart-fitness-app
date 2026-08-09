@@ -35,19 +35,28 @@ describe('Social profile and share shell UX', () => {
     ['public profile', publicProfile, 'paddingTop: insets.top + Spacing.four'],
     ['profile editor', profileEditor, 'paddingTop: insets.top + Spacing.four'],
     ['share workout', shareWorkout, 'paddingTop: insets.top + Spacing.three'],
-  ])('%s owns runtime top safe area and Lucide back language', (_name, source, topInset) => {
+  ])('%s owns runtime top safe area and the shared glass back control', (_name, source, topInset) => {
     expect(source).toContain('ChevronLeft');
     expect(source).toContain(topInset);
-    expect(source).toContain('router.back()');
+    expect(source).toContain('LiquidGlassIconButton');
+    expect(source).toContain('Icon={ChevronLeft}');
+    expect(source).toContain('onPress={() => router.back()}');
     expect(source).not.toContain('styles.backLabel');
+    expect(source).not.toContain('styles.backButton');
     expect(source).not.toContain('>‹</Text>');
   });
 
-  it('keeps public profile reflow resilient and relationship behavior intact', () => {
+  it('keeps public profile reflow and relationship behavior intact on adaptive avatar material', () => {
+    expect(publicProfile).toContain('resolveLiquidGlassPalette(resolvedAppearance)');
+    expect(publicProfileStyles).toContain('backgroundColor: glass.controlFill');
+    expect(publicProfileStyles).toContain('borderColor: glass.controlBorder');
     expect(publicProfileStyles).toContain('flexGrow: 1');
     expect(publicProfileStyles).toContain('minWidth: 0');
     expect(publicProfileStyles).not.toContain('paddingTop: Spacing.four');
     expect(publicProfileStyles).not.toContain('backLabel:');
+    expect(publicProfileStyles).not.toContain('backButton:');
+    expect(publicProfileStyles).not.toContain('pressed: { opacity:');
+    expect(publicProfileStyles).not.toContain('colors.backgroundSelected');
     expect(publicProfile).toContain('socialApi.follow(username)');
     expect(publicProfile).toContain('socialApi.unfollow(username)');
     expect(publicProfile).toContain('socialApi.block(username)');
