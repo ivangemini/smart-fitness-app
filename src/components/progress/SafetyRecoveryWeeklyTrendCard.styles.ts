@@ -8,6 +8,9 @@ export const createSafetyRecoveryWeeklyTrendStyles = (
   glass: LiquidGlassPalette,
 ) =>
   StyleSheet.create({
+    accentPressed: {
+      backgroundColor: glass.accentPressedFill,
+    },
     chartContent: {
       alignItems: 'flex-end',
       gap: Spacing.two,
