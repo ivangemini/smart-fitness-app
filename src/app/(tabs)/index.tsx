@@ -1,12 +1,13 @@
 import { router } from 'expo-router';
 import { User } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HomeSnapshotCard } from '@/components/home/HomeSnapshotCard';
 import { HomeSummaryCard } from '@/components/home/HomeSummaryCard';
 import { getFloatingTabBarBottomClearance } from '@/components/navigation/floatingTabBarLayout';
+import { GlassIconButton } from '@/components/ui/GlassIconButton';
 import { QuickActionsCard } from '@/components/ui/QuickActionsCard';
 import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme';
 import {
@@ -269,13 +270,11 @@ export default function HomeScreen() {
       <View style={styles.container}>
         <View style={styles.headerRow}>
           <Text style={styles.headerTitle}>{t('tabs.home')}</Text>
-          <Pressable
+          <GlassIconButton
             accessibilityLabel={t('home.openProfile')}
-            accessibilityRole="button"
-            onPress={() => router.push('/(tabs)/profile')}
-            style={({ pressed }) => [styles.profileButton, pressed && styles.pressed]}>
+            onPress={() => router.push('/(tabs)/profile')}>
             <User color={colors.textPrimary} size={22} strokeWidth={2} />
-          </Pressable>
+          </GlassIconButton>
         </View>
         <HomeSummaryCard
           caloriesLabel={t('home.calories')}
@@ -342,18 +341,6 @@ const createStyles = (colors: typeof Colors.light) =>
       fontWeight: Typography.screenTitle.fontWeight,
       lineHeight: Typography.screenTitle.lineHeight,
       minWidth: 0,
-    },
-    pressed: { opacity: 0.72 },
-    profileButton: {
-      alignItems: 'center',
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.borderSubtle,
-      borderRadius: 22,
-      borderWidth: StyleSheet.hairlineWidth,
-      flexShrink: 0,
-      height: 44,
-      justifyContent: 'center',
-      width: 44,
     },
     screen: { backgroundColor: colors.background, flex: 1 },
   });
