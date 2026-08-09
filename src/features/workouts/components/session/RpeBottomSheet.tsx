@@ -121,7 +121,7 @@ export function RpeBottomSheet({
                 const selected = helperRpe === value;
                 return (
                   <Pressable
-                    accessibilityLabel={`RPE ${value}`}
+                    accessibilityLabel={`${t('workouts.session.trackRpe')}: ${value}`}
                     accessibilityRole="button"
                     accessibilityState={{ selected }}
                     key={value}
