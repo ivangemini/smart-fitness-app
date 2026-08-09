@@ -2,7 +2,6 @@ import { useMemo, useRef, useState } from "react";
 import {
   Alert,
   Platform,
-  Pressable,
   ScrollView,
   Switch,
   Text,
@@ -17,6 +16,7 @@ import { createSocialApi, type SocialWorkoutShareControls } from "@/api/social";
 import { useCapabilityGate } from "@/capabilities";
 import { AppCard } from "@/components/ui/AppCard";
 import { InlineError } from "@/components/ui/InlineError";
+import { LiquidGlassIconButton } from "@/components/ui/LiquidGlassIconButton";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
@@ -27,6 +27,7 @@ import { useAuthSession } from "@/hooks/useAuthSession";
 import { createUuid } from "@/lib/ids";
 import { useLocalization } from "@/localization";
 import { useAppTheme } from "@/theme/AppThemeProvider";
+import { resolveLiquidGlassPalette } from "@/theme/liquidGlass";
 
 import { ShareWorkoutMediaCard } from "../ShareWorkoutMediaCard";
 import {
@@ -58,11 +59,18 @@ export default function ShareWorkoutScreen() {
   const params = useLocalSearchParams<{ sessionId?: string | string[] }>();
   const sessionId = readSessionId(params.sessionId);
   const insets = useSafeAreaInsets();
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { locale, t } = useLocalization();
   const copy = getShareWorkoutCopy(locale);
   const imageCapability = useCapabilityGate("workoutPostImages");
-  const styles = useMemo(() => createShareWorkoutStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(
+    () => createShareWorkoutStyles(colors, glass),
+    [colors, glass],
+  );
   const { isRestoringState } = useAppInfrastructure();
   const { workoutSessions } = useWorkoutState();
   const {
@@ -219,17 +227,11 @@ export default function ShareWorkoutScreen() {
     >
       <View style={styles.container}>
         <View style={styles.header}>
-          <Pressable
+          <LiquidGlassIconButton
             accessibilityLabel={copy.back}
-            accessibilityRole="button"
+            Icon={ChevronLeft}
             onPress={() => router.back()}
-            style={({ pressed }) => [
-              styles.backButton,
-              pressed && styles.pressed,
-            ]}
-          >
-            <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
-          </Pressable>
+          />
           <View style={styles.headerCopy}>
             <Text style={styles.title}>{copy.title}</Text>
             <Text style={styles.body}>{copy.subtitle}</Text>

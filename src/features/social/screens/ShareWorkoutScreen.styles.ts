@@ -1,19 +1,13 @@
 import { StyleSheet } from "react-native";
 
 import { Colors, MaxContentWidth, Spacing } from "@/constants/theme";
+import type { LiquidGlassPalette } from "@/theme/liquidGlass";
 
-export const createShareWorkoutStyles = (colors: typeof Colors.light) =>
+export const createShareWorkoutStyles = (
+  colors: typeof Colors.light,
+  glass: LiquidGlassPalette,
+) =>
   StyleSheet.create({
-    backButton: {
-      alignItems: "center",
-      borderColor: colors.borderSubtle,
-      borderRadius: 999,
-      borderWidth: StyleSheet.hairlineWidth,
-      flexShrink: 0,
-      height: 44,
-      justifyContent: "center",
-      width: 44,
-    },
     body: {
       color: colors.textSecondary,
       flexShrink: 1,
@@ -21,7 +15,9 @@ export const createShareWorkoutStyles = (colors: typeof Colors.light) =>
       lineHeight: 21,
     },
     captionInput: {
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
+      borderCurve: "continuous",
       borderRadius: 12,
       borderWidth: StyleSheet.hairlineWidth,
       color: colors.textPrimary,
@@ -92,8 +88,11 @@ export const createShareWorkoutStyles = (colors: typeof Colors.light) =>
     },
     mediaPreview: {
       aspectRatio: 4 / 3,
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
+      borderCurve: "continuous",
       borderRadius: 12,
+      borderWidth: StyleSheet.hairlineWidth,
       width: "100%",
     },
     mediaWarning: {
@@ -103,17 +102,17 @@ export const createShareWorkoutStyles = (colors: typeof Colors.light) =>
       fontWeight: "700",
       lineHeight: 20,
     },
-    pressed: {
-      opacity: 0.72,
-    },
     previewGrid: {
       flexDirection: "row",
       flexWrap: "wrap",
       gap: Spacing.one,
     },
     previewItem: {
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
+      borderCurve: "continuous",
       borderRadius: 10,
+      borderWidth: StyleSheet.hairlineWidth,
       flexGrow: 1,
       gap: 2,
       minWidth: "47%",
@@ -144,8 +143,10 @@ export const createShareWorkoutStyles = (colors: typeof Colors.light) =>
       height: "100%",
     },
     progressTrack: {
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderRadius: 999,
+      borderWidth: StyleSheet.hairlineWidth,
       height: 8,
       overflow: "hidden",
       width: "100%",
