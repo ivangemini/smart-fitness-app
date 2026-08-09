@@ -35,18 +35,23 @@ import {
   type WeightTrendRange,
 } from '@/lib/progress';
 import { useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import type { BodyMeasurementMetric, BodyMeasurementUnit } from '@/types';
 import { weightFromKg, useUnitPreferences } from '@/units';
 
 const weightTrendRanges: WeightTrendRange[] = [7, 30, 90];
 
+type ProgressStyles = ReturnType<typeof createStyles>;
+
 const SectionRow = memo(function SectionRow({
   detail,
   label,
+  styles,
   value,
 }: {
   detail?: string;
   label: string;
+  styles: ProgressStyles;
   value: string;
 }) {
   return (
@@ -61,6 +66,7 @@ const SectionRow = memo(function SectionRow({
 });
 
 export default function ProgressScreen() {
+  const { colors } = useAppTheme();
   const { addBodyMeasurement } = useAppActions();
   const { bodyMeasurements, weightHistory } = useProgressState();
   const { exercises, workoutSessions } = useWorkoutState();
@@ -71,6 +77,7 @@ export default function ProgressScreen() {
     length: lengthUnit,
     weight: weightUnit,
   } = useUnitPreferences();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const safeAreaInsets = useSafeAreaInsets();
   const [measurementDraft, setMeasurementDraft] = useState(() =>
     createBodyMeasurementDraft(lengthUnit),
@@ -273,6 +280,7 @@ export default function ProgressScreen() {
                     measurement.metric,
                     measurement.label,
                   )}
+                  styles={styles}
                   value={formatMeasurementValue(measurement)}
                 />
               ))}
@@ -323,113 +331,114 @@ export default function ProgressScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  chartWrap: { marginBottom: Spacing.three },
-  container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
-  content: { alignItems: 'center', flexGrow: 1, padding: Spacing.three },
-  rangeTab: {
-    alignItems: 'center',
-    borderRadius: 10,
-    flex: 1,
-    justifyContent: 'center',
-    minHeight: 44,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: 8,
-  },
-  rangeTabLabel: {
-    color: Colors.dark.textSecondary,
-    flexShrink: 1,
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  rangeTabLabelSelected: { color: Colors.dark.textPrimary },
-  rangeTabPressed: { opacity: 0.72 },
-  rangeTabs: {
-    backgroundColor: Colors.dark.surfaceSecondary,
-    borderRadius: 12,
-    flexDirection: 'row',
-    gap: 4,
-    marginBottom: Spacing.three,
-    padding: 3,
-  },
-  rangeTabSelected: { backgroundColor: Colors.dark.surfacePrimary },
-  rowDetail: {
-    color: Colors.dark.textSecondary,
-    flexShrink: 1,
-    fontSize: 12,
-    lineHeight: 18,
-  },
-  rowLabel: {
-    color: Colors.dark.textSecondary,
-    flex: 1,
-    flexShrink: 1,
-    fontSize: 13,
-    fontWeight: '700',
-    minWidth: 0,
-  },
-  rowValue: {
-    color: Colors.dark.textPrimary,
-    flexShrink: 1,
-    fontSize: 15,
-    fontWeight: '800',
-    maxWidth: '48%',
-    textAlign: 'right',
-  },
-  screen: { backgroundColor: Colors.dark.background, flex: 1 },
-  sectionHeader: { gap: 2, marginBottom: Spacing.two },
-  sectionRow: {
-    borderColor: Colors.dark.divider,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    gap: 2,
-    paddingTop: Spacing.two,
-  },
-  sectionRowCopy: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    gap: Spacing.two,
-    justifyContent: 'space-between',
-    minWidth: 0,
-  },
-  sectionSubtitle: {
-    color: Colors.dark.textSecondary,
-    flexShrink: 1,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  sectionTitle: {
-    color: Colors.dark.textPrimary,
-    flexShrink: 1,
-    fontSize: 18,
-    fontWeight: '800',
-  },
-  stack: { gap: Spacing.two },
-  weightActions: { gap: Spacing.two, marginTop: Spacing.two },
-  weightHero: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.two,
-    justifyContent: 'space-between',
-    marginBottom: Spacing.two,
-  },
-  weightHeroCopy: { flex: 1, flexBasis: 180, gap: 2, minWidth: 0 },
-  weightHeroDetail: {
-    color: Colors.dark.textSecondary,
-    flexShrink: 1,
-    fontSize: 12,
-    lineHeight: 18,
-  },
-  weightHeroLabel: {
-    color: Colors.dark.textSecondary,
-    flexShrink: 1,
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  weightHeroValue: {
-    color: Colors.dark.textPrimary,
-    flexShrink: 1,
-    fontSize: 34,
-    fontWeight: '900',
-    lineHeight: 40,
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    chartWrap: { marginBottom: Spacing.three },
+    container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
+    content: { alignItems: 'center', flexGrow: 1, padding: Spacing.three },
+    rangeTab: {
+      alignItems: 'center',
+      borderRadius: 10,
+      flex: 1,
+      justifyContent: 'center',
+      minHeight: 44,
+      paddingHorizontal: Spacing.two,
+      paddingVertical: 8,
+    },
+    rangeTabLabel: {
+      color: colors.textSecondary,
+      flexShrink: 1,
+      fontSize: 13,
+      fontWeight: '800',
+    },
+    rangeTabLabelSelected: { color: colors.textPrimary },
+    rangeTabPressed: { opacity: 0.72 },
+    rangeTabs: {
+      backgroundColor: colors.surfaceSecondary,
+      borderRadius: 12,
+      flexDirection: 'row',
+      gap: 4,
+      marginBottom: Spacing.three,
+      padding: 3,
+    },
+    rangeTabSelected: { backgroundColor: colors.surfacePrimary },
+    rowDetail: {
+      color: colors.textSecondary,
+      flexShrink: 1,
+      fontSize: 12,
+      lineHeight: 18,
+    },
+    rowLabel: {
+      color: colors.textSecondary,
+      flex: 1,
+      flexShrink: 1,
+      fontSize: 13,
+      fontWeight: '700',
+      minWidth: 0,
+    },
+    rowValue: {
+      color: colors.textPrimary,
+      flexShrink: 1,
+      fontSize: 15,
+      fontWeight: '800',
+      maxWidth: '48%',
+      textAlign: 'right',
+    },
+    screen: { backgroundColor: colors.background, flex: 1 },
+    sectionHeader: { gap: 2, marginBottom: Spacing.two },
+    sectionRow: {
+      borderColor: colors.divider,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      gap: 2,
+      paddingTop: Spacing.two,
+    },
+    sectionRowCopy: {
+      alignItems: 'flex-start',
+      flexDirection: 'row',
+      gap: Spacing.two,
+      justifyContent: 'space-between',
+      minWidth: 0,
+    },
+    sectionSubtitle: {
+      color: colors.textSecondary,
+      flexShrink: 1,
+      fontSize: 13,
+      lineHeight: 18,
+    },
+    sectionTitle: {
+      color: colors.textPrimary,
+      flexShrink: 1,
+      fontSize: 18,
+      fontWeight: '800',
+    },
+    stack: { gap: Spacing.two },
+    weightActions: { gap: Spacing.two, marginTop: Spacing.two },
+    weightHero: {
+      alignItems: 'flex-start',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: Spacing.two,
+      justifyContent: 'space-between',
+      marginBottom: Spacing.two,
+    },
+    weightHeroCopy: { flex: 1, flexBasis: 180, gap: 2, minWidth: 0 },
+    weightHeroDetail: {
+      color: colors.textSecondary,
+      flexShrink: 1,
+      fontSize: 12,
+      lineHeight: 18,
+    },
+    weightHeroLabel: {
+      color: colors.textSecondary,
+      flexShrink: 1,
+      fontSize: 12,
+      fontWeight: '700',
+    },
+    weightHeroValue: {
+      color: colors.textPrimary,
+      flexShrink: 1,
+      fontSize: 34,
+      fontWeight: '900',
+      lineHeight: 40,
+    },
+  });
