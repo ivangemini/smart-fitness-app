@@ -135,37 +135,39 @@ export function RoutineExerciseMenuModal({
         accessibilityRole="button"
         onPress={onClose}
         style={[styles.menuOverlay, { paddingBottom: insets.bottom + Spacing.three }]}>
-        <Pressable onPress={() => undefined} style={styles.menuPanel}>
-          <Text style={styles.menuTitle}>{exercise?.name}</Text>
-          <Pressable
-            accessibilityLabel={copy.replaceExercise}
-            accessibilityRole="button"
-            onPress={() => {
-              if (!exercise) return;
-              onReplace(exercise.id);
-            }}
-            style={({ pressed }) => [styles.menuAction, pressed && styles.pressed]}>
-            <Text style={styles.menuActionLabel}>{copy.replaceExercise}</Text>
-          </Pressable>
-          <Pressable
-            accessibilityLabel={copy.deleteExercise}
-            accessibilityRole="button"
-            onPress={() => {
-              if (!exercise) return;
-              Alert.alert(copy.deleteExerciseTitle, copy.deleteExerciseBody, [
-                { text: copy.cancel, style: 'cancel' },
-                {
-                  text: copy.deleteExercise,
-                  style: 'destructive',
-                  onPress: () => onDelete(exercise.id),
-                },
-              ]);
-            }}
-            style={({ pressed }) => [styles.menuAction, pressed && styles.pressed]}>
-            <Text style={[styles.menuActionLabel, styles.deleteLabel]}>
-              {copy.deleteExercise}
-            </Text>
-          </Pressable>
+        <Pressable onPress={() => undefined} style={styles.menuPanelHitArea}>
+          <LiquidGlassSurface radius={22} style={styles.menuPanel} variant="elevated">
+            <Text style={styles.menuTitle}>{exercise?.name}</Text>
+            <Pressable
+              accessibilityLabel={copy.replaceExercise}
+              accessibilityRole="button"
+              onPress={() => {
+                if (!exercise) return;
+                onReplace(exercise.id);
+              }}
+              style={({ pressed }) => [styles.menuAction, pressed && styles.pressed]}>
+              <Text style={styles.menuActionLabel}>{copy.replaceExercise}</Text>
+            </Pressable>
+            <Pressable
+              accessibilityLabel={copy.deleteExercise}
+              accessibilityRole="button"
+              onPress={() => {
+                if (!exercise) return;
+                Alert.alert(copy.deleteExerciseTitle, copy.deleteExerciseBody, [
+                  { text: copy.cancel, style: 'cancel' },
+                  {
+                    text: copy.deleteExercise,
+                    style: 'destructive',
+                    onPress: () => onDelete(exercise.id),
+                  },
+                ]);
+              }}
+              style={({ pressed }) => [styles.menuAction, pressed && styles.pressed]}>
+              <Text style={[styles.menuActionLabel, styles.deleteLabel]}>
+                {copy.deleteExercise}
+              </Text>
+            </Pressable>
+          </LiquidGlassSurface>
         </Pressable>
       </Pressable>
     </Modal>
