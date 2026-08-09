@@ -7,13 +7,14 @@ This file is the **canonical forward roadmap**. Detailed current evidence belong
 ## Current verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current runtime mobile `main`: `279a09e4b73e067a2cb0c1d836b8da809ce0b6b1`.
-- Latest runtime merge: PR #537 — Exercise Detail / shared secondary-material theme convergence.
-- PR #537 exact validated head: `5ee5a3dfb1cf3591168821c3b4275b26e597aca4`; Mobile CI #1992 passed the full required gate.
+- Current runtime mobile `main`: `c14a173a35636853d3d1bfacb5daf64f85f301c4`.
+- Latest runtime merge: PR #542 — virtualized, safe-area-aware replacement exercise picker with shared Liquid Glass shell.
+- PR #542 exact validated head: `bc8c0d50070615ab3694878b57c8a0484734f52e`; Mobile CI #2003 passed the full required gate.
 - Backend Stories foundation: PR #214 merged as `2339f6ce…`; exact validated head `9a5af3aba1f4470f261eb9ea00a6e2f2f8979bfe`.
 - **LG-H2 Stories is complete for the current image-only v1 source scope.**
-- Progress/exercise reassessment has completed one bounded package: Exercise Detail, `MuscleMap`, and shared `StatChip` now use the active theme rather than hardcoded dark tokens.
-- Active product/source priority: **continue the remaining Progress/exercise secondary-material audit; move to LG-4 Workouts when no material bounded debt remains.**
+- **Progress/exercise secondary-material reassessment is complete for the current active source scope.** PR #537 closed the concrete active debt found; remaining legacy/deferred findings are not active product surfaces and are not authorization for churn.
+- **LG-4 Workouts material convergence is active.** Four bounded packages are merged: hub interactive chrome (#539), responsive active-session header (#540), shared active-session footer actions (#541), and virtualized replacement exercise picker (#542).
+- Active product/source priority: **continue evidence-backed LG-4 Workouts material/responsive convergence while preserving the tuned workout set table and all domain/persistence behavior.**
 - **Coach material is deferred by explicit product priority.**
 
 Release readiness remains lower than source completeness because physical-device/native-release/production/provider evidence is separately gated.
@@ -44,8 +45,8 @@ Release readiness remains lower than source completeness because physical-device
 - **Phase 7 Social foundation:** base Social plus Stories list/view/authoring/delete complete for the current image-only v1 source scope.
 - **Phase 8 privacy/security hardening:** substantially complete for current source scope; environment/provider evidence remains external.
 - **Phase 9 release/privacy/data-access evidence:** separate cross-repository/release program, not implicitly activated by product work.
-- **Phase 10 Responsive Mobile UI Hardening:** complete for current source/CI scope.
-- **Phase 11 Liquid Glass + Home convergence:** active; LG-H2 Stories is complete and Progress/exercise secondary-material reassessment is active.
+- **Phase 10 Responsive Mobile UI Hardening:** complete for current source/CI scope; new responsive regressions discovered during Phase 11 remain valid bounded fixes.
+- **Phase 11 Liquid Glass + Home convergence:** active; LG-H2 Stories and Progress/exercise reassessment are complete, LG-4 Workouts is active.
 
 ---
 
@@ -120,6 +121,33 @@ During validation, PR #535 also restored two canonical local-state decision mark
 
 Physical-device/native-release/production evidence remains separately gated and was not performed as part of LG-H2.
 
+## Progress/exercise secondary material — reassessment complete
+
+PR #537 closed the concrete active debt found during the post-Stories reassessment:
+
+- `ExerciseDetailScreen` no longer owns a hardcoded dark palette and now consumes the active application theme through extracted adaptive styles;
+- `MuscleMap` renders its SVG/background/border/text from active semantic theme colors;
+- shared `StatChip` follows the active theme wherever reused;
+- Exercise Detail back navigation uses shared `LiquidGlassIconButton`;
+- the inert unimplemented “More” button affordance was removed rather than exposing a false interactive control;
+- media, favorites, sharing, history/progress calculations, navigation, persistence and safe-area/content-driven behavior were preserved;
+- a source guard prevents hardcoded `Colors.dark` from returning to this boundary.
+
+PR #537 exact validated head `5ee5a3dfb1cf3591168821c3b4275b26e597aca4` passed Mobile CI #1992 and merged as `279a09e4b73e067a2cb0c1d836b8da809ce0b6b1`.
+
+The subsequent broader audit found no additional meaningful bounded debt in active Progress/exercise surfaces. Remaining hardcoded-dark findings were inactive legacy primitives or explicitly deferred Coach/planning surfaces, so no cosmetic runtime churn was created.
+
+## LG-4 Workouts — active
+
+Four bounded packages are complete:
+
+1. **Workouts hub interactive chrome — PR #539.** Search uses shared `LiquidGlassIconButton`; sticky Start/Resume uses shared `PrimaryButton` while preserving tab-bar-safe clearance; Create Program shell/actions use shared `AppCard`/buttons. Exact head `0190fdf6aae13ef7f2ab2682a7e9ee7277e4ef0e`, Mobile CI #1997, merge `3f336794fec980ddbcf5d2c26572f054ecb59a6a`.
+2. **Active-session responsive header — PR #540.** Removed magic `paddingBottom: 52` / `marginTop: 48`, moved back/overflow to shared glass icon controls, and made stats/timer spacing content-driven while preserving Finish gating and the set table. Exact head `63163f0049024a5f359035c3f1e0114f31f36fbb`, Mobile CI #1999, merge `9d934e755d09af6270807b7b797baff4fe2b3024`.
+3. **Active-session footer actions — PR #541.** Add Exercises/Test GIF now use shared primary/secondary controls; fixed `marginTop: 38` and footer-only duplicate button styles were removed without changing the empty-workout card. Exact head `ffeb006fb812ce67061974ed3b8b6676066bf2b8`, Mobile CI #2001, merge `2b4ec40bcc78dbabb06fb1af591d17c9b07c3fb5`.
+4. **Replacement exercise picker — PR #542.** Replaced `ScrollView + slice(0,100).map` with bounded `FlatList`, removed the artificial 100-item cap, added bottom-safe-area ownership, and moved the sheet/close chrome to shared Liquid Glass primitives. Exact head `bc8c0d50070615ab3694878b57c8a0484734f52e`, Mobile CI #2003, merge `c14a173a35636853d3d1bfacb5daf64f85f301c4`.
+
+Continue auditing the remaining active Workouts surfaces for evidence-backed material/responsive debt. Current candidates include active-session overflow/RPE sheets and workout-creation surfaces that still own local/hardcoded material. Preserve the carefully tuned `Set / Previous / KG / Reps / RPE` table geometry unless a separately proven defect requires change.
+
 ## LG-H3 Steps
 
 **Blocked.** Require a reviewed native health/activity source, dependency/permission disclosure and later separately authorized physical runtime evidence. Do not infer steps from workouts.
@@ -128,31 +156,12 @@ Physical-device/native-release/production evidence remains separately gated and 
 
 Later. Preserve chronological Following semantics until a separately reviewed ranking contract exists.
 
-## Active reassessment — Progress/exercise secondary material
-
-PR #537 closed the first concrete debt found in this reassessment:
-
-- `ExerciseDetailScreen` no longer owns a hardcoded dark palette and now consumes the active application theme through extracted adaptive styles;
-- `MuscleMap` now renders its SVG/background/border/text from active semantic theme colors;
-- shared `StatChip` now follows the active theme, improving secondary cards wherever the primitive is reused;
-- Exercise Detail back navigation now uses the shared `LiquidGlassIconButton`;
-- the inert unimplemented “More” button affordance was removed rather than exposing a false interactive control;
-- media, favorites, sharing, history/progress calculations, navigation, persistence and safe-area/content-driven behavior were preserved;
-- a source guard prevents hardcoded `Colors.dark` from returning to this boundary.
-
-PR #537 exact validated head `5ee5a3dfb1cf3591168821c3b4275b26e597aca4` passed Mobile CI #1992: repository and changed-file line audits, TypeScript, full regression suite, expanded model smoke, Expo export and Expo Doctor. It merged as `279a09e4b73e067a2cb0c1d836b8da809ce0b6b1`; no review blockers remained.
-
-Continue auditing remaining Progress/exercise secondary surfaces for actual material/responsive debt such as local legacy surface styling, duplicate controls, non-semantic colors or layout geometry. Do not create cosmetic churn when shared primitives and current architecture are already correct. If no meaningful bounded debt remains, record that conclusion and move to LG-4 Workouts.
-
-Coach recovery scores/inputs, limitation choices, Safety lookback controls, history filters and Combined domain/result material remain explicitly deferred unless reprioritized.
-
 ## Later Phase 11 execution
 
-1. Finish the remaining Progress/exercise secondary-material audit and only implement evidence-backed bounded packages.
-2. LG-4 Workouts material convergence.
-3. LG-5 bounded elevated chrome/motion.
-4. LG-6 visual QA/stabilization; physical evidence only when separately authorized.
-5. LG-H3 Steps only after native capability review and authorization.
+1. Continue LG-4 Workouts material convergence with bounded evidence-backed packages.
+2. LG-5 bounded elevated chrome/motion.
+3. LG-6 visual QA/stabilization; physical evidence only when separately authorized.
+4. LG-H3 Steps only after native capability review and authorization.
 
 ---
 
