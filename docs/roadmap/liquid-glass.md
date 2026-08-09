@@ -8,7 +8,7 @@ Architecture contract: `docs/architecture/liquid-glass-ui.md`.
 
 Converge Smart Fitness on the Liquid Glass material language while preserving responsive/safe-area rules, accessibility, localization, business logic, persistence, synchronization, Social authority, and backend contracts.
 
-Home remains **social-first hybrid**: compact personal fitness context above the server-authoritative Social feed.
+Home remains **social-first hybrid**: compact personal fitness context above Stories and the server-authoritative Social feed.
 
 ## Status
 
@@ -25,17 +25,34 @@ Home remains **social-first hybrid**: compact personal fitness context above the
 - **LG-3D Social shell + notification controls:** PR #521 + #525 / Mobile CI #1957 + #1963.
 - **LG-3E Social Share Workout material:** PR #523 / Mobile CI #1960.
 - **LG-3F Account Sessions + Social Profile Editor navigation:** PR #526 / Mobile CI #1965.
-- **LG-3G Social workout-post shell navigation:** PR #528 / exact green head `9ac58b6ed86287bbff5b198e88849f862e5b127d` / Mobile CI #1967 / merge `e26ccebe2efa57a7a67d0e15018f59ac53ca7d1e`.
-- **LG-3H Social profile/avatar material:** PR #529 / exact green head `2b11a671d45ff868980ce82440aff393228bf83d` / Mobile CI #1970 / merge `2f85aea5a1f7f009e427663ee3278f0f78197978`.
-- **Active:** LG-3I Coach secondary shared navigation.
-- LG-H2 Stories and LG-H3 Steps remain blocked by real server/native contracts and must not be faked.
-- No OTA/EAS publication, native install/build, or physical-device proof is implied by source/CI completion.
+- **LG-3G Social workout-post shell navigation:** PR #528 / Mobile CI #1967.
+- **LG-3H Social profile/avatar material:** PR #529 / Mobile CI #1970.
+- **LG-3I Coach secondary shared navigation:** PR #531 / exact head `3d5255b6545bbb8d3fe8aa5972c9c984ce060394` / Mobile CI #1974 / merge `7ca5aba37dd0e994739f52a88afd8601bed5794a`.
+- **Active product priority:** LG-H2 Stories contracts and implementation.
+- **Coach material is explicitly deferred.** Do not resume it unless reprioritized.
+- LG-H3 Steps remains blocked by real native capability/permissions and must not be faked.
+- No OTA/EAS publication, native install/build, backend deployment, migration execution, or physical-device proof is implied by source/CI completion.
 
-## LG-H — blocked Home follow-ups
+## LG-H — Home follow-ups
 
 ### LG-H2 — Stories
 
-**Blocked.** Require reviewed story DTO/schema, expiry, ownership, follow/block/private-profile enforcement, media lifecycle/moderation, viewed state, retention/deletion, pagination/loading and privacy-safe cache contracts before UI work.
+**Active.** The previous blocker is now the implementation target rather than permission to fabricate UI. Build real server-authoritative contracts first, then mobile UI.
+
+Required contract surface:
+
+- versioned Story DTO/schema and stable errors;
+- authenticated ownership and idempotent create semantics;
+- explicit expiry and active-story filtering;
+- owner deletion and account-deletion cascade;
+- Following/private-profile/block/restriction enforcement on the server;
+- managed-media ownership, approval and delivery reuse; do not create a parallel upload/moderation pipeline;
+- viewed/unviewed state with idempotent marking;
+- bounded ordering/pagination/loading contracts;
+- retention/cleanup semantics;
+- strict mobile parsing and privacy-safe bounded cache only after backend contracts merge.
+
+Initial source scope should prefer the smallest coherent Story: one approved managed image asset, no fabricated text/media behavior. More expressive Story authoring can be added after the lifecycle is stable.
 
 ### LG-H3 — Steps
 
@@ -43,7 +60,7 @@ Home remains **social-first hybrid**: compact personal fitness context above the
 
 ### LG-H4 — feed retention
 
-**Planned after base Home stability.** Preserve chronological Following semantics unless a separately reviewed ranking contract exists.
+**Planned after Home Stories/base feed stability.** Preserve chronological Following semantics unless a separately reviewed ranking contract exists.
 
 ## LG-2 — primary tabs
 
@@ -51,53 +68,23 @@ LG-2B Progress + Coach, LG-2C Nutrition primary, and LG-2D Profile primary are c
 
 ## LG-3 — secondary surfaces
 
-**Status: active.** Batch adjacent surfaces by shared material defect rather than one PR per route.
-
-### LG-3A through LG-3F
-
-**Complete.** Settings controls, Nutrition secondary, Social interaction controls, Social shell/notifications, Share Workout material, and Account Sessions + Social Profile Editor navigation are merged and validated. See `docs/current-status.md` for exact history.
-
-### LG-3G — Social workout-post shell navigation
-
-**Complete.**
-
-PR #528 moved Following Feed, Profile Workout Posts and Workout Post Detail back navigation to shared `LiquidGlassIconButton`; only obsolete local `backButton` ownership was removed. Interactive workout-post `pressed` feedback stayed in place.
-
-Preserved: Following feed cache/refresh/pagination, profile-post privacy/error/pagination, detail load/delete/report/reaction/comment behavior, safe-area/keyboard geometry, localization/accessibility and Social API authority.
-
-Exact head `9ac58b6ed86287bbff5b198e88849f862e5b127d` passed the full Mobile CI #1967 gate before merge `e26ccebe2efa57a7a67d0e15018f59ac53ca7d1e`.
-
-### LG-3H — Social profile/avatar material
-
-**Complete.**
-
-PR #529 delivered shared Public Profile back navigation, adaptive Public Profile avatar fallback, and adaptive Managed Avatar preview/empty-state/status/progress material using Liquid Glass control tokens.
-
-Preserved: profile privacy/relationship/report actions, own-profile/posts navigation, managed-avatar capability gating, choose/refresh/remove lifecycle, approved/candidate asset handling, progress semantics, localization/accessibility and safe-area behavior. No native blur was introduced.
-
-The initial head exceeded the repository line limit by one line in `SocialPublicProfileScreen.tsx`; the final fix compacted formatting only. Exact head `2b11a671d45ff868980ce82440aff393228bf83d` passed the full Mobile CI #1970 gate before merge `2f85aea5a1f7f009e427663ee3278f0f78197978`.
+LG-3A through LG-3I are complete for the approved source scope.
 
 ### LG-3I — Coach secondary shared navigation
 
-**Active.**
+**Complete.**
 
-Audited local 44 pt back-control ownership exists in:
+PR #531 moved `CombinedCoachScreen`, `RecoveryCheckInScreen`, `SafetyRecoveryCoachScreen`, `UserLimitationScreen`, and `CoachRunHistoryScreen` from local back-control recipes to shared `LiquidGlassIconButton`. Generic pressed states still owned by score/lookback/choice/filter/row controls were preserved.
 
-- `CombinedCoachScreen`;
-- `RecoveryCheckInScreen`;
-- `SafetyRecoveryCoachScreen`;
-- `UserLimitationScreen`;
-- `CoachRunHistoryScreen`.
+Exact head `3d5255b6545bbb8d3fe8aa5972c9c984ce060394` passed repository/changed-file line audits, TypeScript, full regression, expanded model smoke, Expo export and Expo Doctor in Mobile CI #1974 before merge `7ca5aba37dd0e994739f52a88afd8601bed5794a`.
 
-Replace only those local back actions with shared `LiquidGlassIconButton` and remove obsolete back-style recipes. Preserve safe-area geometry and every Coach/recovery/history domain contract. Keep generic `pressed` styles where still owned by lookback buttons, choices, filters, rows or other interactive controls.
-
-Do **not** mix this navigation pass with Coach material migration. Recovery inputs, score pickers, Safety lookback controls, Combined domain/result cards, history filters and other material debt belong to later bounded packages.
+Recovery inputs, score pickers, Safety lookback controls, Combined domain/result cards, history filters and other Coach material were intentionally not changed and are now deferred by product priority.
 
 ### Remaining LG-3 audit
 
 `SyncBackupScreen`, `DataRecoveryCard`, `SyncConflictReviewCard`, and `SupportDiagnosticsCard` already use shared `AppCard`/`AppButton` ownership; remaining borders are structural dividers and do not justify churn.
 
-After LG-3I, continue Progress detail, Coach material and exercise detail/library surfaces by shared defect.
+Remaining Progress/exercise secondary work can resume after the current Home/Stories priority. Coach material remains deferred.
 
 ## LG-4 — Workouts
 
@@ -113,4 +100,4 @@ Require exact-head source/CI checks first. Physical cross-device/light-dark/Dyna
 
 ## Execution rule
 
-Prefer coherent migration batches over one-screen micro-PRs. Home/Social integration must reuse existing Social authority rather than duplicate it. Exact code, tests, and current Git history override stale roadmap prose.
+Prefer coherent migration batches over one-screen micro-PRs. Home/Social integration must reuse existing Social authority and managed-media infrastructure rather than duplicate it. Exact code, tests, current Git history and explicit product priority override stale roadmap prose.

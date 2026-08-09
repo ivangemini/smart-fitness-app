@@ -5,14 +5,14 @@ Updated: 2026-08-09
 ## Verified mobile baseline
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current `main`: `2f85aea5a1f7f009e427663ee3278f0f78197978`.
-- Latest runtime merge: `2f85aea5a1f7f009e427663ee3278f0f78197978` (PR #529 — LG-3H Social profile/avatar material).
-- PR #529 exact validated head: `2b11a671d45ff868980ce82440aff393228bf83d`; Mobile CI #1970 passed the full required gate.
-- Previous LG-3G merge: PR #528 / exact head `9ac58b6ed86287bbff5b198e88849f862e5b127d` / Mobile CI #1967 / merge `e26ccebe2efa57a7a67d0e15018f59ac53ca7d1e`.
-- Backend dependency-awareness baseline: `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`; backend remains out of scope.
-- Active autonomous UI package: **LG-3I Coach secondary shared navigation**.
+- Current runtime `main`: `7ca5aba37dd0e994739f52a88afd8601bed5794a`.
+- Latest runtime merge: PR #531 — LG-3I Coach secondary shared navigation.
+- PR #531 exact validated head: `3d5255b6545bbb8d3fe8aa5972c9c984ce060394`; Mobile CI #1974 passed the full required gate.
+- Backend dependency-awareness baseline: `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`.
+- Active product/source priority: **Home / LG-H2 Stories contracts and implementation**.
+- **Coach material is deferred by explicit product priority.**
 
-Exact code, tests, and current Git history override this checkpoint if it becomes stale.
+Exact code, tests and current Git history override this checkpoint if it becomes stale.
 
 ## Completed UI foundation
 
@@ -34,36 +34,56 @@ Liquid Glass milestones:
 - PR #526 LG-3F Account Sessions + Social Profile Editor navigation / Mobile CI #1965.
 - PR #528 LG-3G Social workout-post shell navigation / Mobile CI #1967.
 - PR #529 LG-3H Social profile/avatar material / Mobile CI #1970.
+- PR #531 LG-3I Coach secondary shared navigation / Mobile CI #1974.
 
 ## Home boundaries
 
-Home remains social-first hybrid: compact personal daily metrics → Stories only after real contracts → existing server-authoritative Following Feed. LG-H2 Stories remains blocked on real DTO/lifecycle/privacy/media/moderation/view-state/cache contracts. LG-H3 Steps remains blocked on a reviewed native health/activity source and permissions. Do not fake either.
+Home is a social-first hybrid: compact personal daily metrics → Stories → existing server-authoritative Following Feed.
 
-Focused roadmap: `docs/roadmap/liquid-glass.md`.
-Social authority/privacy roadmap: `docs/roadmap/social-network.md`.
+### Stories
 
-## LG-3G complete — Social workout-post shell navigation
+LG-H2 is now the active implementation priority. The old “blocked” state means UI must not be fabricated ahead of contracts; it no longer means the work is postponed. Backend contracts come first.
 
-PR #528 moved Following Feed, Profile Workout Posts and Workout Post Detail back navigation to shared `LiquidGlassIconButton` and removed only the obsolete shared local `backButton` style recipe. Interactive workout-post `pressed` ownership was intentionally retained.
+Required source contract:
 
-Preserved: Following feed cache/refresh/pagination, profile-post privacy/error/pagination, detail load/delete/report/reaction/comment behavior, safe-area/keyboard geometry, localization/accessibility and Social API authority.
+- versioned Story DTOs and stable errors;
+- authenticated ownership and idempotent creation;
+- server-authoritative expiry and active-story filtering;
+- owner deletion and account-deletion cascade;
+- Following/private-profile/block/moderation-restriction enforcement;
+- reuse of existing managed-media upload/moderation/delivery authority;
+- idempotent viewed/unviewed state;
+- bounded ordering/pagination/loading semantics;
+- retention/cleanup semantics;
+- strict mobile parsing and bounded privacy-safe cache after backend merge.
 
-## LG-3H complete — Social profile/avatar material
+The first coherent scope should be image-only and reference an approved owned managed-media asset. Do not add a second media pipeline.
 
-PR #529 delivered:
+### Steps
 
-- Public Profile shared `LiquidGlassIconButton` back navigation;
-- adaptive `controlFill/controlBorder` avatar fallback material;
-- adaptive Managed Avatar preview/empty-state, status-box and progress-track material;
-- no native blur behind profile/avatar content.
+LG-H3 remains blocked on a reviewed native health/activity source and permissions. Do not infer steps from workouts.
 
-Preserved: public-profile load/privacy/follow/unfollow/request/block/unblock/report behavior, own-profile navigation, managed-avatar capability gating, choose/refresh/remove lifecycle and progress semantics.
+### Feed retention
 
-The first exact head exceeded the repository 500-line limit by one line in `SocialPublicProfileScreen.tsx`; the final patch corrected formatting only. No runtime contract was changed by the line-limit fix.
+LG-H4 remains later. Preserve chronological Following semantics until a separately reviewed ranking contract exists.
+
+## LG-3I complete — Coach secondary shared navigation
+
+PR #531 migrated local back-control ownership in:
+
+- `CombinedCoachScreen`;
+- `RecoveryCheckInScreen`;
+- `SafetyRecoveryCoachScreen`;
+- `UserLimitationScreen`;
+- `CoachRunHistoryScreen`.
+
+All five use shared `LiquidGlassIconButton`. Existing score/lookback/choice/filter/row pressed states and all Coach/recovery/history domain behavior were preserved.
+
+The first exact head exposed four stale touch-target assertions that still expected local `backButton` styles. Only those source-contract assertions were updated to verify the shared 44×44 primitive; runtime scope did not expand.
 
 ## Validation state
 
-PR #529 exact head `2b11a671d45ff868980ce82440aff393228bf83d` passed Mobile CI #1970:
+PR #531 exact head `3d5255b6545bbb8d3fe8aa5972c9c984ce060394` passed Mobile CI #1974:
 
 - repository and changed-file line audits;
 - TypeScript;
@@ -74,23 +94,20 @@ PR #529 exact head `2b11a671d45ff868980ce82440aff393228bf83d` passed Mobile CI #
 
 Source/CI validation is not physical-device or release proof.
 
-## Current LG-3 audit result
+## Current UI/material scope
 
-`SyncBackupScreen`, `DataRecoveryCard`, `SyncConflictReviewCard`, and `SupportDiagnosticsCard` already use shared `AppCard`/`AppButton` ownership; their remaining borders are structural dividers. Do not create cosmetic churn there without a concrete material defect.
+`SyncBackupScreen`, `DataRecoveryCard`, `SyncConflictReviewCard`, and `SupportDiagnosticsCard` already use shared `AppCard`/`AppButton` ownership; their remaining borders are structural dividers.
 
-The next shared defect is Coach secondary navigation. The audited screens are `CombinedCoachScreen`, `RecoveryCheckInScreen`, `SafetyRecoveryCoachScreen`, `UserLimitationScreen`, and `CoachRunHistoryScreen`: each still owns a local 44 pt back control. Migrate back ownership first. Preserve existing filter/picker/form/card material and domain behavior for a later bounded material pass.
-
-After Coach navigation, continue remaining Progress detail, Coach material, and exercise detail/library secondary surfaces by shared defect.
+Coach material debt still exists in recovery scores/inputs, limitation choices, Safety lookback controls, history filters, Combined domain/result cards and related surfaces, but **it is intentionally deferred**. Do not resume it as the automatic next package.
 
 ## Planned follow-up
 
-- **LG-3I:** Coach secondary shared navigation.
-- Continue remaining LG-3 secondary material batches.
-- **LG-4:** staged Workouts Liquid Glass migration.
-- **LG-5:** bounded elevated chrome/motion.
-- **LG-6:** visual QA/stabilization.
-- **LG-H2/H3:** only after blockers are resolved; LG-H4 after the base Home feed is stable.
+1. Backend Stories contract/persistence/API source package.
+2. Mobile strict Stories contracts/API integration.
+3. Home Stories strip/viewer/creation flow on the merged server contract.
+4. Reassess remaining Progress/exercise secondary material after Home Stories is stable.
+5. LG-H3 Steps only after native provider/permissions authorization.
 
 ## Release / provider boundary
 
-Do not perform or claim OTA/EAS publication, native build/install, production/provider activation, backend deployment/migrations, credentials/DNS changes, store submission, or HealthKit/Health Connect activation without explicit authorization.
+Do not perform or claim OTA/EAS publication, native build/install, backend deployment or migration execution, production/provider activation, credentials/DNS changes, store submission, or HealthKit/Health Connect activation without explicit authorization.
