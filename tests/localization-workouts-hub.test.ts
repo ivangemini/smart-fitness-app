@@ -119,8 +119,11 @@ describe('localized Workouts hub contract', () => {
 
   it('keeps a visible explanation next to the disabled program-create action', () => {
     const components = readSource('src/features/workouts/screens/WorkoutsScreenComponents.tsx');
+    const primaryButton = readSource('src/components/ui/PrimaryButton.tsx');
 
     expect(components).toContain("t('workouts.programNameRequired')");
-    expect(components).toContain('accessibilityState={{ disabled: !canCreate }}');
+    expect(components).toContain('disabled={!canCreate}');
+    expect(primaryButton).toContain('accessibilityState={state.accessibilityState}');
+    expect(primaryButton).toContain('disabled={state.disabled}');
   });
 });
