@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { createSocialApi, type SocialWorkoutPostDto } from '@/api/social';
 import { AppCard } from '@/components/ui/AppCard';
 import { InlineError } from '@/components/ui/InlineError';
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
@@ -164,13 +165,11 @@ export default function SocialProfileWorkoutPostsScreen() {
       style={styles.screen}>
       <View style={styles.container}>
         <View style={styles.headerRow}>
-          <Pressable
+          <LiquidGlassIconButton
             accessibilityLabel={t('common.back')}
-            accessibilityRole="button"
+            Icon={ChevronLeft}
             onPress={() => router.back()}
-            style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}>
-            <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
-          </Pressable>
+          />
           <View style={styles.headerCopy}>
             <Text style={styles.eyebrow}>{copy.listEyebrow}</Text>
             <Text style={styles.title}>@{username}</Text>
