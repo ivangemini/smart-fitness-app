@@ -11,6 +11,7 @@ import {
 import { getBodyMeasurementMetricLabel } from '@/features/progress/progressLocalization';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import type { BodyMeasurementMetric, BodyMeasurementUnit } from '@/types';
 
 type Props = {
@@ -24,6 +25,8 @@ type Props = {
   onSave(): void;
 };
 
+type GlassPalette = ReturnType<typeof resolveLiquidGlassPalette>;
+
 export function AddBodyMeasurementCard({
   draft,
   error,
@@ -34,9 +37,13 @@ export function AddBodyMeasurementCard({
   onChangeValue,
   onSave,
 }: Props) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { t } = useLocalization();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const availableUnits = getBodyMeasurementUnits(draft.metric);
 
   return (
@@ -52,7 +59,12 @@ export function AddBodyMeasurementCard({
               accessibilityRole="radio"
               accessibilityState={{ checked: selected }}
               onPress={() => onChangeMetric(option.metric)}
-              style={[styles.choice, selected && styles.choiceSelected]}>
+              style={({ pressed }) => [
+                styles.choice,
+                selected && styles.choiceSelected,
+                pressed && styles.choicePressed,
+                selected && pressed && styles.choiceSelectedPressed,
+              ]}>
               <Text style={[styles.choiceLabel, selected && styles.choiceLabelSelected]}>
                 {getBodyMeasurementMetricLabel(t, option.metric)}
               </Text>
@@ -97,7 +109,12 @@ export function AddBodyMeasurementCard({
                   accessibilityRole="radio"
                   accessibilityState={{ checked: selected }}
                   onPress={() => onChangeUnit(unit)}
-                  style={[styles.unitChoice, selected && styles.choiceSelected]}>
+                  style={({ pressed }) => [
+                    styles.unitChoice,
+                    selected && styles.choiceSelected,
+                    pressed && styles.choicePressed,
+                    selected && pressed && styles.choiceSelectedPressed,
+                  ]}>
                   <Text style={[styles.choiceLabel, selected && styles.choiceLabelSelected]}>
                     {unit === 'percent' ? '%' : unit}
                   </Text>
@@ -113,13 +130,14 @@ export function AddBodyMeasurementCard({
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: GlassPalette) =>
   StyleSheet.create({
     choice: {
       alignItems: 'center',
-      borderColor: colors.border,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderRadius: Radii.pill,
-      borderWidth: 1,
+      borderWidth: StyleSheet.hairlineWidth,
       justifyContent: 'center',
       minHeight: 44,
       paddingHorizontal: Spacing.two,
@@ -133,18 +151,20 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     choiceLabel: { color: colors.textSecondary, fontSize: 13, fontWeight: '700' },
     choiceLabelSelected: { color: colors.accent },
-    choiceSelected: { backgroundColor: colors.accentSoft, borderColor: colors.accent },
+    choicePressed: { backgroundColor: glass.controlPressedFill },
+    choiceSelected: { backgroundColor: glass.semanticAccentFill, borderColor: colors.accent },
+    choiceSelectedPressed: { backgroundColor: glass.accentPressedFill },
     editor: {
-      borderTopColor: colors.divider,
+      borderTopColor: glass.controlBorder,
       borderTopWidth: StyleSheet.hairlineWidth,
       paddingTop: Spacing.three,
     },
     error: { color: colors.error, fontSize: 13, marginBottom: Spacing.two },
     input: {
-      backgroundColor: colors.background,
-      borderColor: colors.border,
-      borderRadius: 8,
-      borderWidth: 1,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
+      borderRadius: Radii.medium,
+      borderWidth: StyleSheet.hairlineWidth,
       color: colors.text,
       fontSize: 16,
       minHeight: 48,
@@ -161,9 +181,10 @@ const createStyles = (colors: typeof Colors.light) =>
     sectionTitle: { color: colors.text, fontSize: 18, fontWeight: '800', marginBottom: Spacing.two },
     unitChoice: {
       alignItems: 'center',
-      borderColor: colors.border,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderRadius: Radii.medium,
-      borderWidth: 1,
+      borderWidth: StyleSheet.hairlineWidth,
       flex: 1,
       justifyContent: 'center',
       minHeight: 48,
