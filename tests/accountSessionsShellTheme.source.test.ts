@@ -26,12 +26,14 @@ describe('Account Sessions shell and theme', () => {
     expect(source).toContain('flexGrow: 1');
   });
 
-  it('keeps the 44 pt back target and uses Lucide navigation language', () => {
+  it('uses the shared 44 pt Liquid Glass back target and Lucide navigation language', () => {
     const source = readSource('src/app/account/sessions.tsx');
 
-    expect(source).toContain('<ChevronLeft');
+    expect(source).toContain('LiquidGlassIconButton');
+    expect(source).toContain('Icon={ChevronLeft}');
     expect(source).not.toContain('>‹</Text>');
-    expect(source).toMatch(/backButton:\s*\{[\s\S]*?height:\s*44,[\s\S]*?width:\s*44,/);
+    expect(source).not.toContain('styles.backButton');
+    expect(source).not.toContain('backButton:');
     expect(source).toContain("accessibilityLabel={t('common.back')}");
     expect(source).toContain('onPress={() => router.back()}');
   });

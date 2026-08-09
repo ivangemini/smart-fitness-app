@@ -55,8 +55,13 @@ describe('Social profile and share shell UX', () => {
     expect(publicProfile).toContain('<SocialReportModal');
   });
 
-  it('keeps profile-editor validation, keyboard reachability and save behavior intact', () => {
+  it('keeps profile-editor validation, keyboard reachability and save behavior intact on the shared back control', () => {
     expect(profileEditor).toContain('automaticallyAdjustKeyboardInsets');
+    expect(profileEditor).toContain('LiquidGlassIconButton');
+    expect(profileEditor).toContain('Icon={ChevronLeft}');
+    expect(profileEditor).toContain('onPress={() => router.back()}');
+    expect(profileEditor).not.toContain('styles.backButton');
+    expect(profileEditor).not.toContain('backButton:');
     expect(profileEditor).toContain('validateSocialProfileForm(values)');
     expect(profileEditor).toContain('buildSocialProfileInput(values)');
     expect(profileEditor).toContain('socialApi.upsertOwnProfile');
