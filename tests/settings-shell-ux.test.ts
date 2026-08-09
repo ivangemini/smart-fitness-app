@@ -35,11 +35,12 @@ describe('Settings shell UX', () => {
     expect(settings).toContain('keyboardShouldPersistTaps="handled"');
   });
 
-  it('uses current-theme copy colors and a Lucide back action', () => {
+  it('uses current-theme copy colors and the shared glass back action', () => {
     expect(settings).toContain("import { ChevronLeft } from 'lucide-react-native';");
-    expect(settings).toContain(
-      '<ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />',
-    );
+    expect(settings).toContain('LiquidGlassIconButton');
+    expect(settings).toContain('Icon={ChevronLeft}');
+    expect(settings).toContain('onPress={() => router.back()}');
+    expect(settings).not.toContain('styles.backButton');
     expect(settings).not.toContain('>‹</Text>');
     expect(settings).not.toContain('color: Colors.dark.textPrimary');
     expect(settings).not.toContain('color: Colors.dark.textSecondary');
