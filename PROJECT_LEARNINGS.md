@@ -125,6 +125,8 @@ Automatic application remains prohibited. Do not invent a client-only compensati
 - Keep Story state separate from Following feed state. Home can refresh both concurrently without making one surface authoritative for the other.
 - Seen/unseen state comes from server `viewed`; a local mark is only a post-success responsiveness update or best-effort UI hint, not the source of truth.
 - Expired/deleted/private/blocked/restricted Stories must fail closed through the backend rather than being inferred from UI state.
+- Owner Story authoring must reuse the managed-media signed upload/finalize/polling authority. Create only from an owned `approved` `story_image` using its exact current `stateVersion`; revalidate authoritative Stories after create/delete instead of fabricating local server objects.
+- Keep unfinished unbound Story media restart-safe and account-scoped. Recover pending native image-picker results where supported, and delete replaced unbound assets through the managed-media owner API.
 - When a previously blocked feature becomes real, update stale source guards to assert the new authoritative contract. Do not weaken them into no-op tests: preserve the original anti-fabrication intent. PR #533 exposed this with the old Home guard that banned the words `Story`/`Stories`; the replacement requires `useSocialStories` and still rejects mock/demo Story data.
 - Temporary CI diagnostics must be removed before merge and the permanent workflow restored exactly. Use diagnostics to identify a blocker, not as a permanent bypass.
 
@@ -200,6 +202,7 @@ Automatic application remains prohibited. Do not invent a client-only compensati
 - Extract cohesive styles, components, hooks, parsers, contracts, or pure helpers.
 - Do not replace one large file with a generic untestable abstraction.
 - Generated files, lockfiles, generated migrations, and packed outputs are excluded.
+- Markdown-only workflow filters can skip Mobile CI even when source tests assert exact canonical-doc markers. Before merging roadmap/docs rewrites, preserve or deliberately update those asserted strings and inspect the relevant source tests; PR #534/#535 exposed this failure mode.
 
 Mobile CI is blocking for:
 
