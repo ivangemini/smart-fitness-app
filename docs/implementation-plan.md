@@ -7,11 +7,10 @@ This file is the **canonical forward roadmap**. PR-by-PR history and exact valid
 ## Current verified mobile checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current mobile `main`: `97d497ccda6bcc756d808190e4d84ce1de3f849f`.
-- Latest runtime merge: `97d497ccda6bcc756d808190e4d84ce1de3f849f` (PR #521 — LG-3D Social shell + notification controls, batch 1).
-- PR #521 exact validated head: `290f19513e1871f705cd87a3a78838e6ed27b609`; Mobile CI #1957 passed the full required gate.
-- Active package: **Phase 11 / LG-3E Social Share Workout material**.
-- LG-3D retains one small residual: `SocialCommunityGuidelinesScreen` local back control.
+- Current mobile `main`: `32447156ece5b777b574a52288809f2025328147`.
+- Latest runtime merge: `32447156ece5b777b574a52288809f2025328147` (PR #523 — LG-3E Social Share Workout material).
+- PR #523 exact validated head: `6efd2e3e13222b037da8180d3fddddc13561a12e`; Mobile CI #1960 passed the full required gate.
+- Active package: **Phase 11 / LG-3D Community Guidelines residual**.
 - Backend baseline inspected for dependency awareness: `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`; backend is not part of this package.
 
 Release readiness remains lower than source completeness because staging/provider/physical-device/native-release/production evidence is separately gated.
@@ -24,6 +23,7 @@ Release readiness remains lower than source completeness because staging/provide
 - Follow `docs/architecture/responsive-mobile-ui.md` and `docs/architecture/liquid-glass-ui.md` for mobile UI work.
 - Use shared navigation/safe-area geometry and shared material primitives instead of screen-local magic clearances or duplicate glass recipes.
 - Preserve the reviewed local-state decision in `docs/architecture/local-state-performance-decision.md`; do not replace the current AsyncStorage architecture without new measured evidence and a separately reviewed decision.
+- Local AsyncStorage remains the active storage strategy; architecture-only design options are not implementation authorization.
 - There is no remaining approved autonomous source-refactor phase for local-state storage; Phase 11 Liquid Glass work does not reopen that decision.
 - Keep analytics/telemetry collection disabled until the P9-C consent/evidence gate is explicitly satisfied.
 - Do not claim provider, production, physical-device, native-release, OTA, or deployment evidence unless it actually ran.
@@ -118,6 +118,7 @@ Focused execution roadmap: `docs/roadmap/liquid-glass.md`.
 - **LG-3B Nutrition secondary:** PR #517 / Mobile CI #1953.
 - **LG-3C Social interaction controls:** PR #519 / Mobile CI #1955.
 - **LG-3D batch 1 Social Notifications + Profile Lookup:** PR #521 / exact green head `290f19513e1871f705cd87a3a78838e6ed27b609` / Mobile CI #1957 / merge `97d497ccda6bcc756d808190e4d84ce1de3f849f`.
+- **LG-3E Social Share Workout material:** PR #523 / exact green head `6efd2e3e13222b037da8180d3fddddc13561a12e` / Mobile CI #1960 / merge `32447156ece5b777b574a52288809f2025328147`.
 
 Home remains a social-first hybrid: compact personal daily metrics → future Stories only after real contracts → existing server-authoritative Following Feed. Do not fabricate Stories or Steps.
 
@@ -129,25 +130,22 @@ Home remains a social-first hybrid: compact personal daily metrics → future St
 
 ## LG-3 — secondary surfaces
 
-LG-3A Settings, LG-3B Nutrition secondary and LG-3C Social interaction controls are complete. LG-3D batch 1 moved Social Notifications and Profile Lookup shell ownership to shared/adaptive material while preserving domain behavior. `SocialCommunityGuidelinesScreen` remains the only LG-3D residual.
+LG-3A Settings, LG-3B Nutrition secondary, LG-3C Social interaction controls and LG-3E Share Workout material are complete. LG-3D batch 1 moved Social Notifications and Profile Lookup shell ownership to shared/adaptive material while preserving domain behavior. `SocialCommunityGuidelinesScreen` is the only remaining explicit LG-3D residual.
 
-### LG-3E — Social Share Workout material
-
-**Status: active.**
+### Active residual — Social Community Guidelines
 
 Bounded package:
 
-- replace Share Workout's local back action with shared `LiquidGlassIconButton`;
-- migrate caption input, visibility toggle, preview shell/rows and other material-owning controls from direct legacy surface recipes to adaptive card/control/accent tokens with explicit pressed states;
-- preserve publish state machine, idempotency key semantics, managed-media release/cleanup, moderation/rate-limit errors, request sequencing, preview data, localization/accessibility, safe-area/keyboard behavior, and Social API authority;
-- do not add native blur to publishing inputs or preview rows;
-- update the existing Share Workout source guard and add a focused material/no-blur guard.
+- replace the local bordered 44 pt back `Pressable` with shared `LiquidGlassIconButton`;
+- remove only the obsolete local back material/opacity style ownership;
+- preserve all existing `AppCard` content, warning-note presentation, copy, routing, localization/accessibility and safe-area geometry;
+- extend `test/liquid-glass-social-shell.test.mjs` to guard shared back ownership and absence of local back/opacity material.
 
-After LG-3E, continue Settings/account, Sync & Backup, Social profile/detail, Progress detail, Coach detail and exercise detail/library surfaces by shared defect; revisit the single Guidelines back-control residual when it can be landed safely.
+After this residual, continue Settings/account, Sync & Backup, Social profile/detail, Progress detail, Coach detail and exercise detail/library surfaces by shared defect.
 
 ## Remaining Phase 11 execution order
 
-1. **LG-3 secondary surfaces**, currently LG-3E Share Workout material plus the isolated LG-3D Guidelines residual.
+1. **LG-3 secondary surfaces**, beginning with the isolated Community Guidelines residual, then the remaining coherent secondary-surface material batches.
 2. **LG-4 Workouts:** hub/program cards → library/builder → active workout chrome → set-table states → finish/summary.
 3. **LG-5 elevated chrome/motion:** true blur only for bounded elevated/floating roles.
 4. **LG-6 visual QA/stabilization:** exact-head CI/source guards first; physical evidence only when separately authorized.
@@ -163,6 +161,6 @@ Docs-only synchronization uses diff/ancestry verification; workflows may intenti
 
 # Current definition of done
 
-LG-3E is done only when Share Workout's shell/input/preview material uses adaptive shared primitives/tokens, publishing/media/moderation behavior is unchanged, no dense/native blur is introduced, exact-head Mobile CI is green, docs agree with Git history, and the validated head merges without unresolved review blockers.
+The Community Guidelines residual is done only when its back action uses the shared glass primitive, the existing content/safe-area/accessibility contract is unchanged, exact-head Mobile CI is green, docs agree with Git history, and the validated head merges without unresolved review blockers.
 
 Physical-device, OTA/EAS, native-release, provider, production and store evidence remain separate gates and must not be inferred from source/CI completion.
