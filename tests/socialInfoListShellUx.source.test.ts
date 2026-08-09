@@ -14,12 +14,14 @@ const projectRoot = resolve(__dirname, '..');
 const readSource = (relativePath: string) =>
   readFileSync(resolve(projectRoot, relativePath), 'utf8');
 
-const screens = [
+const directIconScreens = [
   'src/features/social/screens/SocialCommunityGuidelinesScreen.tsx',
   'src/features/social/screens/SocialNotificationScreen.tsx',
-  'src/features/social/screens/SocialRelationshipListsScreen.tsx',
 ];
 
+const relationshipScreen = readSource(
+  'src/features/social/screens/SocialRelationshipListsScreen.tsx',
+);
 const notificationStyles = readSource(
   'src/features/social/screens/SocialNotificationScreen.styles.ts',
 );
@@ -28,7 +30,7 @@ const relationshipStyles = readSource(
 );
 
 describe('Social information and list shell UX', () => {
-  it.each(screens)('%s owns hidden-header top safe area and Lucide back language', (path) => {
+  it.each(directIconScreens)('%s owns hidden-header top safe area and Lucide back language', (path) => {
     const source = readSource(path);
 
     expect(source).toContain("import { ChevronLeft } from 'lucide-react-native';");
@@ -37,6 +39,16 @@ describe('Social information and list shell UX', () => {
       '<ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />',
     );
     expect(source).not.toContain('>‹</Text>');
+  });
+
+  it('keeps relationship-list safe area and Lucide language through the shared back control', () => {
+    expect(relationshipScreen).toContain("import { ChevronLeft } from 'lucide-react-native';");
+    expect(relationshipScreen).toContain('paddingTop: insets.top + Spacing.four');
+    expect(relationshipScreen).toContain('LiquidGlassIconButton');
+    expect(relationshipScreen).toContain('Icon={ChevronLeft}');
+    expect(relationshipScreen).toContain('onPress={() => router.back()}');
+    expect(relationshipScreen).not.toContain('styles.backButton');
+    expect(relationshipScreen).not.toContain('>‹</Text>');
   });
 
   it('preserves notification navigation/read semantics', () => {
@@ -51,13 +63,11 @@ describe('Social information and list shell UX', () => {
   });
 
   it('preserves relationship list actions and 44 pt tab ownership', () => {
-    const source = readSource('src/features/social/screens/SocialRelationshipListsScreen.tsx');
-
-    expect(source).toContain('SOCIAL_RELATIONSHIP_LIST_KINDS.map');
-    expect(source).toContain('socialApi.approveFollowRequest(username)');
-    expect(source).toContain('socialApi.rejectFollowRequest(username)');
-    expect(source).toContain('socialApi.cancelFollowRequest(username)');
-    expect(source).toContain('socialApi.unfollow(username)');
+    expect(relationshipScreen).toContain('SOCIAL_RELATIONSHIP_LIST_KINDS.map');
+    expect(relationshipScreen).toContain('socialApi.approveFollowRequest(username)');
+    expect(relationshipScreen).toContain('socialApi.rejectFollowRequest(username)');
+    expect(relationshipScreen).toContain('socialApi.cancelFollowRequest(username)');
+    expect(relationshipScreen).toContain('socialApi.unfollow(username)');
     expect(relationshipStyles).toContain('minHeight: 44');
   });
 
