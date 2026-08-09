@@ -23,8 +23,8 @@ Home remains **social-first hybrid**: compact personal fitness context above the
 - **LG-3B Nutrition secondary:** PR #517 / Mobile CI #1953.
 - **LG-3C Social interaction controls:** PR #519 / Mobile CI #1955 / merge `7a9274d910c0e2dfc8bd270d0d1dc332989d6863`.
 - **LG-3D Social shell + notification controls — batch 1 complete:** PR #521, exact green head `290f19513e1871f705cd87a3a78838e6ed27b609`, Mobile CI #1957, merge `97d497ccda6bcc756d808190e4d84ce1de3f849f`.
-- **LG-3E Social Share Workout material is active.**
-- One LG-3D residual remains: the local back control in `SocialCommunityGuidelinesScreen`; do not mark LG-3D fully complete until it lands.
+- **LG-3E Social Share Workout material complete:** PR #523, exact green head `6efd2e3e13222b037da8180d3fddddc13561a12e`, Mobile CI #1960, merge `32447156ece5b777b574a52288809f2025328147`.
+- **Active:** close the sole LG-3D residual, `SocialCommunityGuidelinesScreen` local back control.
 - LG-H2 Stories and LG-H3 Steps remain blocked by real server/native contracts and must not be faked.
 - No OTA/EAS publication, native install/build, or physical-device proof is implied by source/CI completion.
 
@@ -48,7 +48,7 @@ LG-2B Progress + Coach, LG-2C Nutrition primary, and LG-2D Profile primary are c
 
 ## LG-3 — secondary surfaces
 
-**Status: active.** Batch adjacent surfaces by shared material defect rather than one PR per route.
+**Status: active.** Batch adjacent surfaces by shared material defect rather than one PR per route, except for the explicitly isolated Guidelines residual whose content already uses the shared card system.
 
 ### LG-3A — Settings controls/disclosures
 
@@ -77,21 +77,26 @@ Preserved: notification pagination, request sequencing, missing-notification rol
 
 Exact head `290f19513e1871f705cd87a3a78838e6ed27b609` passed repository/changed-file line audits, TypeScript, full regression, expanded model smoke, Expo export and Expo Doctor in Mobile CI #1957; merge `97d497ccda6bcc756d808190e4d84ce1de3f849f`.
 
-Residual: `SocialCommunityGuidelinesScreen` still owns its local 44 pt bordered back Pressable. Its existing `AppCard` content is already acceptable and must not be churned merely to close the back-control item.
+Residual: `SocialCommunityGuidelinesScreen` still owns its local 44 pt bordered back Pressable. Its existing `AppCard` content is already acceptable. Replace only that local back ownership with the shared glass icon button and extend the existing Social shell guard; do not churn the content cards or warning note.
 
 ### LG-3E — Social Share Workout material
 
-**Status: active.**
+**Complete.**
 
-Audited bounded scope:
+PR #523 delivered:
 
-- `ShareWorkoutScreen`: replace local back control with shared `LiquidGlassIconButton` while preserving safe-area/keyboard behavior;
-- migrate caption input, visibility toggle, preview shell/rows and other material-owning controls from direct `surfaceSecondary` / `backgroundSelected` / `borderSubtle` recipes to adaptive card/control/accent tokens with explicit pressed states;
-- preserve the existing publishing state machine, idempotency, media release/cleanup, moderation error handling, request sequencing, preview semantics, localization/accessibility and Social API authority;
-- keep the publishing/media form blur-free; do not add native blur behind preview rows or inputs;
-- update existing Share Workout shell guards and add one focused material/no-blur guard.
+- shared `LiquidGlassIconButton` back navigation;
+- active Liquid Glass palette resolution in the screen;
+- adaptive `controlFill/controlBorder` material for caption input, managed-media preview, preview metric items and upload-progress track;
+- focused guards preserving publish/idempotency/media-release contracts and the blur-free input/preview boundary.
 
-After LG-3E, continue remaining Settings/account, Sync & Backup, Social profile/detail, Progress detail, Coach detail and exercise detail/library surfaces by shared defect, and revisit the single LG-3D Guidelines residual when it can be landed safely.
+The initial migration exposed a TypeScript contract mismatch after removing media-header/warning styles and also included unrelated visual adjustments. The final exact head restored the required `ShareWorkoutMediaCard` style contract and preserved the pre-existing typography, spacing, grid geometry, success styling and native Switch sizing. This keeps LG-3E a material migration rather than an incidental redesign.
+
+Preserved: publishing state machine, `syncNow()` sequencing, idempotency, media release/cleanup, moderation/rate-limit handling, preview/share-control semantics, native Switch behavior, localization/accessibility and safe-area/keyboard behavior. No native blur was added behind publishing inputs or preview rows.
+
+Exact head `6efd2e3e13222b037da8180d3fddddc13561a12e` passed repository/changed-file line audits, TypeScript, full regression, expanded model smoke, Expo export and Expo Doctor in Mobile CI #1960; merge `32447156ece5b777b574a52288809f2025328147`.
+
+After the Guidelines residual, continue remaining Settings/account, Sync & Backup, Social profile/detail, Progress detail, Coach detail and exercise detail/library surfaces by shared defect.
 
 ## LG-4 — Workouts
 
