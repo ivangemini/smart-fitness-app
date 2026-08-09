@@ -6,7 +6,7 @@ This repository is the Expo / React Native mobile client for Smart Fitness.
 
 Connected backend:
 
-- repository: `hon4olo/smart-fitness-backend`;
+- repository: `ivangemini/smart-fitness-backend`;
 - production API: `https://api.peptonio.com`;
 - stack: Node.js 22, TypeScript, Fastify, PostgreSQL, Drizzle ORM, Zod, Pino, Docker Compose.
 
@@ -57,7 +57,7 @@ Do not add without explicit approval:
 - AsyncStorage for offline-first application state, metadata, and queues;
 - Expo SecureStore for native access and refresh tokens;
 - shared backend API through `src/api/`;
-- dark minimal UI.
+- adaptive Liquid Glass UI with the floating bottom navigation as the material reference and coherent light/dark/system appearance.
 
 One authoritative internal `AppState` still backs repositories, persistence, mutation ordering, outbox generation, and synchronization. Production consumers must use focused state boundaries rather than the full compatibility `useAppContext` hook.
 
@@ -253,7 +253,10 @@ Do not:
 
 UI invariants:
 
-- preserve the existing dark minimal style;
+- preserve and extend the shared Liquid Glass visual system defined in `docs/architecture/liquid-glass-ui.md`; do not reintroduce flat dark-only presentation as the global default;
+- use shared adaptive glass tokens/primitives instead of screen-local `rgba(...)` recipes;
+- reserve true backdrop blur for bounded elevated/floating chrome rather than every card or list row;
+- keep intentionally dense/dark Workouts surfaces stable until their dedicated LG-4 migration package;
 - account for bottom-tab and safe-area overlap;
 - use `keyboardShouldPersistTaps="handled"` on scrollable forms;
 - keep related text and controls as siblings in one Flexbox parent;
