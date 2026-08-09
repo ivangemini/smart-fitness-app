@@ -115,6 +115,7 @@ function WeeklyColumn({
         styles.weekColumn,
         selected && styles.weekColumnSelected,
         pressed && styles.pressed,
+        selected && pressed && styles.accentPressed,
       ]}>
       <Text numberOfLines={1} style={styles.weekCount}>
         {point.reviewedWorkouts}/{point.totalWorkouts}
@@ -234,6 +235,7 @@ export function SafetyRecoveryWeeklyTrendCard({
                   styles.periodChip,
                   selected && styles.periodChipSelected,
                   pressed && styles.pressed,
+                  selected && pressed && styles.accentPressed,
                 ]}>
                 <Text style={[styles.periodChipLabel, selected && styles.periodChipLabelSelected]}>
                   {optionLabel}
@@ -313,7 +315,7 @@ export function SafetyRecoveryWeeklyTrendCard({
               <Pressable
                 accessibilityRole="button"
                 onPress={() => openHistory()}
-                style={({ pressed }) => [styles.historyButton, pressed && styles.pressed]}>
+                style={({ pressed }) => [styles.historyButton, pressed && styles.accentPressed]}>
                 <Text style={styles.historyButtonLabel}>{t('safety.allWorkouts')}</Text>
               </Pressable>
               {STATUS_ORDER.filter((status) => selectedPoint.statusCounts[status] > 0).map(
@@ -325,7 +327,7 @@ export function SafetyRecoveryWeeklyTrendCard({
                       accessibilityLabel={t('safety.openStatusWorkouts', { status: statusLabel })}
                       accessibilityRole="button"
                       onPress={() => openHistory(status)}
-                      style={({ pressed }) => [styles.historyButton, pressed && styles.pressed]}>
+                      style={({ pressed }) => [styles.historyButton, pressed && styles.accentPressed]}>
                       <Text style={styles.historyButtonLabel}>
                         {statusLabel} · {formatNumber(selectedPoint.statusCounts[status])}
                       </Text>
