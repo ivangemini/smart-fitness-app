@@ -10,6 +10,10 @@ import { useAppActions } from '@/context/AppContext';
 import { useProfileState } from '@/context/ProfileStateContext';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 import type { ProfileCalculationSex } from '@/types';
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
@@ -33,8 +37,12 @@ const validateDateOfBirth = (value: string): string | null => {
 };
 
 export function PersonalDetailsSettingsCard() {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const { profile } = useProfileState();
   const { updatePersonalDetails } = useAppActions();
   const { t } = useLocalization();
@@ -130,8 +138,12 @@ function FormulaOption({
   onPress(): void;
   selected: boolean;
 }) {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   return (
     <Pressable
@@ -141,14 +153,14 @@ function FormulaOption({
       style={({ pressed }) => [
         styles.option,
         selected && styles.optionSelected,
-        pressed && styles.pressed,
+        pressed && (selected ? styles.optionSelectedPressed : styles.optionPressed),
       ]}>
       <Text style={[styles.optionLabel, selected && styles.optionLabelSelected]}>{label}</Text>
     </Pressable>
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     group: { gap: Spacing.one },
     help: {
@@ -163,8 +175,8 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     option: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderRadius: Radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
       flex: 1,
@@ -177,9 +189,10 @@ const createStyles = (colors: typeof Colors.light) =>
       fontSize: Typography.label.fontSize,
       fontWeight: Typography.label.fontWeight,
     },
-    optionLabelSelected: { color: colors.textPrimary },
-    optionSelected: { backgroundColor: colors.backgroundSelected, borderColor: colors.accent },
-    pressed: { opacity: 0.76 },
+    optionLabelSelected: { color: glass.accentText },
+    optionPressed: { backgroundColor: glass.controlPressedFill },
+    optionSelected: { backgroundColor: glass.accentFill, borderColor: glass.accentBorder },
+    optionSelectedPressed: { backgroundColor: glass.accentPressedFill },
     row: { flexDirection: 'row', gap: Spacing.two },
     title: {
       color: colors.textPrimary,
