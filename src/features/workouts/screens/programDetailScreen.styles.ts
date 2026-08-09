@@ -33,22 +33,6 @@ export const createProgramDetailScreenStyles = (colors: typeof Colors.light) =>
       marginTop: Spacing.three,
       minHeight: 62,
     },
-    backLabel: {
-      color: colors.textPrimary,
-      fontSize: 36,
-      fontWeight: '300',
-      lineHeight: 38,
-    },
-    circleButton: {
-      alignItems: 'center',
-      backgroundColor: colors.overlay,
-      borderCurve: 'continuous',
-      borderRadius: 999,
-      flexShrink: 0,
-      height: 44,
-      justifyContent: 'center',
-      width: 44,
-    },
     container: {
       maxWidth: MaxContentWidth,
       width: '100%',
@@ -102,19 +86,13 @@ export const createProgramDetailScreenStyles = (colors: typeof Colors.light) =>
       flexShrink: 0,
       height: 44,
       justifyContent: 'center',
-      width: 28,
+      width: 44,
     },
     moreLabel: {
       color: colors.textPrimary,
       fontSize: 26,
       fontWeight: '700',
       lineHeight: 28,
-    },
-    moreNavLabel: {
-      color: colors.textPrimary,
-      fontSize: 28,
-      fontWeight: '800',
-      lineHeight: 30,
     },
     navRow: {
       flexDirection: 'row',
@@ -126,7 +104,7 @@ export const createProgramDetailScreenStyles = (colors: typeof Colors.light) =>
       flexShrink: 0,
       height: 44,
       justifyContent: 'center',
-      width: 36,
+      width: 44,
     },
     playLabel: {
       color: colors.textPrimary,
