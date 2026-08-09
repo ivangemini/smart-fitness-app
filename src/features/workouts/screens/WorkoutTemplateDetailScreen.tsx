@@ -1,5 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useMemo } from 'react';
+import { ChevronLeft, Ellipsis, Share2 } from 'lucide-react-native';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   Pressable,
@@ -11,6 +12,9 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
+import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
+import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 import {
   useAppActions,
@@ -42,6 +46,7 @@ export default function WorkoutTemplateDetailScreen() {
   const insets = useSafeAreaInsets();
   const { height: viewportHeight } = useWindowDimensions();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const [footerHeight, setFooterHeight] = useState(0);
 
   useEffect(() => {
     void hydrateActiveWorkoutSessionDraft();
@@ -124,31 +129,33 @@ export default function WorkoutTemplateDetailScreen() {
 
   return (
     <View style={styles.screen}>
-      <View style={[styles.header, { paddingTop: insets.top + 6 }]}>
-        <Pressable
-          accessibilityLabel={copy.back}
-          accessibilityRole="button"
-          onPress={() => router.back()}
-          style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}>
-          <Text style={styles.backButtonLabel}>‹ {copy.back}</Text>
-        </Pressable>
-        <Text style={styles.headerTitle}>{copy.headerTitle}</Text>
-        <View style={styles.headerActions}>
+      <View style={[styles.header, { paddingTop: insets.top + Spacing.one }]}>
+        <View style={styles.headerSide}>
+          <LiquidGlassIconButton
+            accessibilityLabel={copy.back}
+            Icon={ChevronLeft}
+            onPress={() => router.back()}
+          />
+        </View>
+        <Text numberOfLines={2} style={styles.headerTitle}>
+          {copy.headerTitle}
+        </Text>
+        <View style={[styles.headerSide, styles.headerActions]}>
           <Pressable
             accessibilityLabel={copy.shareUnavailable}
             accessibilityRole="button"
             accessibilityState={{ disabled: true }}
             disabled
-            style={styles.iconButton}>
-            <Text style={styles.headerIcon}>↗</Text>
+            style={styles.disabledIconButton}>
+            <LiquidGlassSurface radius={22} style={styles.disabledIconSurface} variant="control">
+              <Share2 color={colors.textMuted} size={21} strokeWidth={2} />
+            </LiquidGlassSurface>
           </Pressable>
-          <Pressable
+          <LiquidGlassIconButton
             accessibilityLabel={copy.moreOptions}
-            accessibilityRole="button"
+            Icon={Ellipsis}
             onPress={openMenu}
-            style={({ pressed }) => [styles.iconButton, pressed && styles.pressed]}>
-            <Text style={styles.headerIcon}>…</Text>
-          </Pressable>
+          />
         </View>
       </View>
 
@@ -158,7 +165,7 @@ export default function WorkoutTemplateDetailScreen() {
           styles.content,
           {
             minHeight: viewportHeight - insets.top,
-            paddingBottom: insets.bottom + 116,
+            paddingBottom: footerHeight + Spacing.three,
           },
         ]}
         keyboardShouldPersistTaps="handled"
@@ -197,16 +204,25 @@ export default function WorkoutTemplateDetailScreen() {
         </View>
       </ScrollView>
 
-      <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 14) }]}>
+      <View
+        onLayout={(event) => {
+          const nextHeight = event.nativeEvent.layout.height;
+          setFooterHeight((currentHeight) =>
+            Math.abs(currentHeight - nextHeight) > 0.5 ? nextHeight : currentHeight,
+          );
+        }}
+        style={[
+          styles.footer,
+          {
+            paddingBottom: Math.max(insets.bottom, Spacing.two),
+          },
+        ]}>
         <View style={styles.container}>
-          <Pressable
+          <PrimaryButton
             accessibilityHint={copy.startWorkoutHint}
-            accessibilityLabel={copy.startWorkout}
-            accessibilityRole="button"
+            label={copy.startWorkout}
             onPress={startWorkout}
-            style={({ pressed }) => [styles.footerButton, pressed && styles.pressed]}>
-            <Text style={styles.footerButtonLabel}>{copy.startWorkout}</Text>
-          </Pressable>
+          />
         </View>
       </View>
     </View>
@@ -215,19 +231,6 @@ export default function WorkoutTemplateDetailScreen() {
 
 const createStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
-    backButton: {
-      alignItems: 'center',
-      flexDirection: 'row',
-      height: 34,
-      justifyContent: 'center',
-      minWidth: 74,
-    },
-    backButtonLabel: {
-      color: colors.accent,
-      fontSize: 17,
-      fontWeight: '400',
-      lineHeight: 22,
-    },
     backToWorkouts: {
       alignItems: 'center',
       backgroundColor: colors.surfaceSecondary,
@@ -251,6 +254,18 @@ const createStyles = (colors: typeof Colors.light) =>
       backgroundColor: colors.background,
       paddingHorizontal: Spacing.three,
       paddingTop: Spacing.five,
+    },
+    disabledIconButton: {
+      flexShrink: 0,
+      height: 44,
+      width: 44,
+    },
+    disabledIconSurface: {
+      alignItems: 'center',
+      height: 44,
+      justifyContent: 'center',
+      opacity: 0.58,
+      width: 44,
     },
     emptyTitle: {
       color: colors.textPrimary,
@@ -289,36 +304,17 @@ const createStyles = (colors: typeof Colors.light) =>
       fontSize: 26,
       fontWeight: '300',
     },
-    exerciseTitle: {
-      color: colors.textPrimary,
-      fontSize: 22,
-      fontWeight: '400',
-      lineHeight: 28,
-    },
     footer: {
+      alignItems: 'center',
       backgroundColor: colors.background,
       borderTopColor: colors.divider,
       borderTopWidth: StyleSheet.hairlineWidth,
       bottom: 0,
       left: 0,
       paddingHorizontal: Spacing.three,
-      paddingTop: 14,
+      paddingTop: Spacing.two,
       position: 'absolute',
       right: 0,
-    },
-    footerButton: {
-      alignItems: 'center',
-      backgroundColor: colors.textPrimary,
-      borderCurve: 'continuous',
-      borderRadius: 999,
-      minHeight: 58,
-      justifyContent: 'center',
-    },
-    footerButtonLabel: {
-      color: colors.background,
-      fontSize: 19,
-      fontWeight: '700',
-      lineHeight: 24,
     },
     header: {
       alignItems: 'center',
@@ -326,38 +322,28 @@ const createStyles = (colors: typeof Colors.light) =>
       borderBottomColor: colors.divider,
       borderBottomWidth: StyleSheet.hairlineWidth,
       flexDirection: 'row',
-      justifyContent: 'space-between',
-      paddingBottom: 8,
-      paddingHorizontal: 10,
+      gap: Spacing.two,
+      paddingBottom: Spacing.two,
+      paddingHorizontal: Spacing.two,
     },
     headerActions: {
-      alignItems: 'center',
       flexDirection: 'row',
+      gap: Spacing.one,
       justifyContent: 'flex-end',
-      minWidth: 96,
     },
-    headerIcon: {
-      color: colors.accent,
-      fontSize: 28,
-      fontWeight: '400',
-      lineHeight: 30,
+    headerSide: {
+      flexDirection: 'row',
+      minWidth: 96,
     },
     headerTitle: {
       color: colors.textPrimary,
+      flex: 1,
+      flexShrink: 1,
       fontSize: 19,
       fontWeight: '500',
       lineHeight: 24,
-      position: 'absolute',
-      bottom: 12,
-      left: 0,
-      right: 0,
+      minWidth: 0,
       textAlign: 'center',
-    },
-    iconButton: {
-      alignItems: 'center',
-      height: 34,
-      justifyContent: 'center',
-      width: 44,
     },
     loadingLabel: {
       color: colors.textSecondary,
