@@ -17,9 +17,8 @@ Home is explicitly **social-first hybrid**: personal fitness context stays immed
 - **LG-1 shared foundation complete:** PR #501, merge `ca11c1a66495ec71832a0abfd54fa4bbef0391c8`, Mobile CI #1922.
 - **LG-2A original Home Liquid Glass pilot complete:** PR #503, merge `5ad7bd047b89878243d8cf7923c70d3fe7b7787e`, Mobile CI #1925.
 - **LG-H1 social-first Home complete:** PR #505, exact green head `9f28c198ed75070bcf10484ef09a28a78cbc5571`, Mobile CI #1931, merge `9c9e67a929d10e9f91475c92ba0b579bbadbb805`.
-- **LG-2B Progress + Coach primary surfaces is active:** first bounded Progress batch on `ui/lg2b-progress-coach-primary`; Coach primary audit found existing shared primitives already compliant.
+- **LG-2B Progress + Coach primary surfaces is active:** first bounded Progress batch completed via PR #507, exact green head `ab06b04624e64108258aba713214d83db480a9fc`, Mobile CI #1937, merge `4e2df0f2c44137bc1ccc7b9860aaaa29d10dbf21`.
 - LG-H2 Stories and LG-H3 Steps remain blocked by required server/native contracts and must not be faked to unblock UI work.
-- Stale overlapping PR #502 was closed unmerged and must not be revived.
 - No OTA/EAS publication, native install/build, or physical-device proof is implied by these source changes.
 
 ## LG-1 — shared foundation
@@ -38,7 +37,7 @@ Content glass remains translucent without one native blur per card/list row. Tru
 
 Delivered one compact expandable Liquid Glass daily-metrics owner, real workout/program schedule context, unavailable Steps rather than fabricated data, and the existing server-authoritative chronological Following Feed directly on Home. The shared `useSocialFollowingFeed` hook preserves auth, bounded account cache, pull refresh, cursor pagination, block/private-profile/moderation boundaries, and immutable workout-post rendering. Social remains separate from private revisioned `AppState` synchronization.
 
-Exact head `9f28c198ed75070bcf10484ef09a28a78cbc5571` passed repository/changed-file line audits, TypeScript, full regression, expanded model smoke, Expo export, and Expo Doctor in Mobile CI #1931. PR #505 merged as `9c9e67a929d10e9f91475c92ba0b579bbadbb805`; merge-triggered EAS Update was skipped.
+Exact head `9f28c198ed75070bcf10484ef09a28a78cbc5571` passed repository/changed-file line audits, TypeScript, full regression, expanded model smoke, Expo export, and Expo Doctor in Mobile CI #1931. PR #505 merged as `9c9e67a929d10e9f91475c92ba0b579bbadbb805`.
 
 ### LG-H2 — Stories contracts and rail
 
@@ -80,23 +79,29 @@ Potential work:
 
 ### LG-2B — Progress + Coach primary surfaces
 
-**Status: active; first bounded Progress batch in progress.**
+**Status: active; first bounded Progress batch complete, Safety/Recovery follow-up next.**
 
 Audit result:
 
 - Coach primary already uses shared `AppCard` and `AppButton` primitives, so no artificial runtime diff is required there;
-- Progress still contains direct local material recipes and is being migrated in coherent batches.
+- Progress direct material debt is now concentrated in nested Safety/Recovery filters and detail/summary surfaces.
 
-First bounded batch:
+Completed first batch via PR #507:
 
-- migrate the 7D/30D/90D Progress weight-range selector to shared `LiquidGlassSurface` plus adaptive selected/pressed glass tokens;
-- migrate body-measurement metric/unit controls and text inputs to adaptive control tokens;
-- migrate the reusable Progress trend-chart shell to shared `LiquidGlassSurface` without per-chart native blur;
-- add a source-contract regression guard for these surfaces and already-compliant Coach primary usage.
+- migrated the 7D/30D/90D Progress weight-range selector to shared `LiquidGlassSurface` plus adaptive selected/pressed glass tokens;
+- migrated body-measurement metric/unit controls and text inputs to adaptive control tokens;
+- migrated the reusable Progress trend-chart shell to shared `LiquidGlassSurface` without per-chart native blur;
+- added a source-contract regression guard for these surfaces and already-compliant Coach primary usage.
 
-Preserve 44 pt interaction ownership, analytics, navigation, persistence, localization, accessibility states, chart data, and Coach domain behavior.
+Exact head `ab06b04624e64108258aba713214d83db480a9fc` passed repository/changed-file line audits, TypeScript, full regression, expanded model smoke, Expo export, and Expo Doctor in Mobile CI #1937; merge `4e2df0f2c44137bc1ccc7b9860aaaa29d10dbf21`.
 
-This batch does **not** complete LG-2B. Remaining Progress debt includes nested Safety/Recovery filters/detail summary surfaces that still use local material recipes. Continue them as a coherent follow-up after the first batch passes exact-head CI and merges.
+Next coherent LG-2B package:
+
+- migrate Safety/Recovery period/filter controls from direct local surface colors to adaptive Liquid Glass control tokens/shared surfaces;
+- migrate nested Safety/Recovery detail/summary material recipes where they visually own a surface;
+- preserve analytics, comparison semantics, workout-history routing/query parameters, localization, accessibility, 44 pt controls, and no-per-item native blur.
+
+LG-2B is complete only after that remaining direct primary-surface material debt is removed and the exact PR head passes the full Mobile CI gate.
 
 ### LG-2C — Nutrition primary surfaces
 
