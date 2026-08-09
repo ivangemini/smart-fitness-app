@@ -5,61 +5,47 @@ Updated: 2026-08-09
 ## Checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current `main`: `7355c0aa8b4b94a7cac8a7682acba90808739b77`.
-- Latest runtime merge: `7355c0aa8b4b94a7cac8a7682acba90808739b77` — PR #509 `Finish Progress Safety Recovery Liquid Glass migration`.
-- PR #509 exact validated head: `ead5df6e598947da6cbaf4d29489efbcbe72cba9`; Mobile CI #1943 passed the full required gate.
-- Previous LG-2B Progress batch: PR #507, merge `4e2df0f2c44137bc1ccc7b9860aaaa29d10dbf21`, exact green head `ab06b04624e64108258aba713214d83db480a9fc`, Mobile CI #1937.
-- Current roadmap package: **LG-2C Nutrition primary surfaces**.
+- Current `main`: `eaad35aac4733ba7488ae0aa151c285dca3acc38`.
+- Latest runtime merge: `eaad35aac4733ba7488ae0aa151c285dca3acc38` — PR #511 `Migrate Nutrition primary surfaces to Liquid Glass`.
+- PR #511 exact validated head: `e1dfaed79f45080d06dd2d590a757e5547f4111b`; Mobile CI #1947 passed the full required gate.
+- Previous LG-2B package: PR #507 / Mobile CI #1937 plus PR #509 / Mobile CI #1943; final LG-2B merge `7355c0aa8b4b94a7cac8a7682acba90808739b77`.
+- Current roadmap package: **LG-2D Profile primary surfaces**.
 - Backend remains untouched; last dependency-awareness baseline was `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`.
 
-## LG-2B complete
+## LG-2C complete
 
-Progress + Coach primary-surface source migration is complete.
+PR #511 migrated the primary Nutrition tab to adaptive Liquid Glass material ownership:
 
-PR #507 delivered:
+- header calendar, streak and Today controls use adaptive control/disabled/pressed material;
+- week-day selected/logged/today states use adaptive glass/accent tokens;
+- macro summary, meal groups, meal summary strips, diary row shell and meal action controls no longer use the old direct `surfacePrimary` / `surfaceSecondary` / `accentSoft` recipes;
+- dense diary/food rows remain ordinary `View`/`Pressable` content without native blur per row;
+- focused source guards protect adaptive material and no-per-row-blur contracts.
 
-- Progress 7D/30D/90D range selector on shared `LiquidGlassSurface` plus adaptive selected/pressed tokens;
-- body-measurement metric/unit choices and inputs on adaptive control tokens;
-- reusable Progress trend-chart shell on `LiquidGlassSurface` without per-chart native blur;
-- focused source-contract coverage, including already-compliant Coach primary `AppCard`/`AppButton` usage.
-
-PR #509 delivered:
-
-- Safety/Recovery history period filters on adaptive control/semantic glass tokens;
-- weekly Safety/Recovery period filters, selected-week state, and history-filter actions on adaptive glass tokens;
-- selected-week detail owner on shared `LiquidGlassSurface` `variant="control"`, with no native blur;
-- selected/accent pressed states on `accentPressedFill`, neutral pressed states on `controlPressedFill`;
-- expanded source-contract coverage preventing regression to direct `surfaceSecondary/accentSoft` recipes.
-
-No Progress analytics, comparison semantics, workout-history routing/query parameters, persistence/sync, localization, accessibility, or Coach domain behavior changed.
+Preserved: calorie/macro calculations, target derivation, date/week navigation, diary grouping, meal expansion/add-edit routing, persistence/sync schemas and IDs, localization/accessibility, SectionList virtualization, keyboard/reflow behavior and current touch ownership. Secondary add-food/search/editor surfaces stay deferred to LG-3.
 
 ## Exact validation
 
-PR #509 exact head `ead5df6e598947da6cbaf4d29489efbcbe72cba9` passed Mobile CI #1943:
+PR #511 exact head `e1dfaed79f45080d06dd2d590a757e5547f4111b` passed Mobile CI #1947:
 
 - repository file line audit;
 - changed-file line audit;
 - TypeScript;
-- full regression suite;
+- full regression suite — 1508 tests;
 - expanded model smoke;
 - Expo export;
 - Expo Doctor.
 
-Together with PR #507 / Mobile CI #1937, LG-2B is complete for source/CI scope.
+LG-2C is complete for source/CI scope. No physical-device/release evidence is implied.
 
-## Next package — LG-2C Nutrition primary surfaces
+## Next package — LG-2D Profile primary surfaces
 
-Audit Nutrition before editing and migrate only direct primary-surface material debt. Preserve:
+Read-only audit already isolated a bounded presentation-only scope:
 
-- calorie/macro calculations and target derivation;
-- diary/date/grouping semantics;
-- recent/saved/search/add-food and meal-template behavior;
-- persistence/sync schemas;
-- keyboard and short-screen reflow behavior;
-- localization/accessibility and 44 pt touch ownership;
-- dense-row performance: no native blur per food/diary row.
-
-Prefer shared `AppCard`, `AppButton`, `LiquidGlassSurface`, and adaptive glass tokens over new local recipes.
+- `src/app/(tabs)/profile.tsx`: replace the local settings icon surface with shared `LiquidGlassIconButton` while preserving the 44 pt action and `/settings` route;
+- `src/features/profile/ProfileGoalsSection.tsx`: migrate the goals disclosure owner from direct `surfacePrimary`/`borderSubtle` material to shared/adaptive control material with explicit pressed fill and no blur;
+- `src/features/social/SocialProfileEntryCard.tsx`: preserve existing `AppCard`/`SecondaryButton` structure but remove static `Colors.dark` text ownership in favor of the active theme;
+- update focused theme/material guards without changing goal validation/save logic, Profile state, nutrition-target recalculation, routing, localization, accessibility or safe-area behavior.
 
 ## Blocked Home follow-ups
 
@@ -67,11 +53,12 @@ LG-H2 Stories remains blocked until real Social DTO/lifecycle/privacy/media/mode
 
 ## Next sequence
 
-1. LG-2C Nutrition primary surfaces.
-2. LG-2D Profile primary surfaces.
-3. LG-3 secondary surfaces.
-4. LG-4 Workouts staged migration.
-5. LG-H2/H3 only when their blockers are resolved; LG-H4 after the base Home feed is stable.
+1. LG-2D Profile primary surfaces.
+2. LG-3 secondary surfaces.
+3. LG-4 Workouts staged migration.
+4. LG-5 elevated chrome/motion.
+5. LG-6 visual QA/stabilization.
+6. LG-H2/H3 only when blockers are resolved; LG-H4 after the base Home feed is stable.
 
 ## Prohibited implicit actions
 
