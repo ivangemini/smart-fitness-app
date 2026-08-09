@@ -25,21 +25,23 @@ const styles = readSource(
 );
 
 describe('Social workout-post shell UX', () => {
-  it.each(screens)('%s owns hidden-header top safe area and Lucide back language', (path) => {
+  it.each(screens)('%s owns hidden-header top safe area and shared glass back navigation', (path) => {
     const source = readSource(path);
 
     expect(source).toContain("import { ChevronLeft } from 'lucide-react-native';");
     expect(source).toContain('paddingTop: insets.top + Spacing.four');
-    expect(source).toContain(
-      '<ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />',
-    );
-    expect(source).not.toContain('styles.backLabel');
+    expect(source).toContain('LiquidGlassIconButton');
+    expect(source).toContain('Icon={ChevronLeft}');
+    expect(source).toContain('onPress={() => router.back()}');
+    expect(source).not.toContain('styles.backButton');
     expect(source).not.toContain('>‹</Text>');
   });
 
-  it('keeps the shared shell free from fixed top spacing and raw back-label styling', () => {
+  it('keeps the shared shell free from local back material while retaining interactive post press feedback', () => {
     expect(styles).not.toContain('paddingTop: Spacing.four');
     expect(styles).not.toContain('backLabel:');
+    expect(styles).not.toContain('backButton:');
+    expect(styles).toContain('pressed: { opacity: 0.72 }');
     expect(styles).toContain('flexGrow: 1');
   });
 
