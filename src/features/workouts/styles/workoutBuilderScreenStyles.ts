@@ -198,7 +198,7 @@ export const createStyles = (colors: typeof Colors.light) =>
     },
     startNextButton: {
       flexShrink: 1,
-      minHeight: 36,
+      minHeight: 44,
       justifyContent: 'center',
       paddingVertical: 6,
     },
