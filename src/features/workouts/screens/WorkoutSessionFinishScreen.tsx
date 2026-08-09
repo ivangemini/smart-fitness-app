@@ -13,6 +13,8 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { PrimaryButton } from '@/components/ui/PrimaryButton';
+import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { Spacing } from '@/constants/theme';
 import { useAppActions, useAppInfrastructure } from '@/context/AppContext';
 import { getShareWorkoutCopy } from '@/features/social/shareWorkoutCopy';
@@ -231,6 +233,7 @@ export default function WorkoutSessionFinishScreen() {
         <View style={styles.container}>
           <View style={styles.header}>
             <Pressable
+              accessibilityLabel={t('workouts.finish.resume')}
               accessibilityRole="button"
               onPress={() => router.back()}
               style={({ pressed }) => [styles.resumeButton, pressed && styles.pressed]}>
@@ -258,7 +261,9 @@ export default function WorkoutSessionFinishScreen() {
               />
               {title.length > 0 ? (
                 <Pressable
+                  accessibilityLabel={t('workouts.finish.clearWorkoutName')}
                   accessibilityRole="button"
+                  hitSlop={11}
                   onPress={() => setTitle('')}
                   style={({ pressed }) => [styles.clearButton, pressed && styles.pressed]}>
                   <Text style={styles.clearLabel}>×</Text>
@@ -339,30 +344,16 @@ export default function WorkoutSessionFinishScreen() {
           },
         ]}>
         <View style={[styles.container, styles.footerStack]}>
-          <Pressable
-            accessibilityRole="button"
+          <SecondaryButton
             disabled={!canSave}
+            label={shareCopy.title}
             onPress={handleSaveAndShare}
-            style={({ pressed }) => [
-              styles.shareButton,
-              !canSave && styles.shareButtonDisabled,
-              pressed && canSave && styles.pressed,
-            ]}>
-            <Text style={styles.shareButtonLabel}>{shareCopy.title}</Text>
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
+          />
+          <PrimaryButton
             disabled={!canSave}
+            label={t('workouts.finish.save')}
             onPress={handleSave}
-            style={({ pressed }) => [
-              styles.saveButton,
-              !canSave && styles.saveButtonDisabled,
-              pressed && canSave && styles.pressed,
-            ]}>
-            <Text style={[styles.saveButtonLabel, !canSave && styles.saveButtonLabelDisabled]}>
-              {t('workouts.finish.save')}
-            </Text>
-          </Pressable>
+          />
         </View>
       </View>
     </KeyboardAvoidingView>
