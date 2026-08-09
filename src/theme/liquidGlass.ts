@@ -26,6 +26,11 @@ export type LiquidGlassPalette = {
   navInactiveIcon: string;
   navPanelFill: string;
   navPanelShadow: string;
+  semanticAccentFill: string;
+  semanticPositiveBorder: string;
+  semanticPositiveFill: string;
+  semanticWarningBorder: string;
+  semanticWarningFill: string;
   shadowColor: string;
   shadowOpacity: number;
 };
@@ -56,6 +61,11 @@ const darkGlass: LiquidGlassPalette = {
   navInactiveIcon: '#8F8F98',
   navPanelFill: 'rgba(18, 18, 22, 0.54)',
   navPanelShadow: 'rgba(6, 6, 10, 0.38)',
+  semanticAccentFill: 'rgba(10, 132, 255, 0.15)',
+  semanticPositiveBorder: 'rgba(46, 214, 111, 0.30)',
+  semanticPositiveFill: 'rgba(46, 214, 111, 0.12)',
+  semanticWarningBorder: 'rgba(255, 214, 10, 0.30)',
+  semanticWarningFill: 'rgba(255, 214, 10, 0.12)',
   shadowColor: '#08080C',
   shadowOpacity: 0.28,
 };
@@ -86,6 +96,11 @@ const lightGlass: LiquidGlassPalette = {
   navInactiveIcon: '#66717D',
   navPanelFill: 'rgba(244, 247, 250, 0.62)',
   navPanelShadow: 'rgba(17, 24, 39, 0.16)',
+  semanticAccentFill: 'rgba(27, 138, 122, 0.12)',
+  semanticPositiveBorder: 'rgba(22, 129, 94, 0.24)',
+  semanticPositiveFill: 'rgba(22, 129, 94, 0.10)',
+  semanticWarningBorder: 'rgba(160, 106, 30, 0.24)',
+  semanticWarningFill: 'rgba(160, 106, 30, 0.10)',
   shadowColor: '#111827',
   shadowOpacity: 0.12,
 };
