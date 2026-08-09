@@ -14,48 +14,54 @@ This phase replaces the previous assumption that every surface should remain a f
 
 - Phase 10 responsive source hardening is complete for the current source scope.
 - VUX secondary-surface cleanup is complete through VUX-7F.
-- **LG-1 foundation is active on `ui/liquid-glass-foundation`.**
+- LG-1 shared foundation PR #501 merged as `ca11c1a66495ec71832a0abfd54fa4bbef0391c8`; exact head `a2bcdb49fd89caa329dbdab30e439b12b5677496` passed Mobile CI #1922.
+- **LG-2 primary-tab migration is active on `ui/liquid-glass-primary-tabs`.**
 - No OTA/EAS publication, native install/build or physical-device proof is part of autonomous source execution.
 
-## LG-1 — shared foundation
+## LG-1 — shared foundation — complete
 
 **Goal:** make the existing bottom navigation the canonical material source instead of an isolated effect.
 
-Scope:
+Completed:
 
 - central adaptive Liquid Glass token contract;
 - reusable glass surface primitive;
 - AppCard migration;
 - PrimaryButton / SecondaryButton migration;
-- floating tab bar migration from local hardcoded glass colors to shared tokens;
+- floating tab bar migration from local hardcoded glass colors to shared adaptive tokens;
 - Home Summary and Home Snapshot semantic material migration;
 - source-contract guards for shared glass behavior;
-- document blur/performance rules.
+- blur/performance architecture contract.
 
-Exit criteria:
+The shared card intentionally uses material translucency without enabling one native blur per card. True backdrop blur remains reserved for bounded elevated/floating chrome such as the tab bar.
 
-- no shared card/button/tab-bar glass role relies on its own duplicated dark-only token set;
-- shared buttons preserve explicit loading/pressed/disabled states and minimum touch ownership;
-- full exact-head Mobile CI is green.
-
-## LG-2 — primary tabs
+## LG-2 — primary tabs — active
 
 **Goal:** remove remaining flat/opaque local presentation from the five public tabs where it conflicts with the shared material system.
 
-Audit/migration targets:
+### LG-2A — direct primary-tab controls and Nutrition diary materials
 
-- Home direct surfaces not already inherited from AppCard;
-- Nutrition diary/targets/search/recent/saved/add affordances;
-- Progress trend/measurement/summary direct surfaces;
-- Coach direct action/group surfaces;
-- Profile goal/settings/action surfaces.
+Current batch:
+
+- replace duplicate Home/Profile circular header controls with one shared glass icon button;
+- migrate Nutrition calendar, today, streak, week-day, macro-summary, meal-group, meal-action and food-list materials to the shared glass palette;
+- preserve Nutrition selected/disabled semantics, meal expansion, edit/add routes and 44 pt effective interaction ownership;
+- keep Coach unchanged where its visible surfaces already inherit LG-1 through AppCard/AppButton.
+
+### Remaining LG-2 audit
+
+- Progress range selectors and any direct chart/measurement materials not inherited from AppCard;
+- Profile child surfaces that still define opaque local materials outside shared cards;
+- Home direct surfaces only if concrete leftovers remain after LG-2A;
+- Nutrition child/detail affordances belong to LG-3 unless they are part of the visible diary surface.
 
 Rules:
 
 - prefer shared primitives over local `rgba(...)` recipes;
 - preserve semantic success/warning/error meaning;
 - do not create backdrop blur per row in long lists;
-- do not reopen already-correct responsive geometry.
+- do not reopen already-correct responsive geometry;
+- batch adjacent surfaces with the same material contract instead of one-screen PRs.
 
 ## LG-3 — secondary surfaces
 
