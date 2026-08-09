@@ -146,7 +146,7 @@ export const createStyles = (colors: typeof Colors.light) =>
     replacementHeader: {
       alignItems: 'center',
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      gap: Spacing.two,
       paddingBottom: Spacing.three,
     },
     replacementIcon: {
@@ -162,6 +162,12 @@ export const createStyles = (colors: typeof Colors.light) =>
       color: colors.textPrimary,
       fontSize: 18,
       fontWeight: '900',
+    },
+    replacementList: {
+      flexShrink: 1,
+    },
+    replacementListContent: {
+      paddingBottom: Spacing.two,
     },
     replacementRow: {
       alignItems: 'center',
@@ -181,16 +187,18 @@ export const createStyles = (colors: typeof Colors.light) =>
       fontWeight: '900',
     },
     replacementSheet: {
-      backgroundColor: colors.surfacePrimary,
-      borderTopLeftRadius: 24,
-      borderTopRightRadius: 24,
       maxHeight: '78%',
-      padding: Spacing.three,
+      overflow: 'hidden',
+      paddingHorizontal: Spacing.three,
+      paddingTop: Spacing.three,
+      width: '100%',
     },
     replacementTitle: {
       color: colors.textPrimary,
+      flex: 1,
       fontSize: 22,
       fontWeight: '900',
+      minWidth: 0,
     },
     screen: {
       backgroundColor: colors.background,
