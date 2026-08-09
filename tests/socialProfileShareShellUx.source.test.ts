@@ -64,10 +64,12 @@ describe('Social profile and share shell UX', () => {
     expect(profileEditor).not.toContain('paddingTop: Spacing.four');
   });
 
-  it('gives Share Workout 44 pt back ownership while preserving publish contracts', () => {
-    expect(shareWorkoutStyles).toMatch(
-      /backButton:[\s\S]*?height:\s*44[\s\S]*?width:\s*44/,
-    );
+  it('uses the shared 44 pt glass back action while preserving Share Workout publish contracts', () => {
+    expect(shareWorkout).toContain('LiquidGlassIconButton');
+    expect(shareWorkout).toContain('Icon={ChevronLeft}');
+    expect(shareWorkout).toContain('onPress={() => router.back()}');
+    expect(shareWorkout).not.toContain('styles.backButton');
+    expect(shareWorkoutStyles).not.toContain('backButton:');
     expect(shareWorkoutStyles).not.toContain('backLabel:');
     expect(shareWorkoutStyles).not.toContain('paddingTop: Spacing.three');
     expect(shareWorkout).toContain('await syncNow()');
