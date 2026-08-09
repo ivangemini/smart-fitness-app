@@ -1,8 +1,12 @@
 import { StyleSheet } from 'react-native';
 
 import { Colors, Radii, Spacing } from '@/constants/theme';
+import type { LiquidGlassPalette } from '@/theme/liquidGlass';
 
-export const createAddFoodScannerStyles = (colors: typeof Colors.dark) =>
+export const createAddFoodScannerStyles = (
+  colors: typeof Colors.light,
+  glass: LiquidGlassPalette,
+) =>
   StyleSheet.create({
     scannerActions: {
       gap: Spacing.two,
@@ -16,8 +20,8 @@ export const createAddFoodScannerStyles = (colors: typeof Colors.dark) =>
       flex: 1,
     },
     scannerCameraWrap: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
@@ -37,7 +41,7 @@ export const createAddFoodScannerStyles = (colors: typeof Colors.dark) =>
       fontWeight: '800',
     },
     scannerFrame: {
-      borderColor: colors.accent,
+      borderColor: glass.accentBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: 2,
@@ -65,8 +69,8 @@ export const createAddFoodScannerStyles = (colors: typeof Colors.dark) =>
       minHeight: 44,
     },
     scannerManualForm: {
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.cardFill,
+      borderColor: glass.cardBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
@@ -91,8 +95,8 @@ export const createAddFoodScannerStyles = (colors: typeof Colors.dark) =>
       padding: Spacing.three,
     },
     scannerPermissionCard: {
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.cardFill,
+      borderColor: glass.cardBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
@@ -117,8 +121,8 @@ export const createAddFoodScannerStyles = (colors: typeof Colors.dark) =>
       paddingTop: Spacing.six,
     },
     scannerStatusCard: {
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.cardFill,
+      borderColor: glass.cardBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
