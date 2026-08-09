@@ -5,27 +5,30 @@ Updated: 2026-08-09
 ## Checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current `main`: `7a9274d910c0e2dfc8bd270d0d1dc332989d6863`.
-- Latest runtime merge: `7a9274d910c0e2dfc8bd270d0d1dc332989d6863` — PR #519 `Migrate Social interaction controls to Liquid Glass`.
-- PR #519 exact validated head: `d739a5406490e38773e9acc91e69605a21184c98`; Mobile CI #1955 passed the full required gate.
-- Previous LG-3B: PR #517 / Mobile CI #1953 / merge `8f7df7507c3a833cdfa82b636820080106b15b9c`.
-- Current roadmap package: **LG-3D Social shell + notification controls**.
+- Current `main`: `97d497ccda6bcc756d808190e4d84ce1de3f849f`.
+- Latest runtime merge: `97d497ccda6bcc756d808190e4d84ce1de3f849f` — PR #521 `Migrate Social notification and lookup shell controls`.
+- PR #521 exact validated head: `290f19513e1871f705cd87a3a78838e6ed27b609`; Mobile CI #1957 passed the full required gate.
+- Previous LG-3C: PR #519 / Mobile CI #1955 / merge `7a9274d910c0e2dfc8bd270d0d1dc332989d6863`.
+- Current roadmap package: **LG-3E Social Share Workout material**.
+- LG-3D retains one residual: `SocialCommunityGuidelinesScreen` local back control.
 - Backend remains untouched; last dependency-awareness baseline was `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`.
 
-## LG-3C complete
+## LG-3D batch 1 complete
 
-PR #519 delivered:
+PR #521 delivered:
 
-- adaptive elevated/control/accent material for `SocialReportModal`, including explicit neutral/selected pressed states;
-- shared 44 pt `LiquidGlassIconButton` for relationship-list back navigation;
-- adaptive relationship tabs and avatar fallback material;
-- lightweight opacity feedback only on the profile link inside existing `AppCard` ownership.
+- shared 44 pt `LiquidGlassIconButton` for Social Notifications;
+- adaptive notification-card `cardFill/cardBorder` material with explicit `controlPressedFill` feedback;
+- shared 44 pt back primitive for Social Profile Lookup;
+- focused guards preserving optimistic notification read/mark-read and Profile Lookup validation/navigation semantics.
 
-Preserved: report target/reason codes, submit/success/error/rate-limit/disabled behavior, Social API authority, relationship paging/stale-request sequencing, cursor/error handling, approve/reject/cancel/unfollow actions, profile routing, privacy/visibility rules and cache semantics. No native blur was added per report option/list item.
+Preserved: notification pagination/request sequencing, missing-notification rollback/removal, profile/post routing, Profile Lookup safe-area/keyboard behavior, username validation/normalization, auth/profile routes, localization/accessibility and Social API authority. No native blur was added per notification card or shell control.
+
+`SocialCommunityGuidelinesScreen` remains unchanged and is the only explicit LG-3D residual; its content already uses shared `AppCard`, so only the local back control remains to migrate.
 
 ## Exact validation
 
-PR #519 exact head `d739a5406490e38773e9acc91e69605a21184c98` passed Mobile CI #1955:
+PR #521 exact head `290f19513e1871f705cd87a3a78838e6ed27b609` passed Mobile CI #1957:
 
 - repository file line audit;
 - changed-file line audit;
@@ -35,18 +38,17 @@ PR #519 exact head `d739a5406490e38773e9acc91e69605a21184c98` passed Mobile CI #
 - Expo export;
 - Expo Doctor.
 
-LG-3C is complete for source/CI scope. No physical-device/release evidence is implied.
+No physical-device/release evidence is implied.
 
-## Next package — LG-3D Social shell + notification controls
+## Next package — LG-3E Social Share Workout material
 
-Read-only audit isolated a coherent presentation-only package:
+Read-only audit isolated a coherent publishing presentation package:
 
-- `src/features/social/screens/SocialNotificationScreen.tsx` + styles: shared back control, adaptive notification-card/avatar material and explicit pressed state; preserve optimistic notification read, mark-read API request, request sequencing, pagination and profile/post routing;
-- `src/features/social/screens/SocialCommunityGuidelinesScreen.tsx`: replace only the local 44 pt back control; existing `AppCard` sections remain shared;
-- `src/features/social/screens/SocialProfileLookupScreen.tsx`: replace only the local back control; preserve safe-area/keyboard behavior, username validation/normalization, sign-in route and profile lookup/navigation;
-- update `tests/socialInfoListShellUx.source.test.ts` and `tests/social-profile-lookup-ux.test.ts` alongside runtime changes so guards assert the shared primitive rather than the old direct Chevron implementation;
-- add one focused material/no-blur guard;
-- exclude Share Workout from this batch because publishing/media form material is broader and belongs in a later LG-3 package.
+- `src/features/social/screens/ShareWorkoutScreen.tsx`: migrate local back navigation to shared `LiquidGlassIconButton`; leave publishing state/data flow intact;
+- `src/features/social/screens/ShareWorkoutScreen.styles.ts`: migrate caption input, visibility toggle, preview shell/rows and material-owning controls from direct `surfaceSecondary` / `backgroundSelected` / `borderSubtle` ownership to adaptive card/control/accent tokens with explicit pressed states;
+- preserve idempotency, managed-media release/cleanup, moderation/rate-limit errors, request sequencing, preview semantics, localization/accessibility, safe-area/keyboard behavior and Social API authority;
+- keep inputs and preview rows blur-free;
+- update `tests/socialProfileShareShellUx.source.test.ts` and add one focused material/no-blur guard.
 
 ## Blocked Home follow-ups
 
@@ -54,7 +56,7 @@ LG-H2 Stories remains blocked until real Social DTO/lifecycle/privacy/media/mode
 
 ## Next sequence
 
-1. LG-3D Social shell + notification controls, then remaining LG-3 batches by shared defect.
+1. LG-3E Share Workout material; continue remaining LG-3 batches by shared defect and revisit the single Guidelines residual when possible.
 2. LG-4 Workouts staged migration.
 3. LG-5 elevated chrome/motion.
 4. LG-6 visual QA/stabilization.

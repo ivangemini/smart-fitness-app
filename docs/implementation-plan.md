@@ -7,10 +7,11 @@ This file is the **canonical forward roadmap**. PR-by-PR history and exact valid
 ## Current verified mobile checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current mobile `main`: `7a9274d910c0e2dfc8bd270d0d1dc332989d6863`.
-- Latest runtime merge: `7a9274d910c0e2dfc8bd270d0d1dc332989d6863` (PR #519 — LG-3C Social interaction controls).
-- PR #519 exact validated head: `d739a5406490e38773e9acc91e69605a21184c98`; Mobile CI #1955 passed the full required gate.
-- Active package: **Phase 11 / LG-3D Social shell + notification controls**.
+- Current mobile `main`: `97d497ccda6bcc756d808190e4d84ce1de3f849f`.
+- Latest runtime merge: `97d497ccda6bcc756d808190e4d84ce1de3f849f` (PR #521 — LG-3D Social shell + notification controls, batch 1).
+- PR #521 exact validated head: `290f19513e1871f705cd87a3a78838e6ed27b609`; Mobile CI #1957 passed the full required gate.
+- Active package: **Phase 11 / LG-3E Social Share Workout material**.
+- LG-3D retains one small residual: `SocialCommunityGuidelinesScreen` local back control.
 - Backend baseline inspected for dependency awareness: `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`; backend is not part of this package.
 
 Release readiness remains lower than source completeness because staging/provider/physical-device/native-release/production evidence is separately gated.
@@ -115,7 +116,8 @@ Focused execution roadmap: `docs/roadmap/liquid-glass.md`.
 - **LG-2D Profile primary:** PR #513 / Mobile CI #1949.
 - **LG-3A Settings controls/disclosures:** PR #515 / Mobile CI #1951.
 - **LG-3B Nutrition secondary:** PR #517 / Mobile CI #1953.
-- **LG-3C Social interaction controls:** PR #519 / exact green head `d739a5406490e38773e9acc91e69605a21184c98` / Mobile CI #1955 / merge `7a9274d910c0e2dfc8bd270d0d1dc332989d6863`.
+- **LG-3C Social interaction controls:** PR #519 / Mobile CI #1955.
+- **LG-3D batch 1 Social Notifications + Profile Lookup:** PR #521 / exact green head `290f19513e1871f705cd87a3a78838e6ed27b609` / Mobile CI #1957 / merge `97d497ccda6bcc756d808190e4d84ce1de3f849f`.
 
 Home remains a social-first hybrid: compact personal daily metrics → future Stories only after real contracts → existing server-authoritative Following Feed. Do not fabricate Stories or Steps.
 
@@ -127,26 +129,25 @@ Home remains a social-first hybrid: compact personal daily metrics → future St
 
 ## LG-3 — secondary surfaces
 
-LG-3A Settings and LG-3B Nutrition secondary are complete. LG-3C Social interaction controls is complete for source/CI scope: report option material, relationship back navigation, tabs and avatar fallback are adaptive while moderation/relationship domain behavior and Social API authority remain unchanged.
+LG-3A Settings, LG-3B Nutrition secondary and LG-3C Social interaction controls are complete. LG-3D batch 1 moved Social Notifications and Profile Lookup shell ownership to shared/adaptive material while preserving domain behavior. `SocialCommunityGuidelinesScreen` remains the only LG-3D residual.
 
-### LG-3D — Social shell + notification controls
+### LG-3E — Social Share Workout material
 
 **Status: active.**
 
 Bounded package:
 
-- `SocialNotificationScreen`: use shared `LiquidGlassIconButton` for back navigation; migrate notification-card/avatar material and pressed feedback to adaptive card/control tokens while preserving optimistic read, mark-read API call and profile/post routing;
-- `SocialCommunityGuidelinesScreen`: migrate only the local back control; retain existing shared `AppCard` content ownership;
-- `SocialProfileLookupScreen`: migrate only the local back control; preserve username normalization/validation, keyboard/safe-area behavior, sign-in route and public-profile navigation;
-- update stale Social shell/profile-lookup source guards with the runtime change;
-- Share Workout is explicitly deferred to a later LG-3 package because publishing/media form material has broader domain risk;
-- no native blur per notification card or shell control.
+- replace Share Workout's local back action with shared `LiquidGlassIconButton`;
+- migrate caption input, visibility toggle, preview shell/rows and other material-owning controls from direct legacy surface recipes to adaptive card/control/accent tokens with explicit pressed states;
+- preserve publish state machine, idempotency key semantics, managed-media release/cleanup, moderation/rate-limit errors, request sequencing, preview data, localization/accessibility, safe-area/keyboard behavior, and Social API authority;
+- do not add native blur to publishing inputs or preview rows;
+- update the existing Share Workout source guard and add a focused material/no-blur guard.
 
-After LG-3D, continue remaining Settings/account, Sync & Backup, Social publishing/detail, Progress detail, Coach detail and exercise detail/library surfaces by shared defect.
+After LG-3E, continue Settings/account, Sync & Backup, Social profile/detail, Progress detail, Coach detail and exercise detail/library surfaces by shared defect; revisit the single Guidelines back-control residual when it can be landed safely.
 
 ## Remaining Phase 11 execution order
 
-1. **LG-3 secondary surfaces**, currently LG-3D Social shell + notification controls.
+1. **LG-3 secondary surfaces**, currently LG-3E Share Workout material plus the isolated LG-3D Guidelines residual.
 2. **LG-4 Workouts:** hub/program cards → library/builder → active workout chrome → set-table states → finish/summary.
 3. **LG-5 elevated chrome/motion:** true blur only for bounded elevated/floating roles.
 4. **LG-6 visual QA/stabilization:** exact-head CI/source guards first; physical evidence only when separately authorized.
@@ -162,6 +163,6 @@ Docs-only synchronization uses diff/ancestry verification; workflows may intenti
 
 # Current definition of done
 
-LG-3D is done only when the audited Social shell/back and notification-card material uses adaptive shared primitives/tokens, notification/profile lookup/domain behavior is unchanged, no per-card native blur is introduced, exact-head Mobile CI is green, docs agree with Git history, and the validated head merges without unresolved review blockers.
+LG-3E is done only when Share Workout's shell/input/preview material uses adaptive shared primitives/tokens, publishing/media/moderation behavior is unchanged, no dense/native blur is introduced, exact-head Mobile CI is green, docs agree with Git history, and the validated head merges without unresolved review blockers.
 
 Physical-device, OTA/EAS, native-release, provider, production and store evidence remain separate gates and must not be inferred from source/CI completion.
