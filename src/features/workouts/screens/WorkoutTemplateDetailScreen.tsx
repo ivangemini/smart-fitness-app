@@ -304,6 +304,12 @@ const createStyles = (colors: typeof Colors.light) =>
       fontSize: 26,
       fontWeight: '300',
     },
+    exerciseTitle: {
+      color: colors.textPrimary,
+      fontSize: 22,
+      fontWeight: '400',
+      lineHeight: 28,
+    },
     footer: {
       alignItems: 'center',
       backgroundColor: colors.background,
