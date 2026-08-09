@@ -1,9 +1,16 @@
 import { StyleSheet } from 'react-native';
 
 import { Colors, Radii, Spacing } from '@/constants/theme';
+import type { LiquidGlassPalette } from '@/theme/liquidGlass';
 
-export const createSafetyRecoveryWeeklyTrendStyles = (colors: typeof Colors.light) =>
+export const createSafetyRecoveryWeeklyTrendStyles = (
+  colors: typeof Colors.light,
+  glass: LiquidGlassPalette,
+) =>
   StyleSheet.create({
+    accentPressed: {
+      backgroundColor: glass.accentPressedFill,
+    },
     chartContent: {
       alignItems: 'flex-end',
       gap: Spacing.two,
@@ -30,10 +37,7 @@ export const createSafetyRecoveryWeeklyTrendStyles = (colors: typeof Colors.ligh
       gap: Spacing.one,
     },
     detailCard: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
       borderRadius: Radii.medium,
-      borderWidth: StyleSheet.hairlineWidth,
       gap: Spacing.two,
       padding: Spacing.three,
     },
@@ -71,8 +75,8 @@ export const createSafetyRecoveryWeeklyTrendStyles = (colors: typeof Colors.ligh
     },
     historyButton: {
       alignItems: 'center',
-      backgroundColor: colors.accentSoft,
-      borderColor: colors.accent,
+      backgroundColor: glass.semanticAccentFill,
+      borderColor: glass.accentBorder,
       borderRadius: Radii.pill,
       borderWidth: StyleSheet.hairlineWidth,
       justifyContent: 'center',
@@ -133,8 +137,8 @@ export const createSafetyRecoveryWeeklyTrendStyles = (colors: typeof Colors.ligh
     },
     periodChip: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderRadius: Radii.pill,
       borderWidth: StyleSheet.hairlineWidth,
       justifyContent: 'center',
@@ -151,8 +155,8 @@ export const createSafetyRecoveryWeeklyTrendStyles = (colors: typeof Colors.ligh
       color: colors.accent,
     },
     periodChipSelected: {
-      backgroundColor: colors.accentSoft,
-      borderColor: colors.accent,
+      backgroundColor: glass.semanticAccentFill,
+      borderColor: glass.accentBorder,
     },
     periodHelp: {
       color: colors.textMuted,
@@ -174,7 +178,7 @@ export const createSafetyRecoveryWeeklyTrendStyles = (colors: typeof Colors.ligh
       gap: Spacing.one,
     },
     pressed: {
-      opacity: 0.68,
+      backgroundColor: glass.controlPressedFill,
     },
     statusSegment: {
       minHeight: 2,
@@ -227,8 +231,8 @@ export const createSafetyRecoveryWeeklyTrendStyles = (colors: typeof Colors.ligh
       width: 44,
     },
     weekColumnSelected: {
-      backgroundColor: colors.accentSoft,
-      borderColor: colors.accent,
+      backgroundColor: glass.semanticAccentFill,
+      borderColor: glass.accentBorder,
     },
     weekCount: {
       color: colors.textPrimary,

@@ -36,6 +36,33 @@ describe('Progress Liquid Glass primary surfaces', () => {
     expect(source).not.toContain('backgroundColor: colors.surfacePrimary');
   });
 
+  it('keeps Safety Recovery period controls on adaptive glass control tokens', () => {
+    const componentSource = readSource('src/components/progress/SafetyRecoveryProgressCard.tsx');
+    const styleSource = readSource('src/components/progress/SafetyRecoveryProgressCard.styles.ts');
+
+    expect(componentSource).toContain('resolveLiquidGlassPalette(resolvedAppearance)');
+    expect(styleSource).toContain('backgroundColor: glass.controlFill');
+    expect(styleSource).toContain('borderColor: glass.controlBorder');
+    expect(styleSource).toContain('backgroundColor: glass.semanticAccentFill');
+    expect(styleSource).toContain('backgroundColor: glass.controlPressedFill');
+    expect(styleSource).not.toContain('colors.surfaceSecondary');
+    expect(styleSource).not.toContain('colors.accentSoft');
+  });
+
+  it('keeps weekly Safety Recovery selection and detail surfaces on Liquid Glass', () => {
+    const componentSource = readSource('src/components/progress/SafetyRecoveryWeeklyTrendCard.tsx');
+    const styleSource = readSource('src/components/progress/SafetyRecoveryWeeklyTrendCard.styles.ts');
+
+    expect(componentSource).toContain("import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';");
+    expect(componentSource).toContain('resolveLiquidGlassPalette(resolvedAppearance)');
+    expect(componentSource).toContain('<LiquidGlassSurface style={styles.detailCard} variant="control">');
+    expect(styleSource).toContain('backgroundColor: glass.controlFill');
+    expect(styleSource).toContain('backgroundColor: glass.semanticAccentFill');
+    expect(styleSource).toContain('borderColor: glass.accentBorder');
+    expect(styleSource).not.toContain('colors.surfaceSecondary');
+    expect(styleSource).not.toContain('colors.accentSoft');
+  });
+
   it('keeps Coach primary content on shared cards and buttons', () => {
     const source = readSource('src/app/(tabs)/coach.tsx');
 

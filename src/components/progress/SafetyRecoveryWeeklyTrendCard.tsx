@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { AppCard } from '@/components/ui/AppCard';
+import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { Colors } from '@/constants/theme';
 import type { SafetyRecoveryProgressPeriod } from '@/features/progress/safetyRecoveryProgressAnalytics';
 import {
@@ -16,6 +17,7 @@ import {
 import { useLocalization } from '@/localization';
 import type { Translate } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import type { WorkoutSafetyReviewStatus, WorkoutSession } from '@/types';
 
 import { createSafetyRecoveryWeeklyTrendStyles } from './SafetyRecoveryWeeklyTrendCard.styles';
@@ -87,9 +89,16 @@ function WeeklyColumn({
   point: SafetyRecoveryWeeklyTrendPoint;
   selected: boolean;
 }) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { formatDate, t } = useLocalization();
-  const styles = useMemo(() => createSafetyRecoveryWeeklyTrendStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(
+    () => createSafetyRecoveryWeeklyTrendStyles(colors, glass),
+    [colors, glass],
+  );
   const pointLabel = formatDate(point.startAt, {
     day: 'numeric',
     month: 'short',
@@ -106,6 +115,7 @@ function WeeklyColumn({
         styles.weekColumn,
         selected && styles.weekColumnSelected,
         pressed && styles.pressed,
+        selected && pressed && styles.accentPressed,
       ]}>
       <Text numberOfLines={1} style={styles.weekCount}>
         {point.reviewedWorkouts}/{point.totalWorkouts}
@@ -156,9 +166,16 @@ export function SafetyRecoveryWeeklyTrendCard({
   onOpenHistory,
   sessions,
 }: SafetyRecoveryWeeklyTrendCardProps) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { formatDate, formatNumber, t } = useLocalization();
-  const styles = useMemo(() => createSafetyRecoveryWeeklyTrendStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(
+    () => createSafetyRecoveryWeeklyTrendStyles(colors, glass),
+    [colors, glass],
+  );
   const [period, setPeriod] = useState<SafetyRecoveryProgressPeriod>('90d');
   const [selectedPointKey, setSelectedPointKey] = useState<string | null>(null);
   const trend = useMemo(
@@ -218,6 +235,7 @@ export function SafetyRecoveryWeeklyTrendCard({
                   styles.periodChip,
                   selected && styles.periodChipSelected,
                   pressed && styles.pressed,
+                  selected && pressed && styles.accentPressed,
                 ]}>
                 <Text style={[styles.periodChipLabel, selected && styles.periodChipLabelSelected]}>
                   {optionLabel}
@@ -279,7 +297,7 @@ export function SafetyRecoveryWeeklyTrendCard({
       )}
 
       {selectedPoint ? (
-        <View style={styles.detailCard}>
+        <LiquidGlassSurface style={styles.detailCard} variant="control">
           <View style={styles.detailHeader}>
             <Text selectable style={styles.detailTitle}>{selectedRange}</Text>
             <Text selectable style={styles.detailLabel}>
@@ -297,7 +315,7 @@ export function SafetyRecoveryWeeklyTrendCard({
               <Pressable
                 accessibilityRole="button"
                 onPress={() => openHistory()}
-                style={({ pressed }) => [styles.historyButton, pressed && styles.pressed]}>
+                style={({ pressed }) => [styles.historyButton, pressed && styles.accentPressed]}>
                 <Text style={styles.historyButtonLabel}>{t('safety.allWorkouts')}</Text>
               </Pressable>
               {STATUS_ORDER.filter((status) => selectedPoint.statusCounts[status] > 0).map(
@@ -309,7 +327,7 @@ export function SafetyRecoveryWeeklyTrendCard({
                       accessibilityLabel={t('safety.openStatusWorkouts', { status: statusLabel })}
                       accessibilityRole="button"
                       onPress={() => openHistory(status)}
-                      style={({ pressed }) => [styles.historyButton, pressed && styles.pressed]}>
+                      style={({ pressed }) => [styles.historyButton, pressed && styles.accentPressed]}>
                       <Text style={styles.historyButtonLabel}>
                         {statusLabel} · {formatNumber(selectedPoint.statusCounts[status])}
                       </Text>
@@ -319,7 +337,7 @@ export function SafetyRecoveryWeeklyTrendCard({
               )}
             </View>
           ) : null}
-        </View>
+        </LiquidGlassSurface>
       ) : null}
 
       <Text selectable style={styles.chartHelp}>{t('safety.chartHelp')}</Text>

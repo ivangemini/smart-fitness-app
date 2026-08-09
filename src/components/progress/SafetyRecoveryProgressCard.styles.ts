@@ -1,8 +1,12 @@
 import { StyleSheet } from 'react-native';
 
 import { Colors, Radii, Spacing } from '@/constants/theme';
+import type { LiquidGlassPalette } from '@/theme/liquidGlass';
 
-export const createSafetyRecoveryProgressCardStyles = (colors: typeof Colors.light) =>
+export const createSafetyRecoveryProgressCardStyles = (
+  colors: typeof Colors.light,
+  glass: LiquidGlassPalette,
+) =>
   StyleSheet.create({
     comparisonCell: {
       flexBasis: '46%',
@@ -81,8 +85,8 @@ export const createSafetyRecoveryProgressCardStyles = (colors: typeof Colors.lig
     },
     periodChip: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderRadius: Radii.pill,
       borderWidth: StyleSheet.hairlineWidth,
       justifyContent: 'center',
@@ -99,8 +103,11 @@ export const createSafetyRecoveryProgressCardStyles = (colors: typeof Colors.lig
       color: colors.accent,
     },
     periodChipSelected: {
-      backgroundColor: colors.accentSoft,
-      borderColor: colors.accent,
+      backgroundColor: glass.semanticAccentFill,
+      borderColor: glass.accentBorder,
+    },
+    periodChipSelectedPressed: {
+      backgroundColor: glass.accentPressedFill,
     },
     periodHelp: {
       color: colors.textMuted,
@@ -122,7 +129,7 @@ export const createSafetyRecoveryProgressCardStyles = (colors: typeof Colors.lig
       gap: Spacing.one,
     },
     pressed: {
-      opacity: 0.68,
+      backgroundColor: glass.controlPressedFill,
     },
     section: {
       gap: Spacing.one,
