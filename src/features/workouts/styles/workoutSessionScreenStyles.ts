@@ -87,7 +87,7 @@ export const createStyles = (colors: typeof Colors.light) =>
       gap: Spacing.one,
     },
     overflowBackdrop: {
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      backgroundColor: colors.overlay,
       flex: 1,
       justifyContent: 'flex-end',
       paddingHorizontal: Spacing.three,
@@ -120,11 +120,12 @@ export const createStyles = (colors: typeof Colors.light) =>
       marginBottom: Spacing.one,
     },
     overflowSheet: {
-      backgroundColor: colors.background,
-      borderTopLeftRadius: 24,
-      borderTopRightRadius: 24,
       gap: 8,
       padding: 12,
+    },
+    overflowSheetHitArea: {
+      borderCurve: 'continuous',
+      borderRadius: 24,
     },
     overflowTitle: {
       color: colors.textPrimary,
@@ -227,19 +228,6 @@ export const createStyles = (colors: typeof Colors.light) =>
       color: colors.textSecondary,
       fontSize: 13,
       fontWeight: '800',
-    },
-    textAction: {
-      alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderCurve: 'continuous',
-      borderRadius: 999,
-      paddingHorizontal: Spacing.three,
-      paddingVertical: 10,
-    },
-    textActionLabel: {
-      color: colors.textPrimary,
-      fontSize: 14,
-      fontWeight: '900',
     },
     workoutSheetRow: {
       alignItems: 'center',
