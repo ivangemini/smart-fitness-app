@@ -16,14 +16,17 @@ import { useProgressState } from '@/context/ProgressStateContext';
 import { getProgressAnalytics } from '@/lib/progress';
 import { useLocalization } from '@/localization';
 import { getWeightDetailsCopy } from '@/localization/weightDetailsCopy';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import { useUnitPreferences, weightFromKg } from '@/units';
 
 export default function WeightDetailsScreen() {
+  const { colors } = useAppTheme();
   const { bodyMeasurements, weightHistory } = useProgressState();
   const { exercises, workoutSessions } = useWorkoutState();
   const { formatDate, formatNumber, locale } = useLocalization();
   const copy = getWeightDetailsCopy(locale);
   const { formatWeightValue, weight: weightUnit } = useUnitPreferences();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const safeAreaInsets = useSafeAreaInsets();
 
   const analytics = useMemo(
@@ -81,7 +84,7 @@ export default function WeightDetailsScreen() {
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={[
         styles.content,
-        { paddingBottom: safeAreaInsets.bottom + 120 },
+        { paddingBottom: safeAreaInsets.bottom + Spacing.eight },
       ]}
       style={styles.screen}>
       <View style={styles.container}>
@@ -166,59 +169,68 @@ export default function WeightDetailsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    gap: Spacing.three,
-    maxWidth: MaxContentWidth,
-    width: '100%',
-  },
-  content: {
-    alignItems: 'center',
-    padding: Spacing.three,
-  },
-  detail: {
-    color: Colors.dark.textSecondary,
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  historyDate: {
-    color: Colors.dark.textSecondary,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  historyList: {
-    marginTop: Spacing.one,
-  },
-  historyRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    minHeight: 44,
-    paddingVertical: Spacing.one,
-  },
-  historyRowWithBorder: {
-    borderColor: Colors.dark.divider,
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
-  historyValue: {
-    color: Colors.dark.textPrimary,
-    fontSize: 15,
-    fontWeight: '800',
-  },
-  screen: {
-    backgroundColor: Colors.dark.background,
-    flex: 1,
-  },
-  title: {
-    color: Colors.dark.textPrimary,
-    fontSize: 18,
-    fontWeight: '800',
-    marginBottom: Spacing.one,
-  },
-  value: {
-    color: Colors.dark.textPrimary,
-    fontSize: 34,
-    fontWeight: '900',
-    lineHeight: 40,
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    container: {
+      gap: Spacing.three,
+      maxWidth: MaxContentWidth,
+      width: '100%',
+    },
+    content: {
+      alignItems: 'center',
+      flexGrow: 1,
+      padding: Spacing.three,
+    },
+    detail: {
+      color: colors.textSecondary,
+      fontSize: 13,
+      lineHeight: 19,
+    },
+    historyDate: {
+      color: colors.textSecondary,
+      flexShrink: 1,
+      fontSize: 13,
+      lineHeight: 18,
+      minWidth: 0,
+    },
+    historyList: {
+      marginTop: Spacing.one,
+    },
+    historyRow: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: Spacing.two,
+      justifyContent: 'space-between',
+      minHeight: 44,
+      minWidth: 0,
+      paddingVertical: Spacing.one,
+    },
+    historyRowWithBorder: {
+      borderColor: colors.divider,
+      borderTopWidth: StyleSheet.hairlineWidth,
+    },
+    historyValue: {
+      color: colors.textPrimary,
+      flexShrink: 1,
+      fontSize: 15,
+      fontWeight: '800',
+      maxWidth: '48%',
+      textAlign: 'right',
+    },
+    screen: {
+      backgroundColor: colors.background,
+      flex: 1,
+    },
+    title: {
+      color: colors.textPrimary,
+      fontSize: 18,
+      fontWeight: '800',
+      marginBottom: Spacing.one,
+    },
+    value: {
+      color: colors.textPrimary,
+      fontSize: 34,
+      fontWeight: '900',
+      lineHeight: 40,
+    },
+  });
