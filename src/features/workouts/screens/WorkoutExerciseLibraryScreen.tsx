@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -10,6 +11,8 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
+import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { Spacing } from '@/constants/theme';
 import { useWorkoutState } from '@/context/AppContext';
 import {
@@ -191,13 +194,11 @@ export default function WorkoutExerciseLibraryScreen() {
   const listHeader = (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Pressable
+        <LiquidGlassIconButton
           accessibilityLabel={copy.back}
-          accessibilityRole="button"
+          Icon={ChevronLeft}
           onPress={() => router.back()}
-          style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}>
-          <Text style={styles.backLabel}>‹</Text>
-        </Pressable>
+        />
         <View style={styles.headerCopy}>
           <Text numberOfLines={2} style={styles.title}>
             {copy.title}
@@ -349,19 +350,11 @@ export default function WorkoutExerciseLibraryScreen() {
           },
         ]}>
         <View style={styles.container}>
-          <Pressable
-            accessibilityLabel={addLabel}
-            accessibilityRole="button"
-            accessibilityState={{ disabled: selectedIds.length === 0 }}
+          <PrimaryButton
             disabled={selectedIds.length === 0}
+            label={addLabel}
             onPress={handleAdd}
-            style={({ pressed }) => [
-              styles.addButton,
-              selectedIds.length === 0 && styles.addButtonDisabled,
-              pressed && selectedIds.length > 0 && styles.addButtonPressed,
-            ]}>
-            <Text style={styles.addButtonLabel}>{addLabel}</Text>
-          </Pressable>
+          />
         </View>
       </View>
     </View>
