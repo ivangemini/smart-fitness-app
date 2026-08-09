@@ -1,5 +1,7 @@
-import { Pressable, Text } from 'react-native';
+import { View } from 'react-native';
 
+import { PrimaryButton } from '@/components/ui/PrimaryButton';
+import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import type { createStyles } from '@/features/workouts/styles/workoutSessionScreenStyles';
 import { useLocalization } from '@/localization';
 
@@ -10,20 +12,21 @@ type WorkoutSessionFooterActionsProps = {
   visible: boolean;
 };
 
-export function WorkoutSessionFooterActions({ onAddExercises, onTestGif, styles, visible }: WorkoutSessionFooterActionsProps) {
+export function WorkoutSessionFooterActions({
+  onAddExercises,
+  onTestGif,
+  styles,
+  visible,
+}: WorkoutSessionFooterActionsProps) {
   const { t } = useLocalization();
   if (!visible) {
     return null;
   }
 
   return (
-    <>
-      <Pressable onPress={onAddExercises} style={({ pressed }) => [styles.addExerciseFooterButton, pressed && styles.pressed]}>
-        <Text style={styles.addExerciseFooterLabel}>{t('workouts.session.addExercises')}</Text>
-      </Pressable>
-      <Pressable onPress={onTestGif} style={({ pressed }) => [styles.testGifFooterButton, pressed && styles.pressed]}>
-        <Text style={styles.testGifLabel}>{t('workouts.session.testGif')}</Text>
-      </Pressable>
-    </>
+    <View style={styles.sessionFooterActions}>
+      <PrimaryButton label={t('workouts.session.addExercises')} onPress={onAddExercises} />
+      <SecondaryButton label={t('workouts.session.testGif')} onPress={onTestGif} />
+    </View>
   );
 }
