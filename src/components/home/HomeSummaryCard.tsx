@@ -4,6 +4,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import { AppCard } from '@/components/ui/AppCard';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 type HomeSummaryCardProps = {
   caloriesLabel: string;
@@ -53,8 +57,12 @@ export function HomeSummaryCard({
   title,
   todayLabel,
 }: HomeSummaryCardProps) {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   return (
     <AppCard style={[styles.card, isCaloriesOverTarget && styles.cardWarning]}>
@@ -93,7 +101,7 @@ export function HomeSummaryCard({
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     caloriesLabel: {
       color: colors.textSecondary,
@@ -120,12 +128,15 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     caloriesValueWarning: { color: colors.warning },
     card: {
-      backgroundColor: colors.surfaceAccent,
+      backgroundColor: glass.semanticAccentFill,
       gap: Spacing.three,
     },
-    cardWarning: { backgroundColor: colors.warningSoft },
+    cardWarning: {
+      backgroundColor: glass.semanticWarningFill,
+      borderColor: glass.semanticWarningBorder,
+    },
     divider: {
-      backgroundColor: colors.borderSubtle,
+      backgroundColor: glass.controlBorder,
       height: StyleSheet.hairlineWidth,
     },
     headerCopy: { flex: 1, flexBasis: 180, gap: 4, minWidth: 0 },
