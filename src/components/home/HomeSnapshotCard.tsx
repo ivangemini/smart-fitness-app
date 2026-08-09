@@ -5,6 +5,10 @@ import { AppCard } from '@/components/ui/AppCard';
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import type { HomeSnapshotItem } from '@/lib/home';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 type HomeSnapshotCardProps = {
   items: HomeSnapshotItem[];
@@ -42,8 +46,12 @@ function SnapshotTile({
 }
 
 export function HomeSnapshotCard({ items, subtitle, title }: HomeSnapshotCardProps) {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   return (
     <AppCard>
@@ -65,7 +73,7 @@ export function HomeSnapshotCard({ items, subtitle, title }: HomeSnapshotCardPro
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     grid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
     header: { gap: 4, marginBottom: Spacing.two },
@@ -76,10 +84,12 @@ const createStyles = (colors: typeof Colors.light) =>
       lineHeight: Typography.callout.lineHeight,
     },
     tile: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.medium,
+      borderTopColor: glass.cardHighlight,
+      borderTopWidth: 1,
       borderWidth: StyleSheet.hairlineWidth,
       flexGrow: 1,
       gap: 2,
@@ -99,7 +109,10 @@ const createStyles = (colors: typeof Colors.light) =>
       fontWeight: Typography.label.fontWeight,
       textTransform: 'uppercase',
     },
-    tilePositive: { backgroundColor: colors.successSoft, borderColor: colors.success },
+    tilePositive: {
+      backgroundColor: glass.semanticPositiveFill,
+      borderColor: glass.semanticPositiveBorder,
+    },
     tileValue: {
       color: colors.textPrimary,
       flexShrink: 1,
@@ -107,7 +120,10 @@ const createStyles = (colors: typeof Colors.light) =>
       fontWeight: Typography.bodyEmphasized.fontWeight,
       lineHeight: Typography.bodyEmphasized.lineHeight,
     },
-    tileWarning: { backgroundColor: colors.warningSoft, borderColor: colors.warning },
+    tileWarning: {
+      backgroundColor: glass.semanticWarningFill,
+      borderColor: glass.semanticWarningBorder,
+    },
     title: {
       color: colors.textPrimary,
       flexShrink: 1,
