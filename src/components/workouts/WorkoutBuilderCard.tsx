@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { AppButton } from '@/components/ui/AppButton';
@@ -6,6 +7,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { Colors, Spacing } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { getWorkoutBuilderCopy } from '@/localization/workoutBuilderCopy';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 
 import type { DraftWorkoutExercise } from './workout-builder-types';
 import { WorkoutBuilderExerciseRow } from './WorkoutBuilderExerciseRow';
@@ -49,8 +51,10 @@ export function WorkoutBuilderCard({
   workoutDescription,
   workoutTitle,
 }: WorkoutBuilderCardProps) {
+  const { colors } = useAppTheme();
   const { locale } = useLocalization();
   const copy = getWorkoutBuilderCopy(locale);
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const sectionTitle = editingWorkoutId ? copy.editWorkout : copy.workoutBuilder;
 
   return (
@@ -82,7 +86,8 @@ export function WorkoutBuilderCard({
               accessibilityLabel={copy.workoutTitle}
               onChangeText={onWorkoutTitleChange}
               placeholder={copy.workoutTitlePlaceholder}
-              placeholderTextColor={Colors.dark.textSecondary}
+              placeholderTextColor={colors.textMuted}
+              selectionColor={colors.accent}
               style={styles.input}
               value={workoutTitle}
             />
@@ -97,7 +102,8 @@ export function WorkoutBuilderCard({
               multiline
               onChangeText={onWorkoutDescriptionChange}
               placeholder={copy.workoutNotesPlaceholder}
-              placeholderTextColor={Colors.dark.textSecondary}
+              placeholderTextColor={colors.textMuted}
+              selectionColor={colors.accent}
               style={styles.notesInput}
               value={workoutDescription}
             />
@@ -112,7 +118,8 @@ export function WorkoutBuilderCard({
                 accessibilityLabel={copy.quickAddExercise}
                 onChangeText={onDraftExerciseNameChange}
                 placeholder={copy.exercisePlaceholder}
-                placeholderTextColor={Colors.dark.textSecondary}
+                placeholderTextColor={colors.textMuted}
+                selectionColor={colors.accent}
                 style={styles.input}
                 value={draftExerciseName}
               />
@@ -166,90 +173,91 @@ export function WorkoutBuilderCard({
   );
 }
 
-const styles = StyleSheet.create({
-  collapsibleHeader: {
-    paddingBottom: Spacing.two,
-  },
-  exerciseList: {
-    gap: Spacing.two,
-  },
-  footer: {
-    gap: Spacing.two,
-  },
-  headerContent: {
-    flex: 1,
-    gap: Spacing.one,
-    minWidth: 0,
-  },
-  headerRow: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    gap: Spacing.two,
-    justifyContent: 'space-between',
-  },
-  input: {
-    backgroundColor: Colors.dark.background,
-    borderColor: Colors.dark.border,
-    borderCurve: 'continuous',
-    borderRadius: 8,
-    borderWidth: 1,
-    color: Colors.dark.text,
-    fontSize: 16,
-    minHeight: 48,
-    paddingHorizontal: Spacing.two,
-  },
-  inputGroup: {
-    gap: Spacing.one,
-  },
-  inputLabel: {
-    color: Colors.dark.textSecondary,
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  notesInput: {
-    backgroundColor: Colors.dark.background,
-    borderColor: Colors.dark.border,
-    borderCurve: 'continuous',
-    borderRadius: 8,
-    borderWidth: 1,
-    color: Colors.dark.text,
-    fontSize: 15,
-    minHeight: 88,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.two,
-    textAlignVertical: 'top',
-  },
-  quickAddAction: {
-    flexShrink: 0,
-    justifyContent: 'flex-end',
-  },
-  quickAddField: {
-    flex: 1,
-    gap: Spacing.one,
-    minWidth: 160,
-  },
-  quickAddRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.two,
-    justifyContent: 'space-between',
-  },
-  sectionTitle: {
-    color: Colors.dark.text,
-    flexShrink: 1,
-    fontSize: 18,
-    fontWeight: '800',
-  },
-  subtitle: {
-    color: Colors.dark.textSecondary,
-    flexShrink: 1,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  toggle: {
-    color: Colors.dark.accent,
-    flexShrink: 0,
-    fontSize: 24,
-    fontWeight: '700',
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    collapsibleHeader: {
+      paddingBottom: Spacing.two,
+    },
+    exerciseList: {
+      gap: Spacing.two,
+    },
+    footer: {
+      gap: Spacing.two,
+    },
+    headerContent: {
+      flex: 1,
+      gap: Spacing.one,
+      minWidth: 0,
+    },
+    headerRow: {
+      alignItems: 'flex-start',
+      flexDirection: 'row',
+      gap: Spacing.two,
+      justifyContent: 'space-between',
+    },
+    input: {
+      backgroundColor: colors.backgroundSecondary,
+      borderColor: colors.borderSubtle,
+      borderCurve: 'continuous',
+      borderRadius: 8,
+      borderWidth: 1,
+      color: colors.textPrimary,
+      fontSize: 16,
+      minHeight: 48,
+      paddingHorizontal: Spacing.two,
+    },
+    inputGroup: {
+      gap: Spacing.one,
+    },
+    inputLabel: {
+      color: colors.textSecondary,
+      fontSize: 13,
+      fontWeight: '700',
+    },
+    notesInput: {
+      backgroundColor: colors.backgroundSecondary,
+      borderColor: colors.borderSubtle,
+      borderCurve: 'continuous',
+      borderRadius: 8,
+      borderWidth: 1,
+      color: colors.textPrimary,
+      fontSize: 15,
+      minHeight: 88,
+      paddingHorizontal: Spacing.two,
+      paddingVertical: Spacing.two,
+      textAlignVertical: 'top',
+    },
+    quickAddAction: {
+      flexShrink: 0,
+      justifyContent: 'flex-end',
+    },
+    quickAddField: {
+      flex: 1,
+      gap: Spacing.one,
+      minWidth: 160,
+    },
+    quickAddRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: Spacing.two,
+      justifyContent: 'space-between',
+    },
+    sectionTitle: {
+      color: colors.textPrimary,
+      flexShrink: 1,
+      fontSize: 18,
+      fontWeight: '800',
+    },
+    subtitle: {
+      color: colors.textSecondary,
+      flexShrink: 1,
+      fontSize: 13,
+      lineHeight: 18,
+    },
+    toggle: {
+      color: colors.accent,
+      flexShrink: 0,
+      fontSize: 24,
+      fontWeight: '700',
+    },
+  });
