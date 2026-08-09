@@ -1,7 +1,9 @@
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { AppCard } from '@/components/ui/AppCard';
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 
 type HomeSummaryCardProps = {
   caloriesLabel: string;
@@ -16,7 +18,17 @@ type HomeSummaryCardProps = {
   todayLabel: string;
 };
 
-function Metric({ label, value }: { label: string; value: string }) {
+type HomeSummaryStyles = ReturnType<typeof createStyles>;
+
+function Metric({
+  label,
+  styles,
+  value,
+}: {
+  label: string;
+  styles: HomeSummaryStyles;
+  value: string;
+}) {
   return (
     <View style={styles.metric}>
       <Text selectable style={styles.metricLabel}>
@@ -41,6 +53,9 @@ export function HomeSummaryCard({
   title,
   todayLabel,
 }: HomeSummaryCardProps) {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <AppCard style={[styles.card, isCaloriesOverTarget && styles.cardWarning]}>
       <View style={styles.hero}>
@@ -71,96 +86,97 @@ export function HomeSummaryCard({
       <View style={styles.divider} />
 
       <View style={styles.metricsRow}>
-        <Metric label={currentWeightTitle} value={currentWeightLabel} />
-        <Metric label={streakTitle} value={streakLabel ?? '—'} />
+        <Metric label={currentWeightTitle} styles={styles} value={currentWeightLabel} />
+        <Metric label={streakTitle} styles={styles} value={streakLabel ?? '—'} />
       </View>
     </AppCard>
   );
 }
 
-const styles = StyleSheet.create({
-  caloriesLabel: {
-    color: Colors.dark.textSecondary,
-    flexShrink: 1,
-    fontSize: Typography.caption.fontSize,
-    fontWeight: Typography.label.fontWeight,
-    textAlign: 'right',
-  },
-  caloriesStatus: {
-    alignItems: 'flex-end',
-    flexShrink: 1,
-    gap: 2,
-    maxWidth: '100%',
-    minWidth: 0,
-    paddingTop: 2,
-  },
-  caloriesValue: {
-    color: Colors.dark.textPrimary,
-    flexShrink: 1,
-    fontSize: Typography.cardTitle.fontSize,
-    fontWeight: Typography.heroMetric.fontWeight,
-    lineHeight: Typography.cardTitle.lineHeight,
-    textAlign: 'right',
-  },
-  caloriesValueWarning: { color: Colors.dark.warning },
-  card: {
-    backgroundColor: Colors.dark.surfaceAccent,
-    gap: Spacing.three,
-  },
-  cardWarning: { backgroundColor: Colors.dark.warningSoft },
-  divider: {
-    backgroundColor: Colors.dark.borderSubtle,
-    height: StyleSheet.hairlineWidth,
-  },
-  headerCopy: { flex: 1, flexBasis: 180, gap: 4, minWidth: 0 },
-  hero: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.three,
-    justifyContent: 'space-between',
-  },
-  kicker: {
-    color: Colors.dark.accent,
-    flexShrink: 1,
-    fontSize: Typography.label.fontSize,
-    fontWeight: Typography.label.fontWeight,
-  },
-  metric: {
-    flex: 1,
-    gap: 2,
-    minWidth: 120,
-  },
-  metricLabel: {
-    color: Colors.dark.textSecondary,
-    flexShrink: 1,
-    fontSize: Typography.caption.fontSize,
-    fontWeight: Typography.label.fontWeight,
-  },
-  metricValue: {
-    color: Colors.dark.textPrimary,
-    flexShrink: 1,
-    fontSize: Typography.bodyEmphasized.fontSize,
-    fontWeight: Typography.bodyEmphasized.fontWeight,
-    lineHeight: Typography.bodyEmphasized.lineHeight,
-  },
-  metricsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.four,
-  },
-  subheadline: {
-    color: Colors.dark.textSecondary,
-    flexShrink: 1,
-    fontSize: Typography.callout.fontSize,
-    lineHeight: Typography.callout.lineHeight,
-    marginTop: Spacing.one,
-  },
-  title: {
-    color: Colors.dark.textPrimary,
-    flexShrink: 1,
-    fontSize: Typography.cardTitle.fontSize,
-    fontWeight: Typography.cardTitle.fontWeight,
-    lineHeight: Typography.cardTitle.lineHeight,
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    caloriesLabel: {
+      color: colors.textSecondary,
+      flexShrink: 1,
+      fontSize: Typography.caption.fontSize,
+      fontWeight: Typography.label.fontWeight,
+      textAlign: 'right',
+    },
+    caloriesStatus: {
+      alignItems: 'flex-end',
+      flexShrink: 1,
+      gap: 2,
+      maxWidth: '100%',
+      minWidth: 0,
+      paddingTop: 2,
+    },
+    caloriesValue: {
+      color: colors.textPrimary,
+      flexShrink: 1,
+      fontSize: Typography.cardTitle.fontSize,
+      fontWeight: Typography.heroMetric.fontWeight,
+      lineHeight: Typography.cardTitle.lineHeight,
+      textAlign: 'right',
+    },
+    caloriesValueWarning: { color: colors.warning },
+    card: {
+      backgroundColor: colors.surfaceAccent,
+      gap: Spacing.three,
+    },
+    cardWarning: { backgroundColor: colors.warningSoft },
+    divider: {
+      backgroundColor: colors.borderSubtle,
+      height: StyleSheet.hairlineWidth,
+    },
+    headerCopy: { flex: 1, flexBasis: 180, gap: 4, minWidth: 0 },
+    hero: {
+      alignItems: 'flex-start',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: Spacing.three,
+      justifyContent: 'space-between',
+    },
+    kicker: {
+      color: colors.accent,
+      flexShrink: 1,
+      fontSize: Typography.label.fontSize,
+      fontWeight: Typography.label.fontWeight,
+    },
+    metric: {
+      flex: 1,
+      gap: 2,
+      minWidth: 120,
+    },
+    metricLabel: {
+      color: colors.textSecondary,
+      flexShrink: 1,
+      fontSize: Typography.caption.fontSize,
+      fontWeight: Typography.label.fontWeight,
+    },
+    metricValue: {
+      color: colors.textPrimary,
+      flexShrink: 1,
+      fontSize: Typography.bodyEmphasized.fontSize,
+      fontWeight: Typography.bodyEmphasized.fontWeight,
+      lineHeight: Typography.bodyEmphasized.lineHeight,
+    },
+    metricsRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: Spacing.four,
+    },
+    subheadline: {
+      color: colors.textSecondary,
+      flexShrink: 1,
+      fontSize: Typography.callout.fontSize,
+      lineHeight: Typography.callout.lineHeight,
+      marginTop: Spacing.one,
+    },
+    title: {
+      color: colors.textPrimary,
+      flexShrink: 1,
+      fontSize: Typography.cardTitle.fontSize,
+      fontWeight: Typography.cardTitle.fontWeight,
+      lineHeight: Typography.cardTitle.lineHeight,
+    },
+  });
