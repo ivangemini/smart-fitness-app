@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { AppButton } from '@/components/ui/AppButton';
@@ -7,6 +7,7 @@ import { Colors, Spacing } from '@/constants/theme';
 import { WorkoutSession } from '@/context/AppContext';
 import { getWorkoutHistoryCopy } from '@/localization/workoutHistoryCopy';
 import { useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import { useUnitPreferences } from '@/units';
 
 type WorkoutHistorySessionCardProps = {
@@ -57,8 +58,10 @@ export const WorkoutHistorySessionCard = memo(function WorkoutHistorySessionCard
   visibleSets,
 }: WorkoutHistorySessionCardProps) {
   const { locale, formatNumber } = useLocalization();
+  const { colors } = useAppTheme();
   const { weight, formatWeightValue } = useUnitPreferences();
   const copy = getWorkoutHistoryCopy(locale);
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const formattedSetCount = formatNumber(session.sets.length, {
     maximumFractionDigits: 0,
   });
@@ -100,7 +103,8 @@ export const WorkoutHistorySessionCard = memo(function WorkoutHistorySessionCard
             <TextInput
               onChangeText={onSessionExerciseNameChange}
               placeholder={copy.exercisePlaceholder}
-              placeholderTextColor={Colors.dark.textSecondary}
+              placeholderTextColor={colors.textSecondary}
+              selectionColor={colors.accent}
               style={styles.input}
               value={sessionExerciseName}
             />
@@ -115,7 +119,8 @@ export const WorkoutHistorySessionCard = memo(function WorkoutHistorySessionCard
                 keyboardType="decimal-pad"
                 onChangeText={onSessionWeightChange}
                 placeholder="0"
-                placeholderTextColor={Colors.dark.textSecondary}
+                placeholderTextColor={colors.textSecondary}
+                selectionColor={colors.accent}
                 style={styles.input}
                 value={sessionWeight}
               />
@@ -129,7 +134,8 @@ export const WorkoutHistorySessionCard = memo(function WorkoutHistorySessionCard
                 keyboardType="number-pad"
                 onChangeText={onSessionRepsChange}
                 placeholder="0"
-                placeholderTextColor={Colors.dark.textSecondary}
+                placeholderTextColor={colors.textSecondary}
+                selectionColor={colors.accent}
                 style={styles.input}
                 value={sessionReps}
               />
@@ -199,73 +205,74 @@ export const WorkoutHistorySessionCard = memo(function WorkoutHistorySessionCard
   );
 });
 
-const styles = StyleSheet.create({
-  cardHeader: {
-    flexDirection: 'row',
-    gap: Spacing.two,
-    justifyContent: 'space-between',
-  },
-  duration: {
-    color: Colors.dark.textSecondary,
-    fontSize: 14,
-    fontVariant: ['tabular-nums'],
-  },
-  draftList: { gap: Spacing.two },
-  draftRow: {
-    alignItems: 'center',
-    borderColor: Colors.dark.border,
-    borderTopWidth: 1,
-    flexDirection: 'row',
-    gap: Spacing.two,
-    justifyContent: 'space-between',
-    paddingTop: Spacing.two,
-  },
-  editorFooter: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
-  exercise: { color: Colors.dark.text, fontSize: 15 },
-  exerciseList: { gap: Spacing.one },
-  input: {
-    backgroundColor: Colors.dark.background,
-    borderColor: Colors.dark.border,
-    borderCurve: 'continuous',
-    borderRadius: 8,
-    borderWidth: 1,
-    color: Colors.dark.text,
-    fontSize: 16,
-    minHeight: 48,
-    paddingHorizontal: Spacing.two,
-  },
-  inputGroup: { flex: 1, gap: Spacing.one, minWidth: 130 },
-  inputLabel: {
-    color: Colors.dark.textSecondary,
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  inputsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
-  sessionEditor: { gap: Spacing.two, paddingTop: Spacing.two },
-  sessionStat: {
-    color: Colors.dark.textSecondary,
-    fontSize: 14,
-    fontVariant: ['tabular-nums'],
-    fontWeight: '700',
-  },
-  sessionStats: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
-  setActions: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
-  setContent: { flex: 1, gap: Spacing.one },
-  setMeta: {
-    color: Colors.dark.text,
-    fontSize: 15,
-    fontVariant: ['tabular-nums'],
-    fontWeight: '800',
-  },
-  setName: {
-    color: Colors.dark.textSecondary,
-    flex: 1,
-    fontSize: 15,
-  },
-  title: {
-    color: Colors.dark.text,
-    flex: 1,
-    fontSize: 18,
-    fontWeight: '800',
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    cardHeader: {
+      flexDirection: 'row',
+      gap: Spacing.two,
+      justifyContent: 'space-between',
+    },
+    duration: {
+      color: colors.textSecondary,
+      fontSize: 14,
+      fontVariant: ['tabular-nums'],
+    },
+    draftList: { gap: Spacing.two },
+    draftRow: {
+      alignItems: 'center',
+      borderColor: colors.borderSubtle,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      flexDirection: 'row',
+      gap: Spacing.two,
+      justifyContent: 'space-between',
+      paddingTop: Spacing.two,
+    },
+    editorFooter: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
+    exercise: { color: colors.textPrimary, fontSize: 15 },
+    exerciseList: { gap: Spacing.one },
+    input: {
+      backgroundColor: colors.backgroundSecondary,
+      borderColor: colors.borderSubtle,
+      borderCurve: 'continuous',
+      borderRadius: 8,
+      borderWidth: StyleSheet.hairlineWidth,
+      color: colors.textPrimary,
+      fontSize: 16,
+      minHeight: 48,
+      paddingHorizontal: Spacing.two,
+    },
+    inputGroup: { flex: 1, gap: Spacing.one, minWidth: 130 },
+    inputLabel: {
+      color: colors.textSecondary,
+      fontSize: 13,
+      fontWeight: '700',
+    },
+    inputsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
+    sessionEditor: { gap: Spacing.two, paddingTop: Spacing.two },
+    sessionStat: {
+      color: colors.textSecondary,
+      fontSize: 14,
+      fontVariant: ['tabular-nums'],
+      fontWeight: '700',
+    },
+    sessionStats: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
+    setActions: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
+    setContent: { flex: 1, gap: Spacing.one },
+    setMeta: {
+      color: colors.textPrimary,
+      fontSize: 15,
+      fontVariant: ['tabular-nums'],
+      fontWeight: '800',
+    },
+    setName: {
+      color: colors.textSecondary,
+      flex: 1,
+      fontSize: 15,
+    },
+    title: {
+      color: colors.textPrimary,
+      flex: 1,
+      fontSize: 18,
+      fontWeight: '800',
+    },
+  });
