@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   Pressable,
@@ -9,6 +9,8 @@ import {
   View,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   getSafeSessionManagementError,
@@ -25,10 +27,14 @@ import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import { useAuthSession } from '@/hooks/useAuthSession';
 import { useLocalization } from '@/localization';
 import { localizeSessionManagementMessage } from '@/localization/authCopy';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 
 export default function SessionsScreen() {
   const router = useRouter();
   const { formatDate, t } = useLocalization();
+  const { colors } = useAppTheme();
+  const safeAreaInsets = useSafeAreaInsets();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { session } = useAuthSession();
   const accessToken = session?.tokens.accessToken ?? null;
   const [sessions, setSessions] = useState<AuthSessionSummary[]>([]);
@@ -132,9 +138,21 @@ export default function SessionsScreen() {
 
   return (
     <ScrollView
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[
+        styles.content,
+        {
+          paddingBottom: safeAreaInsets.bottom + Spacing.four,
+          paddingTop: safeAreaInsets.top + Spacing.two,
+        },
+      ]}
+      contentInsetAdjustmentBehavior="never"
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={() => void load('refresh')} />
+        <RefreshControl
+          colors={[colors.accent]}
+          refreshing={refreshing}
+          onRefresh={() => void load('refresh')}
+          tintColor={colors.accent}
+        />
       }
       style={styles.screen}>
       <View style={styles.headerRow}>
@@ -143,7 +161,7 @@ export default function SessionsScreen() {
           accessibilityRole="button"
           onPress={() => router.back()}
           style={styles.backButton}>
-          <Text style={styles.backLabel}>‹</Text>
+          <ChevronLeft color={colors.textPrimary} size={22} strokeWidth={2.4} />
         </Pressable>
         <View style={styles.headerCopy}>
           <Text style={styles.eyebrow}>{t('sessions.eyebrow')}</Text>
@@ -217,104 +235,105 @@ export default function SessionsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  backButton: {
-    alignItems: 'center',
-    borderColor: Colors.dark.border,
-    borderRadius: Radii.large,
-    borderWidth: StyleSheet.hairlineWidth,
-    height: 44,
-    justifyContent: 'center',
-    width: 44,
-  },
-  backLabel: {
-    color: Colors.dark.text,
-    fontSize: 32,
-    lineHeight: 34,
-  },
-  content: {
-    gap: Spacing.three,
-    paddingBottom: Spacing.eight,
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.four,
-  },
-  currentBadge: {
-    color: Colors.dark.accent,
-    fontSize: Typography.metricSmall.fontSize,
-    fontWeight: '800',
-    letterSpacing: 0.7,
-  },
-  currentNote: {
-    color: Colors.dark.textMuted,
-    fontSize: Typography.caption.fontSize,
-    lineHeight: Typography.caption.lineHeight,
-  },
-  detailLabel: {
-    color: Colors.dark.textMuted,
-    fontSize: Typography.caption.fontSize,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  detailValue: {
-    color: Colors.dark.textSecondary,
-    flexShrink: 1,
-    fontSize: Typography.caption.fontSize,
-    textAlign: 'right',
-  },
-  emptyTitle: {
-    color: Colors.dark.text,
-    fontSize: Typography.bodyStrong.fontSize,
-    fontWeight: Typography.bodyStrong.fontWeight,
-  },
-  eyebrow: {
-    color: Colors.dark.textMuted,
-    fontSize: Typography.metricSmall.fontSize,
-    fontWeight: Typography.metricSmall.fontWeight,
-    letterSpacing: 0.8,
-  },
-  headerCopy: {
-    flex: 1,
-    gap: Spacing.one,
-  },
-  headerRow: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    gap: Spacing.three,
-  },
-  screen: {
-    backgroundColor: Colors.dark.background,
-    flex: 1,
-  },
-  sessionHeader: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    gap: Spacing.two,
-    justifyContent: 'space-between',
-  },
-  sessionMeta: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.caption.fontSize,
-  },
-  sessionTitle: {
-    color: Colors.dark.text,
-    fontSize: Typography.bodyStrong.fontSize,
-    fontWeight: Typography.bodyStrong.fontWeight,
-  },
-  sessionTitleGroup: {
-    flex: 1,
-    gap: Spacing.one,
-  },
-  subtitle: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.body.fontSize,
-    lineHeight: Typography.body.lineHeight,
-  },
-  title: {
-    color: Colors.dark.text,
-    fontSize: 28,
-    fontWeight: '800',
-    lineHeight: 34,
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    backButton: {
+      alignItems: 'center',
+      borderColor: colors.borderSubtle,
+      borderRadius: Radii.large,
+      borderWidth: StyleSheet.hairlineWidth,
+      height: 44,
+      justifyContent: 'center',
+      width: 44,
+    },
+    content: {
+      flexGrow: 1,
+      gap: Spacing.three,
+      paddingHorizontal: Spacing.four,
+    },
+    currentBadge: {
+      color: colors.accent,
+      flexShrink: 0,
+      fontSize: Typography.metricSmall.fontSize,
+      fontWeight: '800',
+      letterSpacing: 0.7,
+    },
+    currentNote: {
+      color: colors.textMuted,
+      fontSize: Typography.caption.fontSize,
+      lineHeight: Typography.caption.lineHeight,
+    },
+    detailLabel: {
+      color: colors.textMuted,
+      flexShrink: 1,
+      fontSize: Typography.caption.fontSize,
+    },
+    detailRow: {
+      alignItems: 'flex-start',
+      flexDirection: 'row',
+      gap: Spacing.two,
+      justifyContent: 'space-between',
+    },
+    detailValue: {
+      color: colors.textSecondary,
+      flexShrink: 1,
+      fontSize: Typography.caption.fontSize,
+      textAlign: 'right',
+    },
+    emptyTitle: {
+      color: colors.textPrimary,
+      fontSize: Typography.bodyStrong.fontSize,
+      fontWeight: Typography.bodyStrong.fontWeight,
+    },
+    eyebrow: {
+      color: colors.textMuted,
+      fontSize: Typography.metricSmall.fontSize,
+      fontWeight: Typography.metricSmall.fontWeight,
+      letterSpacing: 0.8,
+    },
+    headerCopy: {
+      flex: 1,
+      gap: Spacing.one,
+      minWidth: 0,
+    },
+    headerRow: {
+      alignItems: 'flex-start',
+      flexDirection: 'row',
+      gap: Spacing.three,
+    },
+    screen: {
+      backgroundColor: colors.background,
+      flex: 1,
+    },
+    sessionHeader: {
+      alignItems: 'flex-start',
+      flexDirection: 'row',
+      gap: Spacing.two,
+      justifyContent: 'space-between',
+    },
+    sessionMeta: {
+      color: colors.textSecondary,
+      fontSize: Typography.caption.fontSize,
+    },
+    sessionTitle: {
+      color: colors.textPrimary,
+      fontSize: Typography.bodyStrong.fontSize,
+      fontWeight: Typography.bodyStrong.fontWeight,
+    },
+    sessionTitleGroup: {
+      flex: 1,
+      gap: Spacing.one,
+      minWidth: 0,
+    },
+    subtitle: {
+      color: colors.textSecondary,
+      fontSize: Typography.body.fontSize,
+      lineHeight: Typography.body.lineHeight,
+    },
+    title: {
+      color: colors.textPrimary,
+      fontSize: 28,
+      fontWeight: '800',
+      lineHeight: 34,
+    },
+  });
