@@ -271,7 +271,7 @@ const createStyles = (colors: typeof Colors.light) =>
       borderRadius: 999,
       borderWidth: 1,
       justifyContent: 'center',
-      minHeight: 34,
+      minHeight: 44,
       maxWidth: '100%',
       paddingHorizontal: Spacing.two,
       paddingVertical: Spacing.one,
