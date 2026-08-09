@@ -101,4 +101,30 @@ describe('program and routine localization', () => {
     expect(source).not.toContain('>Replace exercise<');
     expect(source).not.toContain("Alert.alert('Delete exercise?'");
   });
+
+  it('keeps the routine exercise picker virtualized, complete and inset-safe', () => {
+    const modals = readSource(
+      'src/features/workouts/components/NewRoutineModals.tsx',
+    );
+    const styles = readSource(
+      'src/features/workouts/styles/newRoutineScreenStyles.ts',
+    );
+    const pickerPanelStart = styles.indexOf('pickerPanel: {');
+    const pickerPanelEnd = styles.indexOf('pickerRow: {', pickerPanelStart);
+    const pickerPanel = styles.slice(pickerPanelStart, pickerPanelEnd);
+
+    expect(modals).toContain('<LiquidGlassSurface');
+    expect(modals).toContain('variant="elevated"');
+    expect(modals).toContain('data={exercises}');
+    expect(modals).toContain('initialNumToRender={8}');
+    expect(modals).toContain('maxToRenderPerBatch={8}');
+    expect(modals).toContain('windowSize={5}');
+    expect(modals).toContain('paddingBottom: insets.bottom + Spacing.three');
+    expect(modals).toContain('accessibilityState={{ selected: selected && mode?.type === \'add\' }}');
+    expect(modals).toContain('onReplace(mode.exerciseId, exercise)');
+    expect(modals).toContain('onAdd(exercise)');
+    expect(modals).not.toContain('exercises.slice(0, 100)');
+    expect(pickerPanel).not.toContain('backgroundColor');
+    expect(styles).toMatch(/textButton:\s*\{[\s\S]*?minHeight:\s*44/);
+  });
 });
