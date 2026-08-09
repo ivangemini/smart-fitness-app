@@ -1,29 +1,32 @@
 # Smart Fitness Project Context
 
-Updated: 2026-08-05
+Updated: 2026-08-09
 
 ## Purpose
 
-Smart Fitness is an offline-first fitness application covering workouts, nutrition, progress, profile/authentication, synchronization, and deterministic structured AI Coach workflows.
+Smart Fitness is an offline-first fitness application covering workouts, nutrition, progress, profile/authentication, synchronization, deterministic structured AI Coach workflows, and a privacy-first server-authoritative Social workout network.
 
 Repositories:
 
-- mobile: `hon4olo/smart-fitness-app`;
-- backend: `hon4olo/smart-fitness-backend`;
+- mobile: `ivangemini/smart-fitness-app`;
+- backend: `ivangemini/smart-fitness-backend`;
 - production API: `https://api.peptonio.com`.
 
-This file is stable orientation context. Mutable execution state belongs in `docs/current-status.md`; detailed roadmap state belongs in `docs/implementation-plan.md`.
+This file is stable orientation context. Mutable execution state belongs in `docs/current-status.md`; detailed roadmap state belongs in `docs/implementation-plan.md` and focused roadmap files.
 
 ## Product surfaces
 
 The mobile application currently contains:
 
-- Home;
+- social-first Home with personal daily fitness context and the Social workout feed;
 - Workouts and active workout logging;
 - Nutrition diary, targets, reusable meals, and saved library items;
 - Progress and measurements;
 - Profile, authentication, Data & Sync, and privacy-facing controls;
-- Nutrition, Strength, Safety & Recovery, and Combined Coach surfaces.
+- Nutrition, Strength, Safety & Recovery, and Combined Coach surfaces;
+- Social profiles, relationships, workout posts, following feed, reactions, comments, notifications, reporting/moderation surfaces, and managed-media contracts.
+
+Approved planned Home extensions are tracked in `docs/roadmap/liquid-glass.md`. Stories are a product direction, not an implemented contract: do not fabricate them before server/privacy/media/expiry/view-state contracts exist. Real steps likewise require a reviewed device-health/activity source rather than inferred or demo values.
 
 Excluded unless explicitly approved:
 
@@ -31,8 +34,8 @@ Excluded unless explicitly approved:
 - diagnosis;
 - pharmacology, hormone, SARM, or medication dosing;
 - marketplace;
-- social-network product surfaces;
-- payments and subscriptions.
+- payments and subscriptions;
+- unreviewed Social domains outside the approved Social/Home roadmaps.
 
 ## Mobile architecture
 
@@ -43,6 +46,7 @@ Excluded unless explicitly approved:
 - Native access and refresh tokens use Expo SecureStore.
 - API access is centralized under `src/api/`.
 - Synchronization orchestration lives in `src/context/SyncContext.tsx` and `src/cloud/`.
+- Presentation uses the adaptive Liquid Glass system documented in `docs/architecture/liquid-glass-ui.md`.
 
 The accepted local architecture remains a single persisted `AppState` snapshot. SQLite is not an approved migration without new measured evidence.
 
@@ -124,7 +128,9 @@ Automatic application is prohibited. Hidden chain-of-thought is not stored.
 
 Private fitness state uses revisioned synchronization.
 
-Social and managed media are separate server-authoritative domains and must not be inserted into private `AppState` synchronization by default.
+Social and managed media are separate server-authoritative domains and must not be inserted into private `AppState` synchronization. The Home feed reuses this same Social authority, following-feed cache, pagination, block/private-profile enforcement, and moderation boundaries.
+
+A shared workout remains an immutable bounded public snapshot created only through the explicit Social sharing flow. Home does not make private workout/nutrition/progress data public merely by displaying personal metrics next to the feed.
 
 Provider-backed capabilities remain disabled or fail closed until configuration, policy, infrastructure, deployment, and evidence requirements are explicitly satisfied.
 
@@ -140,10 +146,12 @@ Use this order when statements conflict:
 6. `PROJECT_LEARNINGS.md`;
 7. old PR descriptions, chat summaries, and historical notes.
 
+For the active Liquid Glass/Home UI program, `docs/roadmap/liquid-glass.md` is the focused execution roadmap and must agree with current status/handoff.
+
 Permanent agent rules belong in `AGENTS.md`. The latest restart checkpoint belongs in `docs/handoffs/latest.md`.
 
 ## Change discipline
 
-A pull request that changes architecture, synchronization coverage, roadmap state, active blockers, or deployment boundaries must update the corresponding documentation in the same change.
+A pull request that changes architecture, synchronization coverage, roadmap state, active blockers, Social privacy boundaries, or deployment boundaries must update the corresponding documentation in the same change.
 
 Do not create a second broad overview when a current canonical file already covers the subject. Add a focused document or update the architecture index instead.

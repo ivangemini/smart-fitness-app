@@ -14,37 +14,37 @@ const projectRoot = resolve(__dirname, '..');
 const readSource = (relativePath: string) =>
   readFileSync(resolve(projectRoot, relativePath), 'utf8');
 
-const files = [
-  'src/app/(tabs)/index.tsx',
-  'src/components/home/HomeSummaryCard.tsx',
-  'src/components/home/HomeSnapshotCard.tsx',
-];
+describe('Home theme and shell consistency', () => {
+  it('keeps live Home theme-aware and on the shared Liquid Glass shell', () => {
+    const home = readSource('src/app/(tabs)/index.tsx');
+    const metrics = readSource('src/components/home/HomeDailyMetricsPanel.tsx');
 
-describe('Home theme consistency', () => {
-  it.each(files)('%s resolves current theme instead of hard-coding dark colors', (path) => {
-    const source = readSource(path);
-    expect(source).toContain('useAppTheme');
-    expect(source).not.toContain('Colors.dark.');
+    expect(home).toContain('useAppTheme');
+    expect(home).toContain('<HomeLiquidBackdrop />');
+    expect(home).not.toContain('Colors.dark.');
+    expect(metrics).toContain('<LiquidGlassSurface blur');
+    expect(metrics).toContain('variant="elevated"');
+    expect(metrics).not.toContain('Colors.dark.');
   });
 
   it('preserves Home routes, active-workout resume and nutrition/progress inputs', () => {
     const source = readSource('src/app/(tabs)/index.tsx');
+
     expect(source).toContain('hydrateActiveWorkoutSessionDraft');
     expect(source).toContain('getActiveWorkoutSessionDraft()');
     expect(source).toContain("router.push('/(tabs)/profile')");
-    expect(source).toContain("onPress: () => router.push('/(tabs)/nutrition')");
-    expect(source).toContain("onPress: () => router.push('/weight-entry')");
+    expect(source).toContain("onAddFood={() => router.push('/(tabs)/nutrition')}");
+    expect(source).toContain("onLogWeight={() => router.push('/weight-entry')}");
     expect(source).toContain('sumNutritionTotals(todaysFoodEntries)');
     expect(source).toContain('getProgressAnalytics');
   });
 
-  it('preserves summary warning and snapshot tone ownership', () => {
-    const summary = readSource('src/components/home/HomeSummaryCard.tsx');
-    const snapshot = readSource('src/components/home/HomeSnapshotCard.tsx');
-    expect(summary).toContain('isCaloriesOverTarget && styles.cardWarning');
-    expect(summary).toContain('isCaloriesOverTarget && styles.caloriesValueWarning');
-    expect(snapshot).toContain("tone === 'positive' && styles.tilePositive");
-    expect(snapshot).toContain("tone === 'warning' && styles.tileWarning");
+  it('owns Home safe areas and floating-tab clearance around the feed', () => {
+    const source = readSource('src/app/(tabs)/index.tsx');
+
+    expect(source).toContain('paddingTop: safeAreaInsets.top + Spacing.three');
+    expect(source).toContain('getFloatingTabBarBottomClearance(safeAreaInsets.bottom)');
+    expect(source).toContain('content: { flexGrow: 1');
   });
 
   it('keeps the Home profile action at 44 pt ownership without opacity feedback', () => {
@@ -57,27 +57,5 @@ describe('Home theme consistency', () => {
     );
     expect(iconButton).toContain('transform: [{ scale: 0.96 }]');
     expect(iconButton).not.toContain('opacity:');
-  });
-
-  it('owns Home safe areas and floating-tab clearance around the ambient backdrop', () => {
-    const source = readSource('src/app/(tabs)/index.tsx');
-
-    expect(source).toContain('<HomeLiquidBackdrop />');
-    expect(source).toContain('contentInsetAdjustmentBehavior="never"');
-    expect(source).toContain('paddingTop: safeAreaInsets.top + Spacing.three');
-    expect(source).toContain('getFloatingTabBarBottomClearance(safeAreaInsets.bottom)');
-    expect(source).toContain('flexGrow: 1');
-  });
-
-  it('uses one bounded hero blur and keeps weekly tiles as non-blurred glass surfaces', () => {
-    const summary = readSource('src/components/home/HomeSummaryCard.tsx');
-    const snapshot = readSource('src/components/home/HomeSnapshotCard.tsx');
-
-    expect(summary).toContain('<LiquidGlassSurface');
-    expect(summary).toContain('blur');
-    expect(summary).toContain('variant="elevated"');
-    expect(snapshot).toContain('<LiquidGlassSurface');
-    expect(snapshot).toContain('variant="control"');
-    expect(snapshot).not.toContain('<AppCard');
   });
 });

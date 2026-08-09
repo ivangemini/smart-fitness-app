@@ -1,113 +1,81 @@
 # Smart Fitness Current Status
 
-Updated: 2026-08-08
+Updated: 2026-08-09
 
 ## Verified mobile baseline
 
-- Mobile repo: `ivangemini/smart-fitness-app`
-- Mobile `main`: `3473520ae1ad66b1474b015296c5593a0f14b314` (PR #465 — RUI-4B)
-- Active UI branch: `ui/rui5-secondary-surfaces`
-- Open mobile PR #466 is a **test-only RUI-6 draft** based on the current pre-RUI-5 main. Do not treat its description as proof that RUI-5 is merged; revalidate it after RUI-5 lands.
-- Backend work is a separate workstream and is intentionally out of scope for the current mobile UI pass.
+- Mobile repo: `ivangemini/smart-fitness-app`.
+- Baseline `main` for the active package: `0fa4c0be06247bbbf60359488f67520b4cf0704f` (PR #504 — LG-2A roadmap sync).
+- Active branch: `ui/home-social-first-hybrid`.
+- Stale overlapping PR #502 was closed unmerged because it was based on pre-#503 `main` and conflicted with the newly approved Home direction.
+- Backend baseline inspected at package start: `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`; backend has no open PR and is out of scope for this mobile package.
 
-The mobile architecture remains unchanged: Expo/React Native, focused state boundaries, offline-first persistence, durable sync, deterministic Coach surfaces, and existing Social source contracts. Responsive work changes presentation/layout only; it must not alter routes, persistence schemas, synchronization contracts, calculations, workout ownership/history, auth/session semantics, or backend APIs.
+Exact code/tests/current Git history override this checkpoint if it becomes stale.
 
-## Responsive UI hardening
+## Completed UI foundation
 
-Canonical contract: `docs/architecture/responsive-mobile-ui.md`.
+Responsive mobile source hardening is complete for the current source scope. Safe-area, keyboard, reflow, touch-target, floating-tab clearance, and secondary-surface theme work are established and must not be regressed.
 
-### RUI-1 — complete
+Liquid Glass foundation:
 
-PR #459 merged as `2ff71de222a0cc393ed41806978cce859c98b306`.
+- PR #501 established adaptive Liquid Glass tokens, reusable surfaces, shared buttons, and adaptive floating navigation; exact-head Mobile CI #1922 passed.
+- PR #503 completed the first Home Liquid Glass pilot; exact head `e93bbbdfe27b3c6858c3e17402d138751e98e9e5` passed Mobile CI #1925 and merged as `5ad7bd047b89878243d8cf7923c70d3fe7b7787e`.
+- PR #504 synchronized the focused Liquid Glass roadmap.
 
-Delivered shared floating-tab/safe-area geometry, primary Workouts sticky-action geometry, bounded text reflow and the responsive architecture contract. Exact-head Mobile CI #1830 passed the full required gate.
+## Active product direction — LG-H1 social-first Home
 
-### RUI-2 — complete
+The approved Home hierarchy is now:
 
-PR #460 merged as `740ae06d24c895e882a37e715b59ce47e599ab5d`.
+1. header/profile action;
+2. compact expandable personal daily metrics;
+3. Stories only after real Social contracts exist;
+4. the existing server-authoritative Following Feed.
 
-Delivered shared Home/Progress bottom clearance, short-screen flex growth, bounded primary-tab reflow and one runtime geometry source for `LiquidGlassTabBar`. Exact-head Mobile CI #1832 passed the full required gate.
+Current LG-H1 branch work:
 
-### RUI-3A — complete
+- replaces the old large Home Summary / Quick Actions / Weekly Snapshot hierarchy with one expandable Liquid Glass daily metrics owner;
+- shows current calorie and macro totals/targets, real program workout/rest-day context, current weight, recovery, streak, and workout/nutrition/weight actions;
+- reserves Steps but does not fabricate a value because no reviewed step provider exists;
+- extracts the existing Following Feed loading/cache/pagination state into a reusable hook and uses the same hook from both Home and the standalone Social feed route;
+- renders existing immutable workout-post cards directly in Home;
+- preserves pull-to-refresh, bounded first-page cache, cursor pagination, authentication states, block/private-profile enforcement, moderation boundaries, and server authority;
+- keeps Social outside private `AppState` revisioned synchronization;
+- does not implement fake Stories or add a second feed store/API.
 
-PR #462 merged as `2219213a9b1ba3800d10e343bebe7fad7b13080f`.
+Focused roadmap: `docs/roadmap/liquid-glass.md`.
+Social privacy/authority roadmap: `docs/roadmap/social-network.md`.
 
-Delivered the responsive active-session five-column set grid, keyboard-aware workout inputs, long-name handling, and runtime-measured Workout Session Finish footer clearance. Exact-head Mobile CI #1836 passed line audits, TypeScript, 1392/1392 regression tests, expanded sync smoke, Expo export and Expo Doctor.
+## Current validation gate
 
-### RUI-3B — complete
+Before merge, the exact final LG-H1 head must pass the full Mobile CI gate:
 
-PR #463 merged as `5c9ac4bf96e2ecb2c1c4a07b4b09de0521f4edc8`.
+- repository file line audit;
+- changed-file line limit;
+- TypeScript;
+- full regression suite and source-contract tests;
+- expanded sync/model smoke;
+- Expo export;
+- Expo Doctor.
 
-Delivered:
+The package also requires an unresolved review-thread check before exact-head merge.
 
-- measured Exercise Library sticky-footer clearance;
-- virtualized/bounded Program Workout and New Routine exercise pickers;
-- keyboard-aware New Routine, Workout Builder and workout editor flows;
-- bounded long-text/action layout across workout creation/detail surfaces;
-- no workout/program persistence, ordering, routing, sync or completed-history semantics changed.
+## Planned follow-up after LG-H1
 
-### RUI-4A — complete
+- LG-H2: Stories contracts and rail. Requires explicit server DTO/expiry/privacy/media/moderation/view-state contracts before UI activation.
+- LG-H3: real steps/activity source. Do not infer or demo steps; native health permissions/dependencies and physical runtime evidence remain approval-gated.
+- LG-H4: workout-native feed retention refinement after the base Home feed is stable.
+- Then resume remaining primary-tab Liquid Glass migration (Progress/Coach, Nutrition, Profile) and later Workouts.
 
-PR #464 merged as `4a631101c11630787e046fabc84343a3b6350d0e`.
+## Release / provider boundary
 
-Delivered keyboard/safe-area hardening for shared sign-in/register, forgot/reset password, onboarding, Change Password and Delete Account surfaces without changing auth/session/account semantics. Exact-head Mobile CI #1840 passed the full required gate.
+Source/CI validation is not physical-device or release proof. Do not perform or claim:
 
-### RUI-4B — complete
+- OTA/EAS publication;
+- native build/install;
+- production/provider activation;
+- backend deployment/migrations;
+- credentials/DNS changes;
+- store submission;
+- HealthKit/Health Connect permission activation;
 
-PR #465 merged as `3473520ae1ad66b1474b015296c5593a0f14b314`.
-
-Delivered keyboard-aware editable Profile goals, Nutrition Add Food and Food Portion surfaces while preserving profile/nutrition calculations and persistence semantics.
-
-### RUI-5 — active package
-
-Branch: `ui/rui5-secondary-surfaces`.
-
-The source audit found remaining concrete secondary-surface defects rather than treating RUI-5 as a no-op:
-
-- `weight-entry` still used legacy `safeAreaInsets.bottom + 120` clearance;
-- User Limitations and Recovery Check-In contained editable fields but lacked automatic keyboard inset/dismissal behavior;
-- Social Profile Editor, Share Workout caption and Workout Post Detail comments had the same keyboard-reachability gap;
-- touched Social header/action rows needed explicit `minWidth: 0`, `flexShrink` or wrapping ownership for long localized text.
-
-Current RUI-5 implementation:
-
-- removes the `+120` weight-entry positioning hack and uses actual safe-area spacing;
-- adds automatic keyboard insets and platform-appropriate interactive/on-drag dismissal to the audited editable secondary surfaces;
-- makes short-screen content flex-grow so final actions remain reachable by scrolling;
-- hardens touched Social headers, comment actions, preview fields and switch rows against localization/Dynamic Type pressure;
-- preserves touch-target geometry, dark visual language, API calls, validation, persistence and sync behavior.
-
-RUI-5 is **not complete until exact-head Mobile CI is green and the validated head is merged**.
-
-### RUI-6 — queued after RUI-5
-
-PR #466 already exists as a draft test-only guardrail package. It must be revalidated against the post-RUI-5 `main`; do not merge it based on stale continuity text or an old base result.
-
-Its intended scope is focused regression protection for failure patterns that actually occurred: shared tab clearance, measured sticky footers, virtualized growing pickers, keyboard-aware editable surfaces and localized choice/action reflow. It must not become a blanket ban on legitimate fixed control dimensions or overlay positioning.
-
-## Remaining mobile UI evidence
-
-Source/CI hardening is not physical-device proof. Release evidence still needs, when explicitly authorized:
-
-- narrow/small-height iPhone behavior;
-- Dynamic Type / enlarged system text;
-- open-keyboard reachability;
-- notch/Dynamic Island/Home Indicator safe areas;
-- Android navigation/system insets;
-- long localization and dense/empty states.
-
-No OTA/EAS publication or native build/install is implied by source/CI completion.
-
-## Current execution order for the UI workstream
-
-1. Finish the bounded RUI-5 source diff and documentation sync.
-2. Open one RUI-5 PR and run full exact-head Mobile CI.
-3. Fix only concrete CI failures; merge only the exact validated head.
-4. Rebase/revalidate the existing test-only PR #466 on the resulting `main` and merge only if its exact-head Mobile CI is green.
-5. Keep physical-device/release evidence separate and authorization-gated.
-
-Backend implementation/deployment is not part of this UI workstream.
-
-## Actions not performed
-
-No backend code/deployment, production migration, provider activation, production data access, OTA/EAS publication, native build/install, credential/DNS change, destructive production cleanup or store submission is performed by this responsive UI workstream.
+without explicit authorization.

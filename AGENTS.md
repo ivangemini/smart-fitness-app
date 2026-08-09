@@ -6,7 +6,7 @@ This repository is the Expo / React Native mobile client for Smart Fitness.
 
 Connected backend:
 
-- repository: `hon4olo/smart-fitness-backend`;
+- repository: `ivangemini/smart-fitness-backend`;
 - production API: `https://api.peptonio.com`;
 - stack: Node.js 22, TypeScript, Fastify, PostgreSQL, Drizzle ORM, Zod, Pino, Docker Compose.
 
@@ -38,16 +38,20 @@ Approved product scope:
 - profile and authentication;
 - offline-first local persistence;
 - revision-aware synchronization;
-- deterministic and structured AI Coach flows.
+- deterministic and structured AI Coach flows;
+- the server-authoritative Social workout network defined in `docs/roadmap/social-network.md`;
+- the approved social-first Home integration defined in `docs/roadmap/liquid-glass.md`.
 
-Do not add without explicit approval:
+Do not add without explicit approval and a reviewed contract where applicable:
 
 - blood-test analysis;
 - diagnosis logic;
 - pharmacology, hormone, SARM, or medication-dosing logic;
 - coach marketplace;
-- social-network product surfaces;
+- new Social domains outside the approved Social/Home roadmaps;
 - payments or subscriptions.
+
+Stories are an approved product direction but must not be implemented as fake/local content before their server, privacy, expiry, media, moderation, and viewed-state contracts exist.
 
 ## Mobile architecture
 
@@ -57,7 +61,7 @@ Do not add without explicit approval:
 - AsyncStorage for offline-first application state, metadata, and queues;
 - Expo SecureStore for native access and refresh tokens;
 - shared backend API through `src/api/`;
-- dark minimal UI.
+- adaptive Liquid Glass UI with the floating bottom navigation as the material reference and coherent light/dark/system appearance.
 
 One authoritative internal `AppState` still backs repositories, persistence, mutation ordering, outbox generation, and synchronization. Production consumers must use focused state boundaries rather than the full compatibility `useAppContext` hook.
 
@@ -72,6 +76,8 @@ Available focused boundaries include:
 - `SafetyRecoveryState`.
 
 Synchronization orchestration lives in `src/context/SyncContext.tsx` and `src/cloud/`.
+
+Social remains server-authoritative and separate from private `AppState` synchronization. Do not route Social profiles, follows, posts, reactions, comments, notifications, reports, moderation, or future Stories through the private revisioned-sync layer.
 
 ## Current synchronization baseline
 
@@ -253,11 +259,22 @@ Do not:
 
 UI invariants:
 
-- preserve the existing dark minimal style;
+- preserve and extend the shared Liquid Glass visual system defined in `docs/architecture/liquid-glass-ui.md`; do not reintroduce flat dark-only presentation as the global default;
+- use shared adaptive glass tokens/primitives instead of screen-local `rgba(...)` recipes;
+- reserve true backdrop blur for bounded elevated/floating chrome rather than every card or list row;
+- keep intentionally dense/dark Workouts surfaces stable until their dedicated LG-4 migration package;
 - account for bottom-tab and safe-area overlap;
 - use `keyboardShouldPersistTaps="handled"` on scrollable forms;
 - keep related text and controls as siblings in one Flexbox parent;
 - do not align related controls using screen-relative coordinates or isolated pixel nudges.
+
+Home invariants while LG-H is active:
+
+- Home is a social-first hybrid: compact personal status first, then future Stories when contracted, then Social feed;
+- do not hide the existing fitness utility behind a mandatory Social interaction;
+- do not fabricate steps, Stories, recommendations, or public activity;
+- reuse the existing server-authoritative Following Feed contracts/cache instead of creating a second feed store;
+- preserve block/private-profile/moderation/account boundaries from `docs/roadmap/social-network.md`.
 
 ## Navigation invariants
 

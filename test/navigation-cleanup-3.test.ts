@@ -34,16 +34,19 @@ describe('navigation repair and UX cleanup 3.0', () => {
     expect(source).toContain('name="eat"');
   });
 
-  test('home keeps a single current-weight display and owns the Profile shortcut', () => {
+  test('home keeps one personal metrics owner and owns the Profile shortcut', () => {
     const source = readSource('src/app/(tabs)/index.tsx');
 
     expect(source).not.toContain('latestWorkoutLabel');
     expect(source).not.toContain('HomeActivityCard');
     expect(source).not.toContain('HomeIntelligenceCard');
     expect(source).not.toContain('Today’s essentials');
-    expect(source).toContain('HomeSummaryCard');
-    expect(source).toContain('QuickActionsCard');
-    expect(source).toContain('HomeSnapshotCard');
+    expect(source).toContain('HomeDailyMetricsPanel');
+    expect(source).toContain('useSocialFollowingFeed()');
+    expect(source).toContain('SocialWorkoutPostCard');
+    expect(source).not.toContain('HomeSummaryCard');
+    expect(source).not.toContain('QuickActionsCard');
+    expect(source).not.toContain('HomeSnapshotCard');
     expect(source).toContain("router.push('/(tabs)/profile')");
     expect(source).toContain("router.replace('/auth')");
   });

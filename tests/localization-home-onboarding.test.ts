@@ -74,7 +74,7 @@ describe('localized Home and onboarding contract', () => {
     expect(home).not.toContain('weeklyVolumeTrend.detail');
     expect(home).not.toContain('recoveryAdvisor.recoveryExplanation');
     expect(home).toContain('getHomeRecoveryStatusLabel');
-    expect(home).toContain('getHomeMotivationLabel');
+    expect(home).toContain('getHomeSocialCopy(locale)');
   });
 
   it('localizes deterministic Home statuses and safely contains unknown motivation copy', () => {
