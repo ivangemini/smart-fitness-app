@@ -64,6 +64,22 @@ export {
   parseSocialReportResponse,
 } from "./report-parsers";
 export {
+  SOCIAL_STORY_DTO_SCHEMA_VERSION,
+  SOCIAL_STORY_MEDIA_SCHEMA_VERSION,
+  type CreateSocialStoryInput,
+  type ListSocialStoriesInput,
+  type SocialStoryDto,
+  type SocialStoryImageDescriptorDto,
+  type SocialStoryMediaInput,
+  type SocialStoryPageDto,
+} from "./story-contracts";
+export {
+  parseSocialStoryDto,
+  parseSocialStoryPageResponse,
+  parseSocialStoryResponse,
+  parseSocialStorySuccessResponse,
+} from "./story-parsers";
+export {
   SOCIAL_WORKOUT_COMMENT_DTO_SCHEMA_VERSION,
   SOCIAL_WORKOUT_COMMENT_PAGE_DTO_SCHEMA_VERSION,
   type CreateSocialWorkoutCommentInput,
