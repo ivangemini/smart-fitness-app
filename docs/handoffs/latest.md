@@ -5,26 +5,27 @@ Updated: 2026-08-09
 ## Checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current `main`: `be332729c070bbdf5050536d038b270656a5f0e8`.
-- Latest runtime merge: `be332729c070bbdf5050536d038b270656a5f0e8` — PR #515 `Migrate Settings controls to Liquid Glass`.
-- PR #515 exact validated head: `cf12f4c62eacce618a6c7832163d438514dd7f1d`; Mobile CI #1951 passed the full required gate.
-- Previous LG-2D: PR #513 / Mobile CI #1949 / merge `fb5943c1497cf893858d59ca6b41dcab60790da8`.
-- Current roadmap package: **LG-3B Nutrition secondary surfaces**.
+- Current `main`: `8f7df7507c3a833cdfa82b636820080106b15b9c`.
+- Latest runtime merge: `8f7df7507c3a833cdfa82b636820080106b15b9c` — PR #517 `Migrate Nutrition secondary surfaces to Liquid Glass`.
+- PR #517 exact validated head: `f3d4a2a6977e96ba3672a1d6b663145509aa0bc5`; Mobile CI #1953 passed the full required gate.
+- Previous LG-3A: PR #515 / Mobile CI #1951 / merge `be332729c070bbdf5050536d038b270656a5f0e8`.
+- Current roadmap package: **LG-3C Social interaction controls**.
 - Backend remains untouched; last dependency-awareness baseline was `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`.
 
-## LG-3A complete
+## LG-3B complete
 
-PR #515 delivered the first secondary-surface material batch:
+PR #517 delivered the Nutrition secondary material migration:
 
-- Settings back navigation now reuses shared 44 pt `LiquidGlassIconButton`;
-- shared `SegmentedControl` uses adaptive control/accent material with distinct neutral and selected pressed states;
-- Personal Details formula radio options use the same adaptive material language;
-- tab/radio accessibility roles/states, Settings safe-area/keyboard behavior, Personal Details validation/save flow, existing `AppCard` ownership and lightweight semantic dividers were preserved;
-- no native blur was added per control/row.
+- Nutrition calendar day/header/month controls now use adaptive glass control/accent material with explicit neutral/selected pressed states;
+- Add Food material resolution is centralized in `createAddFoodStyles(colors)` from the active theme palette, so the large Add Food orchestration route was not modified;
+- Add Food base/sheet/scanner factories use adaptive card/control/accent tokens instead of direct legacy surface recipes;
+- dense rows, modal sheet content and camera-backed scanner surfaces remain blur-free.
+
+Preserved: calendar/date/routing semantics, search/library/provider results, favorites, templates, food-entry mutation/persistence, barcode/manual-food/scanner behavior, localization, keyboard/reflow, touch ownership and existing `expo-camera` permission/dependency behavior.
 
 ## Exact validation
 
-PR #515 exact head `cf12f4c62eacce618a6c7832163d438514dd7f1d` passed Mobile CI #1951:
+PR #517 exact head `f3d4a2a6977e96ba3672a1d6b663145509aa0bc5` passed Mobile CI #1953:
 
 - repository file line audit;
 - changed-file line audit;
@@ -34,18 +35,19 @@ PR #515 exact head `cf12f4c62eacce618a6c7832163d438514dd7f1d` passed Mobile CI #
 - Expo export;
 - Expo Doctor.
 
-LG-3A is complete for source/CI scope. No physical-device/release evidence is implied.
+LG-3B is complete for source/CI scope. No physical-device/release evidence is implied.
 
-## Next package — LG-3B Nutrition secondary surfaces
+## Next package — LG-3C Social interaction controls
 
-Read-only audit isolated a presentation-only package around the date picker and centralized Add Food style factories:
+Read-only audit isolated a coherent presentation-only package:
 
-- `src/app/nutrition/date-picker.tsx`: migrate neutral/selected/logged/today day states, header actions, and month navigation to adaptive glass control/accent tokens; preserve 42-cell calendar logic, localized dates, logged markers, routing, and effective touch ownership;
-- `src/app/nutrition/add-food.tsx`: resolve the active Liquid Glass palette and pass it into the centralized style factory; do not touch search/library/template/entry mutation logic;
-- `src/features/nutrition/styles/addFoodStyles.ts`, `addFoodBaseStyles.ts`, `addFoodSheetStyles.ts`, `addFoodScannerStyles.ts`: replace direct legacy surface recipes with adaptive card/control/accent tokens;
-- keep modal sheet content, scanner camera/permission/status surfaces, inputs and action controls blur-free;
-- do not change existing `expo-camera` dependency, permission flow, barcode lookup/manual-food logic, localization, persistence or keyboard/reflow behavior;
-- add one focused material/no-blur source guard; existing calendar/Add Food tests continue to own product and localization semantics.
+- `src/features/social/SocialReportModal.tsx`: migrate report sheet, reason rows and radios to adaptive elevated/card/control/accent material with explicit neutral/selected pressed states; preserve report reason codes, submission, success/error/rate-limit handling, disabled behavior and Social API authority;
+- `src/features/social/screens/SocialRelationshipListsScreen.tsx`: replace local 44 pt back control with shared `LiquidGlassIconButton`; keep paging, request sequencing and relationship actions unchanged;
+- `src/features/social/screens/SocialRelationshipListsScreen.styles.ts`: migrate tabs and avatar fallback to adaptive material with explicit neutral/selected pressed states;
+- `src/features/social/SocialRelationshipListCard.tsx`: only adjust presentation hook-up if needed for profile-link feedback; existing `AppCard` and action buttons remain shared;
+- preserve privacy/visibility authority, follow/request behavior, moderation ownership and cache semantics; no native blur per list item/report option.
+
+Before writes, inspect existing Social shell/report/relationship source guards so stale material assertions are updated with the runtime package rather than after CI.
 
 ## Blocked Home follow-ups
 
@@ -53,7 +55,7 @@ LG-H2 Stories remains blocked until real Social DTO/lifecycle/privacy/media/mode
 
 ## Next sequence
 
-1. LG-3B Nutrition secondary surfaces, then remaining LG-3 batches by shared defect.
+1. LG-3C Social interaction controls, then remaining LG-3 batches by shared defect.
 2. LG-4 Workouts staged migration.
 3. LG-5 elevated chrome/motion.
 4. LG-6 visual QA/stabilization.
