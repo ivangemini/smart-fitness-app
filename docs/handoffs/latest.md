@@ -5,53 +5,53 @@ Updated: 2026-08-09
 ## Checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Package base: `8fe97589d652a48ad45b295c2e460a145439b5c5` on `main`.
-- Latest runtime merge: `9c9e67a929d10e9f91475c92ba0b579bbadbb805` — PR #505 `Make Home a social-first hybrid`.
-- PR #505 exact validated head: `9f28c198ed75070bcf10484ef09a28a78cbc5571`; Mobile CI #1931 passed.
-- Active branch: `ui/lg2b-progress-coach-primary`.
-- Current package: **LG-2B Progress + Coach primary surfaces — first bounded Progress batch**.
+- Current `main`: `4e2df0f2c44137bc1ccc7b9860aaaa29d10dbf21`.
+- Latest runtime merge: `4e2df0f2c44137bc1ccc7b9860aaaa29d10dbf21` — PR #507 `Migrate Progress primary controls to Liquid Glass`.
+- PR #507 exact validated head: `ab06b04624e64108258aba713214d83db480a9fc`; Mobile CI #1937 passed the full required gate.
+- Current roadmap package: **LG-2B Progress + Coach primary surfaces — Safety/Recovery follow-up next**.
 - Backend inspected at `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068` and remains untouched.
 
-## Why LG-2B is active
+## Completed first LG-2B batch
 
-LG-H2 Stories cannot activate before real Social DTO/lifecycle/privacy/media/moderation/view-state/cache contracts exist. LG-H3 Steps cannot activate before separately reviewed native health/activity provider, permissions, dependencies, and later device evidence exist.
+PR #507 merged the first bounded Progress package:
 
-The remaining autonomously executable Liquid Glass path therefore resumes at LG-2B.
+- `src/app/(tabs)/progress.tsx` — 7D/30D/90D range selector uses shared `LiquidGlassSurface` and adaptive selected/pressed glass tokens while preserving 44 pt ownership;
+- `src/components/progress/AddBodyMeasurementCard.tsx` — metric/unit choices and text inputs use the adaptive control palette;
+- `src/components/progress/ProgressTrendChart.tsx` — reusable chart shell uses `LiquidGlassSurface` `variant="control"` with no per-chart native blur;
+- `test/liquid-glass-progress-primary.test.mjs` — source-contract guard protects migrated Progress surfaces and verifies Coach primary remains on shared `AppCard`/`AppButton` primitives.
 
-## Current LG-2B audit
+Progress analytics, chart data, navigation, persistence, localization, accessibility roles/states, and Coach domain behavior were unchanged.
 
-Coach primary already uses shared `AppCard` and `AppButton` primitives. Do not create a runtime diff there merely to satisfy the roadmap label.
+## Exact validation
 
-The first bounded Progress batch changes only:
+PR #507 exact head `ab06b04624e64108258aba713214d83db480a9fc` passed Mobile CI #1937:
 
-- `src/app/(tabs)/progress.tsx` — the 7D/30D/90D range selector now uses shared `LiquidGlassSurface` and adaptive selected/pressed glass tokens while preserving 44 pt ownership;
-- `src/components/progress/AddBodyMeasurementCard.tsx` — metric/unit choices and text inputs now use the adaptive control palette;
-- `src/components/progress/ProgressTrendChart.tsx` — the reusable chart shell now uses `LiquidGlassSurface` `variant="control"` with no per-chart native blur;
-- `test/liquid-glass-progress-primary.test.mjs` — source-contract guards prevent these primary surfaces from regressing to local `surfacePrimary/surfaceSecondary` recipes and verify Coach primary remains on shared primitives.
+- repository file line audit;
+- changed-file line audit;
+- TypeScript;
+- full regression suite;
+- expanded model smoke;
+- Expo export;
+- Expo Doctor.
 
-Progress analytics, chart data, navigation, persistence, localization, accessibility roles/states, and Coach domain behavior are unchanged.
+The first test iteration exposed only a roadmap wording contract for the reviewed AsyncStorage decision; the canonical wording was restored without changing storage architecture. Final exact-head CI passed.
 
 ## Remaining LG-2B work
 
-Do **not** mark LG-2B complete after this batch. Remaining direct Progress material debt includes nested Safety/Recovery filters/detail summary surfaces that still use local surface recipes. Migrate them only as a coherent follow-up after this batch is validated/merged.
+LG-2B is **not complete**. Coach primary already uses shared primitives and should not receive artificial churn. Remaining direct Progress material debt is concentrated in nested Safety/Recovery filters and detail/summary surfaces that still use local surface recipes.
 
-## Validation state
+Next coherent package should migrate those Safety/Recovery materials to the adaptive Liquid Glass palette/shared primitives while preserving analytics, filters, history routing, localization, accessibility, and 44 pt interaction ownership.
 
-The execution environment cannot currently resolve GitHub for a local clone, so local npm/TypeScript/test/export validation is unavailable. Use the PR's exact-head Mobile CI as the authoritative gate and record the exact head/run before merge.
+## Blocked Home follow-ups
 
-No physical-device, native build/install, OTA/EAS publication, backend deployment, or provider activation is part of this package.
-
-## Home / Social boundary still authoritative
-
-Home remains a social-first hybrid with compact personal metrics followed by future Stories only after contracts exist, then the existing server-authoritative chronological Following Feed. Social remains separate from private revisioned `AppState` synchronization. Do not fabricate Steps or Stories.
+LG-H2 Stories remains blocked until real Social DTO/lifecycle/privacy/media/moderation/view-state/cache contracts exist. LG-H3 Steps remains blocked until a reviewed native health/activity provider, permissions/dependencies, and later physical runtime evidence exist. Do not fabricate either.
 
 ## Next sequence
 
-1. Validate and merge this first bounded LG-2B Progress batch.
-2. Continue the remaining coherent LG-2B Progress/Coach audit, especially Safety/Recovery nested material recipes.
-3. LG-2C Nutrition primary surfaces.
-4. LG-2D Profile primary surfaces.
-5. LG-H2/H3 only when their blocked contracts/native approvals become available; LG-H4 after the base Home feed is stable.
+1. Finish remaining LG-2B Safety/Recovery material debt.
+2. LG-2C Nutrition primary surfaces.
+3. LG-2D Profile primary surfaces.
+4. LG-H2/H3 only when their contract/native blockers are resolved; LG-H4 after the base Home feed is stable.
 
 ## Prohibited implicit actions
 
