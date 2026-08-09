@@ -1,16 +1,17 @@
 import { useMemo, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, SectionList, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { WorkoutHistorySessionCard } from '@/components/workouts/WorkoutHistorySessionCard';
 import { AppCard } from '@/components/ui/AppCard';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { SectionHeader } from '@/components/ui/SectionHeader';
-import { BottomTabInset, Colors, MaxContentWidth, Spacing } from '@/constants/theme';
+import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useAppActions, useWorkoutState } from '@/context/AppContext';
 import { getSessionExercises, getSessionVolume } from '@/lib/workouts';
 import { useLocalization } from '@/localization';
 import { getWorkoutHistoryCopy } from '@/localization/workoutHistoryCopy';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import type { WorkoutSession } from '@/types';
 import { parseDisplayNumber, useUnitPreferences, weightToKg } from '@/units';
 
@@ -19,12 +20,19 @@ const isSameLocalDay = (left: Date, right: Date) =>
   left.getMonth() === right.getMonth() &&
   left.getDate() === right.getDate();
 
+type WorkoutHistorySection = {
+  title: string;
+  data: WorkoutSession[];
+};
+
 export default function WorkoutHistoryRoute() {
   const { deleteWorkoutSession, updateWorkoutSession } = useAppActions();
   const { workoutSessions } = useWorkoutState();
   const { formatDate, formatNumber, locale } = useLocalization();
   const { formatWeightValue, weight } = useUnitPreferences();
+  const { colors } = useAppTheme();
   const copy = getWorkoutHistoryCopy(locale);
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [editingSessionId, setEditingSessionId] = useState<string | undefined>();
   const [editingSessionSetId, setEditingSessionSetId] = useState<string | undefined>();
   const [sessionDraftSets, setSessionDraftSets] = useState<WorkoutSession['sets']>([]);
@@ -40,13 +48,13 @@ export default function WorkoutHistoryRoute() {
       ),
     [workoutSessions],
   );
-  const groupedSessions = useMemo(() => {
+  const sections = useMemo<WorkoutHistorySection[]>(() => {
     const groups = new Map<string, WorkoutSession[]>();
     completedSessions.forEach((session) => {
       const key = formatDate(session.finishedAt, { month: 'long', year: 'numeric' });
       groups.set(key, [...(groups.get(key) ?? []), session]);
     });
-    return Array.from(groups.entries());
+    return Array.from(groups.entries()).map(([title, data]) => ({ title, data }));
   }, [completedSessions, formatDate]);
 
   const formatFinishedAt = (finishedAt: string) => {
@@ -146,108 +154,117 @@ export default function WorkoutHistoryRoute() {
     resetSetEditor();
   };
 
+  const renderSession = ({ item: session }: { item: WorkoutSession }) => {
+    const isEditingSession = editingSessionId === session.id;
+    const visibleSets = isEditingSession ? sessionDraftSets : session.sets;
+    const sessionExercises = getSessionExercises({ ...session, sets: visibleSets });
+    const sessionVolume = getSessionVolume({ ...session, sets: visibleSets });
+
+    return (
+      <View style={styles.container}>
+        <WorkoutHistorySessionCard
+          editingSessionSetId={editingSessionSetId}
+          formatFinishedAt={formatFinishedAt}
+          isEditing={isEditingSession}
+          onCancelSessionEdit={handleCancelSessionEdit}
+          onCancelSessionSetEdit={resetSetEditor}
+          onDeleteSession={() => handleDeleteSession(session.id)}
+          onDeleteSessionSet={(setId) =>
+            setSessionDraftSets((current) => current.filter((set) => set.id !== setId))
+          }
+          onEditSession={() => handleEditSession(session)}
+          onEditSessionSet={handleEditSessionSet}
+          onSaveSessionChanges={() => handleSaveSessionChanges(session)}
+          onSaveSessionSet={handleSaveSessionSet}
+          onSessionExerciseNameChange={setSessionExerciseName}
+          onSessionRepsChange={setSessionReps}
+          onSessionWeightChange={setSessionWeight}
+          session={session}
+          sessionExerciseName={sessionExerciseName}
+          sessionExercises={sessionExercises}
+          sessionReps={sessionReps}
+          sessionVolume={sessionVolume}
+          sessionWeight={sessionWeight}
+          visibleSets={visibleSets}
+        />
+      </View>
+    );
+  };
+
   return (
     <View style={styles.screen}>
-      <ScrollView
+      <SectionList
+        automaticallyAdjustKeyboardInsets
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={[
           styles.content,
-          { paddingBottom: insets.bottom + BottomTabInset + 120 },
+          { paddingBottom: insets.bottom + Spacing.six },
         ]}
-        style={styles.scrollView}>
-        <View style={styles.container}>
-          <SectionHeader subtitle={copy.subtitle} title={copy.title} />
-
-          {completedSessions.length === 0 ? (
+        keyboardDismissMode="interactive"
+        keyboardShouldPersistTaps="handled"
+        keyExtractor={(session) => session.id}
+        ListEmptyComponent={
+          <View style={styles.container}>
             <EmptyState compact message={copy.emptyMessage} title={copy.emptyTitle} />
-          ) : (
-            groupedSessions.map(([month, sessions]) => (
-              <View key={month} style={styles.groupBlock}>
-                <AppCard>
-                  <Text selectable style={styles.monthTitle}>
-                    {month}
-                  </Text>
-                  <Text selectable style={styles.monthMeta}>
-                    {copy.sessions(
-                      sessions.length,
-                      formatNumber(sessions.length, { maximumFractionDigits: 0 }),
-                    )}
-                  </Text>
-                </AppCard>
-                {sessions.map((session) => {
-                  const isEditingSession = editingSessionId === session.id;
-                  const visibleSets = isEditingSession ? sessionDraftSets : session.sets;
-                  const sessionExercises = getSessionExercises({ ...session, sets: visibleSets });
-                  const sessionVolume = getSessionVolume({ ...session, sets: visibleSets });
-
-                  return (
-                    <WorkoutHistorySessionCard
-                      key={session.id}
-                      editingSessionSetId={editingSessionSetId}
-                      formatFinishedAt={formatFinishedAt}
-                      isEditing={isEditingSession}
-                      onCancelSessionEdit={handleCancelSessionEdit}
-                      onCancelSessionSetEdit={resetSetEditor}
-                      onDeleteSession={() => handleDeleteSession(session.id)}
-                      onDeleteSessionSet={(setId) =>
-                        setSessionDraftSets((current) =>
-                          current.filter((set) => set.id !== setId),
-                        )
-                      }
-                      onEditSession={() => handleEditSession(session)}
-                      onEditSessionSet={handleEditSessionSet}
-                      onSaveSessionChanges={() => handleSaveSessionChanges(session)}
-                      onSaveSessionSet={handleSaveSessionSet}
-                      onSessionExerciseNameChange={setSessionExerciseName}
-                      onSessionRepsChange={setSessionReps}
-                      onSessionWeightChange={setSessionWeight}
-                      session={session}
-                      sessionExerciseName={sessionExerciseName}
-                      sessionExercises={sessionExercises}
-                      sessionReps={sessionReps}
-                      sessionVolume={sessionVolume}
-                      sessionWeight={sessionWeight}
-                      visibleSets={visibleSets}
-                    />
-                  );
-                })}
-              </View>
-            ))
-          )}
-        </View>
-      </ScrollView>
+          </View>
+        }
+        ListHeaderComponent={
+          <View style={styles.container}>
+            <SectionHeader subtitle={copy.subtitle} title={copy.title} />
+          </View>
+        }
+        renderItem={renderSession}
+        renderSectionHeader={({ section }) => (
+          <View style={styles.container}>
+            <AppCard>
+              <Text selectable style={styles.monthTitle}>
+                {section.title}
+              </Text>
+              <Text selectable style={styles.monthMeta}>
+                {copy.sessions(
+                  section.data.length,
+                  formatNumber(section.data.length, { maximumFractionDigits: 0 }),
+                )}
+              </Text>
+            </AppCard>
+          </View>
+        )}
+        sections={sections}
+        showsVerticalScrollIndicator={false}
+        stickySectionHeadersEnabled={false}
+        style={styles.list}
+      />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    gap: Spacing.three,
-    maxWidth: MaxContentWidth,
-    width: '100%',
-  },
-  content: {
-    alignItems: 'center',
-    padding: Spacing.three,
-  },
-  groupBlock: {
-    gap: Spacing.two,
-  },
-  monthMeta: {
-    color: Colors.dark.textSecondary,
-    fontSize: 13,
-  },
-  monthTitle: {
-    color: Colors.dark.text,
-    fontSize: 18,
-    fontWeight: '900',
-  },
-  screen: {
-    backgroundColor: Colors.dark.background,
-    flex: 1,
-  },
-  scrollView: {
-    backgroundColor: Colors.dark.background,
-    flex: 1,
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    container: {
+      gap: Spacing.three,
+      maxWidth: MaxContentWidth,
+      width: '100%',
+    },
+    content: {
+      alignItems: 'center',
+      gap: Spacing.two,
+      padding: Spacing.three,
+    },
+    list: {
+      backgroundColor: colors.background,
+      flex: 1,
+    },
+    monthMeta: {
+      color: colors.textSecondary,
+      fontSize: 13,
+    },
+    monthTitle: {
+      color: colors.textPrimary,
+      fontSize: 18,
+      fontWeight: '900',
+    },
+    screen: {
+      backgroundColor: colors.background,
+      flex: 1,
+    },
+  });
