@@ -7,10 +7,11 @@ This file is the **canonical forward roadmap**. PR-by-PR history and exact valid
 ## Current verified mobile checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current mobile `main`: `b2333891a86bf5010a9e8e3db787fea2d1f3fa28`.
-- Latest runtime merge: `b2333891a86bf5010a9e8e3db787fea2d1f3fa28` (PR #526 — LG-3F Account Sessions + Social Profile Editor shared navigation).
-- PR #526 exact validated head: `5d136c044519f0afa570e8f8ebc6d77bc4932947`; Mobile CI #1965 passed the full required gate.
-- Active package: **Phase 11 / LG-3G Social workout-post shell navigation**.
+- Current mobile `main`: `2f85aea5a1f7f009e427663ee3278f0f78197978`.
+- Latest runtime merge: `2f85aea5a1f7f009e427663ee3278f0f78197978` (PR #529 — LG-3H Social profile/avatar material).
+- PR #529 exact validated head: `2b11a671d45ff868980ce82440aff393228bf83d`; Mobile CI #1970 passed the full required gate.
+- Previous LG-3G: PR #528 / exact green head `9ac58b6ed86287bbff5b198e88849f862e5b127d` / Mobile CI #1967 / merge `e26ccebe2efa57a7a67d0e15018f59ac53ca7d1e`.
+- Active package: **Phase 11 / LG-3I Coach secondary shared navigation**.
 - Backend baseline inspected for dependency awareness: `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`; backend is not part of this package.
 
 Release readiness remains lower than source completeness because staging/provider/physical-device/native-release/production evidence is separately gated.
@@ -117,9 +118,11 @@ Focused execution roadmap: `docs/roadmap/liquid-glass.md`.
 - **LG-3A Settings controls/disclosures:** PR #515 / Mobile CI #1951.
 - **LG-3B Nutrition secondary:** PR #517 / Mobile CI #1953.
 - **LG-3C Social interaction controls:** PR #519 / Mobile CI #1955.
-- **LG-3D Social shell + notification controls:** PR #521 + #525 / Mobile CI #1957 + #1963 / final merge `8272b862200c7a2a1585bd61030a5ca2f8d9a0d8`.
-- **LG-3E Social Share Workout material:** PR #523 / exact green head `6efd2e3e13222b037da8180d3fddddc13561a12e` / Mobile CI #1960 / merge `32447156ece5b777b574a52288809f2025328147`.
-- **LG-3F Account Sessions + Social Profile Editor shared navigation:** PR #526 / exact green head `5d136c044519f0afa570e8f8ebc6d77bc4932947` / Mobile CI #1965 / merge `b2333891a86bf5010a9e8e3db787fea2d1f3fa28`.
+- **LG-3D Social shell + notification controls:** PR #521 + #525 / Mobile CI #1957 + #1963.
+- **LG-3E Social Share Workout material:** PR #523 / Mobile CI #1960.
+- **LG-3F Account Sessions + Social Profile Editor navigation:** PR #526 / Mobile CI #1965.
+- **LG-3G Social workout-post shell navigation:** PR #528 / exact green head `9ac58b6ed86287bbff5b198e88849f862e5b127d` / Mobile CI #1967 / merge `e26ccebe2efa57a7a67d0e15018f59ac53ca7d1e`.
+- **LG-3H Social profile/avatar material:** PR #529 / exact green head `2b11a671d45ff868980ce82440aff393228bf83d` / Mobile CI #1970 / merge `2f85aea5a1f7f009e427663ee3278f0f78197978`.
 
 Home remains a social-first hybrid: compact personal daily metrics → future Stories only after real contracts → existing server-authoritative Following Feed. Do not fabricate Stories or Steps.
 
@@ -131,26 +134,24 @@ Home remains a social-first hybrid: compact personal daily metrics → future St
 
 ## LG-3 — secondary surfaces
 
-LG-3A Settings, LG-3B Nutrition secondary, LG-3C Social interaction controls, LG-3D Social shell/notifications, LG-3E Share Workout material, and LG-3F Account Sessions + Social Profile Editor navigation are complete.
+LG-3A through LG-3H are complete. A read-only audit found no direct migration work worth doing in `SyncBackupScreen`, `DataRecoveryCard`, `SyncConflictReviewCard`, or `SupportDiagnosticsCard`: those surfaces already use shared cards/buttons and their remaining borders are structural dividers.
 
-A read-only audit found no direct migration work worth doing in `SyncBackupScreen`, `DataRecoveryCard`, `SyncConflictReviewCard`, or `SupportDiagnosticsCard`: they already use shared `AppCard`/`AppButton` ownership and their remaining borders are structural dividers.
-
-### Active — LG-3G Social workout-post shell navigation
+### Active — LG-3I Coach secondary shared navigation
 
 Bounded package:
 
-- replace local bordered back `Pressable` ownership in `SocialFollowingFeedScreen`, `SocialProfileWorkoutPostsScreen`, and `SocialWorkoutPostDetailScreen` with shared `LiquidGlassIconButton`;
-- delete only the obsolete `backButton` recipe from `SocialWorkoutPostSurface.styles.ts`;
-- preserve `styles.pressed` because interactive workout-post/card content still owns it;
-- preserve feed caching/pagination, profile-post privacy/pagination, detail load/delete/report/comment/reaction behavior, safe-area geometry, localization/accessibility and Social API authority;
-- update `tests/socialWorkoutPostShellUx.source.test.ts` and extend the existing Liquid Glass Social shell guard;
-- do not mix comment/metric material redesign into this navigation-only batch.
+- replace local 44 pt back-control ownership in `CombinedCoachScreen`, `RecoveryCheckInScreen`, `SafetyRecoveryCoachScreen`, `UserLimitationScreen`, and `CoachRunHistoryScreen` with shared `LiquidGlassIconButton`;
+- remove only obsolete back-style recipes;
+- preserve generic `pressed` styles wherever still used by lookback buttons, choices, filters, rows or other controls;
+- preserve Combined Coach sync/run contracts, Recovery Check-In local persistence/sync, Safety & Recovery capability/run/snapshot contracts, User Limitation lifecycle/sync, Coach Run History filters/API/navigation, safe-area geometry and localization/accessibility;
+- update the canonical Coach secondary back-icon source guard and add/extend a focused Liquid Glass Coach shell guard;
+- do not mix recovery inputs, score pickers, Safety lookback buttons, Combined domain/result cards, history filters or other Coach material into this navigation-only package.
 
-After LG-3G, continue Social public-profile material, Progress detail, Coach detail and exercise detail/library surfaces by shared defect.
+After LG-3I, continue remaining Progress detail, Coach material and exercise detail/library secondary surfaces by shared defect.
 
 ## Remaining Phase 11 execution order
 
-1. **LG-3 secondary surfaces:** LG-3G workout-post shell navigation, then remaining coherent Social public-profile / Progress detail / Coach detail / exercise detail-library material batches.
+1. **LG-3 secondary surfaces:** LG-3I Coach navigation, then remaining coherent Progress detail / Coach material / exercise detail-library batches.
 2. **LG-4 Workouts:** hub/program cards → library/builder → active workout chrome → set-table states → finish/summary.
 3. **LG-5 elevated chrome/motion:** true blur only for bounded elevated/floating roles.
 4. **LG-6 visual QA/stabilization:** exact-head CI/source guards first; physical evidence only when separately authorized.
@@ -166,6 +167,6 @@ Docs-only synchronization uses diff/ancestry verification; workflows may intenti
 
 # Current definition of done
 
-LG-3G is done only when the three Social workout-post shell back actions use the shared glass primitive, obsolete local back material ownership is removed without changing interactive-post pressed semantics or domain behavior, exact-head Mobile CI is green, docs agree with Git history, and the validated head merges without unresolved review blockers.
+LG-3I is done only when the audited Coach secondary back actions use the shared glass primitive, obsolete local back ownership is removed without changing other pressed/material/domain semantics, exact-head Mobile CI is green, docs agree with Git history, and the validated head merges without unresolved review blockers.
 
 Physical-device, OTA/EAS, native-release, provider, production and store evidence remain separate gates and must not be inferred from source/CI completion.
