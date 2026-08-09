@@ -5,12 +5,12 @@ Updated: 2026-08-09
 ## Verified mobile baseline
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current `main`: `97d497ccda6bcc756d808190e4d84ce1de3f849f`.
-- Latest runtime merge: `97d497ccda6bcc756d808190e4d84ce1de3f849f` (PR #521 — LG-3D Social shell + notification controls, batch 1).
-- PR #521 exact validated head: `290f19513e1871f705cd87a3a78838e6ed27b609`; Mobile CI #1957 passed the full required gate.
-- Previous LG-3C: PR #519 / Mobile CI #1955 / merge `7a9274d910c0e2dfc8bd270d0d1dc332989d6863`.
+- Current `main`: `32447156ece5b777b574a52288809f2025328147`.
+- Latest runtime merge: `32447156ece5b777b574a52288809f2025328147` (PR #523 — LG-3E Social Share Workout material).
+- PR #523 exact validated head: `6efd2e3e13222b037da8180d3fddddc13561a12e`; Mobile CI #1960 passed the full required gate.
+- Previous LG-3D batch 1: PR #521 / Mobile CI #1957 / merge `97d497ccda6bcc756d808190e4d84ce1de3f849f`.
 - Backend dependency-awareness baseline: `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`; backend remains out of scope.
-- Active autonomous UI package: **LG-3E Social Share Workout material**.
+- Active autonomous UI package: **LG-3D Community Guidelines residual**.
 
 Exact code, tests, and current Git history override this checkpoint if it becomes stale.
 
@@ -30,6 +30,7 @@ Liquid Glass milestones:
 - PR #517 LG-3B Nutrition secondary / Mobile CI #1953.
 - PR #519 LG-3C Social interaction controls / Mobile CI #1955.
 - PR #521 LG-3D batch 1 / exact head `290f19513e1871f705cd87a3a78838e6ed27b609` / Mobile CI #1957 / merge `97d497ccda6bcc756d808190e4d84ce1de3f849f`.
+- PR #523 LG-3E Share Workout / exact head `6efd2e3e13222b037da8180d3fddddc13561a12e` / Mobile CI #1960 / merge `32447156ece5b777b574a52288809f2025328147`.
 
 ## Home boundaries
 
@@ -38,22 +39,20 @@ Home remains social-first hybrid: compact personal daily metrics → Stories onl
 Focused roadmap: `docs/roadmap/liquid-glass.md`.
 Social authority/privacy roadmap: `docs/roadmap/social-network.md`.
 
-## LG-3D batch 1 complete — Social Notifications + Profile Lookup
+## LG-3E complete — Social Share Workout material
 
-PR #521 delivered:
+PR #523 delivered a presentation-only migration:
 
-- shared 44 pt `LiquidGlassIconButton` for Social Notification back navigation;
-- notification cards on adaptive `cardFill/cardBorder` material with explicit `controlPressedFill` feedback rather than legacy selected-background + opacity ownership;
-- shared back control for Social Profile Lookup;
-- guards preserving notification optimistic-read/mark-read behavior and Profile Lookup validation/navigation contracts.
+- Share Workout back navigation now uses shared 44 pt `LiquidGlassIconButton`;
+- caption input, managed-media preview, workout preview metrics and progress track use adaptive `controlFill/controlBorder` material;
+- the final patch deliberately preserved the pre-existing typography, spacing, preview-grid geometry, success styling and native Switch sizing rather than coupling unrelated redesign churn to the material migration;
+- focused guards cover shared back ownership, adaptive/no-blur material and publish/idempotency/media-release contracts.
 
-Preserved: notification pagination/request sequencing, missing-notification rollback/removal, profile/post routing, Profile Lookup safe-area/keyboard behavior, username validation/normalization, sign-in/profile routes, localization/accessibility, and Social API authority. No native blur was added per notification card or shell control.
-
-One LG-3D residual remains: `SocialCommunityGuidelinesScreen` still uses a local bordered back Pressable. Its `AppCard` content does not need material churn.
+Preserved: publish state machine, `syncNow()` sequencing, idempotency key semantics, managed-media release/cleanup, moderation/rate-limit errors, preview/share-control semantics, native Switch behavior, localization/accessibility and safe-area/keyboard ownership. No native blur was added behind publishing inputs or preview rows.
 
 ## Validation state
 
-PR #521 exact head `290f19513e1871f705cd87a3a78838e6ed27b609` passed Mobile CI #1957:
+PR #523 exact head `6efd2e3e13222b037da8180d3fddddc13561a12e` passed Mobile CI #1960:
 
 - repository and changed-file line audits;
 - TypeScript;
@@ -64,21 +63,15 @@ PR #521 exact head `290f19513e1871f705cd87a3a78838e6ed27b609` passed Mobile CI #
 
 Source/CI validation is not physical-device or release proof.
 
-## Active LG-3E — Social Share Workout material
+## Active residual — Social Community Guidelines back control
 
-Read-only audit isolated a coherent presentation-only publishing package:
+`SocialCommunityGuidelinesScreen` is the only explicit LG-3D residual. Its content already uses shared `AppCard`, so the bounded task is only to replace the local 44 pt bordered back `Pressable` with `LiquidGlassIconButton` and remove the obsolete local back/opacity styles. Preserve copy, cards, warning note, routing, localization, accessibility and safe-area geometry.
 
-- replace Share Workout's local back control with shared `LiquidGlassIconButton`;
-- migrate caption input, visibility toggle, preview shell/rows and material-owning controls to adaptive card/control/accent tokens with explicit pressed states;
-- preserve publish/idempotency behavior, media release/cleanup, moderation errors, request sequencing, preview semantics, localization/accessibility, safe-area/keyboard behavior and Social API authority;
-- keep inputs/preview rows blur-free;
-- update the existing Share Workout source guard and add one focused material/no-blur guard.
-
-After LG-3E, continue remaining LG-3 secondary batches by shared defect and revisit the single Guidelines back-control residual when it can be landed safely.
+After that residual lands, continue remaining LG-3 secondary surfaces by shared material defect: Settings/account, Sync & Backup, Social profile/detail, Progress detail, Coach detail and exercise detail/library.
 
 ## Planned follow-up
 
-- Complete LG-3E and remaining LG-3 secondary packages.
+- Close the Guidelines residual, then continue remaining LG-3 secondary packages.
 - **LG-4:** staged Workouts Liquid Glass migration.
 - **LG-5:** bounded elevated chrome/motion.
 - **LG-6:** visual QA/stabilization.
