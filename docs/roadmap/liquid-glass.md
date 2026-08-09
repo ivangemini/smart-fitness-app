@@ -19,7 +19,8 @@ Home is explicitly **social-first hybrid**: personal fitness context stays immed
 - **LG-H1 social-first Home complete:** PR #505, exact green head `9f28c198ed75070bcf10484ef09a28a78cbc5571`, Mobile CI #1931, merge `9c9e67a929d10e9f91475c92ba0b579bbadbb805`.
 - **LG-2B Progress + Coach primary surfaces complete:** PR #507 / Mobile CI #1937 plus PR #509 / Mobile CI #1943, merge `7355c0aa8b4b94a7cac8a7682acba90808739b77`.
 - **LG-2C Nutrition primary surfaces complete:** PR #511, exact green head `e1dfaed79f45080d06dd2d590a757e5547f4111b`, Mobile CI #1947, merge `eaad35aac4733ba7488ae0aa151c285dca3acc38`.
-- **LG-2D Profile primary surfaces is active.**
+- **LG-2D Profile primary surfaces complete:** PR #513, exact green head `aa22621db120b523ddab8a04aacb3077aa9f91ed`, Mobile CI #1949, merge `fb5943c1497cf893858d59ca6b41dcab60790da8`.
+- **LG-3 secondary surfaces is active.**
 - LG-H2 Stories and LG-H3 Steps remain blocked by required server/native contracts and must not be faked to unblock UI work.
 - No OTA/EAS publication, native install/build, or physical-device proof is implied by these source changes.
 
@@ -27,9 +28,7 @@ Home is explicitly **social-first hybrid**: personal fitness context stays immed
 
 **Status: complete.**
 
-Delivered adaptive Liquid Glass tokens, reusable `LiquidGlassSurface`, shared card/buttons, adaptive floating navigation, semantic Home material states, source guards, and blur/performance rules.
-
-Content glass remains translucent without one native blur per card/list row. True backdrop blur is reserved for bounded elevated/floating roles.
+Delivered adaptive Liquid Glass tokens, reusable `LiquidGlassSurface`, shared card/buttons, adaptive floating navigation, semantic Home material states, source guards, and blur/performance rules. Content glass remains translucent without one native blur per card/list row. True backdrop blur is reserved for bounded elevated/floating roles.
 
 ## LG-H — social-first Home
 
@@ -41,65 +40,56 @@ Delivered one compact expandable Liquid Glass daily-metrics owner, real workout/
 
 ### LG-H2 — Stories contracts and rail
 
-**Status: planned; blocked on real Social contracts.**
-
-Stories belong **between personal metrics and feed**, so the target hierarchy remains `personal status → stories → feed`.
-
-Before implementation define and review story DTO/schema versions and expiry semantics; create/delete ownership; author/follow/block/private-profile enforcement; image/video lifecycle and moderation boundaries; viewed state; bounded retention/account deletion; rail pagination/loading; and privacy-safe cache policy.
-
-Do not add story placeholders that look like real user content before these contracts exist.
+**Status: planned; blocked on real Social contracts.** Stories belong between personal metrics and feed. Before implementation define and review story DTO/schema versions and expiry semantics; create/delete ownership; author/follow/block/private-profile enforcement; image/video lifecycle and moderation boundaries; viewed state; bounded retention/account deletion; rail pagination/loading; and privacy-safe cache policy. Do not add fake story content.
 
 ### LG-H3 — real steps / activity source
 
-**Status: planned; blocked on reviewed native source/permissions.**
-
-The daily metrics panel reserves a Steps role, but a real value requires a reviewed device-health/activity source. Do not infer steps from workouts or fabricate values. HealthKit/Health Connect/native dependency, permission disclosure, and physical runtime evidence remain separately approval-gated.
+**Status: planned; blocked on reviewed native source/permissions.** Do not infer steps from workouts or fabricate values. HealthKit/Health Connect/native dependency, permission disclosure, and physical runtime evidence remain separately approval-gated.
 
 ### LG-H4 — feed retention refinement
 
-**Status: planned after the base Home feed is stable.**
-
-Potential work includes stronger workout-native post hierarchy and action visibility, explicit-contract discovery/creator content, and useful fitness retention improvements. Preserve chronological Following semantics until a separately reviewed ranking contract exists.
+**Status: planned after the base Home feed is stable.** Preserve chronological Following semantics until a separately reviewed ranking contract exists.
 
 ## LG-2 — remaining primary tabs
 
 ### LG-2B — Progress + Coach primary surfaces
 
-**Status: complete for source/CI scope.**
-
-PR #507 migrated the Progress weight-range selector, body-measurement controls/inputs, and reusable trend-chart shell to the shared/adaptive Liquid Glass system. PR #509 migrated the remaining Safety/Recovery period controls, selected-week state, history-filter actions, and selected-week detail owner. Coach primary already used shared `AppCard` and `AppButton` primitives.
+**Status: complete for source/CI scope.** PR #507 migrated Progress primary controls/chart shell and PR #509 finished Safety/Recovery material ownership. Coach primary already used shared primitives.
 
 ### LG-2C — Nutrition primary surfaces
 
-**Status: complete for source/CI scope.**
-
-PR #511 migrated the primary Nutrition tab to adaptive Liquid Glass material ownership: header controls, streak/today controls, week-day states, macro summary, meal groups, meal summary strips, diary row shell, and meal action controls now use adaptive glass tokens rather than direct `surfacePrimary` / `surfaceSecondary` / `accentSoft` recipes.
-
-Dense diary and food rows remain ordinary `View`/`Pressable` content without per-row native blur. Calorie/macro calculations, target derivation, date/week navigation, diary grouping, meal expansion/add-edit routing, persistence/sync schemas and IDs, localization/accessibility, SectionList virtualization, keyboard/reflow behavior, and existing touch ownership were preserved.
-
-Exact head `e1dfaed79f45080d06dd2d590a757e5547f4111b` passed repository/changed-file line audits, TypeScript, full regression (1508 tests), expanded model smoke, Expo export, and Expo Doctor in Mobile CI #1947; merge `eaad35aac4733ba7488ae0aa151c285dca3acc38`.
-
-Secondary Nutrition add-food/search/editor surfaces remain intentionally deferred to LG-3.
+**Status: complete for source/CI scope.** PR #511 migrated primary Nutrition header controls, week states, macro summary, meal groups, diary shell and action controls to adaptive glass material without native blur per dense row. Calculations, targets, date/day semantics, diary grouping, add/edit routing, persistence/sync, localization/accessibility, SectionList virtualization, keyboard/reflow and touch ownership were preserved.
 
 ### LG-2D — Profile primary surfaces
 
-**Status: active.**
+**Status: complete for source/CI scope.**
 
-Converge Profile goals/settings/actions onto the shared material system while preserving completed theme/safe-area work.
+PR #513 completed the bounded Profile primary migration:
 
-Current audited scope is bounded to direct primary-surface debt:
+- Profile Settings uses shared 44 pt `LiquidGlassIconButton` rather than a screen-local material recipe;
+- goals disclosure uses shared `LiquidGlassSurface` `variant="control"` with adaptive `controlPressedFill` and no native blur;
+- `SocialProfileEntryCard` retains shared `AppCard`/`SecondaryButton` structure while text follows the active app theme rather than static `Colors.dark` values;
+- source guards cover shared material ownership and theme adaptation.
 
-- replace the Profile settings icon's local surface recipe with the shared Liquid Glass icon control;
-- migrate the goals disclosure owner from direct `surfacePrimary`/`borderSubtle` material to adaptive shared control material with an explicit pressed fill;
-- remove static `Colors.dark` text ownership from the Social profile entry while preserving its existing `AppCard`/`SecondaryButton` structure;
-- preserve Profile state, goal validation/save behavior, nutrition-target recalculation, routes, localization, accessibility, and 44 pt interaction ownership;
-- do not add native blur to the disclosure/card content.
+Profile state, goal validation/save behavior, nutrition-target recalculation, routes, localization, accessibility, safe-area/scroll behavior, and interaction ownership were unchanged.
 
-LG-2D is complete only after direct Profile primary material debt is removed and exact-head Mobile CI passes.
+Exact head `aa22621db120b523ddab8a04aacb3077aa9f91ed` passed repository/changed-file line audits, TypeScript, full regression, expanded model smoke, Expo export, and Expo Doctor in Mobile CI #1949; merge `fb5943c1497cf893858d59ca6b41dcab60790da8`.
 
 ## LG-3 — secondary surfaces
 
+**Status: active.**
+
 Converge Settings/account, Sync & Backup, Social detail, Progress detail, Nutrition add/edit/detail, Coach detail, and exercise detail/library surfaces. Batch adjacent surfaces sharing the same material defect rather than creating one PR per screen.
+
+First audited package: **Settings controls and disclosures**.
+
+- `src/app/settings/index.tsx` is already largely composed from `AppCard`, `SecondaryButton`, and `SegmentedControl`; replace the remaining local 44 pt back-control material with the shared glass icon control.
+- `src/components/ui/SegmentedControl.tsx` is a shared secondary-surface defect: container/selected/pressed states still use direct `surfaceSecondary` / `surfacePrimary` / `backgroundSelected`. Migrate the shared control itself to adaptive glass tokens while preserving tab roles and 44 pt segments.
+- `src/features/settings/PersonalDetailsSettingsCard.tsx` formula options still own direct local `surfaceSecondary` / selected material; migrate those radio controls to the same adaptive control/accent token language without touching validation/save behavior.
+- Settings privacy/about/sync rows already live inside shared `AppCard`; divider-only semantic separators do not need artificial card/blur wrappers.
+- Do not add native blur per setting row or disclosure.
+
+After the first Settings batch, continue through adjacent secondary surfaces by shared material defect, not route count.
 
 ## LG-4 — Workouts system
 
@@ -119,11 +109,7 @@ Use true blur selectively for sticky action bars, modal/sheet headers, compact f
 
 ## LG-6 — visual QA and stabilization
 
-Source/CI checks:
-
-- no regression to duplicated local glass token sets;
-- line limits, TypeScript, full regression, model smoke, Expo export, and Expo Doctor green;
-- source guards preserve 44 pt ownership and explicit disabled states.
+Source/CI checks: no regression to duplicated local glass token sets; line limits, TypeScript, full regression, model smoke, Expo export, and Expo Doctor green; source guards preserve 44 pt ownership and explicit disabled states.
 
 Physical validation when separately authorized covers short/tall iPhones, Android fallback, light/dark/system, EN/RU, Dynamic Type, keyboard states, populated/empty/loading/error/success/disabled states, and list/animation performance.
 
