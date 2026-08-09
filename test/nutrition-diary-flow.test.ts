@@ -48,7 +48,7 @@ describe('nutrition compact diary 5.0', () => {
     expect(nutritionUi).toContain('mealHeaderMeta');
     expect(nutritionUi).toContain('mealSummaryStrip');
     expect(nutritionUi).toContain('mealHeaderActions');
-    expect(nutritionUi).toContain('surfaceSecondary');
+    expect(nutritionUi).toContain('glass.cardFill');
     expect(nutritionUi).not.toContain('mealSummaryLabel');
     expect(nutritionUi).not.toContain('mealSummaryMetric');
     expect(nutritionUi).not.toContain('mealSubtotal');
@@ -77,11 +77,12 @@ describe('nutrition compact diary 5.0', () => {
     const copy = readSource('src/localization/nutritionDiaryCopy.ts');
     const summaryHook = readSource('src/features/nutrition/hooks/useNutritionDaySummary.ts');
     const utils = readSource('src/features/nutrition/utils/nutritionScreenUtils.ts');
+    const styles = readSource('src/features/nutrition/styles/nutritionScreenStyles.ts');
 
     expect(source).toContain('accessibilityState={{ disabled: selectedDateIsToday }}');
-    expect(source).toContain('backgroundColor: colors.backgroundSecondary');
-    expect(source).toContain('borderColor: colors.divider');
-    expect(source).toContain('color: colors.textMuted');
+    expect(styles).toContain('backgroundColor: glass.disabledFill');
+    expect(styles).toContain('borderColor: glass.disabledBorder');
+    expect(styles).toContain('color: colors.textMuted');
     expect(source).toContain('CalendarDays');
     expect(source).toContain("router.replace({ pathname: '/nutrition', params: { date: nextDate } })");
     expect(source).toContain("pathname: '/nutrition/date-picker'");
