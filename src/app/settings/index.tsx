@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,9 +10,10 @@ import { AuthGateCard } from '@/components/auth';
 import { ProfileActionsCard } from '@/components/profile/ProfileActionsCard';
 import { ProfileRuntimeInfoCard } from '@/components/profile/ProfileRuntimeInfoCard';
 import { AppCard } from '@/components/ui/AppCard';
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
-import { Colors, MaxContentWidth, Radii, Spacing, Typography } from '@/constants/theme';
+import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme';
 import type { AppearanceMode } from '@/constants/theme';
 import { useAppActions } from '@/context/AppContext';
 import { LocalPerformanceDiagnosticsCard } from '@/features/settings/LocalPerformanceDiagnosticsCard';
@@ -129,13 +130,11 @@ export default function SettingsScreen() {
       style={styles.screen}>
       <View style={styles.container}>
         <View style={styles.headerRow}>
-          <Pressable
+          <LiquidGlassIconButton
             accessibilityLabel={t('common.back')}
-            accessibilityRole="button"
+            Icon={ChevronLeft}
             onPress={() => router.back()}
-            style={styles.backButton}>
-            <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
-          </Pressable>
+          />
           <View style={styles.headerCopy}>
             <Text style={styles.title}>{t('settings.title')}</Text>
             <Text style={styles.subtitle}>{t('settings.subtitle')}</Text>
@@ -313,16 +312,6 @@ const stylesStatic = StyleSheet.create({
 
 const createStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
-    backButton: {
-      alignItems: 'center',
-      borderColor: colors.borderSubtle,
-      borderRadius: Radii.large,
-      borderWidth: StyleSheet.hairlineWidth,
-      height: 44,
-      justifyContent: 'center',
-      width: 44,
-    },
-    backLabel: { color: colors.textPrimary, fontSize: 32, lineHeight: 34 },
     container: { gap: Spacing.four, maxWidth: MaxContentWidth, width: '100%' },
     content: {
       alignItems: 'center',
