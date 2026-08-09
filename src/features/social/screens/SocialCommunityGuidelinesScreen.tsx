@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppCard } from '@/components/ui/AppCard';
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { Colors, MaxContentWidth, Radii, Spacing, Typography } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
@@ -31,13 +32,11 @@ export default function SocialCommunityGuidelinesScreen() {
       style={styles.screen}>
       <View style={styles.container}>
         <View style={styles.headerRow}>
-          <Pressable
+          <LiquidGlassIconButton
             accessibilityLabel={t('common.back')}
-            accessibilityRole="button"
+            Icon={ChevronLeft}
             onPress={() => router.back()}
-            style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}>
-            <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
-          </Pressable>
+          />
           <View style={styles.headerCopy}>
             <Text style={styles.eyebrow}>{copy.eyebrow}</Text>
             <Text style={styles.title}>{copy.title}</Text>
@@ -74,16 +73,6 @@ export default function SocialCommunityGuidelinesScreen() {
 
 const createStyles = (colors: typeof Colors.dark) =>
   StyleSheet.create({
-    backButton: {
-      alignItems: 'center',
-      borderColor: colors.borderSubtle,
-      borderRadius: Radii.large,
-      borderWidth: StyleSheet.hairlineWidth,
-      flexShrink: 0,
-      height: 44,
-      justifyContent: 'center',
-      width: 44,
-    },
     body: {
       color: colors.textSecondary,
       fontSize: Typography.body.fontSize,
@@ -119,7 +108,6 @@ const createStyles = (colors: typeof Colors.dark) =>
       fontSize: Typography.caption.fontSize,
       lineHeight: Typography.caption.lineHeight,
     },
-    pressed: { opacity: 0.72 },
     screen: { backgroundColor: colors.background, flex: 1 },
     subtitle: {
       color: colors.textSecondary,
