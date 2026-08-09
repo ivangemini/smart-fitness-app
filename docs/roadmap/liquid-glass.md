@@ -17,8 +17,9 @@ Home is explicitly **social-first hybrid**: personal fitness context stays immed
 - **LG-1 shared foundation complete:** PR #501, merge `ca11c1a66495ec71832a0abfd54fa4bbef0391c8`, Mobile CI #1922.
 - **LG-2A original Home Liquid Glass pilot complete:** PR #503, merge `5ad7bd047b89878243d8cf7923c70d3fe7b7787e`, Mobile CI #1925.
 - **LG-H1 social-first Home complete:** PR #505, exact green head `9f28c198ed75070bcf10484ef09a28a78cbc5571`, Mobile CI #1931, merge `9c9e67a929d10e9f91475c92ba0b579bbadbb805`.
+- **LG-2B Progress + Coach primary surfaces is active:** first bounded Progress batch on `ui/lg2b-progress-coach-primary`; Coach primary audit found existing shared primitives already compliant.
+- LG-H2 Stories and LG-H3 Steps remain blocked by required server/native contracts and must not be faked to unblock UI work.
 - Stale overlapping PR #502 was closed unmerged and must not be revived.
-- No Liquid Glass runtime package is currently active.
 - No OTA/EAS publication, native install/build, or physical-device proof is implied by these source changes.
 
 ## LG-1 — shared foundation
@@ -35,31 +36,13 @@ Content glass remains translucent without one native blur per card/list row. Tru
 
 **Status: complete.**
 
-Delivered:
+Delivered one compact expandable Liquid Glass daily-metrics owner, real workout/program schedule context, unavailable Steps rather than fabricated data, and the existing server-authoritative chronological Following Feed directly on Home. The shared `useSocialFollowingFeed` hook preserves auth, bounded account cache, pull refresh, cursor pagination, block/private-profile/moderation boundaries, and immutable workout-post rendering. Social remains separate from private revisioned `AppState` synchronization.
 
-- one compact expandable Liquid Glass daily-metrics owner instead of the old Home Summary / Quick Actions / Weekly Snapshot stack;
-- collapsed calories, P/F/C, Steps slot, and active/program-scheduled/rest/next-workout context;
-- expanded calorie/macro progress, workout action, current weight, recovery, streak, Add Food, and Log Weight;
-- local non-persisted expand/collapse state with explicit accessibility state and >=44 pt interaction ownership;
-- real `getWorkoutProgramSchedule` ownership for program-day state;
-- Steps renders an unavailable state instead of fabricated data;
-- existing server-authoritative chronological Following Feed directly on Home;
-- one reusable `useSocialFollowingFeed` hook shared by Home and the standalone feed route;
-- existing auth, bounded account-scoped cache, pull refresh, cursor pagination, error/empty states, block/private-profile/moderation boundaries, and immutable workout-post rendering preserved;
-- Social remains separate from private revisioned `AppState` synchronization;
-- no fake Stories or duplicate Social authority/store/API.
-
-Validation:
-
-- first PR head exposed four stale source-contract tests that still asserted the superseded Home/screen-local feed structure;
-- those guards were updated without reverting production behavior;
-- exact head `9f28c198ed75070bcf10484ef09a28a78cbc5571` passed repository/changed-file line audits, TypeScript, full regression suite, expanded model smoke, Expo export, and Expo Doctor in Mobile CI #1931;
-- PR #505 merged as `9c9e67a929d10e9f91475c92ba0b579bbadbb805` with no unresolved review threads;
-- merge-triggered EAS Update was skipped; no OTA publication occurred.
+Exact head `9f28c198ed75070bcf10484ef09a28a78cbc5571` passed repository/changed-file line audits, TypeScript, full regression, expanded model smoke, Expo export, and Expo Doctor in Mobile CI #1931. PR #505 merged as `9c9e67a929d10e9f91475c92ba0b579bbadbb805`; merge-triggered EAS Update was skipped.
 
 ### LG-H2 — Stories contracts and rail
 
-**Status: planned; not active. Requires real Social contracts before UI activation.**
+**Status: planned; blocked on real Social contracts.**
 
 Stories belong **between personal metrics and feed**, so the target hierarchy remains `personal status → stories → feed`.
 
@@ -78,7 +61,7 @@ Do not add story placeholders that look like real user content before these cont
 
 ### LG-H3 — real steps / activity source
 
-**Status: planned.**
+**Status: planned; blocked on reviewed native source/permissions.**
 
 The daily metrics panel reserves a Steps role, but a real value requires a reviewed device-health/activity source. Do not infer steps from workouts or fabricate values. HealthKit/Health Connect/native dependency, permission disclosure, and physical runtime evidence remain separately approval-gated.
 
@@ -95,18 +78,25 @@ Potential work:
 
 ## LG-2 — remaining primary tabs
 
-Resume after the social-first Home hierarchy is stable.
-
 ### LG-2B — Progress + Coach primary surfaces
 
-Audit/migrate one coherent batch covering direct Progress and Coach surfaces that still bypass the shared Liquid Glass material system.
+**Status: active; first bounded Progress batch in progress.**
 
-Rules:
+Audit result:
 
-- keep charts, dense metrics, and structured Coach output readable;
-- prefer shared primitives over local material recipes;
-- preserve semantic states, Progress analytics, and Coach domain behavior;
-- use true blur only for bounded elevated/priority chrome.
+- Coach primary already uses shared `AppCard` and `AppButton` primitives, so no artificial runtime diff is required there;
+- Progress still contains direct local material recipes and is being migrated in coherent batches.
+
+First bounded batch:
+
+- migrate the 7D/30D/90D Progress weight-range selector to shared `LiquidGlassSurface` plus adaptive selected/pressed glass tokens;
+- migrate body-measurement metric/unit controls and text inputs to adaptive control tokens;
+- migrate the reusable Progress trend-chart shell to shared `LiquidGlassSurface` without per-chart native blur;
+- add a source-contract regression guard for these surfaces and already-compliant Coach primary usage.
+
+Preserve 44 pt interaction ownership, analytics, navigation, persistence, localization, accessibility states, chart data, and Coach domain behavior.
+
+This batch does **not** complete LG-2B. Remaining Progress debt includes nested Safety/Recovery filters/detail summary surfaces that still use local material recipes. Continue them as a coherent follow-up after the first batch passes exact-head CI and merges.
 
 ### LG-2C — Nutrition primary surfaces
 
