@@ -1,15 +1,18 @@
 import { StyleSheet } from 'react-native';
 
 import { Colors, MaxContentWidth, Radii, Spacing } from '@/constants/theme';
+import type { LiquidGlassPalette } from '@/theme/liquidGlass';
 
-export const createStyles = (colors: typeof Colors.dark) =>
+export const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     addButton: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 999,
+      borderTopColor: glass.cardHighlight,
+      borderTopWidth: 1,
       borderWidth: StyleSheet.hairlineWidth,
       height: 36,
       justifyContent: 'center',
@@ -23,10 +26,12 @@ export const createStyles = (colors: typeof Colors.dark) =>
     },
     calendarButton: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 999,
+      borderTopColor: glass.cardHighlight,
+      borderTopWidth: 1,
       borderWidth: StyleSheet.hairlineWidth,
       height: 44,
       justifyContent: 'center',
@@ -44,8 +49,8 @@ export const createStyles = (colors: typeof Colors.dark) =>
       paddingTop: Spacing.three,
     },
     foodList: {
-      backgroundColor: colors.surfaceSecondary,
-      borderTopColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderTopColor: glass.controlBorder,
       borderTopWidth: StyleSheet.hairlineWidth,
       gap: 0,
       paddingHorizontal: Spacing.three,
@@ -71,7 +76,7 @@ export const createStyles = (colors: typeof Colors.dark) =>
       lineHeight: 16,
     },
     foodRowDivider: {
-      borderTopColor: colors.borderSubtle,
+      borderTopColor: glass.controlBorder,
       borderTopWidth: StyleSheet.hairlineWidth,
       paddingTop: Spacing.one,
     },
@@ -89,7 +94,7 @@ export const createStyles = (colors: typeof Colors.dark) =>
     },
     detailRow: {
       alignItems: 'center',
-      borderTopColor: colors.borderSubtle,
+      borderTopColor: glass.controlBorder,
       borderTopWidth: StyleSheet.hairlineWidth,
       flexDirection: 'row',
       gap: Spacing.two,
@@ -114,20 +119,24 @@ export const createStyles = (colors: typeof Colors.dark) =>
     },
     mealActionButton: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 999,
+      borderTopColor: glass.cardHighlight,
+      borderTopWidth: 1,
       borderWidth: StyleSheet.hairlineWidth,
       height: 36,
       justifyContent: 'center',
       width: 36,
     },
     mealGroup: {
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.cardFill,
+      borderColor: glass.cardBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.medium,
+      borderTopColor: glass.cardHighlight,
+      borderTopWidth: 1,
       borderWidth: StyleSheet.hairlineWidth,
       overflow: 'hidden',
     },
@@ -177,8 +186,8 @@ export const createStyles = (colors: typeof Colors.dark) =>
       marginTop: Spacing.two,
     },
     mealSummaryStrip: {
-      backgroundColor: colors.backgroundSecondary,
-      borderTopColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderTopColor: glass.controlBorder,
       borderTopWidth: StyleSheet.hairlineWidth,
     },
     mealTitle: {
@@ -238,10 +247,12 @@ export const createStyles = (colors: typeof Colors.dark) =>
     streakChip: {
       alignItems: 'center',
       alignSelf: 'flex-start',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 999,
+      borderTopColor: glass.cardHighlight,
+      borderTopWidth: 1,
       borderWidth: StyleSheet.hairlineWidth,
       flexDirection: 'row',
       gap: Spacing.one,
@@ -259,10 +270,12 @@ export const createStyles = (colors: typeof Colors.dark) =>
       fontWeight: '800',
     },
     summarySection: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.cardFill,
+      borderColor: glass.cardBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.medium,
+      borderTopColor: glass.cardHighlight,
+      borderTopWidth: 1,
       borderWidth: StyleSheet.hairlineWidth,
       overflow: 'hidden',
     },
@@ -282,7 +295,7 @@ export const createStyles = (colors: typeof Colors.dark) =>
       paddingHorizontal: Spacing.one,
     },
     macroGridCellWithBorder: {
-      borderLeftColor: colors.borderSubtle,
+      borderLeftColor: glass.controlBorder,
       borderLeftWidth: StyleSheet.hairlineWidth,
     },
     macroGridLabel: {
@@ -301,7 +314,6 @@ export const createStyles = (colors: typeof Colors.dark) =>
       lineHeight: 16,
       textAlign: 'center',
     },
-
     title: {
       color: colors.textPrimary,
       fontSize: 24,
@@ -309,10 +321,12 @@ export const createStyles = (colors: typeof Colors.dark) =>
     },
     todayButton: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 999,
+      borderTopColor: glass.cardHighlight,
+      borderTopWidth: 1,
       borderWidth: StyleSheet.hairlineWidth,
       height: 36,
       justifyContent: 'center',
@@ -334,10 +348,12 @@ export const createStyles = (colors: typeof Colors.dark) =>
     },
     weekDayCircle: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 999,
+      borderTopColor: glass.cardHighlight,
+      borderTopWidth: 1,
       borderWidth: StyleSheet.hairlineWidth,
       height: 22,
       justifyContent: 'center',
@@ -392,9 +408,9 @@ export const createStyles = (colors: typeof Colors.dark) =>
       backgroundColor: colors.textOnAccent,
     },
     weekSection: {
-      borderBottomColor: colors.borderSubtle,
+      borderBottomColor: glass.controlBorder,
       borderBottomWidth: StyleSheet.hairlineWidth,
-      borderTopColor: colors.borderSubtle,
+      borderTopColor: glass.controlBorder,
       borderTopWidth: StyleSheet.hairlineWidth,
       paddingVertical: Spacing.one,
     },
