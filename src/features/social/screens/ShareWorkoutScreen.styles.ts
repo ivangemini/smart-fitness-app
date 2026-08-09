@@ -10,16 +10,9 @@ export const createShareWorkoutStyles = (colors: typeof Colors.light) =>
       borderRadius: 999,
       borderWidth: StyleSheet.hairlineWidth,
       flexShrink: 0,
-      height: 40,
+      height: 44,
       justifyContent: "center",
-      width: 40,
-    },
-    backLabel: {
-      color: colors.textPrimary,
-      fontSize: 28,
-      fontWeight: "400",
-      lineHeight: 30,
-      marginTop: -2,
+      width: 44,
     },
     body: {
       color: colors.textSecondary,
@@ -52,7 +45,6 @@ export const createShareWorkoutStyles = (colors: typeof Colors.light) =>
       alignItems: "center",
       flexGrow: 1,
       paddingHorizontal: Spacing.three,
-      paddingTop: Spacing.three,
     },
     fieldLabel: {
       color: colors.textPrimary,
