@@ -18,6 +18,12 @@ import { Platform, Pressable, StyleSheet, View, type LayoutChangeEvent } from 'r
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
+
 import {
   FLOATING_TAB_BAR_HEIGHT,
   FLOATING_TAB_BAR_MIN_BOTTOM_OFFSET,
@@ -53,6 +59,8 @@ const MORPH_SPRING = {
 
 type TabButtonProps = {
   accessibilityLabel: string;
+  activeColor: string;
+  inactiveColor: string;
   isActive: boolean;
   Icon: LucideIcon;
   onLongPress: () => void;
@@ -62,6 +70,7 @@ type TabButtonProps = {
 
 type LiquidGeometryProps = {
   activeIndex: number;
+  glass: LiquidGlassPalette;
   width: number;
 };
 
@@ -114,6 +123,8 @@ function makeBlobPath(width: number, index: number): SkPath {
 
 const TabButton = memo(function TabButton({
   accessibilityLabel,
+  activeColor,
+  inactiveColor,
   isActive,
   Icon,
   onLongPress,
@@ -150,12 +161,12 @@ const TabButton = memo(function TabButton({
       onPressOut={handlePressOut}
       style={[styles.tabItem, animatedButtonStyle]}
       testID={testID}>
-      <Icon color={isActive ? '#FFFFFF' : '#8F8F98'} size={24} strokeWidth={2} />
+      <Icon color={isActive ? activeColor : inactiveColor} size={24} strokeWidth={2} />
     </AnimatedPressable>
   );
 });
 
-function LiquidGeometry({ activeIndex, width }: LiquidGeometryProps) {
+function LiquidGeometry({ activeIndex, glass, width }: LiquidGeometryProps) {
   const activePosition = useSharedValue(activeIndex);
   const panelPath = useMemo(() => makePanelPath(width), [width]);
   const blobPaths = useMemo(
@@ -167,46 +178,42 @@ function LiquidGeometry({ activeIndex, width }: LiquidGeometryProps) {
     activePosition.value = withSpring(activeIndex, MORPH_SPRING);
   }, [activeIndex, activePosition]);
 
-  const blobPath = usePathInterpolation(
-    activePosition,
-    [0, 1, 2, 3, 4],
-    blobPaths,
-  );
+  const blobPath = usePathInterpolation(activePosition, [0, 1, 2, 3, 4], blobPaths);
 
   return (
     <Canvas pointerEvents="none" style={StyleSheet.absoluteFill}>
       <Group>
-        <Path path={panelPath} color="rgba(6, 6, 10, 0.38)">
+        <Path path={panelPath} color={glass.navPanelShadow}>
           <BlurMask blur={18} style="outer" />
         </Path>
-        <Path path={panelPath} color="rgba(18, 18, 22, 0.54)" />
+        <Path path={panelPath} color={glass.navPanelFill} />
         <Path
           path={panelPath}
-          color="rgba(255, 255, 255, 0.16)"
+          color={glass.navEdgeStrong}
           style="stroke"
           strokeWidth={0.75}
         />
         <Path
           path={panelPath}
-          color="rgba(255, 255, 255, 0.08)"
+          color={glass.navEdgeSoft}
           style="stroke"
           strokeWidth={0.35}
         />
       </Group>
 
-      <Path path={blobPath} color="rgba(255, 255, 255, 0.13)">
+      <Path path={blobPath} color={glass.navBlobFill}>
         <BlurMask blur={5} style="solid" />
       </Path>
-      <Path path={blobPath} color="rgba(255, 255, 255, 0.10)">
+      <Path path={blobPath} color={glass.navBlobGlow}>
         <LinearGradient
           start={vec(0, 8)}
           end={vec(width, PANEL_HEIGHT)}
-          colors={['rgba(255,255,255,0.19)', 'rgba(255,255,255,0.07)']}
+          colors={[glass.navBlobGradientStart, glass.navBlobGradientEnd]}
         />
       </Path>
       <Path
         path={blobPath}
-        color="rgba(255, 255, 255, 0.22)"
+        color={glass.navBlobStroke}
         style="stroke"
         strokeWidth={0.7}
       />
@@ -216,6 +223,11 @@ function LiquidGeometry({ activeIndex, width }: LiquidGeometryProps) {
 
 export function LiquidGlassTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const { resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const [panelWidth, setPanelWidth] = useState(DEFAULT_PANEL_WIDTH);
   const visibleRoutes = state.routes.filter((route) => VISIBLE_TABS.has(route.name));
   const activeRouteKey = state.routes[state.index]?.key;
@@ -241,17 +253,39 @@ export function LiquidGlassTabBar({ state, descriptors, navigation }: BottomTabB
             bottom: Math.max(insets.bottom, FLOATING_TAB_BAR_MIN_BOTTOM_OFFSET),
           },
         ]}>
-        <View pointerEvents="none" style={styles.shadowWide} />
-        <View pointerEvents="none" style={styles.shadowTight} />
-        <View onLayout={handlePanelLayout} style={styles.glassShell}>
+        <View
+          pointerEvents="none"
+          style={[
+            styles.shadowWide,
+            {
+              backgroundColor: glass.navPanelShadow,
+              shadowColor: glass.shadowColor,
+              shadowOpacity: glass.shadowOpacity,
+            },
+          ]}
+        />
+        <View
+          pointerEvents="none"
+          style={[
+            styles.shadowTight,
+            {
+              backgroundColor: glass.navPanelShadow,
+              shadowColor: glass.shadowColor,
+              shadowOpacity: glass.shadowOpacity * 0.8,
+            },
+          ]}
+        />
+        <View
+          onLayout={handlePanelLayout}
+          style={[styles.glassShell, { backgroundColor: glass.navPanelFill }]}>
           <BlurView
             blurMethod={Platform.OS === 'android' ? 'dimezisBlurViewSdk31Plus' : undefined}
             intensity={Platform.OS === 'ios' ? 52 : 76}
             pointerEvents="none"
-            tint="systemMaterialDark"
+            tint={glass.blurTint}
             style={StyleSheet.absoluteFill}
           />
-          <LiquidGeometry activeIndex={activeVisibleIndex} width={panelWidth} />
+          <LiquidGeometry activeIndex={activeVisibleIndex} glass={glass} width={panelWidth} />
           <View style={styles.tabRow}>
             {visibleRoutes.map((route) => {
               const descriptor = descriptors[route.key];
@@ -288,7 +322,9 @@ export function LiquidGlassTabBar({ state, descriptors, navigation }: BottomTabB
               return (
                 <TabButton
                   accessibilityLabel={label}
+                  activeColor={glass.navActiveIcon}
                   Icon={Icon}
+                  inactiveColor={glass.navInactiveIcon}
                   isActive={isActive}
                   key={route.key}
                   onLongPress={handleLongPress}
@@ -323,10 +359,7 @@ const styles = StyleSheet.create({
     height: 54,
     borderCurve: 'continuous',
     borderRadius: 28,
-    backgroundColor: 'rgba(8, 8, 12, 0.28)',
-    shadowColor: '#08080C',
     shadowOffset: { width: 0, height: 14 },
-    shadowOpacity: 0.34,
     shadowRadius: 22,
     elevation: 10,
   },
@@ -338,10 +371,7 @@ const styles = StyleSheet.create({
     height: 48,
     borderCurve: 'continuous',
     borderRadius: 24,
-    backgroundColor: 'rgba(10, 10, 14, 0.16)',
-    shadowColor: '#0B0B0E',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.26,
     shadowRadius: 12,
     elevation: 6,
   },
@@ -351,10 +381,6 @@ const styles = StyleSheet.create({
     borderCurve: 'continuous',
     borderRadius: PANEL_RADIUS,
     overflow: 'hidden',
-    backgroundColor: Platform.select({
-      android: 'rgba(20, 20, 24, 0.90)',
-      default: 'rgba(18, 18, 22, 0.32)',
-    }),
   },
   tabRow: {
     ...StyleSheet.absoluteFill,
