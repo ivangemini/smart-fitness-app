@@ -79,11 +79,53 @@ const profile = {
   updatedAt: iso,
 };
 
+const storyDescriptor = {
+  schemaVersion: 1,
+  assetId,
+  assetType: "story_image",
+  width: 1080,
+  height: 1920,
+  aspectRatio: 1080 / 1920,
+  placeholder: { type: "average_color", value: "#112233" },
+  variants: Object.fromEntries(
+    [320, 640, 1080, 1440].map((size) => [
+      `post_${size}`,
+      {
+        width: Math.round(size * (1080 / 1920)),
+        height: size,
+        mimeType: "image/jpeg",
+        contentHash: hash,
+        url: `https://media.example.test/public/social-media/v1/${assetId}/post_${size}/${hash}.jpg`,
+      },
+    ]),
+  ),
+};
+
 describe("managed social media parsers", () => {
   it("accepts strict owner assets and owner-opaque immutable URLs", () => {
     expect(parseSocialMediaOwnerAssetDto(asset)).toMatchObject({
       assetId,
       state: "approved",
+    });
+  });
+
+  it("accepts story_image descriptors through the shared post variant contract", () => {
+    expect(
+      parseSocialMediaOwnerAssetDto({
+        ...asset,
+        assetType: "story_image",
+        source: {
+          ...asset.source,
+          width: 1080,
+          height: 1920,
+          pixelCount: 1080 * 1920,
+        },
+        publicDescriptor: storyDescriptor,
+      }),
+    ).toMatchObject({
+      assetId,
+      assetType: "story_image",
+      publicDescriptor: { assetType: "story_image" },
     });
   });
 
