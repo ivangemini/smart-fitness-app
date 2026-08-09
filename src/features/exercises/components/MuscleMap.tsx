@@ -4,7 +4,12 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 
-import { CANONICAL_MUSCLES, type CanonicalMuscleId, type MuscleHighlightMap, type MuscleSide } from '../muscleTaxonomy';
+import {
+  CANONICAL_MUSCLES,
+  type CanonicalMuscleId,
+  type MuscleHighlightMap,
+  type MuscleSide,
+} from '../muscleTaxonomy';
 
 type MuscleMapProps = {
   highlights: MuscleHighlightMap;
@@ -39,7 +44,11 @@ const BACK_SHAPES: MuscleShape[] = [
 
 const encodeSvg = (svg: string) => `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 
-const createSvgUri = (side: MuscleSide, highlights: MuscleHighlightMap, colors: typeof Colors.dark) => {
+const createSvgUri = (
+  side: MuscleSide,
+  highlights: MuscleHighlightMap,
+  colors: typeof Colors.light,
+) => {
   const shapes = side === 'front' ? FRONT_SHAPES : BACK_SHAPES;
   const baseFill = colors.surfaceElevated;
   const stroke = colors.borderSubtle;
@@ -49,7 +58,12 @@ const createSvgUri = (side: MuscleSide, highlights: MuscleHighlightMap, colors: 
   const body = shapes
     .map((shape) => {
       const role = highlights[shape.id];
-      const fill = role === 'primary' ? primaryFill : role === 'secondary' ? secondaryFill : baseFill;
+      const fill =
+        role === 'primary'
+          ? primaryFill
+          : role === 'secondary'
+            ? secondaryFill
+            : baseFill;
 
       return `<g fill="${fill}" stroke="${stroke}" stroke-width="2">${shape.shape}</g>`;
     })
@@ -72,7 +86,11 @@ const createSvgUri = (side: MuscleSide, highlights: MuscleHighlightMap, colors: 
 
 export const MuscleMap = memo(function MuscleMap({ highlights, side }: MuscleMapProps) {
   const { colors } = useAppTheme();
-  const svgUri = useMemo(() => createSvgUri(side, highlights, colors), [colors, highlights, side]);
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const svgUri = useMemo(
+    () => createSvgUri(side, highlights, colors),
+    [colors, highlights, side],
+  );
   const highlightedLabels = CANONICAL_MUSCLES
     .filter((muscle) => muscle.side === side && highlights[muscle.id])
     .map((muscle) => muscle.label)
@@ -86,29 +104,31 @@ export const MuscleMap = memo(function MuscleMap({ highlights, side }: MuscleMap
         source={{ uri: svgUri }}
         style={styles.image}
       />
-      <Text style={[styles.label, { color: colors.textSecondary }]}>{side === 'front' ? 'Front' : 'Back'}</Text>
+      <Text style={styles.label}>{side === 'front' ? 'Front' : 'Back'}</Text>
     </View>
   );
 });
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    backgroundColor: Colors.dark.surfaceSecondary,
-    borderColor: Colors.dark.borderSubtle,
-    borderRadius: Radii.large,
-    borderWidth: StyleSheet.hairlineWidth,
-    flex: 1,
-    gap: Spacing.two,
-    minWidth: 0,
-    padding: Spacing.three,
-  },
-  image: {
-    aspectRatio: 0.5,
-    width: '100%',
-  },
-  label: {
-    fontSize: Typography.caption.fontSize,
-    fontWeight: Typography.label.fontWeight,
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    container: {
+      alignItems: 'center',
+      backgroundColor: colors.surfaceSecondary,
+      borderColor: colors.borderSubtle,
+      borderRadius: Radii.large,
+      borderWidth: StyleSheet.hairlineWidth,
+      flex: 1,
+      gap: Spacing.two,
+      minWidth: 0,
+      padding: Spacing.three,
+    },
+    image: {
+      aspectRatio: 0.5,
+      width: '100%',
+    },
+    label: {
+      color: colors.textSecondary,
+      fontSize: Typography.caption.fontSize,
+      fontWeight: Typography.label.fontWeight,
+    },
+  });
