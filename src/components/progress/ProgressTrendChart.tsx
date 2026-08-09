@@ -1,6 +1,7 @@
 import { memo, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
@@ -75,56 +76,58 @@ export const ProgressTrendChart = memo(function ProgressTrendChart({
   }
 
   return (
-    <View
-      accessible
-      accessibilityHint={t('progress.chartHint')}
-      accessibilityLabel={t('progress.chartLabel', { max: maxLabel, min: minLabel })}
-      style={styles.chartShell}>
-      <View style={styles.plotRow}>
-        <View style={styles.plot}>
-          <View style={[styles.horizontalGrid, styles.gridTop]} />
-          <View style={[styles.horizontalGrid, styles.gridMiddle]} />
-          <View style={[styles.horizontalGrid, styles.gridBottom]} />
-          <View style={styles.barsRow}>
-            {chartMetrics.bars.map((point, index) => (
-              <View key={point.key} style={styles.column}>
-                {index > 0 ? <View style={styles.verticalGrid} /> : null}
-                <View style={styles.barTrack}>
-                  <View
-                    style={[
-                      styles.bar,
-                      {
-                        backgroundColor: resolvedBarColor,
-                        height: point.height,
-                        opacity: index === chartMetrics.bars.length - 1 ? 1 : 0.72,
-                      },
-                    ]}
-                  />
+    <LiquidGlassSurface radius={18} style={styles.chartShell} variant="control">
+      <View
+        accessible
+        accessibilityHint={t('progress.chartHint')}
+        accessibilityLabel={t('progress.chartLabel', { max: maxLabel, min: minLabel })}
+        style={styles.chartContent}>
+        <View style={styles.plotRow}>
+          <View style={styles.plot}>
+            <View style={[styles.horizontalGrid, styles.gridTop]} />
+            <View style={[styles.horizontalGrid, styles.gridMiddle]} />
+            <View style={[styles.horizontalGrid, styles.gridBottom]} />
+            <View style={styles.barsRow}>
+              {chartMetrics.bars.map((point, index) => (
+                <View key={point.key} style={styles.column}>
+                  {index > 0 ? <View style={styles.verticalGrid} /> : null}
+                  <View style={styles.barTrack}>
+                    <View
+                      style={[
+                        styles.bar,
+                        {
+                          backgroundColor: resolvedBarColor,
+                          height: point.height,
+                          opacity: index === chartMetrics.bars.length - 1 ? 1 : 0.72,
+                        },
+                      ]}
+                    />
+                  </View>
                 </View>
-              </View>
+              ))}
+            </View>
+          </View>
+          <View style={styles.axis}>
+            {chartMetrics.axisLabels.map((axisLabel) => (
+              <Text key={axisLabel.key} numberOfLines={1} style={styles.axisLabel}>
+                {axisLabel.value}
+              </Text>
             ))}
           </View>
         </View>
-        <View style={styles.axis}>
-          {chartMetrics.axisLabels.map((axisLabel) => (
-            <Text key={axisLabel.key} numberOfLines={1} style={styles.axisLabel}>
-              {axisLabel.value}
+        <View style={styles.labelsRow}>
+          {chartMetrics.bars.map((point) => (
+            <Text key={point.key} numberOfLines={1} style={styles.xLabel}>
+              {point.label}
             </Text>
           ))}
+          <View style={styles.axisSpacer} />
         </View>
+        <Text numberOfLines={1} style={styles.latestValue}>
+          {chartMetrics.bars.at(-1)?.displayValue}
+        </Text>
       </View>
-      <View style={styles.labelsRow}>
-        {chartMetrics.bars.map((point) => (
-          <Text key={point.key} numberOfLines={1} style={styles.xLabel}>
-            {point.label}
-          </Text>
-        ))}
-        <View style={styles.axisSpacer} />
-      </View>
-      <Text numberOfLines={1} style={styles.latestValue}>
-        {chartMetrics.bars.at(-1)?.displayValue}
-      </Text>
-    </View>
+    </LiquidGlassSurface>
   );
 });
 
@@ -158,14 +161,12 @@ const createStyles = (colors: typeof Colors.light) =>
       flex: 1,
       flexDirection: 'row',
     },
-    chartShell: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
-      borderRadius: 18,
-      borderWidth: StyleSheet.hairlineWidth,
+    chartContent: {
       gap: Spacing.one,
-      overflow: 'hidden',
       padding: Spacing.three,
+    },
+    chartShell: {
+      overflow: 'hidden',
     },
     column: {
       flex: 1,
