@@ -3,6 +3,10 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 type SegmentedOption<Value extends string> = {
   label: string;
@@ -17,8 +21,12 @@ type SegmentedControlProps<Value extends string> = {
 };
 
 export function SegmentedControl<Value extends string>({ accessibilityLabel, onChange, options, value }: SegmentedControlProps<Value>) {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   return (
     <View accessibilityLabel={accessibilityLabel} accessibilityRole="tablist" style={styles.container}>
@@ -31,7 +39,11 @@ export function SegmentedControl<Value extends string>({ accessibilityLabel, onC
             accessibilityRole="tab"
             accessibilityState={{ selected }}
             onPress={() => onChange(option.value)}
-            style={({ pressed }) => [styles.segment, selected && styles.segmentSelected, pressed && !selected && styles.pressed]}>
+            style={({ pressed }) => [
+              styles.segment,
+              selected && styles.segmentSelected,
+              pressed && (selected ? styles.segmentSelectedPressed : styles.segmentPressed),
+            ]}>
             <Text style={[styles.label, selected && styles.labelSelected]}>{option.label}</Text>
           </Pressable>
         );
@@ -40,11 +52,11 @@ export function SegmentedControl<Value extends string>({ accessibilityLabel, onC
   );
 }
 
-const createStyles = (colors: typeof Colors.dark) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     container: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
@@ -59,10 +71,7 @@ const createStyles = (colors: typeof Colors.dark) =>
       lineHeight: Typography.label.lineHeight,
     },
     labelSelected: {
-      color: colors.textPrimary,
-    },
-    pressed: {
-      backgroundColor: colors.backgroundSelected,
+      color: glass.accentText,
     },
     segment: {
       alignItems: 'center',
@@ -74,7 +83,13 @@ const createStyles = (colors: typeof Colors.dark) =>
       paddingHorizontal: Spacing.two,
       paddingVertical: Spacing.one,
     },
+    segmentPressed: {
+      backgroundColor: glass.controlPressedFill,
+    },
     segmentSelected: {
-      backgroundColor: colors.surfacePrimary,
+      backgroundColor: glass.accentFill,
+    },
+    segmentSelectedPressed: {
+      backgroundColor: glass.accentPressedFill,
     },
   });
