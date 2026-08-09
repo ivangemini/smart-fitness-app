@@ -5,30 +5,28 @@ Updated: 2026-08-09
 ## Checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current `main`: `97d497ccda6bcc756d808190e4d84ce1de3f849f`.
-- Latest runtime merge: `97d497ccda6bcc756d808190e4d84ce1de3f849f` — PR #521 `Migrate Social notification and lookup shell controls`.
-- PR #521 exact validated head: `290f19513e1871f705cd87a3a78838e6ed27b609`; Mobile CI #1957 passed the full required gate.
-- Previous LG-3C: PR #519 / Mobile CI #1955 / merge `7a9274d910c0e2dfc8bd270d0d1dc332989d6863`.
-- Current roadmap package: **LG-3E Social Share Workout material**.
-- LG-3D retains one residual: `SocialCommunityGuidelinesScreen` local back control.
+- Current `main`: `32447156ece5b777b574a52288809f2025328147`.
+- Latest runtime merge: `32447156ece5b777b574a52288809f2025328147` — PR #523 `Migrate Share Workout material to Liquid Glass`.
+- PR #523 exact validated head: `6efd2e3e13222b037da8180d3fddddc13561a12e`; Mobile CI #1960 passed the full required gate.
+- Previous LG-3D batch 1: PR #521 / Mobile CI #1957 / merge `97d497ccda6bcc756d808190e4d84ce1de3f849f`.
+- Current roadmap package: **LG-3D Community Guidelines residual**.
 - Backend remains untouched; last dependency-awareness baseline was `1d10bbbfcfe4974121d5c7e9bf1b7de4f0bad068`.
 
-## LG-3D batch 1 complete
+## LG-3E complete
 
-PR #521 delivered:
+PR #523 delivered:
 
-- shared 44 pt `LiquidGlassIconButton` for Social Notifications;
-- adaptive notification-card `cardFill/cardBorder` material with explicit `controlPressedFill` feedback;
-- shared 44 pt back primitive for Social Profile Lookup;
-- focused guards preserving optimistic notification read/mark-read and Profile Lookup validation/navigation semantics.
+- shared 44 pt `LiquidGlassIconButton` for Share Workout back navigation;
+- adaptive `controlFill/controlBorder` material for caption input, media preview, preview metrics and upload-progress track;
+- focused source guards for shared back ownership, adaptive/no-blur material and publishing/media contracts.
 
-Preserved: notification pagination/request sequencing, missing-notification rollback/removal, profile/post routing, Profile Lookup safe-area/keyboard behavior, username validation/normalization, auth/profile routes, localization/accessibility and Social API authority. No native blur was added per notification card or shell control.
+A CI-detected TypeScript mismatch in `ShareWorkoutMediaCard` exposed that the first style migration had removed `mediaHeader`, `mediaHeaderCopy` and `mediaWarning`. The final patch restored those required style contracts and also removed unrelated layout/typography churn, leaving the package material-focused.
 
-`SocialCommunityGuidelinesScreen` remains unchanged and is the only explicit LG-3D residual; its content already uses shared `AppCard`, so only the local back control remains to migrate.
+Preserved: publish state machine, `syncNow()` sequencing, idempotency key semantics, managed-media release/cleanup, moderation/rate-limit handling, preview/share-control semantics, native Switch behavior, localization/accessibility and safe-area/keyboard behavior. No native blur was added behind publishing inputs or preview rows.
 
 ## Exact validation
 
-PR #521 exact head `290f19513e1871f705cd87a3a78838e6ed27b609` passed Mobile CI #1957:
+PR #523 exact head `6efd2e3e13222b037da8180d3fddddc13561a12e` passed Mobile CI #1960:
 
 - repository file line audit;
 - changed-file line audit;
@@ -40,15 +38,16 @@ PR #521 exact head `290f19513e1871f705cd87a3a78838e6ed27b609` passed Mobile CI #
 
 No physical-device/release evidence is implied.
 
-## Next package — LG-3E Social Share Workout material
+## Next package — Community Guidelines residual
 
-Read-only audit isolated a coherent publishing presentation package:
+The only explicit LG-3D residual is `src/features/social/screens/SocialCommunityGuidelinesScreen.tsx`:
 
-- `src/features/social/screens/ShareWorkoutScreen.tsx`: migrate local back navigation to shared `LiquidGlassIconButton`; leave publishing state/data flow intact;
-- `src/features/social/screens/ShareWorkoutScreen.styles.ts`: migrate caption input, visibility toggle, preview shell/rows and material-owning controls from direct `surfaceSecondary` / `backgroundSelected` / `borderSubtle` ownership to adaptive card/control/accent tokens with explicit pressed states;
-- preserve idempotency, managed-media release/cleanup, moderation/rate-limit errors, request sequencing, preview semantics, localization/accessibility, safe-area/keyboard behavior and Social API authority;
-- keep inputs and preview rows blur-free;
-- update `tests/socialProfileShareShellUx.source.test.ts` and add one focused material/no-blur guard.
+- replace the local bordered 44 pt back `Pressable` with shared `LiquidGlassIconButton`;
+- remove local `backButton` and generic opacity `pressed` styles and the now-unused `Pressable`/`Radii` ownership if applicable;
+- keep all `AppCard` content, warning note styling, copy, routing, localization/accessibility and safe-area geometry unchanged;
+- extend the existing `test/liquid-glass-social-shell.test.mjs` guard rather than creating unnecessary parallel test ownership.
+
+After this residual, audit the remaining LG-3 secondary surfaces by shared defect: Settings/account, Sync & Backup, Social profile/detail, Progress detail, Coach detail and exercise detail/library.
 
 ## Blocked Home follow-ups
 
@@ -56,7 +55,7 @@ LG-H2 Stories remains blocked until real Social DTO/lifecycle/privacy/media/mode
 
 ## Next sequence
 
-1. LG-3E Share Workout material; continue remaining LG-3 batches by shared defect and revisit the single Guidelines residual when possible.
+1. Close the Community Guidelines residual; continue remaining LG-3 batches by shared defect.
 2. LG-4 Workouts staged migration.
 3. LG-5 elevated chrome/motion.
 4. LG-6 visual QA/stabilization.
