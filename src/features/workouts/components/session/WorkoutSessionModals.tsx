@@ -108,32 +108,36 @@ export function ExerciseOverflowModal({
       <Pressable
         onPress={onDismiss}
         style={[styles.overflowBackdrop, { paddingBottom: bottomInset + Spacing.three }]}>
-        <Pressable onPress={() => undefined} style={styles.overflowSheet}>
-          <Text style={styles.overflowTitle}>{exercise?.exerciseName ?? ''}</Text>
-          <View style={styles.overflowActions}>
-            {message ? <Text style={styles.overflowMessage}>{message}</Text> : null}
-            <Pressable
-              onPress={() => exercise && onReplace(exercise)}
-              style={({ pressed }) => [styles.overflowAction, pressed && styles.pressed]}>
-              <Text style={styles.overflowActionLabel}>{t('workouts.session.replaceExercise')}</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => exercise && onDelete(exercise)}
-              style={({ pressed }) => [
-                styles.overflowAction,
-                styles.overflowDangerAction,
-                pressed && styles.pressed,
-              ]}>
-              <Text style={[styles.overflowActionLabel, styles.overflowDangerLabel]}>
-                {t('workouts.session.deleteExercise')}
-              </Text>
-            </Pressable>
-            <Pressable
-              onPress={onCancel}
-              style={({ pressed }) => [styles.overflowCancel, pressed && styles.pressed]}>
-              <Text style={styles.overflowCancelLabel}>{t('common.cancel')}</Text>
-            </Pressable>
-          </View>
+        <Pressable onPress={() => undefined} style={styles.overflowSheetHitArea}>
+          <LiquidGlassSurface radius={24} style={styles.overflowSheet} variant="elevated">
+            <Text style={styles.overflowTitle}>{exercise?.exerciseName ?? ''}</Text>
+            <View style={styles.overflowActions}>
+              {message ? <Text style={styles.overflowMessage}>{message}</Text> : null}
+              <Pressable
+                onPress={() => exercise && onReplace(exercise)}
+                style={({ pressed }) => [styles.overflowAction, pressed && styles.pressed]}>
+                <Text style={styles.overflowActionLabel}>
+                  {t('workouts.session.replaceExercise')}
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => exercise && onDelete(exercise)}
+                style={({ pressed }) => [
+                  styles.overflowAction,
+                  styles.overflowDangerAction,
+                  pressed && styles.pressed,
+                ]}>
+                <Text style={[styles.overflowActionLabel, styles.overflowDangerLabel]}>
+                  {t('workouts.session.deleteExercise')}
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={onCancel}
+                style={({ pressed }) => [styles.overflowCancel, pressed && styles.pressed]}>
+                <Text style={styles.overflowCancelLabel}>{t('common.cancel')}</Text>
+              </Pressable>
+            </View>
+          </LiquidGlassSurface>
         </Pressable>
       </Pressable>
     </Modal>
@@ -170,38 +174,40 @@ export function WorkoutOverflowModal({
       <Pressable
         onPress={onClose}
         style={[styles.overflowBackdrop, { paddingBottom: bottomInset + Spacing.three }]}>
-        <Pressable onPress={() => undefined} style={styles.overflowSheet}>
-          <Text style={styles.overflowTitle}>{title}</Text>
-          <View style={styles.overflowActions}>
-            <WorkoutSheetRow
-              label={t('workouts.session.trackRpe')}
-              styles={styles}
-              trailingAccessory={
-                <Switch
-                  value={trackRpeEnabled}
-                  onValueChange={onTrackRpeChange}
-                  trackColor={{ false: colors.surfaceSecondary, true: colors.accent }}
-                  thumbColor="#FFFFFF"
-                />
-              }
-            />
-            <WorkoutSheetRow
-              label={t('workouts.session.addExercises')}
-              onPress={onAddExercises}
-              styles={styles}
-            />
-            <WorkoutSheetRow
-              destructive
-              label={t('workouts.session.discard')}
-              onPress={onDiscard}
-              styles={styles}
-            />
-            <Pressable
-              onPress={onClose}
-              style={({ pressed }) => [styles.overflowCancel, pressed && styles.pressed]}>
-              <Text style={styles.overflowCancelLabel}>{t('common.cancel')}</Text>
-            </Pressable>
-          </View>
+        <Pressable onPress={() => undefined} style={styles.overflowSheetHitArea}>
+          <LiquidGlassSurface radius={24} style={styles.overflowSheet} variant="elevated">
+            <Text style={styles.overflowTitle}>{title}</Text>
+            <View style={styles.overflowActions}>
+              <WorkoutSheetRow
+                label={t('workouts.session.trackRpe')}
+                styles={styles}
+                trailingAccessory={
+                  <Switch
+                    value={trackRpeEnabled}
+                    onValueChange={onTrackRpeChange}
+                    trackColor={{ false: colors.surfaceSecondary, true: colors.accent }}
+                    thumbColor="#FFFFFF"
+                  />
+                }
+              />
+              <WorkoutSheetRow
+                label={t('workouts.session.addExercises')}
+                onPress={onAddExercises}
+                styles={styles}
+              />
+              <WorkoutSheetRow
+                destructive
+                label={t('workouts.session.discard')}
+                onPress={onDiscard}
+                styles={styles}
+              />
+              <Pressable
+                onPress={onClose}
+                style={({ pressed }) => [styles.overflowCancel, pressed && styles.pressed]}>
+                <Text style={styles.overflowCancelLabel}>{t('common.cancel')}</Text>
+              </Pressable>
+            </View>
+          </LiquidGlassSurface>
         </Pressable>
       </Pressable>
     </Modal>

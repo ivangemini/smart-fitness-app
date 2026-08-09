@@ -1,5 +1,6 @@
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
+import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import type { createStyles } from '@/features/workouts/styles/workoutSessionScreenStyles';
 import { useLocalization } from '@/localization';
 
@@ -9,15 +10,21 @@ type WorkoutSessionMissingStateProps = {
   styles: ReturnType<typeof createStyles>;
 };
 
-export function WorkoutSessionMissingState({ backgroundColor, onBackToWorkouts, styles }: WorkoutSessionMissingStateProps) {
+export function WorkoutSessionMissingState({
+  backgroundColor,
+  onBackToWorkouts,
+  styles,
+}: WorkoutSessionMissingStateProps) {
   const { t } = useLocalization();
+
   return (
     <View style={[styles.screen, { backgroundColor }]}>
       <View style={styles.loadingState}>
         <Text style={styles.emptyTitle}>{t('workouts.session.missingTitle')}</Text>
-        <Pressable onPress={onBackToWorkouts} style={({ pressed }) => [styles.textAction, pressed && styles.pressed]}>
-          <Text style={styles.textActionLabel}>{t('workouts.session.backToWorkouts')}</Text>
-        </Pressable>
+        <SecondaryButton
+          label={t('workouts.session.backToWorkouts')}
+          onPress={onBackToWorkouts}
+        />
       </View>
     </View>
   );
