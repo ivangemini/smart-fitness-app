@@ -1,12 +1,15 @@
+import { X } from 'lucide-react-native';
 import type { ReactNode } from 'react';
-import { Modal, Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import { FlatList, Modal, Pressable, Switch, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
+import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { Colors, Spacing } from '@/constants/theme';
 import { createStyles } from '@/features/workouts/styles/workoutSessionScreenStyles';
 import { useLocalization } from '@/localization';
 
 type WorkoutSessionStyles = ReturnType<typeof createStyles>;
-
 
 type ExerciseTarget = {
   exerciseId: string;
@@ -182,7 +185,11 @@ export function WorkoutOverflowModal({
                 />
               }
             />
-            <WorkoutSheetRow label={t('workouts.session.addExercises')} onPress={onAddExercises} styles={styles} />
+            <WorkoutSheetRow
+              label={t('workouts.session.addExercises')}
+              onPress={onAddExercises}
+              styles={styles}
+            />
             <WorkoutSheetRow
               destructive
               label={t('workouts.session.discard')}
@@ -215,6 +222,7 @@ export function ReplacementExerciseModal({
   target: ExerciseTarget | null;
 }) {
   const { t } = useLocalization();
+  const insets = useSafeAreaInsets();
 
   return (
     <Modal
@@ -223,21 +231,30 @@ export function ReplacementExerciseModal({
       visible={Boolean(target)}
       onRequestClose={onClose}>
       <View style={styles.replacementBackdrop}>
-        <View style={styles.replacementSheet}>
+        <LiquidGlassSurface
+          radius={24}
+          style={[styles.replacementSheet, { paddingBottom: insets.bottom + Spacing.three }]}
+          variant="elevated">
           <View style={styles.replacementHeader}>
-            <Text style={styles.replacementTitle}>{t('workouts.session.replaceExercise')}</Text>
-            <Pressable
+            <Text numberOfLines={2} style={styles.replacementTitle}>
+              {t('workouts.session.replaceExercise')}
+            </Text>
+            <LiquidGlassIconButton
+              accessibilityLabel={t('common.cancel')}
+              Icon={X}
               onPress={onClose}
-              style={({ pressed }) => [styles.overflowCancel, pressed && styles.pressed]}>
-              <Text style={styles.overflowCancelLabel}>{t('common.cancel')}</Text>
-            </Pressable>
+            />
           </View>
-          <ScrollView
-            contentInsetAdjustmentBehavior="automatic"
-            showsVerticalScrollIndicator={false}>
-            {exercises.slice(0, 100).map((exercise) => (
+          <FlatList
+            contentContainerStyle={styles.replacementListContent}
+            data={exercises}
+            initialNumToRender={12}
+            keyExtractor={(exercise) => exercise.id}
+            maxToRenderPerBatch={12}
+            renderItem={({ item: exercise }) => (
               <Pressable
-                key={exercise.id}
+                accessibilityLabel={exercise.name}
+                accessibilityRole="button"
                 onPress={() => onSelect(exercise)}
                 style={({ pressed }) => [styles.replacementRow, pressed && styles.pressed]}>
                 <View style={styles.replacementIcon}>
@@ -250,13 +267,18 @@ export function ReplacementExerciseModal({
                     {exercise.name}
                   </Text>
                   <Text numberOfLines={1} style={styles.replacementRowMeta}>
-                    {exercise.muscleGroup ?? exercise.category ?? t('workouts.session.exerciseFallback')}
+                    {exercise.muscleGroup ??
+                      exercise.category ??
+                      t('workouts.session.exerciseFallback')}
                   </Text>
                 </View>
               </Pressable>
-            ))}
-          </ScrollView>
-        </View>
+            )}
+            showsVerticalScrollIndicator={false}
+            style={styles.replacementList}
+            windowSize={7}
+          />
+        </LiquidGlassSurface>
       </View>
     </Modal>
   );
