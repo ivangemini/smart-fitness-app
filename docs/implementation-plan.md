@@ -7,17 +7,15 @@ This file is the **canonical forward roadmap**. Detailed current evidence belong
 ## Current verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current runtime mobile `main`: `dcc62356d946f4e2c309aa24666322e9a671f067`.
-- Latest runtime merge: PR #574 — workout-post comments now use the post-detail screen as their single virtualized list boundary.
-- PR #574 exact validated head: `3d959128c63b46948cef946895352d96658732fa`; Mobile CI #2077 passed before merge.
-- PR #573 exact validated head: `e5769c5e579dc1da9963f7a6e2433214c996dc4a`; Mobile CI #2073 passed before merge after virtualizing the other four cursor-paginated Social collection surfaces.
-- Other merged LG-5 batches after the prior checkpoint: PR #567 shared state theme consistency, #568 auth appearance consistency, #569 onboarding appearance consistency, #570 Exercise Detail loading-state ownership, #571 Share Workout state/theme resilience and #572 Coach history theme consistency.
-- PR #572 exact validated head: `76276d6ecc6a435339064adcdfd84e51a9c65be3`; Mobile CI #2065 passed before merge.
-- Earlier LG-5 packages remain: PR #559 Create Program keyboard safety, #560 Workouts short-height/large-text resilience, #561 shared-control text resilience and #565 shared `SectionHeader` theme consistency.
+- Current runtime mobile `main`: `57565185031b4b0fd1b2c17798947d3500c57976`.
+- Latest runtime merge: PR #577 — completed-workout detail now uses one top-level `FlatList` boundary for exercise groups.
+- PR #577 exact validated head: `93e6affdd5293720dafa59b2f3645be8b0462a2a`; Mobile CI #2079 passed before merge.
+- PR #576 established completed workout history as a read-only current-product surface and recorded the focused scope evidence in `docs/qa/lg5-completed-history-scope.md`.
+- Earlier LG-5 packages remain: #559, #560, #561, #565, #567-#574; exact evidence is retained in `docs/current-status.md` and Git history.
 - Mobile CI execution remains routed through Hermes by PR #562; PR #563 skips only duplicate merge-generated post-merge runs; PR #564 persists that policy for future agents.
 - Backend repo: `ivangemini/smart-fitness-backend`.
 - Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
-- Backend PR #215 remains draft/open at exact head `0826ff18dac7d4afe78943d9881c5a530507f1af`; Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI remain queued and it is not merge-ready.
+- Backend PR #215 remains draft/open at exact head `0826ff18dac7d4afe78943d9881c5a530507f1af`; it is not merge-ready without real exact-head required Hermes validation.
 - **LG-H2 Stories is complete for the current image-only v1 source scope.**
 - **Progress/exercise secondary-material reassessment is complete for the current active source scope.**
 - **LG-4 Workouts source convergence is complete.**
@@ -85,6 +83,9 @@ LG-5 is validation-first. Do not create broad migration packages merely to conti
 - **PR #572:** bounded Coach history filter/detail/input-summary theme consistency without resuming deferred Coach product work.
 - **PR #573:** top-level `FlatList` boundaries for cursor-paginated Notifications, Following Feed, public-profile workout posts and relationship lists.
 - **PR #574:** post-detail owns the sole `FlatList` for cursor-paginated workout comments; comment list/create/delete/report and post/reaction behavior remain separated and preserved.
+- **PR #577:** completed-workout detail owns one top-level `FlatList` for exercise groups instead of eager `ScrollView + .map()` rendering; summary, per-set/RPE data and immutable historical Safety & Recovery context remain preserved.
+
+PR #576 was a documentation/scope correction, not a runtime package: completed workout history is intentionally read-only in the current product contract. See `docs/qa/lg5-completed-history-scope.md`.
 
 These packages are source/CI evidence only. They do not constitute physical-device proof.
 
@@ -100,7 +101,7 @@ These packages are source/CI evidence only. They do not constitute physical-devi
 - elevated material and blur/fallback behavior;
 - Active Session set entry, RPE, replacement, finish and discard flows;
 - workout creation/edit/save/program attachment;
-- completed-history read/edit/delete flows.
+- completed-history retention, list/detail navigation and read-only record review.
 
 ### LG-5 execution rule
 
