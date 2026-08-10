@@ -1,6 +1,6 @@
 import { X } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
@@ -84,7 +84,11 @@ export function ProgramWorkoutPickerModal({
         </View>
 
         {mode === 'choice' ? (
-          <View style={styles.choiceGroup}>
+          <ScrollView
+            contentContainerStyle={styles.choiceGroup}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            style={styles.choiceScroll}>
             <Pressable
               accessibilityLabel={copy.chooseExistingWorkout}
               accessibilityRole="button"
@@ -101,7 +105,7 @@ export function ProgramWorkoutPickerModal({
               <Text style={styles.choiceTitle}>{copy.createNewWorkout}</Text>
               <Text style={styles.choiceSubtitle}>{copy.createNewWorkoutBody}</Text>
             </Pressable>
-          </View>
+          </ScrollView>
         ) : (
           <View style={styles.existingGroup}>
             <Pressable
@@ -214,15 +218,23 @@ const createStyles = (colors: typeof Colors.light) =>
       paddingVertical: Spacing.four,
     },
     choiceGroup: {
+      flexGrow: 1,
       gap: Spacing.two,
+      paddingBottom: Spacing.one,
+    },
+    choiceScroll: {
+      flexShrink: 1,
+      minHeight: 0,
     },
     choiceSubtitle: {
       color: colors.textSecondary,
+      flexShrink: 1,
       fontSize: 13,
       lineHeight: 18,
     },
     choiceTitle: {
       color: colors.textPrimary,
+      flexShrink: 1,
       fontSize: 16,
       fontWeight: '900',
     },
@@ -328,6 +340,7 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     subtitle: {
       color: colors.textSecondary,
+      flexShrink: 1,
       fontSize: 13,
       lineHeight: 18,
     },
