@@ -9,7 +9,6 @@ import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { Spacing } from '@/constants/theme';
 import { useWorkoutState } from '@/context/AppContext';
 import { useLocalization } from '@/localization';
-import { getUserLimitationsCopy } from '@/localization/userLimitationsCopy';
 import { getWorkoutHistoryCopy } from '@/localization/workoutHistoryCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import type { WorkoutSafetyMetadata } from '@/types';
@@ -18,20 +17,39 @@ import {
   buildWorkoutHistoryItemView,
   getWorkoutDurationMinutes,
   groupWorkoutSessionSets,
+  type WorkoutHistoryExerciseGroup,
 } from '../workoutHistoryViewModel';
+import {
+  buildWorkoutSafetyListRows,
+  type WorkoutSafetyListRow,
+} from '../workoutSafetyListModel';
 import {
   createWorkoutHistoryDetailStyles,
   type WorkoutHistoryDetailStyles,
 } from './workoutHistoryDetailScreen.styles';
+import {
+  WorkoutHistorySafetyDisclaimer,
+  WorkoutHistorySafetyIssueRow,
+  WorkoutHistorySafetyRestrictionRow,
+  WorkoutHistorySafetySummaryCard,
+} from './WorkoutHistorySafetyRows';
 
-const safetyColor = (
-  metadata: WorkoutSafetyMetadata,
-  colors: ReturnType<typeof useAppTheme>['colors'],
-): string => {
-  if (metadata.reviewStatus === 'ready') return colors.success;
-  if (metadata.reviewStatus === 'blocked') return colors.error;
-  return colors.warning;
-};
+type WorkoutHistoryDetailRow =
+  | {
+      group: WorkoutHistoryExerciseGroup;
+      id: string;
+      kind: 'exercise';
+    }
+  | {
+      id: 'safety-summary';
+      kind: 'safety-summary';
+      metadata?: WorkoutSafetyMetadata;
+    }
+  | WorkoutSafetyListRow
+  | {
+      id: 'safety-disclaimer';
+      kind: 'safety-disclaimer';
+    };
 
 export default function WorkoutHistoryDetailScreen() {
   const params = useLocalSearchParams<{ sessionId?: string | string[] }>();
@@ -39,7 +57,6 @@ export default function WorkoutHistoryDetailScreen() {
   const { workoutSessions } = useWorkoutState();
   const { formatDate, formatNumber, locale } = useLocalization();
   const copy = getWorkoutHistoryCopy(locale);
-  const limitationCopy = getUserLimitationsCopy(locale);
   const { formatWeightValue, weight: weightUnit } = useUnitPreferences();
   const { colors } = useAppTheme();
   const styles = useMemo(() => createWorkoutHistoryDetailStyles(colors), [colors]);
@@ -56,6 +73,28 @@ export default function WorkoutHistoryDetailScreen() {
     () => (session ? groupWorkoutSessionSets(session) : []),
     [session],
   );
+  const rows = useMemo<WorkoutHistoryDetailRow[]>(() => {
+    if (!session || !summary) return [];
+
+    const exerciseRows: WorkoutHistoryDetailRow[] = exerciseGroups.map((group) => ({
+      group,
+      id: `exercise:${group.exerciseId}:${group.exerciseName}`,
+      kind: 'exercise',
+    }));
+    const metadata = session.safetyRecovery;
+    const safetyRows = metadata
+      ? buildWorkoutSafetyListRows(metadata.restrictions, metadata.issues)
+      : [];
+
+    return [
+      ...exerciseRows,
+      { id: 'safety-summary', kind: 'safety-summary', metadata },
+      ...safetyRows,
+      ...(metadata
+        ? ([{ id: 'safety-disclaimer', kind: 'safety-disclaimer' }] as const)
+        : []),
+    ];
+  }, [exerciseGroups, session, summary]);
   const formatVolume = (volumeKg: number) =>
     `${formatNumber(weightFromKg(volumeKg, weightUnit), {
       maximumFractionDigits: 0,
@@ -97,8 +136,8 @@ export default function WorkoutHistoryDetailScreen() {
           styles.content,
           { paddingBottom: insets.bottom + Spacing.eight },
         ]}
-        data={session && summary ? exerciseGroups : []}
-        keyExtractor={(group) => `${group.exerciseId}-${group.exerciseName}`}
+        data={rows}
+        keyExtractor={(item) => item.id}
         ListHeaderComponent={
           <View style={styles.container}>
             {!session || !summary ? (
@@ -156,59 +195,95 @@ export default function WorkoutHistoryDetailScreen() {
             )}
           </View>
         }
-        ListFooterComponent={
-          session && summary ? (
-            <View style={styles.listFooter}>
-              <View style={styles.container}>
-                <SafetyHistoryCard
-                  metadata={session.safetyRecovery}
+        renderItem={({ item }) => {
+          if (item.kind === 'exercise') {
+            const group = item.group;
+            return (
+              <View style={styles.exerciseListItem}>
+                <AppCard>
+                  <View style={styles.exerciseHeader}>
+                    <View style={styles.exerciseCopy}>
+                      <Text style={styles.sectionTitle}>{group.exerciseName}</Text>
+                      <Text style={styles.metaText}>
+                        {copy.sets(
+                          group.completedSetCount,
+                          formatNumber(group.completedSetCount, { maximumFractionDigits: 0 }),
+                        )}{' '}
+                        · {formatVolume(group.volume)}
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.setTableHeader}>
+                    <Text style={[styles.tableHeaderLabel, styles.setColumn]}>{copy.tableSet}</Text>
+                    <Text style={styles.tableHeaderLabel}>{weightUnit.toUpperCase()}</Text>
+                    <Text style={styles.tableHeaderLabel}>{copy.tableReps}</Text>
+                    <Text style={styles.tableHeaderLabel}>RPE</Text>
+                  </View>
+                  {group.sets.map((set, index) => (
+                    <View key={set.id} style={styles.setRow}>
+                      <Text style={[styles.setValue, styles.setColumn]}>
+                        {formatNumber(index + 1, { maximumFractionDigits: 0 })}
+                      </Text>
+                      <Text style={styles.setValue}>{formatWeightValue(set.weight)}</Text>
+                      <Text style={styles.setValue}>
+                        {formatNumber(set.reps, { maximumFractionDigits: 0 })}
+                      </Text>
+                      <Text style={styles.setValue}>
+                        {set.actualRpe === undefined
+                          ? '—'
+                          : formatNumber(set.actualRpe, { maximumFractionDigits: 0 })}
+                      </Text>
+                    </View>
+                  ))}
+                </AppCard>
+              </View>
+            );
+          }
+
+          if (item.kind === 'safety-summary') {
+            return (
+              <View style={styles.exerciseListItem}>
+                <WorkoutHistorySafetySummaryCard
+                  metadata={item.metadata}
                   styles={styles}
                   colors={colors}
                 />
               </View>
+            );
+          }
+
+          if (item.kind === 'restriction') {
+            return (
+              <View style={styles.exerciseListItem}>
+                <WorkoutHistorySafetyRestrictionRow
+                  colors={colors}
+                  index={item.index}
+                  restriction={item.restriction}
+                  styles={styles}
+                />
+              </View>
+            );
+          }
+
+          if (item.kind === 'issue') {
+            return (
+              <View style={styles.exerciseListItem}>
+                <WorkoutHistorySafetyIssueRow
+                  colors={colors}
+                  index={item.index}
+                  issue={item.issue}
+                  styles={styles}
+                />
+              </View>
+            );
+          }
+
+          return (
+            <View style={styles.exerciseListItem}>
+              <WorkoutHistorySafetyDisclaimer styles={styles} />
             </View>
-          ) : null
-        }
-        renderItem={({ item: group }) => (
-          <View style={styles.exerciseListItem}>
-            <AppCard>
-              <View style={styles.exerciseHeader}>
-                <View style={styles.exerciseCopy}>
-                  <Text style={styles.sectionTitle}>{group.exerciseName}</Text>
-                  <Text style={styles.metaText}>
-                    {copy.sets(
-                      group.completedSetCount,
-                      formatNumber(group.completedSetCount, { maximumFractionDigits: 0 }),
-                    )}{' '}
-                    · {formatVolume(group.volume)}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.setTableHeader}>
-                <Text style={[styles.tableHeaderLabel, styles.setColumn]}>{copy.tableSet}</Text>
-                <Text style={styles.tableHeaderLabel}>{weightUnit.toUpperCase()}</Text>
-                <Text style={styles.tableHeaderLabel}>{copy.tableReps}</Text>
-                <Text style={styles.tableHeaderLabel}>RPE</Text>
-              </View>
-              {group.sets.map((set, index) => (
-                <View key={set.id} style={styles.setRow}>
-                  <Text style={[styles.setValue, styles.setColumn]}>
-                    {formatNumber(index + 1, { maximumFractionDigits: 0 })}
-                  </Text>
-                  <Text style={styles.setValue}>{formatWeightValue(set.weight)}</Text>
-                  <Text style={styles.setValue}>
-                    {formatNumber(set.reps, { maximumFractionDigits: 0 })}
-                  </Text>
-                  <Text style={styles.setValue}>
-                    {set.actualRpe === undefined
-                      ? '—'
-                      : formatNumber(set.actualRpe, { maximumFractionDigits: 0 })}
-                  </Text>
-                </View>
-              ))}
-            </AppCard>
-          </View>
-        )}
+          );
+        }}
         showsVerticalScrollIndicator={false}
       />
     </View>
@@ -228,188 +303,6 @@ function Metric({
     <View style={styles.metricCell}>
       <Text style={styles.metricValue}>{value}</Text>
       <Text style={styles.metricLabel}>{label}</Text>
-    </View>
-  );
-}
-
-function SafetyHistoryCard({
-  colors,
-  metadata,
-  styles,
-}: {
-  colors: ReturnType<typeof useAppTheme>['colors'];
-  metadata?: WorkoutSafetyMetadata;
-  styles: WorkoutHistoryDetailStyles;
-}) {
-  const { formatDate, formatNumber, locale } = useLocalization();
-  const copy = getWorkoutHistoryCopy(locale);
-  const limitationCopy = getUserLimitationsCopy(locale);
-  const formatTimestamp = (value: string | null | undefined): string => {
-    if (!value || !Number.isFinite(Date.parse(value))) return copy.unknownDate;
-    return formatDate(value, { dateStyle: 'medium', timeStyle: 'short' });
-  };
-  const limitationLabel = (labels: Record<string, string>, value: string) =>
-    labels[value] ?? copy.unknownValue;
-
-  if (!metadata) {
-    return (
-      <AppCard>
-        <Text style={styles.cardTitle}>{copy.safetyContext}</Text>
-        <Text style={styles.bodyText}>{copy.noSafetyContext}</Text>
-        <Text style={styles.disclaimer}>{copy.currentReadinessDisclaimer}</Text>
-      </AppCard>
-    );
-  }
-
-  const accentColor = safetyColor(metadata, colors);
-  const status = copy.safetyLabel(metadata.reviewStatus);
-  const loadCeiling =
-    metadata.recommendedLoadMultiplier === null
-      ? copy.notRecorded
-      : `${formatNumber(Math.round(metadata.recommendedLoadMultiplier * 100), {
-          maximumFractionDigits: 0,
-        })}%`;
-  const gateLabel =
-    metadata.gateKind === 'review_missing'
-      ? copy.reviewMissing
-      : metadata.gateKind === 'review_stale'
-        ? copy.reviewStale
-        : metadata.gateKind === 'confirmation_required'
-          ? copy.confirmationRequired
-          : copy.readyWithoutConfirmation;
-
-  return (
-    <AppCard style={metadata.reviewStatus === 'blocked' ? styles.blockedCard : undefined}>
-      <View style={styles.sectionHeader}>
-        <View style={styles.headerCopy}>
-          <Text style={styles.cardTitle}>{copy.safetyContext}</Text>
-          <Text style={styles.bodyText}>{copy.immutableContext}</Text>
-        </View>
-        <Text style={[styles.statusBadge, { color: accentColor }]}>{status}</Text>
-      </View>
-
-      <View style={styles.metricGrid}>
-        <Metric label={copy.reviewedLoadCeiling} value={loadCeiling} styles={styles} />
-        <Metric
-          label={copy.restrictionsShown}
-          value={formatNumber(metadata.restrictions.length, { maximumFractionDigits: 0 })}
-          styles={styles}
-        />
-      </View>
-
-      <View style={styles.infoStack}>
-        <InfoRow label={copy.gateState} value={gateLabel} styles={styles} />
-        <InfoRow
-          label={copy.acknowledgement}
-          value={
-            metadata.acknowledgementRequired
-              ? metadata.explicitlyAcknowledged
-                ? copy.explicitlyConfirmed
-                : copy.notConfirmed
-              : copy.notRequired
-          }
-          styles={styles}
-        />
-        <InfoRow
-          label={copy.capturedAt}
-          value={formatTimestamp(metadata.acknowledgedAt)}
-          styles={styles}
-        />
-        <InfoRow
-          label={copy.reviewRun}
-          value={metadata.reviewRunId ? copy.yes : copy.noReviewRun}
-          styles={styles}
-        />
-      </View>
-
-      {metadata.restrictions.length > 0 ? (
-        <View style={styles.sectionBlock}>
-          <Text style={styles.sectionTitle}>{copy.restrictionsBefore}</Text>
-          {metadata.restrictions.map((restriction) => (
-            <View key={restriction.limitationId} style={styles.listRow}>
-              <View style={styles.listCopy}>
-                <Text style={styles.listTitle}>
-                  {limitationLabel(
-                    limitationCopy.bodyRegionLabels as Record<string, string>,
-                    restriction.bodyRegion,
-                  )}{' '}
-                  ·{' '}
-                  {limitationLabel(
-                    limitationCopy.sideLabels as Record<string, string>,
-                    restriction.side,
-                  )}
-                </Text>
-                <Text style={styles.bodyText}>
-                  {copy.actionLabel(restriction.action)} ·{' '}
-                  {copy.affectedLoad(
-                    formatNumber(Math.round(restriction.maximumLoadMultiplier * 100), {
-                      maximumFractionDigits: 0,
-                    }),
-                  )}
-                </Text>
-                {restriction.movementPatterns.length > 0 ? (
-                  <Text style={styles.metaText}>
-                    {copy.movements}:{' '}
-                    {restriction.movementPatterns
-                      .map((value) =>
-                        limitationLabel(
-                          limitationCopy.movementLabels as Record<string, string>,
-                          value,
-                        ),
-                      )
-                      .join(', ')}
-                  </Text>
-                ) : null}
-              </View>
-              <Text style={[styles.rowBadge, { color: colors.warning }]}>
-                {copy.severityLabel(restriction.severity)}
-              </Text>
-            </View>
-          ))}
-        </View>
-      ) : null}
-
-      {metadata.issues.length > 0 ? (
-        <View style={styles.sectionBlock}>
-          <Text style={styles.sectionTitle}>{copy.findingsBefore}</Text>
-          {metadata.issues.map((issue, index) => (
-            <View key={`${issue.code}-${index}`} style={styles.listRow}>
-              <View style={styles.listCopy}>
-                <Text style={styles.listTitle}>{copy.findingTitle}</Text>
-                <Text style={styles.bodyText}>{copy.findingFallback}</Text>
-              </View>
-              <Text
-                style={[
-                  styles.rowBadge,
-                  { color: issue.severity === 'hard_block' ? colors.error : colors.warning },
-                ]}>
-                {copy.severityLabel(issue.severity)}
-              </Text>
-            </View>
-          ))}
-        </View>
-      ) : null}
-
-      <Text style={styles.disclaimer}>{copy.historicalDisclaimer}</Text>
-    </AppCard>
-  );
-}
-
-function InfoRow({
-  label,
-  styles,
-  value,
-}: {
-  label: string;
-  styles: WorkoutHistoryDetailStyles;
-  value: string;
-}) {
-  return (
-    <View style={styles.infoRow}>
-      <Text style={styles.metaText}>{label}</Text>
-      <Text selectable style={styles.infoValue}>
-        {value}
-      </Text>
     </View>
   );
 }
