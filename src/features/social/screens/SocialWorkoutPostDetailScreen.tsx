@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Platform, ScrollView, Text, View } from 'react-native';
+import { Alert, FlatList, Platform, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,7 +18,12 @@ import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 
 import { SocialReportModal } from '../SocialReportModal';
-import { SocialWorkoutCommentsCard } from '../SocialWorkoutCommentsCard';
+import {
+  SocialWorkoutCommentRow,
+  SocialWorkoutCommentsControls,
+  SocialWorkoutCommentsHeader,
+  useSocialWorkoutComments,
+} from '../SocialWorkoutCommentsCard';
 import { SocialWorkoutPostDetailContent } from '../SocialWorkoutPostDetailContent';
 import { SocialWorkoutReactionCard } from '../SocialWorkoutReactionCard';
 import { getSocialReportCopy } from '../socialReportCopy';
@@ -75,6 +80,16 @@ export default function SocialWorkoutPostDetailScreen() {
     [refresh, session?.tokens.accessToken],
   );
   const socialApi = useMemo(() => createSocialApi(auth), [auth]);
+  const commentsEnabled =
+    ready && isAuthenticated && status === 'ready' && post !== null;
+  const comments = useSocialWorkoutComments({
+    canComment: ownUsername !== null,
+    copy,
+    enabled: commentsEnabled,
+    locale,
+    postId,
+    socialApi,
+  });
 
   const loadPost = useCallback(async () => {
     if (!isAuthenticated) return;
@@ -159,141 +174,200 @@ export default function SocialWorkoutPostDetailScreen() {
       : loadError === 'session_expired'
         ? copy.loadErrorSession
         : copy.loadErrorGeneric;
+  const commentListData =
+    commentsEnabled && comments.status === 'ready' ? comments.comments : [];
 
   return (
-    <ScrollView
-      automaticallyAdjustKeyboardInsets
-      contentContainerStyle={[
-        styles.content,
-        {
-          flexGrow: 1,
-          paddingBottom: insets.bottom + Spacing.eight,
-          paddingTop: insets.top + Spacing.four,
-        },
-      ]}
-      keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
-      keyboardShouldPersistTaps="handled"
-      style={styles.screen}>
-      <View style={styles.container}>
-        <View style={styles.headerRow}>
-          <LiquidGlassIconButton
-            accessibilityLabel={t('common.back')}
-            Icon={ChevronLeft}
-            onPress={() => router.back()}
-          />
-          <View style={styles.headerCopy}>
-            <Text style={styles.eyebrow}>{copy.detailEyebrow}</Text>
-            <Text style={styles.title}>
-              {post?.workout.title ?? copy.untitledWorkout}
-            </Text>
+    <>
+      <FlatList
+        automaticallyAdjustKeyboardInsets
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingBottom: insets.bottom + Spacing.eight,
+            paddingTop: insets.top + Spacing.four,
+          },
+        ]}
+        data={commentListData}
+        ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
+        keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+        keyboardShouldPersistTaps="handled"
+        keyExtractor={(comment) => comment.id}
+        ListFooterComponent={
+          ready && isAuthenticated && status === 'ready' && post ? (
+            <View style={styles.listFooter}>
+              <SocialWorkoutCommentsControls
+                canComment={ownUsername !== null}
+                controller={comments}
+                copy={copy}
+                onCreateProfile={() => router.push('/settings/social-profile')}
+                styles={styles}
+              />
+              {!isOwnPost ? (
+                <SecondaryButton
+                  label={reportCopy.reportPost}
+                  onPress={() =>
+                    setReportTarget({ type: 'workout_post', postId: post.id })
+                  }
+                />
+              ) : null}
+              {isOwnPost ? (
+                <>
+                  <InlineError message={deleteError} />
+                  <DestructiveButton
+                    disabled={deleteBusy}
+                    label={copy.deletePost}
+                    loading={deleteBusy}
+                    onPress={confirmDelete}
+                  />
+                </>
+              ) : null}
+            </View>
+          ) : null
+        }
+        ListHeaderComponent={
+          <View
+            style={[
+              styles.container,
+              commentListData.length > 0 && styles.listHeaderWithItems,
+            ]}>
+            <View style={styles.headerRow}>
+              <LiquidGlassIconButton
+                accessibilityLabel={t('common.back')}
+                Icon={ChevronLeft}
+                onPress={() => router.back()}
+              />
+              <View style={styles.headerCopy}>
+                <Text style={styles.eyebrow}>{copy.detailEyebrow}</Text>
+                <Text style={styles.title}>
+                  {post?.workout.title ?? copy.untitledWorkout}
+                </Text>
+              </View>
+            </View>
+
+            {!ready ||
+            (ready &&
+              isAuthenticated &&
+              (status === 'idle' || status === 'loading')) ? (
+              <AppCard>
+                <LoadingState label={copy.loadingPost} />
+              </AppCard>
+            ) : null}
+
+            {ready && !isAuthenticated ? (
+              <StateCard
+                body={copy.signInBody}
+                styles={styles}
+                title={copy.signInTitle}>
+                <PrimaryButton
+                  label={copy.signInAction}
+                  onPress={() => router.push('/auth/sign-in')}
+                />
+              </StateCard>
+            ) : null}
+
+            {ready && isAuthenticated && status === 'private' ? (
+              <StateCard
+                body={copy.privateBody}
+                styles={styles}
+                title={copy.privateTitle}
+              />
+            ) : null}
+
+            {ready && isAuthenticated && status === 'blocked' ? (
+              <StateCard
+                body={copy.blockedBody}
+                styles={styles}
+                title={copy.blockedTitle}
+              />
+            ) : null}
+
+            {ready && isAuthenticated && status === 'not_found' ? (
+              <StateCard
+                body={copy.notFoundBody}
+                styles={styles}
+                title={copy.notFoundTitle}
+              />
+            ) : null}
+
+            {ready && isAuthenticated && status === 'deleted' ? (
+              <StateCard
+                body={copy.deletedBody}
+                styles={styles}
+                title={copy.deletedTitle}>
+                <SecondaryButton
+                  label={t('common.back')}
+                  onPress={() => router.back()}
+                />
+              </StateCard>
+            ) : null}
+
+            {ready && isAuthenticated && status === 'error' ? (
+              <StateCard
+                body={errorMessage}
+                styles={styles}
+                title={copy.loadErrorTitle}>
+                <SecondaryButton label={copy.retry} onPress={loadPost} />
+              </StateCard>
+            ) : null}
+
+            {ready && isAuthenticated && status === 'ready' && post ? (
+              <>
+                <SocialWorkoutPostDetailContent
+                  copy={copy}
+                  locale={locale}
+                  post={post}
+                  styles={styles}
+                />
+                <SocialWorkoutReactionCard
+                  canReact={ownUsername !== null}
+                  copy={copy}
+                  locale={locale}
+                  onCreateProfile={() => router.push('/settings/social-profile')}
+                  postId={post.id}
+                  socialApi={socialApi}
+                  styles={styles}
+                />
+                <SocialWorkoutCommentsHeader
+                  controller={comments}
+                  copy={copy}
+                  styles={styles}
+                />
+              </>
+            ) : null}
           </View>
-        </View>
-
-        {!ready || (ready && isAuthenticated && (status === 'idle' || status === 'loading')) ? (
-          <AppCard>
-            <LoadingState label={copy.loadingPost} />
-          </AppCard>
-        ) : null}
-
-        {ready && !isAuthenticated ? (
-          <StateCard body={copy.signInBody} styles={styles} title={copy.signInTitle}>
-            <PrimaryButton
-              label={copy.signInAction}
-              onPress={() => router.push('/auth/sign-in')}
-            />
-          </StateCard>
-        ) : null}
-
-        {ready && isAuthenticated && status === 'private' ? (
-          <StateCard body={copy.privateBody} styles={styles} title={copy.privateTitle} />
-        ) : null}
-
-        {ready && isAuthenticated && status === 'blocked' ? (
-          <StateCard body={copy.blockedBody} styles={styles} title={copy.blockedTitle} />
-        ) : null}
-
-        {ready && isAuthenticated && status === 'not_found' ? (
-          <StateCard body={copy.notFoundBody} styles={styles} title={copy.notFoundTitle} />
-        ) : null}
-
-        {ready && isAuthenticated && status === 'deleted' ? (
-          <StateCard body={copy.deletedBody} styles={styles} title={copy.deletedTitle}>
-            <SecondaryButton label={t('common.back')} onPress={() => router.back()} />
-          </StateCard>
-        ) : null}
-
-        {ready && isAuthenticated && status === 'error' ? (
-          <StateCard body={errorMessage} styles={styles} title={copy.loadErrorTitle}>
-            <SecondaryButton label={copy.retry} onPress={loadPost} />
-          </StateCard>
-        ) : null}
-
-        {ready && isAuthenticated && status === 'ready' && post ? (
-          <>
-            <SocialWorkoutPostDetailContent
-              copy={copy}
-              locale={locale}
-              post={post}
-              styles={styles}
-            />
-            <SocialWorkoutReactionCard
-              canReact={ownUsername !== null}
-              copy={copy}
-              locale={locale}
-              onCreateProfile={() => router.push('/settings/social-profile')}
-              postId={post.id}
-              socialApi={socialApi}
-              styles={styles}
-            />
-            <SocialWorkoutCommentsCard
-              canComment={ownUsername !== null}
+        }
+        renderItem={({ item: comment }) => (
+          <View style={styles.listItem}>
+            <SocialWorkoutCommentRow
               cancelLabel={t('common.cancel')}
+              comment={comment}
+              controller={comments}
               copy={copy}
               isPostOwner={isOwnPost}
               locale={locale}
-              onCreateProfile={() => router.push('/settings/social-profile')}
               onReportComment={(commentId) =>
                 setReportTarget({
                   type: 'workout_comment',
-                  postId: post.id,
+                  postId,
                   commentId,
                 })
               }
               ownUsername={ownUsername}
-              postId={post.id}
               reportLabel={reportCopy.reportComment}
-              socialApi={socialApi}
               styles={styles}
             />
-            {!isOwnPost ? (
-              <SecondaryButton
-                label={reportCopy.reportPost}
-                onPress={() =>
-                  setReportTarget({ type: 'workout_post', postId: post.id })
-                }
-              />
-            ) : null}
-            {isOwnPost ? (
-              <>
-                <InlineError message={deleteError} />
-                <DestructiveButton
-                  disabled={deleteBusy}
-                  label={copy.deletePost}
-                  loading={deleteBusy}
-                  onPress={confirmDelete}
-                />
-              </>
-            ) : null}
-          </>
-        ) : null}
-      </View>
+          </View>
+        )}
+        style={styles.screen}
+      />
       <SocialReportModal
         locale={locale}
         onClose={() => setReportTarget(null)}
         socialApi={socialApi}
         target={reportTarget}
       />
-    </ScrollView>
+    </>
   );
 }
 
