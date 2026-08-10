@@ -21,7 +21,7 @@ describe('LG-5 Workout History material feedback', () => {
 
     expect(styles).toContain('backgroundColor: glass.controlFill');
     expect(styles).toContain('backgroundColor: glass.controlPressedFill');
-    expect(styles).toContain('backgroundColor: glass.accentSoft');
+    expect(styles).toContain('backgroundColor: glass.semanticAccentFill');
     expect(styles).toContain('borderColor: glass.accentBorder');
     expect(styles).not.toContain('opacity: 0.68');
   });
