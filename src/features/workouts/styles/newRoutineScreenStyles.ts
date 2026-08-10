@@ -150,7 +150,7 @@ export const createStyles = (colors: typeof Colors.light) =>
     exerciseNotesInput: {
       color: colors.textPrimary,
       fontSize: 18,
-      minHeight: 42,
+      minHeight: 44,
       paddingVertical: Spacing.one,
     },
     exerciseThumb: {
