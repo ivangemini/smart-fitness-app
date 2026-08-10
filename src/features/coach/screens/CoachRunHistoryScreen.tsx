@@ -164,6 +164,8 @@ function FilterRow<T extends string>({
   onChange(value: T): void;
   value: T;
 }) {
+  const { colors } = useAppTheme();
+
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={stylesStatic.filters}>
       {labels.map((option) => (
@@ -172,8 +174,11 @@ function FilterRow<T extends string>({
           accessibilityState={{ selected: option.value === value }}
           key={option.value}
           onPress={() => onChange(option.value)}
-          style={[stylesStatic.filter, option.value === value && stylesStatic.filterActive]}>
-          <Text style={stylesStatic.filterLabel}>{option.label}</Text>
+          style={[
+            stylesStatic.filter,
+            { borderColor: option.value === value ? colors.accent : colors.borderSubtle },
+          ]}>
+          <Text style={[stylesStatic.filterLabel, { color: colors.textPrimary }]}>{option.label}</Text>
         </Pressable>
       ))}
     </ScrollView>
@@ -183,7 +188,6 @@ function FilterRow<T extends string>({
 const stylesStatic = StyleSheet.create({
   filter: {
     alignItems: 'center',
-    borderColor: Colors.dark.borderSubtle,
     borderRadius: 999,
     borderWidth: 1,
     justifyContent: 'center',
@@ -191,8 +195,7 @@ const stylesStatic = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
-  filterActive: { borderColor: Colors.dark.accent },
-  filterLabel: { color: Colors.dark.textPrimary, fontSize: Typography.caption.fontSize },
+  filterLabel: { fontSize: Typography.caption.fontSize },
   filters: { gap: Spacing.two },
 });
 
