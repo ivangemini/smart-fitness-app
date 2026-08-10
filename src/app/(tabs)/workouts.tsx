@@ -5,15 +5,24 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getFloatingTabBarBottomClearance } from '@/components/navigation/floatingTabBarLayout';
+import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import WorkoutsScreen from '@/features/workouts/screens/WorkoutsScreen';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 export default function WorkoutsRoute() {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { t } = useLocalization();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const insets = useSafeAreaInsets();
   const historyBottom = getFloatingTabBarBottomClearance(insets.bottom, Spacing.two);
 
@@ -25,31 +34,31 @@ export default function WorkoutsRoute() {
         accessibilityLabel={t('workouts.historyAccessibility')}
         accessibilityRole="button"
         onPress={() => router.push('/workout-history')}
-        style={({ pressed }) => [
-          styles.historyButton,
-          { bottom: historyBottom },
-          pressed && styles.pressed,
-        ]}>
-        <History color={colors.accent} size={18} strokeWidth={2.2} />
-        <Text style={styles.historyLabel}>{t('workouts.history')}</Text>
+        style={[styles.historyButton, { bottom: historyBottom }]}>
+        {({ pressed }) => (
+          <LiquidGlassSurface
+            blur
+            radius={Radii.pill}
+            style={[
+              styles.historySurface,
+              pressed && styles.historySurfacePressed,
+            ]}
+            variant="elevated">
+            <History color={colors.accent} size={18} strokeWidth={2.2} />
+            <Text style={styles.historyLabel}>{t('workouts.history')}</Text>
+          </LiquidGlassSurface>
+        )}
       </Pressable>
     </View>
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     historyButton: {
-      alignItems: 'center',
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.borderSubtle,
       borderRadius: Radii.pill,
-      borderWidth: StyleSheet.hairlineWidth,
-      flexDirection: 'row',
-      gap: Spacing.one,
       left: Spacing.three,
       minHeight: 44,
-      paddingHorizontal: Spacing.three,
       position: 'absolute',
       zIndex: 20,
     },
@@ -59,8 +68,15 @@ const createStyles = (colors: typeof Colors.light) =>
       fontWeight: '900',
       lineHeight: Typography.label.lineHeight,
     },
-    pressed: {
-      opacity: 0.68,
+    historySurface: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: Spacing.one,
+      minHeight: 44,
+      paddingHorizontal: Spacing.three,
+    },
+    historySurfacePressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     screen: {
       backgroundColor: colors.background,
