@@ -42,6 +42,22 @@ describe('list virtualization boundaries', () => {
     expect(source).not.toContain('{history.map(');
   });
 
+  test('Active Session keeps one FlatList boundary for arbitrary exercise count', () => {
+    const body = readSource(
+      'src/features/workouts/components/session/WorkoutSessionBody.tsx',
+    );
+
+    expect(body).toContain('<FlatList');
+    expect(body).toContain('data={visibleExercises}');
+    expect(body).toContain('keyExtractor={(exercise) => exercise.id}');
+    expect(body).not.toContain('<ScrollView');
+    expect(body).not.toContain('visibleExercises.map(');
+    expect(body).toContain('automaticallyAdjustKeyboardInsets');
+    expect(body).toContain('keyboardShouldPersistTaps="handled"');
+    expect(body).toContain('<WorkoutSessionEmptyWorkoutCard');
+    expect(body).toContain('<WorkoutSessionFooterActions');
+  });
+
   test('Exercise Library keeps one SectionList and stable exercise ids', () => {
     const route = readSource('src/app/workouts/exercise-library.tsx');
     const browser = readSource(
