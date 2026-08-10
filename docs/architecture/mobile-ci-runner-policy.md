@@ -8,7 +8,7 @@ Routine authoritative Mobile CI runs on the dedicated self-hosted runner label:
 
 `[self-hosted, linux, x64, hermes-mobile-ci]`
 
-This applies to runtime pull-request validation, `main` validation, and manual Mobile CI dispatches.
+Runtime pull requests, direct non-merge pushes to `main`, and manual Mobile CI dispatches use this runner class.
 
 ## Preserved validation gate
 
@@ -26,6 +26,12 @@ Moving the runner does not reduce the required validation surface. The authorita
 
 Documentation-only changes remain excluded through the existing path filters.
 
+## Merge-push deduplication
+
+A normal pull request must pass the authoritative exact-head Mobile CI before merge. The subsequent GitHub-generated `Merge pull request #…` push to `main` is the same validated source tree wrapped in the merge commit and must not immediately repeat the full gate.
+
+The workflow therefore skips merge-generated `main` pushes while retaining validation for direct/non-merge pushes to `main` and manual dispatch. This matches the existing backend CI deduplication contract and prevents already-validated merges from monopolizing the single Hermes runner while other repository checks wait.
+
 ## Why Hermes is authoritative for routine validation
 
 The same `hermes-mobile-ci` runner class already executes the scheduled mobile adversarial model job and the mobile release-validation job, including Node/npm installation, mobile tests, Expo Doctor, and Expo export. Routine Mobile CI therefore does not require a separate GitHub-hosted Linux execution environment.
@@ -40,4 +46,4 @@ Do not run both Hermes and GitHub-hosted copies of the same authoritative mobile
 
 ## Release and deployment boundary
 
-This runner policy changes CI execution location only. It does not authorize OTA/EAS publication, native builds or installation, backend deployment, production migration execution, provider activation, credential changes, or store submission.
+This runner policy changes CI execution location and deduplication only. It does not authorize OTA/EAS publication, native builds or installation, backend deployment, production migration execution, provider activation, credential changes, or store submission.
