@@ -34,6 +34,7 @@ import {
   markActiveWorkoutSessionCompleted,
   markActiveWorkoutSessionFinishing,
 } from '@/lib/workouts';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import { createWorkoutSessionFinishStyles } from './workoutSessionFinishScreen.styles';
 
 const getSessionTitleKey = () => {
@@ -91,11 +92,18 @@ const formatDateTimeLabel = (
 export default function WorkoutSessionFinishScreen() {
   const { saveWorkoutSession } = useAppActions();
   const { isRestoringState } = useAppInfrastructure();
-  const { colors } = useWorkoutTheme();
+  const { colors, isWorkoutDarkMode } = useWorkoutTheme();
   const { formatDate, locale, t } = useLocalization();
   const shareCopy = getShareWorkoutCopy(locale);
   const insets = useSafeAreaInsets();
-  const styles = useMemo(() => createWorkoutSessionFinishStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(isWorkoutDarkMode ? 'dark' : 'light'),
+    [isWorkoutDarkMode],
+  );
+  const styles = useMemo(
+    () => createWorkoutSessionFinishStyles(colors, glass),
+    [colors, glass],
+  );
   const [draft, setDraft] = useState<ReturnType<typeof getActiveWorkoutSessionDraft> | undefined>(
     undefined,
   );
@@ -236,7 +244,10 @@ export default function WorkoutSessionFinishScreen() {
               accessibilityLabel={t('workouts.finish.resume')}
               accessibilityRole="button"
               onPress={() => router.back()}
-              style={({ pressed }) => [styles.resumeButton, pressed && styles.pressed]}>
+              style={({ pressed }) => [
+                styles.resumeButton,
+                pressed && styles.resumeButtonPressed,
+              ]}>
               <Text style={styles.resumeChevron}>‹</Text>
               <Text numberOfLines={2} style={styles.resumeLabel}>
                 {t('workouts.finish.resume')}
@@ -265,7 +276,10 @@ export default function WorkoutSessionFinishScreen() {
                   accessibilityRole="button"
                   hitSlop={11}
                   onPress={() => setTitle('')}
-                  style={({ pressed }) => [styles.clearButton, pressed && styles.pressed]}>
+                  style={({ pressed }) => [
+                    styles.clearButton,
+                    pressed && styles.clearButtonPressed,
+                  ]}>
                   <Text style={styles.clearLabel}>×</Text>
                 </Pressable>
               ) : null}
@@ -287,7 +301,10 @@ export default function WorkoutSessionFinishScreen() {
 
             <Pressable
               onPress={openWorkoutMediaIntegration}
-              style={({ pressed }) => [styles.mediaButton, pressed && styles.pressed]}>
+              style={({ pressed }) => [
+                styles.mediaButton,
+                pressed && styles.mediaButtonPressed,
+              ]}>
               <Text style={styles.mediaIcon}>▧</Text>
               <Text style={styles.mediaLabel}>{t('workouts.finish.addMedia')}</Text>
             </Pressable>
@@ -322,7 +339,10 @@ export default function WorkoutSessionFinishScreen() {
 
           <Pressable
             onPress={discardWorkout}
-            style={({ pressed }) => [styles.discardButton, pressed && styles.pressed]}>
+            style={({ pressed }) => [
+              styles.discardButton,
+              pressed && styles.discardButtonPressed,
+            ]}>
             <Text style={styles.discardLabel}>{t('workouts.session.discard')}</Text>
           </Pressable>
         </View>
@@ -361,8 +381,15 @@ export default function WorkoutSessionFinishScreen() {
 }
 
 function InfoRow({ icon, label }: { icon: string; label: string }) {
-  const { colors } = useWorkoutTheme();
-  const styles = useMemo(() => createWorkoutSessionFinishStyles(colors), [colors]);
+  const { colors, isWorkoutDarkMode } = useWorkoutTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(isWorkoutDarkMode ? 'dark' : 'light'),
+    [isWorkoutDarkMode],
+  );
+  const styles = useMemo(
+    () => createWorkoutSessionFinishStyles(colors, glass),
+    [colors, glass],
+  );
 
   return (
     <View style={styles.infoRow}>
@@ -388,8 +415,15 @@ function IntegrationRow({
   onValueChange: (value: boolean) => void;
   value: boolean;
 }) {
-  const { colors } = useWorkoutTheme();
-  const styles = useMemo(() => createWorkoutSessionFinishStyles(colors), [colors]);
+  const { colors, isWorkoutDarkMode } = useWorkoutTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(isWorkoutDarkMode ? 'dark' : 'light'),
+    [isWorkoutDarkMode],
+  );
+  const styles = useMemo(
+    () => createWorkoutSessionFinishStyles(colors, glass),
+    [colors, glass],
+  );
 
   return (
     <View style={styles.integrationRow}>

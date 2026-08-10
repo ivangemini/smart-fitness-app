@@ -1,17 +1,26 @@
 import { StyleSheet } from 'react-native';
 
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
+import type { LiquidGlassPalette } from '@/theme/liquidGlass';
 
-export const createWorkoutSessionFinishStyles = (colors: typeof Colors.light) =>
+export const createWorkoutSessionFinishStyles = (
+  colors: typeof Colors.light,
+  glass: LiquidGlassPalette,
+) =>
   StyleSheet.create({
     clearButton: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderRadius: 999,
+      borderWidth: StyleSheet.hairlineWidth,
       flexShrink: 0,
       height: 22,
       justifyContent: 'center',
       width: 22,
+    },
+    clearButtonPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     clearLabel: {
       color: colors.textMuted,
@@ -34,6 +43,9 @@ export const createWorkoutSessionFinishStyles = (colors: typeof Colors.light) =>
       borderTopWidth: StyleSheet.hairlineWidth,
       justifyContent: 'center',
       minHeight: 50,
+    },
+    discardButtonPressed: {
+      backgroundColor: colors.errorSoft,
     },
     discardLabel: {
       color: colors.error,
@@ -149,6 +161,7 @@ export const createWorkoutSessionFinishStyles = (colors: typeof Colors.light) =>
     },
     mediaButton: {
       alignItems: 'center',
+      backgroundColor: glass.controlFill,
       borderColor: colors.accent,
       borderCurve: 'continuous',
       borderRadius: 8,
@@ -158,6 +171,9 @@ export const createWorkoutSessionFinishStyles = (colors: typeof Colors.light) =>
       height: 154,
       justifyContent: 'center',
       width: 154,
+    },
+    mediaButtonPressed: {
+      backgroundColor: glass.semanticAccentFill,
     },
     mediaIcon: {
       color: colors.textPrimary,
@@ -179,15 +195,16 @@ export const createWorkoutSessionFinishStyles = (colors: typeof Colors.light) =>
       minHeight: 76,
       padding: Spacing.two,
     },
-    pressed: {
-      opacity: 0.72,
-    },
     resumeButton: {
       alignItems: 'center',
       flex: 1,
       flexDirection: 'row',
       minHeight: 44,
       minWidth: 0,
+    },
+    resumeButtonPressed: {
+      backgroundColor: glass.controlPressedFill,
+      borderRadius: 8,
     },
     resumeChevron: {
       color: colors.textPrimary,
