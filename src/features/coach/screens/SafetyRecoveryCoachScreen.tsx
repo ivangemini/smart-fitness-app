@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { FlatList, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
@@ -25,10 +25,26 @@ import {
 } from '@/storage';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import { buildSafetyRecoveryReviewSnapshot } from '../safetyRecoveryReviewSnapshot';
-import { buildSafetyRecoveryViewModel } from '../safetyRecoveryViewModel';
+import {
+  buildSafetyRecoveryViewModel,
+  type SafetyRecoveryIssueView,
+  type SafetyRecoveryRestrictionView,
+} from '../safetyRecoveryViewModel';
 import { createSafetyRecoveryCoachStyles } from './safetyRecoveryCoachScreen.styles';
 
 const LOOKBACK_OPTIONS = [7, 14, 30] as const;
+
+type SafetyRecoveryReviewListItem =
+  | {
+      id: string;
+      kind: 'restriction';
+      restriction: SafetyRecoveryRestrictionView;
+    }
+  | {
+      id: string;
+      issue: SafetyRecoveryIssueView;
+      kind: 'issue';
+    };
 
 const createIdempotencyKey = (lookbackDays: number): string =>
   `mobile-safety-recovery-review-${lookbackDays}-${Date.now().toString(36)}-${Math.random()
@@ -69,6 +85,25 @@ export default function SafetyRecoveryCoachScreen() {
     [run],
   );
   const presentation = viewModel ? copy.viewModelCopy(viewModel) : null;
+  const resultReadiness = viewModel?.kind === 'result' ? viewModel.readiness : null;
+  const reviewItems = useMemo<SafetyRecoveryReviewListItem[]>(() => {
+    if (!resultReadiness) return [];
+    return [
+      ...resultReadiness.restrictions.map((restriction) => ({
+        id: `restriction:${restriction.limitationId}`,
+        kind: 'restriction' as const,
+        restriction,
+      })),
+      ...resultReadiness.issues.map((issue, index) => ({
+        id: `issue:${issue.code}:${resultReadiness.issueKeys?.[index] ?? index}`,
+        issue,
+        kind: 'issue' as const,
+      })),
+    ];
+  }, [resultReadiness]);
+  const restrictionCount = resultReadiness?.restrictions.length ?? 0;
+  const hasReviewRows = reviewItems.length > 0;
+  const showNoFindings = resultReadiness?.issues.length === 0;
 
   const coachApi = useMemo(
     () =>
@@ -192,236 +227,267 @@ export default function SafetyRecoveryCoachScreen() {
         </View>
       </View>
 
-      <ScrollView
+      <FlatList
         contentContainerStyle={[
           styles.content,
           { paddingBottom: insets.bottom + Spacing.eight },
         ]}
-        showsVerticalScrollIndicator={false}>
-        <View style={styles.container}>
-          <AppCard>
-            <View style={styles.badgeRow}>
-              <Text style={styles.previewBadge}>{copy.deterministic}</Text>
-              <Text style={styles.statusText}>
-                {capabilitiesLoading
-                  ? copy.checkingCapability
-                  : safetyAvailable
-                    ? copy.available
-                    : copy.unavailable}
-              </Text>
-            </View>
-            <Text style={styles.cardTitle}>{copy.readinessReview}</Text>
-            <Text style={styles.bodyText}>{copy.introduction}</Text>
-          </AppCard>
-
-          {loading ? (
-            <AppCard>
-              <Text style={styles.cardTitle}>{copy.preparing}</Text>
-            </AppCard>
-          ) : !isAuthenticated ? (
-            <AppCard>
-              <Text style={styles.cardTitle}>{copy.signInRequired}</Text>
-              <Text style={styles.bodyText}>{copy.signInBody}</Text>
-              <PrimaryButton label={copy.signIn} onPress={() => router.push('/auth/sign-in')} />
-            </AppCard>
-          ) : (
-            <AppCard>
-              <Text style={styles.cardTitle}>{copy.reviewPeriod}</Text>
-              <View style={styles.periodRow}>
-                {LOOKBACK_OPTIONS.map((days) => {
-                  const selected = days === lookbackDays;
-                  return (
-                    <Pressable
-                      key={days}
-                      accessibilityLabel={copy.days(
-                        days,
-                        formatNumber(days, { maximumFractionDigits: 0 }),
-                      )}
-                      accessibilityRole="button"
-                      accessibilityState={{ selected }}
-                      disabled={busy}
-                      onPress={() => {
-                        setLookbackDays(days);
-                        setRun(null);
-                        setError(null);
-                        setSnapshotMessage(null);
-                      }}
-                      style={({ pressed }) => [
-                        styles.periodButton,
-                        selected && styles.periodButtonSelected,
-                        pressed && !busy && styles.pressed,
-                      ]}>
-                      <Text style={[styles.periodLabel, selected && styles.periodLabelSelected]}>
-                        {copy.days(days, formatNumber(days, { maximumFractionDigits: 0 }))}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-              <PrimaryButton
-                disabled={!safetyAvailable || busy || capabilitiesLoading}
-                label={copy.runReview}
-                loading={busy}
-                onPress={() => void startReview()}
-              />
-              {!capabilitiesLoading && !safetyAvailable ? (
-                <Text style={styles.disclaimer}>{copy.capabilityHint}</Text>
-              ) : null}
-            </AppCard>
-          )}
-
-          {error ? (
-            <AppCard style={styles.errorCard}>
-              <Text style={styles.errorTitle}>{copy.requestError}</Text>
-              <Text style={styles.bodyText}>{error}</Text>
-            </AppCard>
-          ) : null}
-
-          {viewModel && presentation ? (
-            <AppCard>
-              <View style={styles.resultHeader}>
-                <Text style={styles.cardTitle}>{presentation.title}</Text>
-                <Text style={styles.resultStatus}>
-                  {run ? copy.runStatusLabel(run.run.status) : ''}
-                </Text>
-              </View>
-              <Text style={styles.bodyText}>{presentation.message}</Text>
-
-              {viewModel.kind === 'result' ? (
+        data={reviewItems}
+        keyExtractor={(item) => item.id}
+        ListFooterComponent={
+          resultReadiness && hasReviewRows ? (
+            <View style={styles.container}>
+              <AppCard style={styles.resultGroupFooter}>
                 <View style={styles.resultStack}>
-                  <View style={styles.metricGrid}>
-                    <View style={styles.metricCell}>
-                      <Text style={styles.metricValue}>
-                        {formatNumber(
-                          Math.round(viewModel.readiness.recommendedLoadMultiplier * 100),
-                          { maximumFractionDigits: 0 },
-                        )}%
-                      </Text>
-                      <Text style={styles.metricLabel}>{copy.recommendedLoad}</Text>
-                    </View>
-                    <View style={styles.metricCell}>
-                      <Text style={styles.metricValue}>
-                        {formatNumber(viewModel.readiness.signalCount, {
-                          maximumFractionDigits: 0,
-                        })}
-                      </Text>
-                      <Text style={styles.metricLabel}>{copy.recoverySignals}</Text>
-                    </View>
-                  </View>
-
-                  <View style={styles.infoRow}>
-                    <Text style={styles.metaText}>{copy.readinessStatus}</Text>
-                    <Text style={styles.infoValue}>
-                      {copy.readinessStatusLabels[viewModel.readiness.status]}
-                    </Text>
-                  </View>
-                  <View style={styles.infoRow}>
-                    <Text style={styles.metaText}>{copy.latestCheckIn}</Text>
-                    <Text style={styles.infoValue}>
-                      {formatCheckIn(
-                        viewModel.readiness.latestCheckInAt,
-                        viewModel.readiness.latestCheckInAgeHours,
-                      )}
-                    </Text>
-                  </View>
-                  <View style={styles.infoRow}>
-                    <Text style={styles.metaText}>{copy.explicitConfirmation}</Text>
-                    <Text style={styles.infoValue}>
-                      {viewModel.readiness.requiresExplicitConfirmation
-                        ? copy.required
-                        : copy.notRequired}
-                    </Text>
-                  </View>
-                  <View style={styles.infoRow}>
-                    <Text style={styles.metaText}>{copy.automaticApplication}</Text>
-                    <Text style={styles.infoValue}>{copy.neverApproved}</Text>
-                  </View>
-
-                  {viewModel.readiness.restrictions.length > 0 ? (
-                    <View style={styles.sectionBlock}>
-                      <Text style={styles.sectionTitle}>{copy.activeRestrictions}</Text>
-                      {viewModel.readiness.restrictions.map((restriction) => (
-                        <View key={restriction.limitationId} style={styles.listRow}>
-                          <View style={styles.listCopy}>
-                            <Text style={styles.listTitle}>
-                              {lookupLabel(
-                                limitationCopy.bodyRegionLabels as Record<string, string>,
-                                restriction.bodyRegion,
-                                copy.unknownValue,
-                              )}{' '}
-                              ·{' '}
-                              {lookupLabel(
-                                limitationCopy.sideLabels as Record<string, string>,
-                                restriction.side,
-                                copy.unknownValue,
-                              )}
-                            </Text>
-                            <Text style={styles.bodyText}>
-                              {copy.actionLabels[restriction.action]} ·{' '}
-                              {copy.maximumAffectedLoad(
-                                formatNumber(
-                                  Math.round(restriction.maximumLoadMultiplier * 100),
-                                  { maximumFractionDigits: 0 },
-                                ),
-                              )}
-                            </Text>
-                            {restriction.movementPatterns.length > 0 ? (
-                              <Text style={styles.metaText}>
-                                {copy.movements}:{' '}
-                                {restriction.movementPatterns
-                                  .map((value) =>
-                                    lookupLabel(
-                                      limitationCopy.movementLabels as Record<string, string>,
-                                      value,
-                                      copy.unknownValue,
-                                    ),
-                                  )
-                                  .join(', ')}
-                              </Text>
-                            ) : null}
-                          </View>
-                          <Text style={styles.restrictionSeverity}>
-                            {lookupLabel(
-                              limitationCopy.severityLabels as Record<string, string>,
-                              restriction.severity,
-                              copy.unknownValue,
-                            )}
-                          </Text>
-                        </View>
-                      ))}
-                    </View>
-                  ) : null}
-
-                  {viewModel.readiness.issues.length > 0 ? (
-                    <View style={styles.sectionBlock}>
-                      <Text style={styles.sectionTitle}>{copy.reviewFindings}</Text>
-                      {viewModel.readiness.issues.map((issue, index) => {
-                        const issuePresentation = copy.issueCopy(issue.code);
-                        return (
-                          <View key={`${issue.code}-${index}`} style={styles.issueRow}>
-                            <Text style={styles.issueBadge}>
-                              {copy.issueSeverityLabels[issue.severity]}
-                            </Text>
-                            <View style={styles.listCopy}>
-                              <Text style={styles.listTitle}>{issuePresentation.title}</Text>
-                              <Text style={styles.bodyText}>{issuePresentation.message}</Text>
-                            </View>
-                          </View>
-                        );
-                      })}
-                    </View>
-                  ) : (
+                  {showNoFindings ? (
                     <Text style={styles.successText}>{copy.noFindings}</Text>
-                  )}
-
+                  ) : null}
                   {snapshotMessage ? <Text style={styles.metaText}>{snapshotMessage}</Text> : null}
                   <Text style={styles.disclaimer}>{copy.disclaimer}</Text>
                 </View>
-              ) : null}
+              </AppCard>
+            </View>
+          ) : null
+        }
+        ListHeaderComponent={
+          <View style={styles.container}>
+            <AppCard>
+              <View style={styles.badgeRow}>
+                <Text style={styles.previewBadge}>{copy.deterministic}</Text>
+                <Text style={styles.statusText}>
+                  {capabilitiesLoading
+                    ? copy.checkingCapability
+                    : safetyAvailable
+                      ? copy.available
+                      : copy.unavailable}
+                </Text>
+              </View>
+              <Text style={styles.cardTitle}>{copy.readinessReview}</Text>
+              <Text style={styles.bodyText}>{copy.introduction}</Text>
             </AppCard>
-          ) : null}
-        </View>
-      </ScrollView>
+
+            {loading ? (
+              <AppCard>
+                <Text style={styles.cardTitle}>{copy.preparing}</Text>
+              </AppCard>
+            ) : !isAuthenticated ? (
+              <AppCard>
+                <Text style={styles.cardTitle}>{copy.signInRequired}</Text>
+                <Text style={styles.bodyText}>{copy.signInBody}</Text>
+                <PrimaryButton label={copy.signIn} onPress={() => router.push('/auth/sign-in')} />
+              </AppCard>
+            ) : (
+              <AppCard>
+                <Text style={styles.cardTitle}>{copy.reviewPeriod}</Text>
+                <View style={styles.periodRow}>
+                  {LOOKBACK_OPTIONS.map((days) => {
+                    const selected = days === lookbackDays;
+                    return (
+                      <Pressable
+                        key={days}
+                        accessibilityLabel={copy.days(
+                          days,
+                          formatNumber(days, { maximumFractionDigits: 0 }),
+                        )}
+                        accessibilityRole="button"
+                        accessibilityState={{ selected }}
+                        disabled={busy}
+                        onPress={() => {
+                          setLookbackDays(days);
+                          setRun(null);
+                          setError(null);
+                          setSnapshotMessage(null);
+                        }}
+                        style={({ pressed }) => [
+                          styles.periodButton,
+                          selected && styles.periodButtonSelected,
+                          pressed && !busy && styles.pressed,
+                        ]}>
+                        <Text
+                          style={[
+                            styles.periodLabel,
+                            selected && styles.periodLabelSelected,
+                          ]}>
+                          {copy.days(days, formatNumber(days, { maximumFractionDigits: 0 }))}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+                <PrimaryButton
+                  disabled={!safetyAvailable || busy || capabilitiesLoading}
+                  label={copy.runReview}
+                  loading={busy}
+                  onPress={() => void startReview()}
+                />
+                {!capabilitiesLoading && !safetyAvailable ? (
+                  <Text style={styles.disclaimer}>{copy.capabilityHint}</Text>
+                ) : null}
+              </AppCard>
+            )}
+
+            {error ? (
+              <AppCard style={styles.errorCard}>
+                <Text style={styles.errorTitle}>{copy.requestError}</Text>
+                <Text style={styles.bodyText}>{error}</Text>
+              </AppCard>
+            ) : null}
+
+            {viewModel && presentation ? (
+              <AppCard
+                style={resultReadiness && hasReviewRows ? styles.resultGroupHeader : undefined}>
+                <View style={styles.resultHeader}>
+                  <Text style={styles.cardTitle}>{presentation.title}</Text>
+                  <Text style={styles.resultStatus}>
+                    {run ? copy.runStatusLabel(run.run.status) : ''}
+                  </Text>
+                </View>
+                <Text style={styles.bodyText}>{presentation.message}</Text>
+
+                {resultReadiness ? (
+                  <View style={styles.resultStack}>
+                    <View style={styles.metricGrid}>
+                      <View style={styles.metricCell}>
+                        <Text style={styles.metricValue}>
+                          {formatNumber(
+                            Math.round(resultReadiness.recommendedLoadMultiplier * 100),
+                            { maximumFractionDigits: 0 },
+                          )}%
+                        </Text>
+                        <Text style={styles.metricLabel}>{copy.recommendedLoad}</Text>
+                      </View>
+                      <View style={styles.metricCell}>
+                        <Text style={styles.metricValue}>
+                          {formatNumber(resultReadiness.signalCount, {
+                            maximumFractionDigits: 0,
+                          })}
+                        </Text>
+                        <Text style={styles.metricLabel}>{copy.recoverySignals}</Text>
+                      </View>
+                    </View>
+
+                    <View style={styles.infoRow}>
+                      <Text style={styles.metaText}>{copy.readinessStatus}</Text>
+                      <Text style={styles.infoValue}>
+                        {copy.readinessStatusLabels[resultReadiness.status]}
+                      </Text>
+                    </View>
+                    <View style={styles.infoRow}>
+                      <Text style={styles.metaText}>{copy.latestCheckIn}</Text>
+                      <Text style={styles.infoValue}>
+                        {formatCheckIn(
+                          resultReadiness.latestCheckInAt,
+                          resultReadiness.latestCheckInAgeHours,
+                        )}
+                      </Text>
+                    </View>
+                    <View style={styles.infoRow}>
+                      <Text style={styles.metaText}>{copy.explicitConfirmation}</Text>
+                      <Text style={styles.infoValue}>
+                        {resultReadiness.requiresExplicitConfirmation
+                          ? copy.required
+                          : copy.notRequired}
+                      </Text>
+                    </View>
+                    <View style={styles.infoRow}>
+                      <Text style={styles.metaText}>{copy.automaticApplication}</Text>
+                      <Text style={styles.infoValue}>{copy.neverApproved}</Text>
+                    </View>
+
+                    {!hasReviewRows && showNoFindings ? (
+                      <Text style={styles.successText}>{copy.noFindings}</Text>
+                    ) : null}
+                    {!hasReviewRows ? (
+                      <>
+                        {snapshotMessage ? (
+                          <Text style={styles.metaText}>{snapshotMessage}</Text>
+                        ) : null}
+                        <Text style={styles.disclaimer}>{copy.disclaimer}</Text>
+                      </>
+                    ) : null}
+                  </View>
+                ) : null}
+              </AppCard>
+            ) : null}
+          </View>
+        }
+        renderItem={({ item, index }) => (
+          <View style={styles.container}>
+            <AppCard style={styles.resultGroupRow}>
+              {item.kind === 'restriction' ? (
+                <>
+                  {index === 0 ? (
+                    <Text style={styles.sectionTitle}>{copy.activeRestrictions}</Text>
+                  ) : null}
+                  <View style={styles.listRow}>
+                    <View style={styles.listCopy}>
+                      <Text style={styles.listTitle}>
+                        {lookupLabel(
+                          limitationCopy.bodyRegionLabels as Record<string, string>,
+                          item.restriction.bodyRegion,
+                          copy.unknownValue,
+                        )}{' '}
+                        ·{' '}
+                        {lookupLabel(
+                          limitationCopy.sideLabels as Record<string, string>,
+                          item.restriction.side,
+                          copy.unknownValue,
+                        )}
+                      </Text>
+                      <Text style={styles.bodyText}>
+                        {copy.actionLabels[item.restriction.action]} ·{' '}
+                        {copy.maximumAffectedLoad(
+                          formatNumber(
+                            Math.round(item.restriction.maximumLoadMultiplier * 100),
+                            { maximumFractionDigits: 0 },
+                          ),
+                        )}
+                      </Text>
+                      {item.restriction.movementPatterns.length > 0 ? (
+                        <Text style={styles.metaText}>
+                          {copy.movements}:{' '}
+                          {item.restriction.movementPatterns
+                            .map((value) =>
+                              lookupLabel(
+                                limitationCopy.movementLabels as Record<string, string>,
+                                value,
+                                copy.unknownValue,
+                              ),
+                            )
+                            .join(', ')}
+                        </Text>
+                      ) : null}
+                    </View>
+                    <Text style={styles.restrictionSeverity}>
+                      {lookupLabel(
+                        limitationCopy.severityLabels as Record<string, string>,
+                        item.restriction.severity,
+                        copy.unknownValue,
+                      )}
+                    </Text>
+                  </View>
+                </>
+              ) : (
+                <>
+                  {index === restrictionCount ? (
+                    <Text style={styles.sectionTitle}>{copy.reviewFindings}</Text>
+                  ) : null}
+                  <View style={styles.issueRow}>
+                    <Text style={styles.issueBadge}>
+                      {copy.issueSeverityLabels[item.issue.severity]}
+                    </Text>
+                    <View style={styles.listCopy}>
+                      <Text style={styles.listTitle}>{copy.issueCopy(item.issue.code).title}</Text>
+                      <Text style={styles.bodyText}>{copy.issueCopy(item.issue.code).message}</Text>
+                    </View>
+                  </View>
+                </>
+              )}
+            </AppCard>
+          </View>
+        )}
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   );
 }

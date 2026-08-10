@@ -38,7 +38,7 @@ describe('LG-3I Coach secondary shared navigation', () => {
     expect(source).not.toContain('backLabel:');
   });
 
-  it('preserves Safety lookback press feedback and review lifecycle', () => {
+  it('preserves Safety lookback press feedback, review lifecycle and result grouping', () => {
     const screen = readSource('src/features/coach/screens/SafetyRecoveryCoachScreen.tsx');
     const styles = readSource('src/features/coach/screens/safetyRecoveryCoachScreen.styles.ts');
 
@@ -47,7 +47,13 @@ describe('LG-3I Coach secondary shared navigation', () => {
     expect(screen).toContain('coachApi.startSafetyRecoveryRun');
     expect(screen).toContain('coachApi.waitForTerminalRun');
     expect(screen).toContain('reviewStore.set(snapshot)');
+    expect(screen).toContain('styles.resultGroupHeader');
+    expect(screen).toContain('styles.resultGroupRow');
+    expect(screen).toContain('styles.resultGroupFooter');
     expect(styles).toContain('pressed:');
+    expect(styles).toContain('resultGroupHeader:');
+    expect(styles).toContain('resultGroupRow:');
+    expect(styles).toContain('resultGroupFooter:');
   });
 
   it('preserves Recovery and User Limitation persistence/sync contracts', () => {

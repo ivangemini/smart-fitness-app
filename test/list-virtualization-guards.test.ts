@@ -58,6 +58,22 @@ describe('list virtualization boundaries', () => {
     expect(body).toContain('<WorkoutSessionFooterActions');
   });
 
+  test('Safety Recovery review virtualizes unbounded restriction and finding rows', () => {
+    const screen = readSource(
+      'src/features/coach/screens/SafetyRecoveryCoachScreen.tsx',
+    );
+    const viewModel = readSource('src/features/coach/safetyRecoveryViewModel.ts');
+
+    expect(screen).toContain('<FlatList');
+    expect(screen).toContain('data={reviewItems}');
+    expect(screen).toContain('keyExtractor={(item) => item.id}');
+    expect(screen).not.toContain('<ScrollView');
+    expect(screen).toContain('id: `restriction:${restriction.limitationId}`');
+    expect(screen).toContain('resultReadiness.issueKeys?.[index]');
+    expect(viewModel).toContain('issueKeys?: string[];');
+    expect(viewModel).toContain("typeof path !== 'string'");
+  });
+
   test('Exercise Library keeps one SectionList and stable exercise ids', () => {
     const route = readSource('src/app/workouts/exercise-library.tsx');
     const browser = readSource(

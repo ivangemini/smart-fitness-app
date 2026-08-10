@@ -184,6 +184,29 @@ export const createSafetyRecoveryCoachStyles = (colors: typeof Colors.light) =>
       fontSize: Typography.caption.fontSize,
       fontWeight: '800',
     },
+    resultGroupFooter: {
+      borderTopLeftRadius: 0,
+      borderTopRightRadius: 0,
+      borderTopWidth: 0,
+      elevation: 0,
+      shadowOpacity: 0,
+    },
+    resultGroupHeader: {
+      borderBottomLeftRadius: 0,
+      borderBottomRightRadius: 0,
+      borderBottomWidth: 0,
+      elevation: 0,
+      shadowOpacity: 0,
+    },
+    resultGroupRow: {
+      borderBottomWidth: 0,
+      borderRadius: 0,
+      borderTopWidth: 0,
+      elevation: 0,
+      paddingBottom: Spacing.three,
+      paddingTop: 0,
+      shadowOpacity: 0,
+    },
     resultHeader: {
       alignItems: 'center',
       flexDirection: 'row',
@@ -201,9 +224,6 @@ export const createSafetyRecoveryCoachStyles = (colors: typeof Colors.light) =>
     screen: {
       backgroundColor: colors.background,
       flex: 1,
-    },
-    sectionBlock: {
-      gap: Spacing.two,
     },
     sectionTitle: {
       color: colors.textPrimary,
