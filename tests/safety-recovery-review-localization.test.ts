@@ -59,6 +59,7 @@ describe('Safety Recovery review localization', () => {
     expect(screen).not.toContain('issue.message');
     expect(screen).not.toContain('viewModel.message');
     expect(screen).toContain('copy.requestErrorBody');
-    expect(screen).toContain('issuePresentation.message');
+    expect(screen).toContain('copy.issueCopy(item.issue.code).title');
+    expect(screen).toContain('copy.issueCopy(item.issue.code).message');
   });
 });
