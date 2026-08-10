@@ -5,13 +5,13 @@ Updated: 2026-08-10
 ## Verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current runtime `main`: `dcc62356d946f4e2c309aa24666322e9a671f067`.
-- Latest runtime merge: PR #574 — workout-post comments now use the post-detail screen as their single virtualized list boundary.
-- PR #574 exact validated head: `3d959128c63b46948cef946895352d96658732fa`; Mobile CI #2077 passed before merge.
-- PR #573 exact validated head: `e5769c5e579dc1da9963f7a6e2433214c996dc4a`; Mobile CI #2073 passed before merge.
+- Current runtime `main`: `57565185031b4b0fd1b2c17798947d3500c57976`.
+- Latest runtime merge: PR #577 — completed-workout detail now virtualizes exercise groups through one top-level `FlatList` boundary.
+- PR #577 exact validated head: `93e6affdd5293720dafa59b2f3645be8b0462a2a`; Mobile CI #2079 passed before merge.
+- PR #576 established completed workout history as an immutable read surface for current LG-5 scope and added focused scope evidence.
 - Backend repo: `ivangemini/smart-fitness-backend`.
 - Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
-- Backend PR #215 is the only open project PR at this checkpoint. It remains draft/unvalidated at head `0826ff18dac7d4afe78943d9881c5a530507f1af`; Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI are still queued on Hermes.
+- Backend PR #215 is the only open backend project PR at this checkpoint. It remains draft at head `0826ff18dac7d4afe78943d9881c5a530507f1af`; do not merge it without exact-head required Hermes validation.
 - **LG-H2 Stories is complete for the current image-only v1 source scope.**
 - **Progress/exercise secondary-material reassessment is complete for the current active source scope.**
 - **LG-4 Workouts source convergence is complete.**
@@ -89,6 +89,14 @@ The first exact-head regression run exposed two source guards that still expecte
 
 Exact validated head: `3d959128c63b46948cef946895352d96658732fa`; Mobile CI #2077 green before merge.
 
+### PR #577 — completed-workout exercise-group virtualization
+
+Completed-workout detail no longer eagerly mounts every exercise group through `ScrollView + exerciseGroups.map()`. The screen now owns one top-level `FlatList` boundary with stable exercise identity while preserving summary, empty/not-found, per-set data, RPE, volume and immutable historical Safety & Recovery context.
+
+A focused source regression guard prevents reintroducing the eager top-level collection and also protects the read-only completed-history boundary.
+
+Exact validated head: `93e6affdd5293720dafa59b2f3645be8b0462a2a`; Mobile CI #2079 green before merge.
+
 ## CI execution changes
 
 These are validation-infrastructure changes, not product behavior:
@@ -97,7 +105,7 @@ These are validation-infrastructure changes, not product behavior:
 - PR #563 skips only GitHub-generated merge-push duplicates after an already exact-head validated PR. The authoritative PR gate remains complete.
 - PR #564 persists the runner/cost policy in `AGENTS.md` so later agents do not require the policy to be restated.
 - Backend PR #216 persisted the backend counterpart policy.
-- Backend PR #215 has **not** completed the actual backend workflow migration because its exact-head jobs have not received/finished Hermes execution. Do not merge it until required exact-head validation is green.
+- Backend PR #215 has **not** completed the actual backend workflow migration. Do not merge it until required exact-head validation is green.
 
 ## Documentation audit — 2026-08-10
 
