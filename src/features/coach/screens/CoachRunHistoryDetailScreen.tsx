@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -8,8 +8,9 @@ import { createCoachApi, type CoachRunEnvelope } from '@/api/coach';
 import { parseCoachAppliedChanges } from '@/api/coach/appliedChangeSummary';
 import { parseCoachApplicationProvenance } from '@/api/coach/applicationProvenance';
 import { AppCard } from '@/components/ui/AppCard';
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
-import { Colors, MaxContentWidth, Radii, Spacing, Typography } from '@/constants/theme';
+import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme';
 import { useAuthSession } from '@/hooks/useAuthSession';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
@@ -105,13 +106,11 @@ export default function CoachRunHistoryDetailScreen() {
   return (
     <View style={styles.screen}>
       <View style={[styles.header, { paddingTop: insets.top + Spacing.two }]}>
-        <Pressable
+        <LiquidGlassIconButton
           accessibilityLabel={t('common.back')}
-          accessibilityRole="button"
+          Icon={ChevronLeft}
           onPress={() => router.back()}
-          style={styles.backButton}>
-          <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
-        </Pressable>
+        />
         <View style={styles.headerCopy}>
           <Text style={styles.title}>{copy.title}</Text>
           <Text style={styles.subtitle}>{copy.immutable}</Text>
@@ -287,16 +286,6 @@ const createStyles = (colors: typeof Colors.light) =>
       fontSize: Typography.body.fontSize,
       fontWeight: '700',
     },
-    backButton: {
-      alignItems: 'center',
-      borderColor: colors.borderSubtle,
-      borderRadius: Radii.large,
-      borderWidth: 1,
-      height: 44,
-      justifyContent: 'center',
-      width: 44,
-    },
-    backLabel: { color: colors.textPrimary, fontSize: 32, lineHeight: 34 },
     body: {
       color: colors.textSecondary,
       fontSize: Typography.body.fontSize,

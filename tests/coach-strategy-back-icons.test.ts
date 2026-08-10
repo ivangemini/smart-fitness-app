@@ -21,13 +21,14 @@ const screens = [
 ] as const;
 
 describe('Coach strategy back icon language', () => {
-  it.each(screens)('%s uses the Lucide ChevronLeft action icon', (path) => {
+  it.each(screens)('%s uses ChevronLeft through the shared Liquid Glass action', (path) => {
     const source = readSource(path);
 
     expect(source).toContain("import { ChevronLeft } from 'lucide-react-native';");
-    expect(source).toContain(
-      '<ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />',
-    );
+    expect(source).toContain('LiquidGlassIconButton');
+    expect(source).toContain('Icon={ChevronLeft}');
+    expect(source).toContain('onPress={() => router.back()}');
     expect(source).not.toContain('>‹</Text>');
+    expect(source).not.toContain('styles.backButton');
   });
 });

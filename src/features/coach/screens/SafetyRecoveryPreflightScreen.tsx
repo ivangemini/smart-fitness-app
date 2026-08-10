@@ -1,10 +1,11 @@
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppCard } from '@/components/ui/AppCard';
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { Colors, MaxContentWidth, Radii, Spacing, Typography } from '@/constants/theme';
@@ -83,13 +84,11 @@ export default function SafetyRecoveryPreflightScreen() {
   return (
     <View style={styles.screen}>
       <View style={[styles.header, { paddingTop: insets.top + Spacing.two }]}>
-        <Pressable
+        <LiquidGlassIconButton
           accessibilityLabel={copy.back}
-          accessibilityRole="button"
+          Icon={ChevronLeft}
           onPress={() => router.back()}
-          style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}>
-          <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
-        </Pressable>
+        />
         <View style={styles.headerCopy}>
           <Text style={styles.title}>{copy.title}</Text>
           <Text style={styles.subtitle}>{copy.subtitle}</Text>
@@ -227,18 +226,6 @@ export default function SafetyRecoveryPreflightScreen() {
 
 const createStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
-    backButton: {
-      alignItems: 'center',
-      height: 44,
-      justifyContent: 'center',
-      width: 44,
-    },
-    backLabel: {
-      color: colors.textPrimary,
-      fontSize: 42,
-      fontWeight: '300',
-      lineHeight: 42,
-    },
     bodyText: {
       color: colors.textSecondary,
       fontSize: Typography.body.fontSize,
@@ -312,9 +299,6 @@ const createStyles = (colors: typeof Colors.light) =>
       fontSize: 22,
       fontWeight: '800',
       lineHeight: 28,
-    },
-    pressed: {
-      opacity: 0.65,
     },
     readinessBadge: {
       borderCurve: 'continuous',
