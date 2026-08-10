@@ -1,4 +1,4 @@
-import { Alert, ScrollView, View } from 'react-native';
+import { Alert, FlatList, View } from 'react-native';
 
 import { Spacing } from '@/constants/theme';
 import { getPreviousCompletedSetsForExercise } from '@/features/workouts/sessionScreenModel';
@@ -97,33 +97,47 @@ export function WorkoutSessionBody({
         volume={completedVolume}
       />
 
-      <ScrollView
+      <FlatList
         automaticallyAdjustKeyboardInsets
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={[
           styles.content,
           { paddingBottom: bottomInset + Spacing.five },
         ]}
+        data={visibleExercises}
         keyboardDismissMode="interactive"
         keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-        style={styles.scrollView}>
-        <View style={styles.container}>
-          {isEmptyWorkout && draft.sets.length === 0 ? (
-            <WorkoutSessionEmptyWorkoutCard
-              onAddExercises={onAddExercises}
-              onTestGif={onTestGif}
-              styles={styles}
-            />
-          ) : null}
+        keyExtractor={(exercise) => exercise.id}
+        ListFooterComponent={
+          visibleExercises.length > 0 ? (
+            <View style={styles.container}>
+              <WorkoutSessionFooterActions
+                onAddExercises={onAddExercises}
+                onTestGif={onTestGif}
+                styles={styles}
+                visible
+              />
+            </View>
+          ) : null
+        }
+        ListHeaderComponent={
+          isEmptyWorkout && draft.sets.length === 0 ? (
+            <View style={styles.container}>
+              <WorkoutSessionEmptyWorkoutCard
+                onAddExercises={onAddExercises}
+                onTestGif={onTestGif}
+                styles={styles}
+              />
+            </View>
+          ) : null
+        }
+        renderItem={({ item: exercise }) => {
+          const exerciseSets = draft.sets.filter((set) => set.exerciseId === exercise.id);
+          const previousSets = getPreviousCompletedSetsForExercise(exercise.id, workoutSessions);
 
-          {visibleExercises.map((exercise) => {
-            const exerciseSets = draft.sets.filter((set) => set.exerciseId === exercise.id);
-            const previousSets = getPreviousCompletedSetsForExercise(exercise.id, workoutSessions);
-
-            return (
+          return (
+            <View style={styles.container}>
               <SessionExerciseSection
-                key={exercise.id}
                 draftInputs={draftInputs}
                 exercise={exercise}
                 exerciseCompleted={
@@ -160,17 +174,12 @@ export function WorkoutSessionBody({
                 onWeightChange={(setId, value) => onSetChange(setId, 'weight', value)}
                 previousSets={previousSets}
               />
-            );
-          })}
-
-          <WorkoutSessionFooterActions
-            onAddExercises={onAddExercises}
-            onTestGif={onTestGif}
-            styles={styles}
-            visible={visibleExercises.length > 0}
-          />
-        </View>
-      </ScrollView>
+            </View>
+          );
+        }}
+        showsVerticalScrollIndicator={false}
+        style={styles.scrollView}
+      />
     </>
   );
 }
