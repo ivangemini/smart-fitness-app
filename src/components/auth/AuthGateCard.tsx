@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Alert, Text, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { buildProfileAuthViewModel } from '@/auth/auth-ui';
@@ -12,6 +12,7 @@ import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useAuthSession } from '@/hooks/useAuthSession';
 import { useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 
 import { ChangePasswordModal } from './ChangePasswordModal';
 import { DeleteAccountModal } from './DeleteAccountModal';
@@ -19,6 +20,8 @@ import { DeleteAccountModal } from './DeleteAccountModal';
 export function AuthGateCard() {
   const router = useRouter();
   const { t } = useLocalization();
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const {
     changePassword,
     deleteAccount,
@@ -180,45 +183,46 @@ export function AuthGateCard() {
   );
 }
 
-const styles = {
-  helpText: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.caption.fontSize,
-    lineHeight: Typography.caption.lineHeight,
-  },
-  metaLabel: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.metricSmall.fontSize,
-    fontWeight: Typography.metricSmall.fontWeight,
-    lineHeight: Typography.metricSmall.lineHeight,
-    textTransform: Typography.metricSmall.textTransform,
-  },
-  metaRow: {
-    borderColor: Colors.dark.border,
-    borderTopWidth: 1,
-    gap: Spacing.one,
-    paddingTop: Spacing.two,
-  },
-  metaStack: {
-    gap: Spacing.one,
-  },
-  metaValue: {
-    color: Colors.dark.text,
-    fontSize: Typography.bodyStrong.fontSize,
-    fontWeight: Typography.bodyStrong.fontWeight,
-    lineHeight: Typography.bodyStrong.lineHeight,
-  },
-  note: {
-    color: Colors.dark.textMuted,
-    fontSize: Typography.caption.fontSize,
-    lineHeight: Typography.caption.lineHeight,
-  },
-  title: {
-    color: Colors.dark.text,
-    fontSize: Typography.sectionTitle.fontSize,
-    fontWeight: Typography.sectionTitle.fontWeight,
-    letterSpacing: Typography.sectionTitle.letterSpacing,
-    lineHeight: Typography.sectionTitle.lineHeight,
-    textTransform: Typography.sectionTitle.textTransform,
-  },
-};
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    helpText: {
+      color: colors.textSecondary,
+      fontSize: Typography.caption.fontSize,
+      lineHeight: Typography.caption.lineHeight,
+    },
+    metaLabel: {
+      color: colors.textSecondary,
+      fontSize: Typography.metricSmall.fontSize,
+      fontWeight: Typography.metricSmall.fontWeight,
+      lineHeight: Typography.metricSmall.lineHeight,
+      textTransform: Typography.metricSmall.textTransform,
+    },
+    metaRow: {
+      borderColor: colors.border,
+      borderTopWidth: 1,
+      gap: Spacing.one,
+      paddingTop: Spacing.two,
+    },
+    metaStack: {
+      gap: Spacing.one,
+    },
+    metaValue: {
+      color: colors.text,
+      fontSize: Typography.bodyStrong.fontSize,
+      fontWeight: Typography.bodyStrong.fontWeight,
+      lineHeight: Typography.bodyStrong.lineHeight,
+    },
+    note: {
+      color: colors.textMuted,
+      fontSize: Typography.caption.fontSize,
+      lineHeight: Typography.caption.lineHeight,
+    },
+    title: {
+      color: colors.text,
+      fontSize: Typography.sectionTitle.fontSize,
+      fontWeight: Typography.sectionTitle.fontWeight,
+      letterSpacing: Typography.sectionTitle.letterSpacing,
+      lineHeight: Typography.sectionTitle.lineHeight,
+      textTransform: Typography.sectionTitle.textTransform,
+    },
+  });
