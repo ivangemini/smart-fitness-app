@@ -424,6 +424,7 @@ function ShareFieldRows({
   onChange: (key: keyof SocialWorkoutShareControls, value: boolean) => void;
   styles: ReturnType<typeof createShareWorkoutStyles>;
 }) {
+  const { colors } = useAppTheme();
   const rows: Array<{
     key: keyof SocialWorkoutShareControls;
     label: string;
@@ -458,8 +459,8 @@ function ShareFieldRows({
         disabled={row.disabled}
         onValueChange={(value) => onChange(row.key, value)}
         style={styles.switchControl}
-        thumbColor="#FFFFFF"
-        trackColor={{ false: "#475569", true: "#14B8A6" }}
+        thumbColor={colors.textOnAccent}
+        trackColor={{ false: colors.surfaceSecondary, true: colors.accent }}
         value={controls[row.key]}
       />
     </View>
