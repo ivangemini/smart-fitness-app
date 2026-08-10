@@ -14,6 +14,7 @@ export type SafetyRecoveryRestrictionAction =
 
 export type SafetyRecoveryIssueView = {
   code: string;
+  path: string;
   severity: SafetyRecoveryIssueSeverity;
   message: string;
   actual?: number | string | null;
@@ -130,10 +131,12 @@ const readIssues = (value: unknown): SafetyRecoveryIssueView[] | null => {
   const issues: SafetyRecoveryIssueView[] = [];
   for (const item of value) {
     if (!isRecord(item)) return null;
-    const { actual, code, limit, message, severity } = item;
+    const { actual, code, limit, message, path, severity } = item;
     if (
       typeof code !== 'string' ||
       !code.trim() ||
+      typeof path !== 'string' ||
+      !path.trim() ||
       typeof message !== 'string' ||
       !message.trim() ||
       typeof severity !== 'string' ||
@@ -151,6 +154,7 @@ const readIssues = (value: unknown): SafetyRecoveryIssueView[] | null => {
 
     issues.push({
       code,
+      path,
       severity: severity as SafetyRecoveryIssueSeverity,
       message,
       ...(actual === undefined ? {} : { actual: actual as number | string | null }),
