@@ -157,7 +157,21 @@ export default function ExerciseDetailScreen() {
     });
   };
 
-  if (loading) return <LoadingState label={copy.loading} />;
+  if (loading) {
+    return (
+      <View
+        style={[
+          styles.centeredState,
+          {
+            backgroundColor: colors.background,
+            paddingBottom: insets.bottom + Spacing.four,
+            paddingTop: insets.top + Spacing.four,
+          },
+        ]}>
+        <LoadingState label={copy.loading} />
+      </View>
+    );
+  }
 
   if (errorCode || !exercise) {
     const boundedError = errorCode ?? 'not_found';
