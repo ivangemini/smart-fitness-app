@@ -65,6 +65,9 @@ describe('Social workout-post shell UX', () => {
     const detail = readSource(
       'src/features/social/screens/SocialWorkoutPostDetailScreen.tsx',
     );
+    const comments = readSource(
+      'src/features/social/SocialWorkoutCommentsCard.tsx',
+    );
 
     expect(feedScreen).toContain('useSocialFollowingFeed()');
     expect(feedState).toContain('cacheStore.load(accountId)');
@@ -72,7 +75,13 @@ describe('Social workout-post shell UX', () => {
     expect(profilePosts).toContain('socialApi.listWorkoutPosts(username');
     expect(detail).toContain('socialApi.getWorkoutPost(postId)');
     expect(detail).toContain('socialApi.deleteWorkoutPost(postId)');
-    expect(detail).toContain('<SocialWorkoutCommentsCard');
+    expect(detail).toContain('useSocialWorkoutComments({');
+    expect(detail).toContain('<SocialWorkoutCommentsHeader');
+    expect(detail).toContain('<SocialWorkoutCommentRow');
+    expect(detail).toContain('<SocialWorkoutCommentsControls');
+    expect(comments).toContain('socialApi.listWorkoutPostComments(postId');
+    expect(comments).toContain('socialApi.createWorkoutPostComment(postId, pending)');
+    expect(comments).toContain('socialApi.deleteWorkoutPostComment(postId, commentId)');
     expect(detail).toContain('<SocialReportModal');
   });
 });
