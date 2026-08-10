@@ -7,13 +7,14 @@ This file is the **canonical forward roadmap**. Detailed current evidence belong
 ## Current verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current runtime mobile `main`: `0c1454d182483c5e297315529e897d4f4246220d`.
-- Latest runtime merge: PR #581 — Coach Run History now uses one top-level `FlatList` boundary for its up-to-50 run collection.
-- PR #581 exact validated head: `ded513d37f527641c3bf972f234018c1cd6e02f1`; Mobile CI #2084 passed before merge.
-- PR #580 added keyboard-inset ownership to the embedded Progress body-measurement form; exact head `025aa3727ca651afcf3971e0726402100f3e93c9`, Mobile CI #2083 green.
-- PR #579 virtualized Workout Template Detail exercises; exact head `5e243e1d97701938621027382e56d5ff35392d53`, Mobile CI #2081 green.
+- Current runtime mobile `main`: `8e8effabe1d7b1cc3b7ccee870b9886d3e2fb64b`.
+- Latest runtime merge: PR #586 — Active Session now owns one top-level `FlatList` boundary for its arbitrary exercise collection instead of `ScrollView + visibleExercises.map()`.
+- PR #586 exact validated head: `1ccbe7eb42df0ed0810508d4471865f6cd2714e2`; Mobile CI #2095 passed before merge.
+- PR #585 virtualized Sync Conflict Review at the `/sync-backup` screen boundary while preserving the conflict-resolution workflow and one visually grouped material section; exact head `a5e61c2312d42c9dcd6e110030c516e270db8354`, Mobile CI #2094 green.
+- PR #584 virtualized the unbounded User Limitations collection while preserving its visually grouped material semantics and keyboard-aware add form; exact head `392bcb0c237cda6cb55265c12585d265f389a294`, Mobile CI #2089 green.
+- PR #583 virtualized Account Sessions with stable session IDs; exact head `d8d829d1f65e928314a042a16777b78c8b2b6673`, Mobile CI #2087 green.
+- Earlier LG-5 packages remain #559, #560, #561, #565, #567-#574, #577 and #579-#581; exact evidence is retained in `docs/current-status.md` and Git history.
 - PR #576 established completed workout history as a read-only current-product surface and recorded focused scope evidence in `docs/qa/lg5-completed-history-scope.md`.
-- Earlier LG-5 packages remain #559, #560, #561, #565, #567-#574 and #577; exact evidence is retained in `docs/current-status.md` and Git history.
 - Mobile CI execution remains routed through Hermes by PR #562; PR #563 skips only duplicate merge-generated post-merge runs; PR #564 persists that policy for future agents.
 - Backend repo: `ivangemini/smart-fitness-backend`.
 - Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
@@ -90,6 +91,10 @@ LG-5 is validation-first. Do not create broad migration packages merely to conti
 - **PR #579:** Workout Template Detail owns one top-level `FlatList` for arbitrary workout exercises; target-set copy, template actions, start lifecycle, safe-area and fixed-footer behavior remain preserved.
 - **PR #580:** Progress owns automatic keyboard insets and interactive/on-drag dismissal for the embedded body-measurement form while retaining floating-tab clearance and measurement persistence.
 - **PR #581:** Coach Run History owns one top-level `FlatList` for its bounded 50-run API collection; filters/auth/loading/error/empty/retry/navigation behavior remains preserved. This is QA correction only, not a Coach product reprioritization.
+- **PR #583:** Account Sessions owns one top-level `FlatList` for the active-session collection with stable session IDs while preserving refresh and revocation behavior.
+- **PR #584:** User Limitations owns one top-level `FlatList` for the unbounded limitation collection while preserving the Current Records material grouping, status/delete/sync actions and keyboard-aware add form.
+- **PR #585:** Sync Backup owns the sole `FlatList` for the unbounded Sync Conflict Review collection; conflict header/rows/footer remain one contiguous material group and durable choice/confirmation/resume/retry semantics remain preserved.
+- **PR #586:** Active Session owns one top-level `FlatList` for arbitrary exercise count with stable exercise IDs while preserving SessionHeader, empty-workout actions, set entry/RPE/replacement, finish/discard behavior, keyboard insets and footer actions.
 
 PR #576 was a documentation/scope correction, not a runtime package: completed workout history is intentionally read-only in the current product contract. See `docs/qa/lg5-completed-history-scope.md`.
 
@@ -109,12 +114,14 @@ These packages are source/CI evidence only. They do not constitute physical-devi
 - workout creation/edit/save/program attachment;
 - completed-history retention, list/detail navigation and read-only record review.
 
-### Current bounded follow-up candidates
+### Current bounded follow-up candidates and no-change evidence
 
-- **User Limitations long collection:** `userLimitations` is not explicitly capped, but its rows are currently one visually grouped `AppCard`. A future RUI-5 fix must preserve the shared material grouping rather than splitting records into unrelated cards solely to gain virtualization.
-- **Sync Conflict Review long collection:** reassess the collection/card boundary and conflict-store behavior before changing source; do not virtualize blindly inside the existing parent `ScrollView`.
+- **No pre-authorized runtime package remains after PR #586.** Continue inspection against the validation matrix and change source only when a concrete defect is demonstrated.
+- **Weight Details:** the visible recent weigh-in history is explicitly bounded to 10 entries, so its current `ScrollView` does not establish a long-collection defect by itself.
+- **Program Detail:** remains semantically bounded by the seven-day `WeekdayKey` structure; `.map()` alone is not evidence for virtualization work.
 - Existing Nutrition Add Food, Recovery Check-in, User Limitations, Social Profile Editor and Weight Entry keyboard behavior is already keyboard-aware; no RUI-4 churn without new evidence.
-- `ProgramDetailScreen` is semantically bounded by the seven-day `WeekdayKey` structure; `.map()` alone is not evidence for virtualization work.
+- User Limitations and Sync Conflict Review are no longer follow-up candidates: their long-collection boundaries were resolved by PRs #584 and #585 respectively.
+- Active Session arbitrary exercise-count virtualization is resolved by PR #586; further session changes require a separate demonstrated layout/interaction defect and must preserve workout lifecycle semantics.
 
 ### LG-5 execution rule
 
@@ -158,9 +165,8 @@ Docs-only synchronization uses diff/ancestry verification; workflows may intenti
 
 # Next work
 
-1. Continue LG-5 source/CI QA across remaining secondary/shared surfaces.
-2. Fix only concrete defects with bounded PRs and exact-head validation.
-3. Resolve the User Limitations and Sync Conflict Review long-collection boundaries only after preserving their current material/interaction semantics is demonstrated.
-4. Keep backend #215 unmerged until exact-head Hermes validation is real and green.
-5. Collect physical-device evidence only when separately authorized.
-6. Resume deferred Coach/material work only after explicit reprioritization.
+1. Continue LG-5 validation-first QA across remaining secondary/shared surfaces; there is no pre-authorized runtime package after PR #586.
+2. Fix only newly demonstrated concrete defects with bounded PRs and exact-head validation; record no-change evidence for bounded/compliant surfaces instead of refactoring them.
+3. Keep backend #215 unmerged until exact-head Hermes validation is real and green.
+4. Collect physical-device evidence only when separately authorized.
+5. Resume deferred Coach/material work only after explicit reprioritization.
