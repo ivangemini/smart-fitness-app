@@ -3,8 +3,8 @@ import { ChevronLeft, Ellipsis, Share2 } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
+  FlatList,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -159,7 +159,7 @@ export default function WorkoutTemplateDetailScreen() {
         </View>
       </View>
 
-      <ScrollView
+      <FlatList
         contentInsetAdjustmentBehavior="never"
         contentContainerStyle={[
           styles.content,
@@ -168,41 +168,46 @@ export default function WorkoutTemplateDetailScreen() {
             paddingBottom: footerHeight + Spacing.three,
           },
         ]}
+        data={workout.exercises}
+        ItemSeparatorComponent={() => <View style={styles.exerciseSeparator} />}
+        keyExtractor={(exercise) => exercise.id}
         keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}>
-        <View style={styles.container}>
-          <Text selectable style={styles.title}>
-            {displayTitle}
-          </Text>
-
-          <View style={styles.exerciseList}>
-            {workout.exercises.map((exercise, index) => {
-              const plan = parsedPlan.exercises[index];
-              const targetSets = plan?.targetSets ?? 3;
-              return (
-                <View key={exercise.id} style={styles.exerciseRow}>
-                  <View style={styles.exerciseThumb}>
-                    <Text style={styles.exerciseThumbLabel}>
-                      {exercise.name.slice(0, 1).toUpperCase()}
-                    </Text>
-                  </View>
-                  <View style={styles.exerciseCopy}>
-                    <Text selectable style={styles.exerciseTitle}>
-                      {exercise.name}
-                    </Text>
-                    <Text selectable style={styles.exerciseMeta}>
-                      {copy.setCount(
-                        targetSets,
-                        formatNumber(targetSets, { maximumFractionDigits: 0 }),
-                      )}
-                    </Text>
-                  </View>
-                </View>
-              );
-            })}
+        ListHeaderComponent={
+          <View style={styles.exerciseListHeader}>
+            <Text selectable style={styles.title}>
+              {displayTitle}
+            </Text>
           </View>
-        </View>
-      </ScrollView>
+        }
+        renderItem={({ item: exercise, index }) => {
+          const plan = parsedPlan.exercises[index];
+          const targetSets = plan?.targetSets ?? 3;
+          return (
+            <View style={styles.exerciseListItem}>
+              <View style={styles.exerciseRow}>
+                <View style={styles.exerciseThumb}>
+                  <Text style={styles.exerciseThumbLabel}>
+                    {exercise.name.slice(0, 1).toUpperCase()}
+                  </Text>
+                </View>
+                <View style={styles.exerciseCopy}>
+                  <Text selectable style={styles.exerciseTitle}>
+                    {exercise.name}
+                  </Text>
+                  <Text selectable style={styles.exerciseMeta}>
+                    {copy.setCount(
+                      targetSets,
+                      formatNumber(targetSets, { maximumFractionDigits: 0 }),
+                    )}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          );
+        }}
+        showsVerticalScrollIndicator={false}
+        style={styles.list}
+      />
 
       <View
         onLayout={(event) => {
@@ -276,9 +281,14 @@ const createStyles = (colors: typeof Colors.light) =>
       flex: 1,
       minWidth: 0,
     },
-    exerciseList: {
-      gap: Spacing.four,
-      marginTop: Spacing.five,
+    exerciseListHeader: {
+      marginBottom: Spacing.five,
+      maxWidth: MaxContentWidth,
+      width: '100%',
+    },
+    exerciseListItem: {
+      maxWidth: MaxContentWidth,
+      width: '100%',
     },
     exerciseMeta: {
       color: colors.textSecondary,
@@ -291,6 +301,9 @@ const createStyles = (colors: typeof Colors.light) =>
       flexDirection: 'row',
       gap: Spacing.four,
       minHeight: 82,
+    },
+    exerciseSeparator: {
+      height: Spacing.four,
     },
     exerciseThumb: {
       alignItems: 'center',
@@ -350,6 +363,9 @@ const createStyles = (colors: typeof Colors.light) =>
       lineHeight: 24,
       minWidth: 0,
       textAlign: 'center',
+    },
+    list: {
+      flex: 1,
     },
     loadingLabel: {
       color: colors.textSecondary,
