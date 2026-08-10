@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { memo, useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getFloatingTabBarBottomClearance } from '@/components/navigation/floatingTabBarLayout';
@@ -197,11 +197,13 @@ export default function ProgressScreen() {
 
   return (
     <ScrollView
+      automaticallyAdjustKeyboardInsets
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={[
         styles.content,
         { paddingBottom: getFloatingTabBarBottomClearance(safeAreaInsets.bottom) },
       ]}
+      keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
       style={styles.screen}>
