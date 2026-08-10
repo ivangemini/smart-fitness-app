@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
+  FlatList,
   RefreshControl,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -137,7 +137,7 @@ export default function SessionsScreen() {
   };
 
   return (
-    <ScrollView
+    <FlatList
       contentContainerStyle={[
         styles.content,
         {
@@ -146,6 +146,55 @@ export default function SessionsScreen() {
         },
       ]}
       contentInsetAdjustmentBehavior="never"
+      data={sessions}
+      ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
+      keyExtractor={(item) => item.id}
+      ListEmptyComponent={
+        accessToken && !loading ? (
+          <AppCard>
+            <Text style={styles.emptyTitle}>{t('sessions.emptyTitle')}</Text>
+            <Text style={styles.subtitle}>{t('sessions.emptyBody')}</Text>
+          </AppCard>
+        ) : null
+      }
+      ListFooterComponent={
+        otherCount > 0 ? (
+          <View style={styles.footer}>
+            <SecondaryButton
+              disabled={busyId !== null}
+              label={
+                busyId === 'others'
+                  ? t('sessions.signingOutOthers')
+                  : t('sessions.signOutAllOthers')
+              }
+              loading={busyId === 'others'}
+              onPress={confirmRevokeOthers}
+            />
+          </View>
+        ) : null
+      }
+      ListHeaderComponent={
+        <View style={styles.headerContent}>
+          <View style={styles.headerRow}>
+            <LiquidGlassIconButton
+              accessibilityLabel={t('common.back')}
+              Icon={ChevronLeft}
+              onPress={() => router.back()}
+            />
+            <View style={styles.headerCopy}>
+              <Text style={styles.eyebrow}>{t('sessions.eyebrow')}</Text>
+              <Text style={styles.title}>{t('sessions.title')}</Text>
+              <Text style={styles.subtitle}>{t('sessions.subtitle')}</Text>
+            </View>
+          </View>
+
+          {!accessToken && !loading ? <InlineError message={t('sessions.signInRequired')} /> : null}
+          {loading ? <LoadingState label={t('sessions.loading')} /> : null}
+          {error ? (
+            <InlineError message={localizeSessionManagementMessage(error, t)} />
+          ) : null}
+        </View>
+      }
       refreshControl={
         <RefreshControl
           colors={[colors.accent]}
@@ -154,35 +203,8 @@ export default function SessionsScreen() {
           tintColor={colors.accent}
         />
       }
-      style={styles.screen}>
-      <View style={styles.headerRow}>
-        <LiquidGlassIconButton
-          accessibilityLabel={t('common.back')}
-          Icon={ChevronLeft}
-          onPress={() => router.back()}
-        />
-        <View style={styles.headerCopy}>
-          <Text style={styles.eyebrow}>{t('sessions.eyebrow')}</Text>
-          <Text style={styles.title}>{t('sessions.title')}</Text>
-          <Text style={styles.subtitle}>{t('sessions.subtitle')}</Text>
-        </View>
-      </View>
-
-      {!accessToken && !loading ? <InlineError message={t('sessions.signInRequired')} /> : null}
-      {loading ? <LoadingState label={t('sessions.loading')} /> : null}
-      {error ? (
-        <InlineError message={localizeSessionManagementMessage(error, t)} />
-      ) : null}
-
-      {accessToken && !loading && sessions.length === 0 ? (
+      renderItem={({ item }) => (
         <AppCard>
-          <Text style={styles.emptyTitle}>{t('sessions.emptyTitle')}</Text>
-          <Text style={styles.subtitle}>{t('sessions.emptyBody')}</Text>
-        </AppCard>
-      ) : null}
-
-      {sessions.map((item) => (
-        <AppCard key={item.id}>
           <View style={styles.sessionHeader}>
             <View style={styles.sessionTitleGroup}>
               <Text style={styles.sessionTitle}>{item.deviceName}</Text>
@@ -215,21 +237,9 @@ export default function SessionsScreen() {
             <Text style={styles.currentNote}>{t('sessions.currentNote')}</Text>
           )}
         </AppCard>
-      ))}
-
-      {otherCount > 0 ? (
-        <SecondaryButton
-          disabled={busyId !== null}
-          label={
-            busyId === 'others'
-              ? t('sessions.signingOutOthers')
-              : t('sessions.signOutAllOthers')
-          }
-          loading={busyId === 'others'}
-          onPress={confirmRevokeOthers}
-        />
-      ) : null}
-    </ScrollView>
+      )}
+      style={styles.screen}
+    />
   );
 }
 
@@ -237,7 +247,6 @@ const createStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
     content: {
       flexGrow: 1,
-      gap: Spacing.three,
       paddingHorizontal: Spacing.four,
     },
     currentBadge: {
@@ -280,6 +289,13 @@ const createStyles = (colors: typeof Colors.light) =>
       fontWeight: Typography.metricSmall.fontWeight,
       letterSpacing: 0.8,
     },
+    footer: {
+      marginTop: Spacing.three,
+    },
+    headerContent: {
+      gap: Spacing.three,
+      marginBottom: Spacing.three,
+    },
     headerCopy: {
       flex: 1,
       gap: Spacing.one,
@@ -289,6 +305,9 @@ const createStyles = (colors: typeof Colors.light) =>
       alignItems: 'flex-start',
       flexDirection: 'row',
       gap: Spacing.three,
+    },
+    itemSeparator: {
+      height: Spacing.three,
     },
     screen: {
       backgroundColor: colors.background,
