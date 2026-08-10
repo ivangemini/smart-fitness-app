@@ -79,7 +79,7 @@ export default function CoachRunHistoryScreen() {
 
   return (
     <View style={styles.screen}>
-      <View style={[styles.header, { paddingTop: insets.top + Spacing.two }]}> 
+      <View style={[styles.header, { paddingTop: insets.top + Spacing.two }]}>
         <LiquidGlassIconButton
           accessibilityLabel={t('common.back')}
           Icon={ChevronLeft}
@@ -90,13 +90,17 @@ export default function CoachRunHistoryScreen() {
           <Text style={styles.subtitle}>{copy.subtitle}</Text>
         </View>
       </View>
-      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing.eight }]}> 
+      <ScrollView
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing.eight }]}>
         <View style={styles.container}>
           {!ready ? <Text style={styles.body}>{copy.loading}</Text> : null}
           {ready && !isAuthenticated ? (
             <AppCard>
               <Text style={styles.body}>{copy.signIn}</Text>
-              <PrimaryButton label={locale === 'ru' ? 'Войти' : 'Sign in'} onPress={() => router.push('/auth/sign-in')} />
+              <PrimaryButton
+                label={locale === 'ru' ? 'Войти' : 'Sign in'}
+                onPress={() => router.push('/auth/sign-in')}
+              />
             </AppCard>
           ) : null}
           {ready && isAuthenticated ? (
@@ -125,7 +129,9 @@ export default function CoachRunHistoryScreen() {
                 </AppCard>
               ) : null}
               {!loading && !error && items.length === 0 ? (
-                <AppCard><Text style={styles.body}>{copy.empty}</Text></AppCard>
+                <AppCard>
+                  <Text style={styles.body}>{copy.empty}</Text>
+                </AppCard>
               ) : null}
               {items.map((item) => (
                 <Pressable
@@ -164,18 +170,31 @@ function FilterRow<T extends string>({
   onChange(value: T): void;
   value: T;
 }) {
+  const { colors } = useAppTheme();
+
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={stylesStatic.filters}>
-      {labels.map((option) => (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{ selected: option.value === value }}
-          key={option.value}
-          onPress={() => onChange(option.value)}
-          style={[stylesStatic.filter, option.value === value && stylesStatic.filterActive]}>
-          <Text style={stylesStatic.filterLabel}>{option.label}</Text>
-        </Pressable>
-      ))}
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={stylesStatic.filters}>
+      {labels.map((option) => {
+        const selected = option.value === value;
+        return (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ selected }}
+            key={option.value}
+            onPress={() => onChange(option.value)}
+            style={[
+              stylesStatic.filter,
+              { borderColor: selected ? colors.accent : colors.borderSubtle },
+            ]}>
+            <Text style={[stylesStatic.filterLabel, { color: colors.textPrimary }]}>
+              {option.label}
+            </Text>
+          </Pressable>
+        );
+      })}
     </ScrollView>
   );
 }
@@ -183,7 +202,6 @@ function FilterRow<T extends string>({
 const stylesStatic = StyleSheet.create({
   filter: {
     alignItems: 'center',
-    borderColor: Colors.dark.borderSubtle,
     borderRadius: 999,
     borderWidth: 1,
     justifyContent: 'center',
@@ -191,22 +209,50 @@ const stylesStatic = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
-  filterActive: { borderColor: Colors.dark.accent },
-  filterLabel: { color: Colors.dark.textPrimary, fontSize: Typography.caption.fontSize },
+  filterLabel: { fontSize: Typography.caption.fontSize },
   filters: { gap: Spacing.two },
 });
 
-const createStyles = (colors: typeof Colors.light) => StyleSheet.create({
-  body: { color: colors.textSecondary, fontSize: Typography.body.fontSize, lineHeight: Typography.body.lineHeight },
-  cardHeader: { alignItems: 'center', flexDirection: 'row', gap: Spacing.two, justifyContent: 'space-between' },
-  cardTitle: { color: colors.textPrimary, fontSize: Typography.cardTitle.fontSize, fontWeight: Typography.cardTitle.fontWeight },
-  container: { alignSelf: 'center', gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
-  content: { paddingHorizontal: Spacing.three, paddingTop: Spacing.three },
-  header: { alignItems: 'center', flexDirection: 'row', gap: Spacing.three, paddingBottom: Spacing.two, paddingHorizontal: Spacing.three },
-  headerCopy: { flex: 1, gap: Spacing.one },
-  meta: { color: colors.textMuted, fontSize: Typography.caption.fontSize },
-  screen: { backgroundColor: colors.background, flex: 1 },
-  status: { color: colors.accent, fontSize: Typography.caption.fontSize, fontWeight: '700' },
-  subtitle: { color: colors.textSecondary, fontSize: Typography.caption.fontSize },
-  title: { color: colors.textPrimary, fontSize: Typography.screenTitle.fontSize, fontWeight: Typography.screenTitle.fontWeight },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    body: {
+      color: colors.textSecondary,
+      fontSize: Typography.body.fontSize,
+      lineHeight: Typography.body.lineHeight,
+    },
+    cardHeader: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: Spacing.two,
+      justifyContent: 'space-between',
+    },
+    cardTitle: {
+      color: colors.textPrimary,
+      fontSize: Typography.cardTitle.fontSize,
+      fontWeight: Typography.cardTitle.fontWeight,
+    },
+    container: {
+      alignSelf: 'center',
+      gap: Spacing.three,
+      maxWidth: MaxContentWidth,
+      width: '100%',
+    },
+    content: { paddingHorizontal: Spacing.three, paddingTop: Spacing.three },
+    header: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: Spacing.three,
+      paddingBottom: Spacing.two,
+      paddingHorizontal: Spacing.three,
+    },
+    headerCopy: { flex: 1, gap: Spacing.one },
+    meta: { color: colors.textMuted, fontSize: Typography.caption.fontSize },
+    screen: { backgroundColor: colors.background, flex: 1 },
+    status: { color: colors.accent, fontSize: Typography.caption.fontSize, fontWeight: '700' },
+    subtitle: { color: colors.textSecondary, fontSize: Typography.caption.fontSize },
+    title: {
+      color: colors.textPrimary,
+      fontSize: Typography.screenTitle.fontSize,
+      fontWeight: Typography.screenTitle.fontWeight,
+    },
+  });
