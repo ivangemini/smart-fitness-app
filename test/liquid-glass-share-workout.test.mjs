@@ -29,7 +29,7 @@ describe('LG-3E Share Workout Liquid Glass material', () => {
     expect(styles).not.toContain('BlurView');
   });
 
-  it('preserves publishing, idempotency and managed-media release contracts', () => {
+  it('preserves publishing, idempotency, managed-media and themed share-control contracts', () => {
     const source = readSource('src/features/social/screens/ShareWorkoutScreen.tsx');
 
     expect(source).toContain('socialApi.createWorkoutPost');
@@ -38,6 +38,9 @@ describe('LG-3E Share Workout Liquid Glass material', () => {
     expect(source).toContain('getSocialRateLimitMessage');
     expect(source).toContain('getShareWorkoutError');
     expect(source).toContain('ShareWorkoutMediaCard');
-    expect(source).toContain('trackColor={{ false: "#475569", true: "#14B8A6" }}');
+    expect(source).toContain('thumbColor={colors.textOnAccent}');
+    expect(source).toContain(
+      'trackColor={{ false: colors.surfaceSecondary, true: colors.accent }}',
+    );
   });
 });
