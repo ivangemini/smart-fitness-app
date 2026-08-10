@@ -57,8 +57,8 @@ export const styles = StyleSheet.create({
     gap: Spacing.two,
     padding: Spacing.three,
   },
-  listStack: {
-    gap: Spacing.three,
+  listFooter: {
+    marginTop: Spacing.four,
   },
   movementChoice: {
     alignItems: 'center',
@@ -76,6 +76,33 @@ export const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.68,
+  },
+  recordsGroupHeader: {
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    borderBottomWidth: 0,
+    elevation: 0,
+    shadowOpacity: 0,
+  },
+  recordsGroupLastRow: {
+    borderBottomLeftRadius: Radii.large,
+    borderBottomRightRadius: Radii.large,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    paddingBottom: Spacing.four,
+  },
+  recordsGroupOnly: {
+    borderBottomLeftRadius: Radii.large,
+    borderBottomRightRadius: Radii.large,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  recordsGroupRow: {
+    borderBottomWidth: 0,
+    borderRadius: 0,
+    borderTopWidth: 0,
+    elevation: 0,
+    paddingBottom: Spacing.three,
+    paddingTop: 0,
+    shadowOpacity: 0,
   },
   rowActions: {
     gap: Spacing.two,
