@@ -52,6 +52,17 @@ describe('list virtualization boundaries', () => {
     expect(browser).toContain('keyExtractor={(exercise) => exercise.id}');
   });
 
+  test('Social notifications keep one FlatList across paginated results', () => {
+    const source = readSource(
+      'src/features/social/screens/SocialNotificationScreen.tsx',
+    );
+    expect(source).toContain('FlatList');
+    expect(source).toContain('data={listData}');
+    expect(source).toContain('keyExtractor={(notification) => notification.id}');
+    expect(source).not.toContain('notifications.map(');
+    expect(source).not.toContain('<ScrollView');
+  });
+
   test('bounded secondary nutrition and progress surfaces stay bounded', () => {
     const addFood = readSource('src/app/nutrition/add-food.tsx');
     const addFoodModel = readSource('src/features/nutrition/addFoodModel.ts');
