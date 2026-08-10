@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -79,7 +79,7 @@ export default function CoachRunHistoryScreen() {
 
   return (
     <View style={styles.screen}>
-      <View style={[styles.header, { paddingTop: insets.top + Spacing.two }]}> 
+      <View style={[styles.header, { paddingTop: insets.top + Spacing.two }]}>
         <LiquidGlassIconButton
           accessibilityLabel={t('common.back')}
           Icon={ChevronLeft}
@@ -90,67 +90,84 @@ export default function CoachRunHistoryScreen() {
           <Text style={styles.subtitle}>{copy.subtitle}</Text>
         </View>
       </View>
-      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing.eight }]}> 
-        <View style={styles.container}>
-          {!ready ? <Text style={styles.body}>{copy.loading}</Text> : null}
-          {ready && !isAuthenticated ? (
-            <AppCard>
-              <Text style={styles.body}>{copy.signIn}</Text>
-              <PrimaryButton label={locale === 'ru' ? 'Войти' : 'Sign in'} onPress={() => router.push('/auth/sign-in')} />
-            </AppCard>
-          ) : null}
-          {ready && isAuthenticated ? (
-            <>
-              <FilterRow<CoachDomain | 'all'>
-                labels={DOMAIN_FILTERS.map((value) => ({
-                  label: value === 'all' ? copy.all : copy.domain(value),
-                  value,
-                }))}
-                onChange={(value) => setDomain(value)}
-                value={domain}
-              />
-              <FilterRow<CoachRunStatus | 'all'>
-                labels={STATUS_FILTERS.map((value) => ({
-                  label: value === 'all' ? copy.all : copy.status(value),
-                  value,
-                }))}
-                onChange={(value) => setStatus(value)}
-                value={status}
-              />
-              {loading ? <Text style={styles.body}>{copy.loading}</Text> : null}
-              {error ? (
-                <AppCard>
-                  <Text style={styles.body}>{copy.notice}</Text>
-                  <PrimaryButton label={copy.retry} onPress={() => void load()} />
-                </AppCard>
-              ) : null}
-              {!loading && !error && items.length === 0 ? (
-                <AppCard><Text style={styles.body}>{copy.empty}</Text></AppCard>
-              ) : null}
-              {items.map((item) => (
-                <Pressable
-                  accessibilityRole="button"
-                  key={item.id}
-                  onPress={() => router.push(`/profile/coach-history/${item.id}`)}>
+      <FlatList
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: insets.bottom + Spacing.eight },
+        ]}
+        data={ready && isAuthenticated ? items : []}
+        ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
+        keyExtractor={(item) => item.id}
+        ListHeaderComponent={
+          <View style={styles.listHeader}>
+            {!ready ? <Text style={styles.body}>{copy.loading}</Text> : null}
+            {ready && !isAuthenticated ? (
+              <AppCard>
+                <Text style={styles.body}>{copy.signIn}</Text>
+                <PrimaryButton
+                  label={locale === 'ru' ? 'Войти' : 'Sign in'}
+                  onPress={() => router.push('/auth/sign-in')}
+                />
+              </AppCard>
+            ) : null}
+            {ready && isAuthenticated ? (
+              <>
+                <FilterRow<CoachDomain | 'all'>
+                  labels={DOMAIN_FILTERS.map((value) => ({
+                    label: value === 'all' ? copy.all : copy.domain(value),
+                    value,
+                  }))}
+                  onChange={(value) => setDomain(value)}
+                  value={domain}
+                />
+                <FilterRow<CoachRunStatus | 'all'>
+                  labels={STATUS_FILTERS.map((value) => ({
+                    label: value === 'all' ? copy.all : copy.status(value),
+                    value,
+                  }))}
+                  onChange={(value) => setStatus(value)}
+                  value={status}
+                />
+                {loading ? <Text style={styles.body}>{copy.loading}</Text> : null}
+                {error ? (
                   <AppCard>
-                    <View style={styles.cardHeader}>
-                      <Text style={styles.cardTitle}>{copy.domain(item.domain)}</Text>
-                      <Text style={styles.status}>{copy.status(item.status)}</Text>
-                    </View>
-                    <Text style={styles.body}>{item.requestType.replaceAll('_', ' ')}</Text>
-                    <Text style={styles.meta}>
-                      {formatDate(item.requestedAt, { dateStyle: 'medium', timeStyle: 'short' })}
-                    </Text>
-                    <Text style={styles.meta}>
-                      {Object.keys(item.policyVersions).length} {copy.policies.toLowerCase()}
-                    </Text>
+                    <Text style={styles.body}>{copy.notice}</Text>
+                    <PrimaryButton label={copy.retry} onPress={() => void load()} />
                   </AppCard>
-                </Pressable>
-              ))}
-            </>
-          ) : null}
-        </View>
-      </ScrollView>
+                ) : null}
+                {!loading && !error && items.length === 0 ? (
+                  <AppCard>
+                    <Text style={styles.body}>{copy.empty}</Text>
+                  </AppCard>
+                ) : null}
+              </>
+            ) : null}
+          </View>
+        }
+        renderItem={({ item }) => (
+          <View style={styles.listItem}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.push(`/profile/coach-history/${item.id}`)}>
+              <AppCard>
+                <View style={styles.cardHeader}>
+                  <Text style={styles.cardTitle}>{copy.domain(item.domain)}</Text>
+                  <Text style={styles.status}>{copy.status(item.status)}</Text>
+                </View>
+                <Text style={styles.body}>{item.requestType.replaceAll('_', ' ')}</Text>
+                <Text style={styles.meta}>
+                  {formatDate(item.requestedAt, { dateStyle: 'medium', timeStyle: 'short' })}
+                </Text>
+                <Text style={styles.meta}>
+                  {Object.keys(item.policyVersions).length} {copy.policies.toLowerCase()}
+                </Text>
+              </AppCard>
+            </Pressable>
+          </View>
+        )}
+        showsVerticalScrollIndicator={false}
+        style={styles.list}
+      />
     </View>
   );
 }
@@ -167,7 +184,10 @@ function FilterRow<T extends string>({
   const { colors } = useAppTheme();
 
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={stylesStatic.filters}>
+    <ScrollView
+      contentContainerStyle={stylesStatic.filters}
+      horizontal
+      showsHorizontalScrollIndicator={false}>
       {labels.map((option) => (
         <Pressable
           accessibilityRole="button"
@@ -178,7 +198,9 @@ function FilterRow<T extends string>({
             stylesStatic.filter,
             { borderColor: option.value === value ? colors.accent : colors.borderSubtle },
           ]}>
-          <Text style={[stylesStatic.filterLabel, { color: colors.textPrimary }]}>{option.label}</Text>
+          <Text style={[stylesStatic.filterLabel, { color: colors.textPrimary }]}>
+            {option.label}
+          </Text>
         </Pressable>
       ))}
     </ScrollView>
@@ -200,16 +222,52 @@ const stylesStatic = StyleSheet.create({
 });
 
 const createStyles = (colors: typeof Colors.light) => StyleSheet.create({
-  body: { color: colors.textSecondary, fontSize: Typography.body.fontSize, lineHeight: Typography.body.lineHeight },
-  cardHeader: { alignItems: 'center', flexDirection: 'row', gap: Spacing.two, justifyContent: 'space-between' },
-  cardTitle: { color: colors.textPrimary, fontSize: Typography.cardTitle.fontSize, fontWeight: Typography.cardTitle.fontWeight },
-  container: { alignSelf: 'center', gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
+  body: {
+    color: colors.textSecondary,
+    fontSize: Typography.body.fontSize,
+    lineHeight: Typography.body.lineHeight,
+  },
+  cardHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: Spacing.two,
+    justifyContent: 'space-between',
+  },
+  cardTitle: {
+    color: colors.textPrimary,
+    fontSize: Typography.cardTitle.fontSize,
+    fontWeight: Typography.cardTitle.fontWeight,
+  },
   content: { paddingHorizontal: Spacing.three, paddingTop: Spacing.three },
-  header: { alignItems: 'center', flexDirection: 'row', gap: Spacing.three, paddingBottom: Spacing.two, paddingHorizontal: Spacing.three },
+  header: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: Spacing.three,
+    paddingBottom: Spacing.two,
+    paddingHorizontal: Spacing.three,
+  },
   headerCopy: { flex: 1, gap: Spacing.one },
+  itemSeparator: { height: Spacing.three },
+  list: { flex: 1 },
+  listHeader: {
+    alignSelf: 'center',
+    gap: Spacing.three,
+    marginBottom: Spacing.three,
+    maxWidth: MaxContentWidth,
+    width: '100%',
+  },
+  listItem: {
+    alignSelf: 'center',
+    maxWidth: MaxContentWidth,
+    width: '100%',
+  },
   meta: { color: colors.textMuted, fontSize: Typography.caption.fontSize },
   screen: { backgroundColor: colors.background, flex: 1 },
   status: { color: colors.accent, fontSize: Typography.caption.fontSize, fontWeight: '700' },
   subtitle: { color: colors.textSecondary, fontSize: Typography.caption.fontSize },
-  title: { color: colors.textPrimary, fontSize: Typography.screenTitle.fontSize, fontWeight: Typography.screenTitle.fontWeight },
+  title: {
+    color: colors.textPrimary,
+    fontSize: Typography.screenTitle.fontSize,
+    fontWeight: Typography.screenTitle.fontWeight,
+  },
 });
