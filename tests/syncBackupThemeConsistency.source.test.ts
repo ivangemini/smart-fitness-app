@@ -30,7 +30,9 @@ describe('Sync Backup theme consistency', () => {
     expect(source).toContain('useWeightSync');
     expect(source).toContain('onPress={() => void syncNow()}');
     expect(source).toContain('<DataRecoveryCard />');
-    expect(source).toContain('<SyncConflictReviewCard />');
+    expect(source).toContain('<SyncConflictReviewHeader review={review} />');
+    expect(source).toContain('<SyncConflictReviewRow');
+    expect(source).toContain('<SyncConflictReviewFooter review={review} />');
     expect(source).toContain('<SupportDiagnosticsCard');
   });
 });

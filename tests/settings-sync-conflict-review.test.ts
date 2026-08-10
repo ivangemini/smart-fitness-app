@@ -15,43 +15,49 @@ const readSource = (path: string) => readFileSync(resolve(projectRoot, path), 'u
 describe('Settings sync conflict review', () => {
   it('shows only safe candidate metadata and version kinds', () => {
     const screen = readSource('src/app/sync-backup.tsx');
-    const card = readSource('src/features/settings/SyncConflictReviewCard.tsx');
+    const presentation = readSource('src/features/settings/SyncConflictReviewCard.tsx');
+    const controller = readSource('src/features/settings/useSyncConflictReview.ts');
 
-    expect(screen).toContain('<SyncConflictReviewCard />');
-    expect(card).toContain('useSyncConflictResolution');
-    expect(card).toContain('listReviewItems');
-    expect(card).toContain('getSyncConflictEntityLabel');
-    expect(card).toContain('formatDate(candidate.detectedAt');
-    expect(card).toContain('candidate.localKind');
-    expect(card).toContain('candidate.remoteKind');
-    expect(card).not.toContain('candidate.entityId');
-    expect(card).not.toContain('candidate.expectedConflictRevision');
-    expect(card).not.toContain('candidate.expectedRemoteRevision');
-    expect(card).not.toContain('getSyncConflictDiagnosticItems');
-    expect(card).not.toContain('conflict.details');
+    expect(screen).toContain('<SyncConflictReviewHeader review={review} />');
+    expect(screen).toContain('<SyncConflictReviewRow');
+    expect(screen).toContain('<SyncConflictReviewFooter review={review} />');
+    expect(controller).toContain('useSyncConflictResolution');
+    expect(controller).toContain('listReviewItems');
+    expect(presentation).toContain('getSyncConflictEntityLabel');
+    expect(presentation).toContain('formatDate(candidate.detectedAt');
+    expect(presentation).toContain('candidate.localKind');
+    expect(presentation).toContain('candidate.remoteKind');
+    expect(presentation).not.toContain('candidate.entityId');
+    expect(presentation).not.toContain('candidate.expectedConflictRevision');
+    expect(presentation).not.toContain('candidate.expectedRemoteRevision');
+    expect(presentation).not.toContain('getSyncConflictDiagnosticItems');
+    expect(presentation).not.toContain('conflict.details');
   });
 
   it('requires an explicit choice and confirmation before submission', () => {
-    const card = readSource('src/features/settings/SyncConflictReviewCard.tsx');
+    const presentation = readSource('src/features/settings/SyncConflictReviewCard.tsx');
+    const controller = readSource('src/features/settings/useSyncConflictReview.ts');
 
-    expect(card).toContain("confirmResolution(item, 'keep_local')");
-    expect(card).toContain("confirmResolution(item, 'keep_remote')");
-    expect(card).toContain('Alert.alert(');
-    expect(card).toContain('resolutionCopy.confirm');
-    expect(card).toContain('resolve(item.candidate!, choice)');
-    expect(card).toContain('disabled={isBusy}');
-    expect(card).not.toContain('automatic');
+    expect(presentation).toContain("review.confirmResolution(item, 'keep_local')");
+    expect(presentation).toContain("review.confirmResolution(item, 'keep_remote')");
+    expect(controller).toContain('Alert.alert(');
+    expect(controller).toContain('resolutionCopy.confirm');
+    expect(controller).toContain('resolve(item.candidate!, choice)');
+    expect(presentation).toContain('disabled={review.isBusy}');
+    expect(controller).not.toContain('automatic');
   });
 
   it('locks a persisted choice and resumes it through the durable workflow', () => {
-    const card = readSource('src/features/settings/SyncConflictReviewCard.tsx');
+    const presentation = readSource('src/features/settings/SyncConflictReviewCard.tsx');
+    const controller = readSource('src/features/settings/useSyncConflictReview.ts');
     const hook = readSource('src/context/useSyncConflictResolution.ts');
 
-    expect(card).toContain('intentChoice !== null && intentState !== null');
-    expect(card).toContain('resumeResolution(item)');
-    expect(card).toContain('isSyncConflictIntentSubmitting');
+    expect(presentation).toContain('intentChoice !== null && intentState !== null');
+    expect(presentation).toContain('review.resumeResolution(item)');
+    expect(presentation).toContain('isSyncConflictIntentSubmitting');
+    expect(controller).toContain('continueResolution(item)');
     expect(hook).toContain('controller.resume(userId, item.conflictId)');
-    expect(card).not.toContain('idempotencyKey');
+    expect(presentation).not.toContain('idempotencyKey');
   });
 
   it('keeps English and Russian choice copy equivalent and bounded', () => {
