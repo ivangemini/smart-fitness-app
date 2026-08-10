@@ -15,6 +15,9 @@ Use it together with:
 - `docs/current-status.md` for current evidence;
 - `docs/handoffs/latest.md` for the active handoff;
 - `docs/roadmap/liquid-glass.md` for Phase 11 execution;
+- `docs/roadmap/release-and-account.md` for release/account lifecycle contracts;
+- `docs/roadmap/localization-settings.md` for localization and regional-formatting contracts;
+- `docs/roadmap/data-quality-and-scale.md` for data-quality and local-storage scalability contracts;
 - focused provider, Social, privacy, release and architecture documents for historical contracts and activation boundaries;
 - backend `AGENTS.md` and backend focused documentation when backend work is required.
 
