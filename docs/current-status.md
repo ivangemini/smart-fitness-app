@@ -5,10 +5,11 @@ Updated: 2026-08-10
 ## Verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Latest runtime `main`: `13eaa33ef96af126bdca7b28a52c60a016e3d669`.
-- Latest runtime merge: PR #591 — residual screen-local Coach back controls converged on the shared `LiquidGlassIconButton` without changing Coach run/history/preflight/proposal behavior.
-- PR #591 exact validated head: `1ef8da30bebe13fa9b0407acb82ac44cb50208cd`; Mobile CI #2122 passed repository/changed-file line limits, TypeScript, full regression, expanded model smoke, Expo export and Expo Doctor before merge.
-- PR #590 virtualized Safety & Recovery Review result rows at one top-level `FlatList` boundary. Exact validated head: `adeda4fc66490cd2e2ad05ca84454f962cc6c31d`; Mobile CI #2118 passed before merge.
+- Latest runtime `main`: `976ea57e2da8753ca990bc2fad151b384a8ccee3`.
+- Latest runtime merge: PR #593 — the Workouts History floating action now uses shared elevated `LiquidGlassSurface` material with bounded blur and fill-based pressed feedback while preserving navigation, accessibility, safe-area clearance and 44 pt interaction geometry.
+- PR #593 exact validated head: `1edade7075999ba5bc210fe8456a3d73531d0a2b`; Mobile CI #2124 passed repository/changed-file line limits, TypeScript, full regression, expanded model smoke, Expo export and Expo Doctor before merge.
+- PR #591 residual screen-local Coach back controls converged on shared `LiquidGlassIconButton`; exact validated head `1ef8da30bebe13fa9b0407acb82ac44cb50208cd`, Mobile CI #2122 green.
+- PR #590 virtualized Safety & Recovery Review result rows at one top-level `FlatList`; exact validated head `adeda4fc66490cd2e2ad05ca84454f962cc6c31d`, Mobile CI #2118 green.
 - Backend repo: `ivangemini/smart-fitness-backend`.
 - Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
 - Backend PR #215 remains draft/open. Its required exact-head Hermes workflows must actually execute and pass before merge.
@@ -22,7 +23,7 @@ Exact code, tests and current Git history override this checkpoint if it becomes
 
 ## LG-5 completed source/CI batches
 
-Merged demonstrated-defect runtime batches now total 22 and run through PR #591:
+Merged demonstrated-defect runtime batches now total 23 and run through PR #593:
 
 - #559 Create Program keyboard/safe-area reachability.
 - #560 Program Add Workout short-height/large-text scrolling plus New Routine notes 44 px interaction minimum.
@@ -46,6 +47,7 @@ Merged demonstrated-defect runtime batches now total 22 and run through PR #591:
 - #586 Active Session exercise virtualization.
 - #590 Safety & Recovery Review result virtualization.
 - #591 residual Coach navigation material convergence.
+- #593 Workouts History floating material convergence.
 
 PR #576 remains a scope/documentation audit rather than a runtime package. Completed workout history is an immutable read surface in the current product contract; do not invent edit/delete UI from generic session state actions. See `docs/qa/lg5-completed-history-scope.md`.
 
@@ -63,13 +65,21 @@ Confirmed defect: six existing Coach surfaces retained duplicated local back-con
 
 Fix: Safety Recovery Preflight, Coach Run History Detail, Nutrition Coach, Strength Coach, Nutrition Target Proposal and Combined Coach Proposal now delegate back navigation to the shared control. Obsolete `backButton/backLabel` styles were removed. Preflight sync/review navigation, immutable run-detail retrieval, Nutrition/Strength run and confirmation flows, target confirmation and Combined confirmations remain intact.
 
-The first exact-head run exposed stale source guards, not runtime failures: two guards still expected deleted local style blocks and one depended on exact line formatting of `api.getRun(runId)`. Guards were rebound to the shared control owner and semantic retrieval contract. Final exact-head Mobile CI #2122 then passed the complete gate on `1ef8da30bebe13fa9b0407acb82ac44cb50208cd`.
+The first exact-head run exposed stale source guards, not runtime failures. Guards were rebound to the shared control owner and semantic retrieval contract. Final exact-head Mobile CI #2122 passed the complete gate on `1ef8da30bebe13fa9b0407acb82ac44cb50208cd`.
+
+### PR #593 — Workouts History floating material
+
+Confirmed defect: the live floating History action on the Workouts tab was a screen-local opaque `Pressable` with opacity-only pressed feedback even though the Liquid Glass architecture assigns floating contextual controls to elevated glass and requires material-fill feedback for direct interaction.
+
+Fix: the route now delegates visible material to shared `LiquidGlassSurface` with `variant="elevated"` and bounded blur. Pressed feedback uses tokenized `controlPressedFill`. `/workout-history`, localization/accessibility labels, floating-tab safe-area clearance and the 44 pt interaction floor remain preserved. A focused source-contract regression guard covers these boundaries.
+
+Exact validated head: `1edade7075999ba5bc210fe8456a3d73531d0a2b`; Mobile CI #2124 passed the complete Hermes gate before merge.
 
 ## CI execution
 
 - PR #562 routes authoritative routine Mobile CI to `[self-hosted, linux, x64, hermes-mobile-ci]` while preserving the complete gate.
 - PR #563 skips only GitHub-generated merge-push duplicates after an already exact-head validated PR.
-- PR #564 persists the runner/cost policy in mobile `AGENTS.md`.
+- PR #564 persists that policy in mobile `AGENTS.md`.
 - Backend PR #216 persisted the backend counterpart policy.
 - Backend PR #215 has **not** completed the actual backend workflow migration. Do not merge it until required exact-head validation is green.
 
@@ -81,9 +91,10 @@ Continue checking light/dark/system appearance, narrow/short phones, safe areas,
 
 Current bounded evidence:
 
-- **There is no pre-authorized runtime package after PR #591.** Inspect first; source changes require a newly demonstrated defect.
-- `QuickActionsCard` currently keys secondary actions by displayed `action.label`, which is not a suitable identity contract if the component has live usage. Live usage has not yet been established by the current audit, so this remains a candidate only; do not change the API for a theoretical/unused defect.
-- The next residual-material audit should continue outside the just-converged Coach navigation group and distinguish genuine material/safe-area/accessibility mismatches from intentional semantic `Pressable` controls.
+- **There is no pre-authorized runtime package after PR #593.** Inspect first; source changes require a newly demonstrated defect.
+- `QuickActionsCard` currently keys secondary actions by displayed `action.label`, which is not a suitable identity contract if the component has live usage. Live usage has not yet been established by the current audit because repository code search is not indexed, so this remains a candidate only; do not change the API for a theoretical/unused defect.
+- The Workouts History floating-control mismatch is resolved by #593.
+- Post-#593 no-change audit: Home/Profile already use shared `LiquidGlassIconButton`; Coach tab actions use shared `AppButton`; Nutrition calendar/Today controls already use tokenized control and pressed fills, while the 36 pt meal-add visual control has `hitSlop={12}` inside the 52 pt meal header; Settings already uses shared navigation/action controls and safe-area-aware scrolling. Do not churn these surfaces without new evidence.
 - Weight Details recent weigh-in rows remain explicitly bounded to 10 entries.
 - `ProgramDetailScreen` remains semantically bounded by the seven-day `WeekdayKey` structure.
 - Nutrition Add Food, Recovery Check-in, User Limitations, Social Profile Editor and Weight Entry already own keyboard-aware scroll behavior.

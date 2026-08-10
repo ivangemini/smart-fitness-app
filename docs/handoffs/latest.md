@@ -5,9 +5,10 @@ Updated: 2026-08-10
 ## Checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Latest runtime `main`: `13eaa33ef96af126bdca7b28a52c60a016e3d669`.
-- Latest runtime merge: PR #591 `Converge residual LG-5 Coach navigation`.
-- PR #591 exact validated head: `1ef8da30bebe13fa9b0407acb82ac44cb50208cd`; Mobile CI #2122 passed the complete Hermes gate before merge.
+- Latest runtime `main`: `976ea57e2da8753ca990bc2fad151b384a8ccee3`.
+- Latest runtime merge: PR #593 `fix: converge Workouts History floating material`.
+- PR #593 exact validated head: `1edade7075999ba5bc210fe8456a3d73531d0a2b`; Mobile CI #2124 passed the complete Hermes gate before merge.
+- PR #591 residual Coach navigation exact validated head: `1ef8da30bebe13fa9b0407acb82ac44cb50208cd`; Mobile CI #2122 passed before merge.
 - PR #590 Safety & Recovery Review virtualization exact validated head: `adeda4fc66490cd2e2ad05ca84454f962cc6c31d`; Mobile CI #2118 passed before merge.
 - Backend repo: `ivangemini/smart-fitness-backend`.
 - Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
@@ -19,7 +20,7 @@ Updated: 2026-08-10
 
 ## LG-5 runtime progress
 
-Merged demonstrated-defect batches now run through PR #591:
+Merged demonstrated-defect batches now total 23 and run through PR #593:
 
 - #559 Create Program keyboard/safe-area reachability.
 - #560 Program Add Workout short-height/large-text resilience plus New Routine notes 44 px interaction minimum.
@@ -43,6 +44,7 @@ Merged demonstrated-defect batches now run through PR #591:
 - #586 Active Session exercise virtualization.
 - #590 Safety & Recovery Review restriction/finding virtualization.
 - #591 residual Coach navigation convergence to shared `LiquidGlassIconButton`.
+- #593 Workouts History floating action convergence to shared elevated `LiquidGlassSurface`.
 
 PR #576 remains a scope/documentation audit rather than a runtime package. Completed workout history is an immutable read surface in the current product contract; do not invent edit/delete UI from generic session state actions. See `docs/qa/lg5-completed-history-scope.md`.
 
@@ -50,8 +52,9 @@ Latest validation evidence:
 
 - #590: Mobile CI #2118 green on exact head `adeda4fc66490cd2e2ad05ca84454f962cc6c31d`.
 - #591: Mobile CI #2122 green on exact head `1ef8da30bebe13fa9b0407acb82ac44cb50208cd`.
+- #593: Mobile CI #2124 green on exact head `1edade7075999ba5bc210fe8456a3d73531d0a2b`.
 
-For #591, the first exact-head run failed three stale regression guards only. The final head updated those guards to assert the shared 44×44 control owner and formatting-independent history retrieval contract; full regression then passed along with TypeScript, model smoke, Expo export and Expo Doctor.
+For #593, the confirmed live defect was limited to the Workouts tab History floating control: its local opaque material and opacity-only pressed state violated the elevated-floating-control contract. The fix preserves `/workout-history`, localization/accessibility, floating-tab safe-area clearance and 44 pt geometry while delegating visible material to shared elevated Liquid Glass with bounded blur and tokenized fill feedback.
 
 ## CI execution
 
@@ -73,9 +76,10 @@ Continue LG-5 validation-first inspection against light/dark/system appearance, 
 
 Current bounded evidence:
 
-- **There is no pre-authorized runtime package after PR #591.** Inspect first; change source only for a newly demonstrated defect.
-- `QuickActionsCard` currently keys secondary actions by localized/displayed `action.label`. This is an identity smell, but live usage has not yet been established; verify usage before changing its API.
-- Continue the residual non-Coach material/navigation audit. Local `Pressable` does not itself prove a defect; distinguish intentional semantic controls from duplicated material/navigation recipes.
+- **There is no pre-authorized runtime package after PR #593.** Inspect first; change source only for a newly demonstrated defect.
+- `QuickActionsCard` currently keys secondary actions by localized/displayed `action.label`. This is an identity smell, but repository code search is not indexed and live usage has not yet been established; verify usage before changing its API.
+- The Workouts History floating-material mismatch is resolved by #593.
+- Post-#593 no-change audit: Home/Profile already use shared `LiquidGlassIconButton`; Coach tab actions use shared `AppButton`; Nutrition calendar/Today controls already use tokenized material/pressed states and the 36 pt meal-add visual control has `hitSlop={12}` inside its 52 pt header; Settings already uses shared navigation/action controls with safe-area-aware scrolling. Do not churn these surfaces without new evidence.
 - Weight Details remains bounded to 10 recent weigh-ins.
 - `ProgramDetailScreen` remains bounded by the seven-day `WeekdayKey` structure.
 - User Limitations, Sync Conflict Review, Active Session and Safety & Recovery Review long-collection candidates are resolved by #584, #585, #586 and #590.
