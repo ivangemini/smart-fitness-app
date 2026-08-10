@@ -21,9 +21,11 @@ Home remains a social-first hybrid: compact personal metrics → server-authorit
 - LG-H2 Stories: complete for the current image-only v1 source scope.
 - Progress/exercise secondary-material reassessment: complete for current active source scope.
 - **LG-4 Workouts material convergence: source-complete.**
-- **LG-5 QA and bounded polish: active with twelve demonstrated-defect runtime batches merged through PR #574.**
-- Current runtime mobile `main`: `dcc62356d946f4e2c309aa24666322e9a671f067`.
-- Coach product/material expansion remains explicitly deferred; PR #572 was only bounded live-surface theme hardening.
+- **LG-5 QA and bounded polish: active with 22 demonstrated-defect runtime batches merged through PR #591.**
+- Latest runtime mobile `main`: `13eaa33ef96af126bdca7b28a52c60a016e3d669`.
+- PR #590 exact head `adeda4fc66490cd2e2ad05ca84454f962cc6c31d` passed Mobile CI #2118 before merge.
+- PR #591 exact head `1ef8da30bebe13fa9b0407acb82ac44cb50208cd` passed Mobile CI #2122 before merge.
+- Coach product/material expansion remains explicitly deferred; bounded live-surface QA corrections do not reopen that phase.
 - LG-H3 Steps remains blocked by real native capability/permissions and must not be faked.
 - No OTA/EAS publication, native install/build, backend deployment, migration execution or physical-device proof is implied by source/CI completion.
 
@@ -46,164 +48,45 @@ Completed workout history is intentionally a read surface in the current product
 
 LG-5 is validation-first. Runtime work requires a concrete defect; no broad source migration package is authorized merely for visual churn.
 
-### Batch 1 — PR #559: Create Program keyboard safety
+### Runtime batches #559–#586
+
+The first 20 demonstrated-defect runtime batches cover keyboard/safe-area reachability, theme consistency, long/localized text resilience and stable-identity virtualization across Workouts, Social, Progress, account/session, sync and existing Coach surfaces. Exact package evidence remains in `docs/current-status.md`, `docs/handoffs/latest.md` and merged PR history.
+
+Key resolved collection boundaries include paginated Social (#573/#574), completed workout detail (#577), Workout Template Detail (#579), Coach Run History (#581), Account Sessions (#583), User Limitations (#584), Sync Conflict Review (#585) and Active Session (#586).
+
+### Batch 21 — PR #590: Safety & Recovery Review virtualization
 
 Confirmed defect:
 
-- the auto-focused name field opened the keyboard inside a centered, non-scrollable modal without keyboard avoidance or modal safe-area ownership;
-- on short-height/increased-text configurations the action row could become unreachable.
+- deterministic Safety & Recovery Review restrictions derive from the unbounded user-limitations collection and findings can be emitted per record;
+- the screen eagerly rendered restriction/finding arrays inside a vertical `ScrollView`.
 
 Fix:
 
-- keyboard avoidance around the form;
-- vertically scrollable content with handled keyboard taps;
-- safe-area-derived top/bottom clearance;
-- validation/create/cancel semantics preserved.
+- the screen owns one top-level `FlatList` for result rows;
+- restriction rows use stable limitation identity;
+- issue rows preserve backend path identity rather than display text/index as their primary contract;
+- summary, virtualized rows and footer remain one visually contiguous Liquid Glass result group;
+- capability/auth states, lookback controls, deterministic Coach run lifecycle, review snapshot persistence and safe-area clearance remain preserved.
 
-### Batch 2 — PR #560: Workouts short-height / large-text resilience
+Exact validated head: `adeda4fc66490cd2e2ad05ca84454f962cc6c31d`; Mobile CI #2118 passed before merge.
 
-Confirmed defects:
-
-- Program Add Workout choice mode could clip its lower action inside a max-height/overflow-hidden, non-scrollable localized choice panel;
-- New Routine expanded exercise notes used a 42 px direct interaction minimum.
-
-Fix:
-
-- choice mode is scroll-safe and localized copy can shrink/wrap;
-- notes input meets the established 44 px minimum.
-
-No-change reassessment:
-
-- main Workout Builder already has keyboard avoidance, automatic keyboard insets, handled taps and dynamic safe-area bottom padding;
-- Workout Editor overlay already has keyboard-aware scrolling and top/bottom safe-area ownership;
-- Finish already has keyboard avoidance, measured footer clearance and safe-area padding.
-
-Those correct boundaries were deliberately left unchanged.
-
-### Batch 3 — PR #561: shared UI text resilience
-
-Confirmed shared-boundary debt:
-
-- long/localized values and large text could stress `ListRow` flex ownership;
-- destructive/tertiary button labels and equal-width segmented labels needed the same wrapping/shrink behavior as already resilient controls.
-
-Fix:
-
-- bounded flex/min-width and label wrapping/shrink hardening without public API or behavior changes.
-
-Exact validated head: `e16f8d961b4a128c4d7b1de5b4fc36d66342fd8e`; Mobile CI #2043 passed before merge.
-
-### Batch 4 — PR #565: shared SectionHeader theme consistency
+### Batch 22 — PR #591: residual Coach navigation convergence
 
 Confirmed defect:
 
-- theme-aware screens could use the active app palette for their background/body while shared `SectionHeader` still resolved title/subtitle colors from `Colors.dark`.
+- six existing Coach surfaces retained duplicated screen-local back-control recipes instead of the shared Liquid Glass navigation control;
+- some local recipes used 42×42 direct-interaction geometry while the shared control owns the established 44×44 contract.
 
 Fix:
 
-- `SectionHeader` now resolves `textPrimary`/`textSecondary` through `useAppTheme()` and memoized active-palette styles;
-- layout, typography, action ownership and public API are preserved.
+- Safety Recovery Preflight, Coach Run History Detail, Nutrition Coach, Strength Coach, Nutrition Target Proposal and Combined Coach Proposal now use `LiquidGlassIconButton` with `ChevronLeft`;
+- obsolete local `backButton/backLabel` recipes were removed;
+- preflight sync/review navigation, immutable history-detail retrieval, Nutrition/Strength run/confirmation behavior, Nutrition Target confirmation and Combined proposal confirmations remain preserved.
 
-Exact validated head: `1a60e87b64db0d87ec99c6ad5c6f47002cf87dde`; Mobile CI #2049 passed before merge.
+The first exact-head CI run exposed stale source guards only: two expected the deleted local size styles and one required exact formatting of `api.getRun(runId)`. Guards were rebound to the shared control owner and semantic retrieval contract. Final exact-head validation then passed the complete gate.
 
-### Batch 5 — PR #567: shared state theme consistency
-
-Confirmed defect:
-
-- shared `EmptyState`, `InlineError` and `LoadingState` could retain `Colors.dark` inside otherwise light/system theme-aware Home and Progress surfaces.
-
-Fix:
-
-- all three shared primitives now resolve semantic presentation from `AppThemeProvider` without changing their APIs or state behavior.
-
-### Batch 6 — PR #568: auth appearance consistency
-
-Confirmed defect:
-
-- auth/account screens, shared auth form primitives and account modals could mix active-theme cards/buttons with hardcoded dark backgrounds, fields, headers and destructive/tertiary controls.
-
-Fix:
-
-- the affected auth/account presentation boundaries now use active semantic colors while preserving auth/session, password-reset and account-deletion behavior.
-
-### Batch 7 — PR #569: onboarding appearance consistency
-
-Confirmed defect:
-
-- the onboarding readiness placeholder and full onboarding client screen hardcoded the dark palette, producing a dark flash/flow under Light/System appearance.
-
-Fix:
-
-- onboarding now follows `AppThemeProvider` for background, fields, choices, helper/validation text and selection state while preserving onboarding payloads, units and persistence.
-
-### Batch 8 — PR #570: Exercise Detail loading-state ownership
-
-Confirmed defect:
-
-- Exercise Detail loading returned a bare shared loading state without the active-theme full-screen/safe-area boundary already used by error and populated states.
-
-Fix:
-
-- loading now reuses the existing centered state boundary with active background and runtime top/bottom safe-area clearance.
-
-### Batch 9 — PR #571: Share Workout state/theme resilience
-
-Confirmed defects:
-
-- restore/auth-readiness loading lacked the safe-area ownership of the populated Share Workout form;
-- live disclosure switches used fixed thumb/track colors rather than the selected app palette.
-
-Fix:
-
-- loading is centered with runtime safe-area clearance;
-- switch presentation uses active semantic colors;
-- share/publish/media/moderation/idempotency semantics are unchanged.
-
-### Batch 10 — PR #572: Coach history theme consistency
-
-Confirmed defect:
-
-- Coach Run History screens already used active-theme outer surfaces while nested filter chips, detail rows and `CoachInputSummaryCard` still used `Colors.dark`.
-
-Fix:
-
-- those nested presentation boundaries now use active semantic colors while preserving filtering, immutable-run and Coach API/data semantics.
-
-This was bounded LG-5 presentation hardening only; deferred Coach product/material work was not resumed.
-
-Exact validated head: `76276d6ecc6a435339064adcdfd84e51a9c65be3`; Mobile CI #2065 passed before merge.
-
-### Batch 11 — PR #573: paginated Social collection virtualization
-
-Confirmed defect:
-
-- Notifications, Following Feed, public-profile workout posts and relationship lists could accumulate cursor pages but eagerly rendered the growing collection through `ScrollView` + `.map()`.
-
-Fix:
-
-- each affected screen now owns one top-level `FlatList` with stable item identity;
-- existing cursor `Load more`, retry/error/empty/auth/cached states, pull-to-refresh where present, notification optimistic-read behavior and relationship actions are preserved;
-- regression guards prevent return to eager unbounded rendering.
-
-Exact validated head: `e5769c5e579dc1da9963f7a6e2433214c996dc4a`; Mobile CI #2073 passed before merge.
-
-### Batch 12 — PR #574: workout-post comment virtualization
-
-Confirmed defect:
-
-- workout-post comments are cursor-paginated but were accumulated with `comments.map()` inside the post-detail `ScrollView`;
-- adding a nested same-axis virtualized list would itself violate the responsive-mobile contract.
-
-Fix:
-
-- workout-post detail now owns the sole top-level `FlatList` and renders comments as stable-ID rows;
-- post/reaction/comment state content remains in list header/footer boundaries;
-- comment list/create/delete/report, retry/load-more, profile-required, post report/delete, safe-area and keyboard behavior are preserved;
-- source guards require the single-list boundary and forbid both eager comment mapping and nested comment `FlatList` rendering.
-
-The first exact-head regression run exposed two stale source guards that still expected the removed monolithic comments component. Those guards were updated to verify the new boundary plus preserved Social API ownership; the final exact head passed the complete gate.
-
-Exact validated head: `3d959128c63b46948cef946895352d96658732fa`; Mobile CI #2077 passed before merge.
+Exact validated head: `1ef8da30bebe13fa9b0407acb82ac44cb50208cd`; Mobile CI #2122 passed before merge.
 
 ## LG-5 validation matrix
 
@@ -216,10 +99,21 @@ Continue reviewing:
 - keyboard-open forms/editors;
 - populated / empty / loading / error / disabled states;
 - long collections and pagination/virtualization boundaries;
+- stable semantic identity for React keys and list items;
 - elevated-material and blur/fallback behavior;
 - Active Session set-entry ergonomics, RPE, replacement, finish and discard flows;
 - workout creation/edit/save/program attachment;
 - completed-history retention, list/detail navigation and read-only record review.
+
+## Current bounded evidence / next inspection
+
+- **There is no pre-authorized runtime package after PR #591.** Inspect first; change source only for a demonstrated defect.
+- `QuickActionsCard` currently uses displayed/localized `action.label` as the key for secondary actions. This is not an acceptable live identity contract, but the current audit has not yet established a usage site. Verify live usage before changing its API; unused/theoretical code is not enough to justify churn.
+- Continue the residual non-Coach material/navigation audit. A local `Pressable` alone is not evidence of a defect; only converge controls when the material, accessibility, touch-target, safe-area or shared-primitive contract is actually mismatched.
+- Weight Details recent weigh-in rows remain explicitly bounded to 10 entries.
+- `ProgramDetailScreen` remains semantically bounded by the seven-day `WeekdayKey` program structure.
+- Nutrition Add Food, Recovery Check-in, User Limitations, Social Profile Editor and Weight Entry already own keyboard-aware scroll behavior.
+- User Limitations, Sync Conflict Review, Active Session and Safety & Recovery Review long-collection boundaries are resolved by #584, #585, #586 and #590.
 
 ## LG-5 execution rule
 
@@ -252,10 +146,12 @@ Coach recovery/input/lookback/history/domain product/material expansion remains 
 
 ## Later execution
 
-1. Continue LG-5 source/CI QA and fix only concrete defects it surfaces.
-2. Collect physical-device evidence only when separately authorized.
-3. Continue deferred Coach/material work only when reprioritized.
-4. LG-H3 Steps only after native capability review/authorization.
+1. Continue LG-5 validation-first source/CI QA from runtime main after PR #591.
+2. Establish live usage before acting on the `QuickActionsCard` identity candidate; continue residual non-Coach material/navigation inspection.
+3. Fix only concrete demonstrated defects, otherwise record no-change evidence and move on.
+4. Collect physical-device evidence only when separately authorized.
+5. Continue deferred Coach/material work only when reprioritized.
+6. LG-H3 Steps only after native capability review/authorization.
 
 ## Execution rule
 
