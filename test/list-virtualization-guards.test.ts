@@ -69,8 +69,8 @@ describe('list virtualization boundaries', () => {
     expect(screen).toContain('keyExtractor={(item) => item.id}');
     expect(screen).not.toContain('<ScrollView');
     expect(screen).toContain('id: `restriction:${restriction.limitationId}`');
-    expect(screen).toContain('id: `issue:${issue.code}:${issue.path}`');
-    expect(viewModel).toContain('path: string;');
+    expect(screen).toContain('resultReadiness.issueKeys?.[index]');
+    expect(viewModel).toContain('issueKeys?: string[];');
     expect(viewModel).toContain("typeof path !== 'string'");
   });
 
