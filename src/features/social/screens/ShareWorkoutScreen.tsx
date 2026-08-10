@@ -205,7 +205,16 @@ export default function ShareWorkoutScreen() {
 
   if (isRestoringState || !ready) {
     return (
-      <View style={styles.screen}>
+      <View
+        style={[
+          styles.screen,
+          styles.loadingState,
+          {
+            paddingBottom: insets.bottom + Spacing.three,
+            paddingTop: insets.top + Spacing.three,
+          },
+        ]}
+      >
         <LoadingState label={copy.publishing} />
       </View>
     );
