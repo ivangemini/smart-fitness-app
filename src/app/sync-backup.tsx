@@ -69,13 +69,11 @@ export default function SyncBackupScreen() {
             review.otherConflictCount === 0 && styles.footerWithoutConflictSegment,
           ]}>
           <SyncConflictReviewFooter review={review} />
-          <View style={styles.afterConflictGroup}>
-            <SupportDiagnosticsCard
-              conflictCount={conflictCount}
-              pendingOperations={pendingOperations}
-              syncStatus={status}
-            />
-          </View>
+          <SupportDiagnosticsCard
+            conflictCount={conflictCount}
+            pendingOperations={pendingOperations}
+            syncStatus={status}
+          />
         </View>
       }
       ListHeaderComponent={
@@ -131,9 +129,6 @@ export default function SyncBackupScreen() {
 
 const createStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
-    afterConflictGroup: {
-      marginTop: Spacing.three,
-    },
     container: {
       gap: Spacing.three,
       maxWidth: MaxContentWidth,
