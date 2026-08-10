@@ -5,12 +5,13 @@ Updated: 2026-08-10
 ## Checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current runtime `main`: `0c1454d182483c5e297315529e897d4f4246220d`.
-- Latest runtime merge: PR #581 `Virtualize LG-5 Coach run history`.
-- PR #581 exact validated head: `ded513d37f527641c3bf972f234018c1cd6e02f1`; Mobile CI #2084 passed before merge.
-- PR #580 Progress keyboard-safety exact head: `025aa3727ca651afcf3971e0726402100f3e93c9`; Mobile CI #2083 passed before merge.
-- PR #579 Workout Template Detail virtualization exact head: `5e243e1d97701938621027382e56d5ff35392d53`; Mobile CI #2081 passed before merge.
-- PR #576 established and documented the current completed-history read-only scope.
+- Current runtime `main`: `8e8effabe1d7b1cc3b7ccee870b9886d3e2fb64b`.
+- Canonical roadmap checkpoint after runtime work: PR #587.
+- Latest runtime merge: PR #586 `Virtualize LG-5 Active Session exercises`.
+- PR #586 exact validated head: `1ccbe7eb42df0ed0810508d4471865f6cd2714e2`; Mobile CI #2095 passed before merge.
+- PR #585 Sync Conflict Review exact validated head: `a5e61c2312d42c9dcd6e110030c516e270db8354`; Mobile CI #2094 passed before merge.
+- PR #584 User Limitations exact validated head: `392bcb0c237cda6cb55265c12585d265f389a294`; Mobile CI #2089 passed before merge.
+- PR #583 Account Sessions exact validated head: `d8d829d1f65e928314a042a16777b78c8b2b6673`; Mobile CI #2087 passed before merge.
 - Backend repo: `ivangemini/smart-fitness-backend`.
 - Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
 - Open backend PR #215 `Route routine backend CI to Hermes` remains draft/open and must not merge without real exact-head required Hermes validation.
@@ -21,7 +22,7 @@ Updated: 2026-08-10
 
 ## LG-5 runtime progress
 
-Merged demonstrated-defect batches now run through PR #581:
+Merged demonstrated-defect batches now run through PR #586:
 
 - **#559:** Create Program keyboard/safe-area reachability.
 - **#560:** Program Add Workout short-height/large-text scrolling plus New Routine notes 44 px interaction minimum.
@@ -34,21 +35,26 @@ Merged demonstrated-defect batches now run through PR #581:
 - **#571:** Share Workout loading safe-area resilience plus theme-aware disclosure switches.
 - **#572:** Coach history filter/detail/input-summary theme consistency; bounded QA only, not a Coach product reprioritization.
 - **#573:** Notifications, Following Feed, public-profile workout posts and relationship lists moved from eager paginated `ScrollView + .map()` rendering to top-level `FlatList` boundaries.
-- **#574:** workout-post detail became the sole `FlatList` boundary for cursor-paginated comments, avoiding both eager mapping and prohibited same-axis nested virtualization.
-- **#577:** completed-workout detail moved exercise groups from eager `ScrollView + .map()` rendering to one top-level `FlatList` boundary while retaining summary, per-set/RPE data and immutable historical Safety & Recovery context.
+- **#574:** workout-post detail became the sole `FlatList` boundary for cursor-paginated comments.
+- **#577:** completed-workout detail moved exercise groups to one top-level `FlatList`, preserving summary, per-set/RPE data and immutable historical Safety & Recovery context.
 - **#579:** Workout Template Detail moved arbitrary workout exercises to one top-level `FlatList` while retaining target sets, template actions, workout start, safe-area and fixed-footer behavior.
-- **#580:** Progress added automatic keyboard insets plus interactive/on-drag dismissal so embedded body-measurement fields and Save remain reachable without changing floating-tab clearance or persistence.
-- **#581:** Coach Run History moved its up-to-50 run collection from vertical `ScrollView + items.map()` to one top-level `FlatList`, preserving API limit, filters, auth/loading/error/empty/retry states and run-detail navigation. This remains bounded QA, not Coach product expansion.
+- **#580:** Progress added automatic keyboard insets plus interactive/on-drag dismissal for the embedded body-measurement form.
+- **#581:** Coach Run History moved its up-to-50 run collection to one top-level `FlatList`, preserving API limit, filters, auth/loading/error/empty/retry states and run-detail navigation.
+- **#583:** Account Sessions moved the active-session collection to one top-level `FlatList` keyed by stable session IDs while preserving refresh and revocation actions.
+- **#584:** User Limitations moved its unbounded record collection to one top-level `FlatList` while preserving the visually grouped Current Records material section, status/delete/sync actions and keyboard-aware add form.
+- **#585:** Sync Backup became the sole `FlatList` owner for the unbounded Sync Conflict Review collection. Conflict header/rows/footer remain one contiguous material section and durable choice/confirmation/resume/retry behavior is preserved.
+- **#586:** Active Session moved arbitrary `visibleExercises` from `ScrollView + .map()` to one top-level `FlatList` keyed by exercise ID while preserving SessionHeader, empty-workout actions, set entry/RPE/replacement, finish/discard behavior, keyboard insets and footer actions.
 
-PR #576 was a scope/documentation audit rather than a runtime package. It confirmed that completed workout history is an immutable read surface in the current product contract; LG-5 must not invent edit/delete UI from generic session state actions. See `docs/qa/lg5-completed-history-scope.md`.
+PR #576 remains a scope/documentation audit rather than a runtime package. Completed workout history is an immutable read surface in the current product contract; do not invent edit/delete UI from generic session state actions. See `docs/qa/lg5-completed-history-scope.md`.
 
 Latest validation evidence:
 
-- #579: Mobile CI #2081 green on exact head `5e243e1d97701938621027382e56d5ff35392d53`.
-- #580: Mobile CI #2083 green on exact head `025aa3727ca651afcf3971e0726402100f3e93c9`.
-- #581: Mobile CI #2084 green on exact head `ded513d37f527641c3bf972f234018c1cd6e02f1`.
+- #583: Mobile CI #2087 green on exact head `d8d829d1f65e928314a042a16777b78c8b2b6673`.
+- #584: Mobile CI #2089 green on exact head `392bcb0c237cda6cb55265c12585d265f389a294`.
+- #585: Mobile CI #2094 green on exact head `a5e61c2312d42c9dcd6e110030c516e270db8354`.
+- #586: Mobile CI #2095 green on exact head `1ccbe7eb42df0ed0810508d4471865f6cd2714e2`.
 
-Each passed repository/changed-file line limits, TypeScript, full regression, expanded model smoke, Expo export and Expo Doctor before merge.
+Each runtime package passed repository/changed-file line limits, TypeScript, full regression, expanded model smoke, Expo export and Expo Doctor before merge.
 
 ## CI execution
 
@@ -79,7 +85,7 @@ Potentially long collections should use one suitable virtualized list boundary w
 
 ## Next work
 
-Continue LG-5 by inspecting bounded secondary/shared surfaces against:
+Continue LG-5 validation-first inspection against:
 
 - light / dark / system appearance;
 - narrow/short phone geometry and safe areas;
@@ -92,14 +98,16 @@ Continue LG-5 by inspecting bounded secondary/shared surfaces against:
 - completed-history retention, list/detail navigation and read-only record review;
 - elevated material and blur/fallback behavior.
 
-Current follow-up candidates/evidence:
+Current bounded evidence:
 
-- User Limitations is a real long-collection candidate because `userLimitations` has no explicit cap, but existing records are visually one grouped `AppCard`. Do not "fix" it by turning every record into a separate unrelated card; preserve material grouping when establishing a virtualized boundary.
-- Sync Conflict Review may need similar long-collection treatment, but first establish the correct screen/card boundary and storage semantics.
+- **There is no pre-authorized runtime package after PR #586.** Inspect first; change source only for a newly demonstrated defect.
+- Weight Details recent weigh-in rows are explicitly bounded to 10 entries; its `ScrollView` is not a long-collection defect by itself.
+- `ProgramDetailScreen` remains semantically limited by the seven-day `WeekdayKey` structure and is not a virtualization target merely because it uses `.map()`.
 - Nutrition Add Food, Recovery Check-in, User Limitations, Social Profile Editor and Weight Entry already satisfy the current keyboard-aware scroll source contract; do not churn them without new evidence.
-- `ProgramDetailScreen` is semantically limited by the seven-day `WeekdayKey` structure and is not a virtualization target merely because it uses `.map()`.
+- User Limitations and Sync Conflict Review long-collection candidates are resolved by #584 and #585.
+- Active Session arbitrary exercise-count virtualization is resolved by #586; further session changes require separate demonstrated layout/interaction evidence.
 
-If inspection shows no defect, do not create churn. If it shows a concrete defect, fix the smallest coherent boundary and merge only an exact fully green runtime head.
+If inspection shows no defect, record/reuse no-change evidence and move on. If it shows a concrete defect, fix the smallest coherent boundary and merge only an exact fully green runtime head.
 
 ## Backend #215
 
