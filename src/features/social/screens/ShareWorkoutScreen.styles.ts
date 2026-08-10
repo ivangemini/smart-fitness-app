@@ -76,6 +76,11 @@ export const createShareWorkoutStyles = (
       letterSpacing: 0.4,
       textTransform: "uppercase",
     },
+    loadingState: {
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: Spacing.three,
+    },
     mediaHeader: {
       alignItems: "flex-start",
       flexDirection: "row",
