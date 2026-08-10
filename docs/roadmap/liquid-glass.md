@@ -36,9 +36,11 @@ Important preserved contracts from LG-4:
 - tuned Set / Previous / weight / reps / RPE table semantics and active-session persistence;
 - RPE value domain and select/skip lifecycle;
 - workout/program draft, save, reorder, attach, favorite and delete semantics;
-- completed-history retention and editable-history save/delete semantics;
+- completed-history retention and trust-oriented read-only review semantics;
 - safety/recovery decision and acknowledgement behavior;
 - routes, private synchronization and backend contracts.
+
+Completed workout history is intentionally a read surface in the current product contract. Commit `b91bd6f1dc3166f6bdc95838cae254c9af63d2ed` introduced history/detail as immutable historical presentation without modifying training data, and the current list/detail routes still expose no completed-session mutation UI. Generic state update/delete actions do not authorize LG-5 to invent that workflow. See `docs/qa/lg5-completed-history-scope.md`.
 
 ## LG-5 — QA and bounded polish active
 
@@ -217,7 +219,7 @@ Continue reviewing:
 - elevated-material and blur/fallback behavior;
 - Active Session set-entry ergonomics, RPE, replacement, finish and discard flows;
 - workout creation/edit/save/program attachment;
-- completed-history read/edit/delete flows.
+- completed-history retention, list/detail navigation and read-only record review.
 
 ## LG-5 execution rule
 
