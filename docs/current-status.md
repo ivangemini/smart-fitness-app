@@ -5,13 +5,15 @@ Updated: 2026-08-10
 ## Verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current runtime `main`: `57565185031b4b0fd1b2c17798947d3500c57976`.
-- Latest runtime merge: PR #577 — completed-workout detail now virtualizes exercise groups through one top-level `FlatList` boundary.
-- PR #577 exact validated head: `93e6affdd5293720dafa59b2f3645be8b0462a2a`; Mobile CI #2079 passed before merge.
+- Current runtime `main`: `0c1454d182483c5e297315529e897d4f4246220d`.
+- Latest runtime merge: PR #581 — Coach Run History now virtualizes its up-to-50 run collection through one top-level `FlatList` boundary.
+- PR #581 exact validated head: `ded513d37f527641c3bf972f234018c1cd6e02f1`; Mobile CI #2084 passed before merge.
+- PR #580 made the embedded Progress body-measurement form keyboard-aware without changing measurement persistence or floating-tab clearance.
+- PR #579 virtualized the arbitrary workout-template exercise collection while preserving workout-template actions and start lifecycle.
 - PR #576 established completed workout history as an immutable read surface for current LG-5 scope and added focused scope evidence.
 - Backend repo: `ivangemini/smart-fitness-backend`.
 - Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
-- Backend PR #215 is the only open backend project PR at this checkpoint. It remains draft at head `0826ff18dac7d4afe78943d9881c5a530507f1af`; do not merge it without exact-head required Hermes validation.
+- Backend PR #215 is the only open backend project PR at this checkpoint. It remains draft and must not merge without exact-head required Hermes validation.
 - **LG-H2 Stories is complete for the current image-only v1 source scope.**
 - **Progress/exercise secondary-material reassessment is complete for the current active source scope.**
 - **LG-4 Workouts source convergence is complete.**
@@ -85,8 +87,6 @@ Exact validated head: `e5769c5e579dc1da9963f7a6e2433214c996dc4a`; Mobile CI #207
 
 Workout-post detail now owns the sole top-level `FlatList` for cursor-paginated comments rather than eagerly mapping accumulated pages inside a `ScrollView`. Comment list/create/delete/report, retry/load-more, post reactions/report/delete, profile-required, safe-area and keyboard behavior remain preserved.
 
-The first exact-head regression run exposed two source guards that still expected the removed monolithic comments component. They were updated to verify the new single-list architecture and retained comment API ownership; the final exact head passed all gates.
-
 Exact validated head: `3d959128c63b46948cef946895352d96658732fa`; Mobile CI #2077 green before merge.
 
 ### PR #577 — completed-workout exercise-group virtualization
@@ -96,6 +96,28 @@ Completed-workout detail no longer eagerly mounts every exercise group through `
 A focused source regression guard prevents reintroducing the eager top-level collection and also protects the read-only completed-history boundary.
 
 Exact validated head: `93e6affdd5293720dafa59b2f3645be8b0462a2a`; Mobile CI #2079 green before merge.
+
+### PR #579 — workout-template exercise virtualization
+
+Workout Template Detail no longer eagerly renders the arbitrary `workout.exercises` collection through `ScrollView + .map()`. It now uses one top-level `FlatList` with stable exercise IDs while preserving workout title, target-set copy, favorite/delete actions, start lifecycle, safe-area ownership and fixed-footer clearance.
+
+Exact validated head: `5e243e1d97701938621027382e56d5ff35392d53`; Mobile CI #2081 green before merge.
+
+### PR #580 — Progress measurement keyboard reachability
+
+The Progress tab now gives its existing `ScrollView` automatic keyboard insets and the established interactive/on-drag dismissal behavior so the embedded body-measurement inputs and Save action remain reachable when the keyboard is open. Existing floating-tab bottom clearance, measurement validation/persistence, charts and Safety & Recovery content are unchanged.
+
+A focused source regression guard protects keyboard ownership plus the measurement save and floating-tab-clearance boundaries.
+
+Exact validated head: `025aa3727ca651afcf3971e0726402100f3e93c9`; Mobile CI #2083 green before merge.
+
+### PR #581 — Coach Run History virtualization
+
+Coach Run History previously requested up to 50 runs and eagerly rendered them through a vertical `ScrollView + items.map()`. The existing live surface now owns one top-level `FlatList` with stable run IDs. Domain/status filters, auth/loading/error/empty states, retry behavior, API limit and run-detail navigation are preserved. Horizontal filter scrollers remain cross-axis only.
+
+This is bounded LG-5/RUI-5 QA on an existing Coach surface; it does not resume deferred Coach product/material expansion.
+
+Exact validated head: `ded513d37f527641c3bf972f234018c1cd6e02f1`; Mobile CI #2084 green before merge.
 
 ## CI execution changes
 
@@ -138,6 +160,13 @@ Continue checking:
 - workout creation/edit/save/program attachment;
 - completed-history retention, list/detail navigation and read-only record review;
 - elevated material and blur/fallback behavior.
+
+Current follow-up evidence:
+
+- Nutrition Add Food, Recovery Check-in, User Limitations, Social Profile Editor and Weight Entry already own keyboard-aware scroll behavior; do not churn them for RUI-4 without a new defect.
+- `ProgramDetailScreen` is semantically bounded by the seven-day `WeekdayKey` program structure; do not virtualize it merely because it contains `.map()`.
+- User Limitations remains a legitimate RUI-5 candidate because `userLimitations` has no explicit collection cap, but its rows are visually grouped inside one shared `AppCard`. Any future virtualization must preserve that material grouping rather than converting rows into unrelated cards as a shortcut.
+- Sync Conflict Review may also require long-collection reassessment, but its screen/card boundary must be established before changing source.
 
 Physical-device evidence remains separately authorization-gated.
 
