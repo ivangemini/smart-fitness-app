@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
-import { Platform, ScrollView, Text, TextInput, View } from 'react-native';
+import { FlatList, Platform, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppCard } from '@/components/ui/AppCard';
@@ -186,105 +186,148 @@ export default function UserLimitationScreen() {
         </View>
       </View>
 
-      <ScrollView
+      <FlatList
         automaticallyAdjustKeyboardInsets
         contentContainerStyle={[
           themedStyles.content,
           { flexGrow: 1, paddingBottom: insets.bottom + Spacing.eight },
         ]}
+        data={userLimitations}
+        keyExtractor={(item) => item.id}
         keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
         keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}>
-        <View style={themedStyles.container}>
-          <AppCard>
-            <Text style={themedStyles.cardTitle}>{copy.currentRecords}</Text>
-            <Text style={themedStyles.bodyText}>
-              {copy.recordCounts(
-                activeCount,
-                formatNumber(activeCount, { maximumFractionDigits: 0 }),
-                userLimitations.length,
-                formatNumber(userLimitations.length, { maximumFractionDigits: 0 }),
-              )}
-            </Text>
-            <Text style={themedStyles.metaText}>
-              {copy.syncStatus(
-                syncStatusLabel,
-                formatNumber(pendingOperations, { maximumFractionDigits: 0 }),
-              )}
-            </Text>
-            {syncError ? (
-              <Text style={[themedStyles.metaText, { color: colors.warning }]}>
-                {copy.syncIssue}
-              </Text>
-            ) : null}
-            {userLimitations.length === 0 ? (
-              <Text style={themedStyles.bodyText}>{copy.noLimitations}</Text>
-            ) : (
-              <View style={styles.listStack}>
-                {userLimitations.map((limitation) => (
-                  <LimitationRow
-                    key={limitation.id}
-                    disabled={Boolean(pendingChange)}
-                    limitation={limitation}
-                    onDelete={() => deleteLimitation(limitation)}
-                    onStatusChange={() => changeStatus(limitation)}
-                  />
-                ))}
-              </View>
-            )}
-          </AppCard>
+        ListFooterComponent={
+          <View style={[themedStyles.container, styles.listFooter]}>
+            <AppCard>
+              <Text style={themedStyles.cardTitle}>{copy.addLimitation}</Text>
+              <Text style={themedStyles.bodyText}>{copy.addExplanation}</Text>
 
-          <AppCard>
-            <Text style={themedStyles.cardTitle}>{copy.addLimitation}</Text>
-            <Text style={themedStyles.bodyText}>{copy.addExplanation}</Text>
-
-            <ChoiceGrid label={copy.type} onChange={(value) => updateDraft('kind', value)} options={options.kinds} value={draft.kind} />
-            <ChoiceGrid columns={3} label={copy.bodyRegion} onChange={(value) => updateDraft('bodyRegion', value)} options={options.bodyRegions} value={draft.bodyRegion} />
-            <ChoiceGrid columns={3} label={copy.affectedSide} onChange={(value) => updateDraft('side', value)} options={options.sides} value={draft.side} />
-            <ChoiceGrid columns={3} label={copy.severity} onChange={(value) => updateDraft('severity', value)} options={options.severities} value={draft.severity} />
-            <ChoiceGrid label={copy.trainingImpact} onChange={(value) => updateDraft('trainingImpact', value)} options={options.impacts} value={draft.trainingImpact} />
-            <MovementGrid onToggle={toggleMovement} values={draft.movementPatterns} />
-
-            <View style={styles.fieldGroup}>
-              <Text style={themedStyles.fieldLabel}>{copy.onsetDate}</Text>
-              <Text style={themedStyles.metaText}>{copy.onsetHelper}</Text>
-              <TextInput
-                accessibilityLabel={copy.onsetAccessibility}
-                autoCapitalize="none"
-                autoCorrect={false}
-                keyboardType="numbers-and-punctuation"
-                maxLength={10}
-                onChangeText={(value) => updateDraft('onsetDate', value)}
-                placeholder="2026-07-23"
-                placeholderTextColor={colors.textMuted}
-                style={themedStyles.input}
-                value={draft.onsetDate}
+              <ChoiceGrid
+                label={copy.type}
+                onChange={(value) => updateDraft('kind', value)}
+                options={options.kinds}
+                value={draft.kind}
               />
-            </View>
+              <ChoiceGrid
+                columns={3}
+                label={copy.bodyRegion}
+                onChange={(value) => updateDraft('bodyRegion', value)}
+                options={options.bodyRegions}
+                value={draft.bodyRegion}
+              />
+              <ChoiceGrid
+                columns={3}
+                label={copy.affectedSide}
+                onChange={(value) => updateDraft('side', value)}
+                options={options.sides}
+                value={draft.side}
+              />
+              <ChoiceGrid
+                columns={3}
+                label={copy.severity}
+                onChange={(value) => updateDraft('severity', value)}
+                options={options.severities}
+                value={draft.severity}
+              />
+              <ChoiceGrid
+                label={copy.trainingImpact}
+                onChange={(value) => updateDraft('trainingImpact', value)}
+                options={options.impacts}
+                value={draft.trainingImpact}
+              />
+              <MovementGrid onToggle={toggleMovement} values={draft.movementPatterns} />
 
-            {formError ? <Text style={themedStyles.errorText}>{formError}</Text> : null}
-            {message ? (
-              <Text style={[themedStyles.metaText, { color: colors.success }]}>{message}</Text>
-            ) : null}
-            <PrimaryButton
-              disabled={isRestoringState || Boolean(pendingChange)}
-              label={copy.save}
-              loading={Boolean(pendingChange)}
-              onPress={saveLimitation}
-            />
-            <SecondaryButton
-              accessibilityHint={copy.openReviewHint}
-              label={copy.openReview}
-              onPress={() => router.push('/profile/safety-recovery')}
-            />
-          </AppCard>
+              <View style={styles.fieldGroup}>
+                <Text style={themedStyles.fieldLabel}>{copy.onsetDate}</Text>
+                <Text style={themedStyles.metaText}>{copy.onsetHelper}</Text>
+                <TextInput
+                  accessibilityLabel={copy.onsetAccessibility}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  keyboardType="numbers-and-punctuation"
+                  maxLength={10}
+                  onChangeText={(value) => updateDraft('onsetDate', value)}
+                  placeholder="2026-07-23"
+                  placeholderTextColor={colors.textMuted}
+                  style={themedStyles.input}
+                  value={draft.onsetDate}
+                />
+              </View>
 
-          <AppCard>
-            <Text style={themedStyles.cardTitle}>{copy.boundary}</Text>
-            <Text style={themedStyles.bodyText}>{copy.boundaryBody}</Text>
-          </AppCard>
-        </View>
-      </ScrollView>
+              {formError ? <Text style={themedStyles.errorText}>{formError}</Text> : null}
+              {message ? (
+                <Text style={[themedStyles.metaText, { color: colors.success }]}>{message}</Text>
+              ) : null}
+              <PrimaryButton
+                disabled={isRestoringState || Boolean(pendingChange)}
+                label={copy.save}
+                loading={Boolean(pendingChange)}
+                onPress={saveLimitation}
+              />
+              <SecondaryButton
+                accessibilityHint={copy.openReviewHint}
+                label={copy.openReview}
+                onPress={() => router.push('/profile/safety-recovery')}
+              />
+            </AppCard>
+
+            <AppCard>
+              <Text style={themedStyles.cardTitle}>{copy.boundary}</Text>
+              <Text style={themedStyles.bodyText}>{copy.boundaryBody}</Text>
+            </AppCard>
+          </View>
+        }
+        ListHeaderComponent={
+          <View style={themedStyles.container}>
+            <AppCard
+              style={[
+                styles.recordsGroupHeader,
+                userLimitations.length === 0 && styles.recordsGroupOnly,
+              ]}>
+              <Text style={themedStyles.cardTitle}>{copy.currentRecords}</Text>
+              <Text style={themedStyles.bodyText}>
+                {copy.recordCounts(
+                  activeCount,
+                  formatNumber(activeCount, { maximumFractionDigits: 0 }),
+                  userLimitations.length,
+                  formatNumber(userLimitations.length, { maximumFractionDigits: 0 }),
+                )}
+              </Text>
+              <Text style={themedStyles.metaText}>
+                {copy.syncStatus(
+                  syncStatusLabel,
+                  formatNumber(pendingOperations, { maximumFractionDigits: 0 }),
+                )}
+              </Text>
+              {syncError ? (
+                <Text style={[themedStyles.metaText, { color: colors.warning }]}>
+                  {copy.syncIssue}
+                </Text>
+              ) : null}
+              {userLimitations.length === 0 ? (
+                <Text style={themedStyles.bodyText}>{copy.noLimitations}</Text>
+              ) : null}
+            </AppCard>
+          </View>
+        }
+        renderItem={({ item, index }) => (
+          <View style={themedStyles.container}>
+            <AppCard
+              style={[
+                styles.recordsGroupRow,
+                index === userLimitations.length - 1 && styles.recordsGroupLastRow,
+              ]}>
+              <LimitationRow
+                disabled={Boolean(pendingChange)}
+                limitation={item}
+                onDelete={() => deleteLimitation(item)}
+                onStatusChange={() => changeStatus(item)}
+              />
+            </AppCard>
+          </View>
+        )}
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   );
 }
