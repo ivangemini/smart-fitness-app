@@ -27,19 +27,25 @@ Exact code, tests and current Git history override stale historical prose.
 
 ### Mobile
 
-- Current `main`: `975440b6098fb4aebf6d874acca87be581334ed4`.
-- Latest runtime merge: PR #565 — shared `SectionHeader` now follows the active app theme instead of `Colors.dark`.
-- PR #565 exact validated head: `1a60e87b64db0d87ec99c6ad5c6f47002cf87dde`; Mobile CI #2049 passed before merge.
-- LG-5 runtime evidence already merged:
-  - PR #559 — Create Program keyboard/safe-area resilience;
-  - PR #560 — Workouts short-height/large-text resilience and 44 px notes input;
-  - PR #561 — shared `ListRow`, button and segmented-control text resilience; exact head `e16f8d961b4a128c4d7b1de5b4fc36d66342fd8e`, Mobile CI #2043 green;
-  - PR #565 — shared `SectionHeader` theme consistency.
-- CI execution policy also advanced without changing app behavior:
+- Current `main`: `dcc62356d946f4e2c309aa24666322e9a671f067`.
+- Latest runtime merge: PR #574 — workout-post comment pagination now uses the post-detail screen as the sole virtualized list boundary.
+- PR #574 exact validated head: `3d959128c63b46948cef946895352d96658732fa`; Mobile CI #2077 passed before merge.
+- PR #573 exact validated head: `e5769c5e579dc1da9963f7a6e2433214c996dc4a`; Mobile CI #2073 passed before merge after virtualizing the other four cursor-paginated Social collection surfaces.
+- LG-5 runtime evidence merged after the prior #566 documentation checkpoint:
+  - PR #567 — shared empty/loading/error theme consistency;
+  - PR #568 — auth/account appearance consistency;
+  - PR #569 — onboarding appearance consistency;
+  - PR #570 — Exercise Detail loading-state safe-area/theme ownership;
+  - PR #571 — Share Workout state/theme resilience;
+  - PR #572 — bounded Coach history theme consistency;
+  - PR #573 — paginated Social collection virtualization;
+  - PR #574 — workout-post comment virtualization.
+- Earlier LG-5 evidence remains PR #559, #560, #561 and #565.
+- CI execution policy remains:
   - PR #562 routes routine authoritative Mobile CI to Hermes;
   - PR #563 skips only duplicate merge-generated post-merge Mobile CI after an exact-head validated PR;
   - PR #564 persists the Hermes policy for future agents.
-- No open mobile pull requests were present at this checkpoint.
+- No open mobile pull requests were present immediately before this documentation checkpoint branch.
 
 ### Backend
 
@@ -78,13 +84,20 @@ Current required source/CI matrix:
 - keyboard-open forms and editors;
 - safe-area ownership on iPhone and Android system navigation;
 - populated / empty / loading / error / disabled states;
-- long exercise, workout-history and program collections;
+- long collections, cursor pagination and stable-identity virtualization boundaries;
 - Active Session set entry, RPE, replacement, finish and discard flows;
 - workout creation/edit/save/program attachment;
 - completed-history read/edit/delete;
 - elevated material and blur/fallback behavior.
 
-Already confirmed/fixed LG-5 defect classes include keyboard reachability, short-height scrolling, minimum touch geometry, long/localized shared-control text resilience and shared-header theme consistency.
+Confirmed/fixed LG-5 defect classes now include:
+
+- keyboard reachability and short-height scrolling;
+- minimum touch geometry;
+- long/localized shared-control text resilience;
+- active-theme consistency for shared state/header, auth/account, onboarding, Share Workout and bounded Coach history presentation;
+- safe-area ownership for transient loading states;
+- eager rendering of cursor-paginated Social collections and workout comments.
 
 ## Historical programs remain authoritative as contracts
 
@@ -102,22 +115,23 @@ The mobile `docs/backend/*` Architecture 1.0 documents are historical design mat
 
 ## Current execution order
 
-1. Continue LG-5 source/CI QA across secondary/shared surfaces.
+1. Continue LG-5 source/CI QA across remaining secondary/shared surfaces.
 2. Create runtime PRs only for demonstrated defects; validate the exact head before merge.
 3. Keep backend PR #215 blocked until its exact-head Hermes jobs execute and pass; do not weaken validation merely to clear the queue.
 4. Collect physical-device/native evidence only when separately authorized.
-5. Resume deferred Coach material only after explicit reprioritization.
+5. Resume deferred Coach product/material expansion only after explicit reprioritization.
 6. Keep LG-H3 Steps blocked until a reviewed native health/activity source and permission contract exist.
 7. Preserve chronological Following semantics until a separate LG-H4 ranking contract is reviewed.
 
 ## Working rules
 
 - Continue through a meaningful bounded package rather than stopping after every micro-change.
-- Use branches and pull requests; merge only an exact fully green runtime head.
+- Use branches and pull requests; merge runtime code only after an exact fully green head.
 - Preserve routes, stable IDs, persistence/sync schemas, authentication/session semantics, revisions, idempotency, conflict behavior, completed history, explicit Coach confirmations, media state versions, leases, retention, legal holds and immutable audit unless a task explicitly changes them.
 - Keep private fitness data in the existing offline-first/revision-aware boundary.
 - Keep Social server-authoritative.
 - Keep provider calls and credentials backend-only.
+- Potentially long collections should use suitable virtualized list boundaries with stable IDs; do not use eager unbounded `.map()` chains or same-axis nested virtualized lists.
 - Keep hand-written source and architecture files within repository line-limit policy.
 - New user-facing copy must use the localization layer and bounded display mappings.
 - Never put health, workout, nutrition, limitation, authentication, Coach, Social content, email, tokens, object keys, signed URLs, OCR plaintext, provider payloads or raw private values into telemetry/diagnostics.
