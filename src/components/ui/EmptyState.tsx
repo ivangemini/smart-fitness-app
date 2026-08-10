@@ -29,7 +29,9 @@ function EmptyStateContent({
       {title ? <Text style={styles.title}>{title}</Text> : null}
       {message ? <Text style={styles.message}>{message}</Text> : null}
       {description ? <Text style={styles.description}>{description}</Text> : null}
-      {actionLabel && onActionPress ? <PrimaryButton label={actionLabel} onPress={onActionPress} /> : null}
+      {actionLabel && onActionPress ? (
+        <PrimaryButton label={actionLabel} onPress={onActionPress} />
+      ) : null}
     </View>
   );
 }
