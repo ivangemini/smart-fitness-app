@@ -50,7 +50,7 @@ The pull-request changed-file audit is intentionally not run here because an arb
 
 ## Repository access
 
-The backend checkout uses `BACKEND_REPOSITORY_TOKEN` when configured and otherwise falls back to the workflow token. Configure the repository secret only when the default token cannot read `hon4olo/smart-fitness-backend`.
+The backend checkout uses `BACKEND_REPOSITORY_TOKEN` when configured and otherwise falls back to the workflow token. Configure the repository secret only when the default token cannot read `ivangemini/smart-fitness-backend`.
 
 Never put the token in workflow inputs, source files, logs, Expo public configuration, or release evidence.
 
