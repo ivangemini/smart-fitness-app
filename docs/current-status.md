@@ -111,7 +111,8 @@ Important interpretation rules from that audit:
 - provider, worker, storage, moderation, password-reset and staging source readiness never authorizes real credentials, provider calls, environment activation or deployment;
 - mobile `docs/backend/*` is historical Architecture 1.0 design material; current backend implementation/documentation is authoritative in `ivangemini/smart-fitness-backend`;
 - analytics/telemetry remains fail-closed with no production event registry authorization;
-- local-state performance evidence still supports the existing AsyncStorage `AppState` snapshot; no storage rewrite is authorized without new measured evidence.
+- local-state performance evidence still supports the existing AsyncStorage `AppState` snapshot; no storage rewrite is authorized without new measured evidence;
+- completed workout history is an immutable read surface in the current product contract; generic session mutation actions do not authorize LG-5 to add history edit/delete UI. See `docs/qa/lg5-completed-history-scope.md`.
 
 ## LG-5 active next work
 
@@ -127,7 +128,7 @@ Continue checking:
 - long collections, pagination and stable-identity virtualization boundaries;
 - Active Session set entry, RPE, replacement, finish and discard flows;
 - workout creation/edit/save/program attachment;
-- completed-history read/edit/delete flows;
+- completed-history retention, list/detail navigation and read-only record review;
 - elevated material and blur/fallback behavior.
 
 Physical-device evidence remains separately authorization-gated.
