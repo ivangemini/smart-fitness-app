@@ -14,7 +14,6 @@ export type SafetyRecoveryRestrictionAction =
 
 export type SafetyRecoveryIssueView = {
   code: string;
-  path: string;
   severity: SafetyRecoveryIssueSeverity;
   message: string;
   actual?: number | string | null;
@@ -40,6 +39,7 @@ export type SafetyRecoveryReadinessView = {
   recommendedLoadMultiplier: number;
   restrictions: SafetyRecoveryRestrictionView[];
   issues: SafetyRecoveryIssueView[];
+  issueKeys?: string[];
   requiresExplicitConfirmation: boolean;
   approvedForAutomaticApply: false;
 };
@@ -125,10 +125,13 @@ const readNullableIsoDate = (value: unknown): string | null | undefined => {
   return Number.isFinite(Date.parse(value)) ? value : undefined;
 };
 
-const readIssues = (value: unknown): SafetyRecoveryIssueView[] | null => {
+const readIssues = (
+  value: unknown,
+): { issues: SafetyRecoveryIssueView[]; issueKeys: string[] } | null => {
   if (!Array.isArray(value)) return null;
 
   const issues: SafetyRecoveryIssueView[] = [];
+  const issueKeys: string[] = [];
   for (const item of value) {
     if (!isRecord(item)) return null;
     const { actual, code, limit, message, path, severity } = item;
@@ -154,14 +157,14 @@ const readIssues = (value: unknown): SafetyRecoveryIssueView[] | null => {
 
     issues.push({
       code,
-      path,
       severity: severity as SafetyRecoveryIssueSeverity,
       message,
       ...(actual === undefined ? {} : { actual: actual as number | string | null }),
       ...(limit === undefined ? {} : { limit: limit as number | string }),
     });
+    issueKeys.push(path);
   }
-  return issues;
+  return { issues, issueKeys };
 };
 
 const readRestrictions = (value: unknown): SafetyRecoveryRestrictionView[] | null => {
@@ -218,7 +221,7 @@ const readReadiness = (value: unknown): SafetyRecoveryReadinessView | null => {
     1,
   );
   const restrictions = readRestrictions(value.restrictions);
-  const issues = readIssues(value.issues);
+  const parsedIssues = readIssues(value.issues);
 
   if (
     typeof value.policyVersion !== 'string' ||
@@ -233,7 +236,7 @@ const readReadiness = (value: unknown): SafetyRecoveryReadinessView | null => {
     value.signalCount > 7 ||
     recommendedLoadMultiplier === null ||
     !restrictions ||
-    !issues ||
+    !parsedIssues ||
     typeof value.requiresExplicitConfirmation !== 'boolean' ||
     value.approvedForAutomaticApply !== false
   ) {
@@ -248,7 +251,8 @@ const readReadiness = (value: unknown): SafetyRecoveryReadinessView | null => {
     signalCount: value.signalCount,
     recommendedLoadMultiplier,
     restrictions,
-    issues,
+    issues: parsedIssues.issues,
+    issueKeys: parsedIssues.issueKeys,
     requiresExplicitConfirmation: value.requiresExplicitConfirmation,
     approvedForAutomaticApply: false,
   };
