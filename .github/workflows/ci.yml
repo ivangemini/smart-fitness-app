@@ -22,8 +22,8 @@ concurrency:
 jobs:
   validate:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
+    runs-on: [self-hosted, linux, x64, hermes-mobile-ci]
+    timeout-minutes: 35
     steps:
       - name: Checkout
         uses: actions/checkout@v4
