@@ -2,22 +2,27 @@
 
 Updated: 2026-08-10
 
-This file is the **canonical forward roadmap**. Detailed current evidence belongs in `docs/current-status.md` and `docs/handoffs/latest.md`; focused Liquid Glass execution belongs in `docs/roadmap/liquid-glass.md`.
+This file is the **canonical forward roadmap**. Detailed current evidence belongs in `docs/current-status.md` and `docs/handoffs/latest.md`; focused Liquid Glass execution belongs in `docs/roadmap/liquid-glass.md`. Historical provider/Social/privacy implementation detail remains in the focused roadmap, architecture, operations and privacy documents plus merged pull requests.
 
 ## Current verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current runtime mobile `main`: `fbdba5e64445b94081da6c4403858b34d7af7c30`.
-- Latest runtime merge: PR #557 — editable workout history moved to virtualized `SectionList`, active semantic theme and stack-safe bottom clearance while preserving edit/save/delete behavior.
-- PR #557 exact validated head: `7c888c65bf5721fcf705888638d080937e979d17`; Mobile CI #2034 passed the full required gate before merge.
-- Backend Stories foundation remains the last recorded backend baseline: PR #214 merged as `2339f6ce…`, exact validated head `9a5af3aba1f4470f261eb9ea00a6e2f2f8979bfe`. LG-4 did not modify or revalidate backend runtime/deployment state.
+- Current runtime mobile `main`: `975440b6098fb4aebf6d874acca87be581334ed4`.
+- Latest runtime merge: PR #565 — active-theme consistency for shared `SectionHeader`.
+- PR #565 exact validated head: `1a60e87b64db0d87ec99c6ad5c6f47002cf87dde`; Mobile CI #2049 passed before merge.
+- Additional merged LG-5 runtime packages: PR #559 Create Program keyboard safety, PR #560 Workouts short-height/large-text resilience, and PR #561 shared-control text resilience.
+- PR #561 exact validated head: `e16f8d961b4a128c4d7b1de5b4fc36d66342fd8e`; Mobile CI #2043 passed before merge.
+- Mobile CI execution is now routed through Hermes by PR #562; PR #563 skips only duplicate merge-generated post-merge runs; PR #564 persists that policy for future agents.
+- Backend repo: `ivangemini/smart-fitness-backend`.
+- Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
+- Backend PR #215 remains draft/open at exact head `0826ff18dac7d4afe78943d9881c5a530507f1af`; its required Hermes CI jobs remain queued and it is not merge-ready.
 - **LG-H2 Stories is complete for the current image-only v1 source scope.**
 - **Progress/exercise secondary-material reassessment is complete for the current active source scope.**
-- **LG-4 Workouts source convergence is complete through PR #557.**
-- Active product/source priority: **LG-5 QA and bounded polish, validation-first. Do not restart broad source migration unless QA identifies a concrete defect.**
+- **LG-4 Workouts source convergence is complete.**
+- **LG-5 QA and bounded polish is the active Phase 11 priority.**
 - **Coach material is deferred by explicit product priority.**
 
-Release readiness remains lower than source completeness because physical-device/native-release/production/provider evidence is separately gated.
+Release readiness remains lower than source completeness because physical-device, native-release, deployed-backend, provider and production evidence are separately gated.
 
 ## Operating rules
 
@@ -29,8 +34,9 @@ Release readiness remains lower than source completeness because physical-device
 - Local AsyncStorage remains the active storage strategy; architecture-only design options are not implementation authorization. Reviewed decision evidence: `docs/architecture/local-state-performance-decision.md`. There is no remaining approved autonomous source-refactor phase. In equivalent explicit terms, **no separate autonomous source-refactor phase is currently authorized**.
 - Stories remain in the server-authoritative Social boundary and must not be added to private revisioned `AppState` sync.
 - Analytics/telemetry collection remains disabled until its separate consent/evidence gate is explicitly satisfied.
-- Do not claim or perform provider/production/physical-device/native-release/OTA/deployment evidence unless it actually ran and was explicitly authorized.
-- Do not perform backend deployment/migration execution, provider activation, production data access, OTA/EAS publication, native build/install, credential/DNS changes, destructive production cleanup, HealthKit/Health Connect activation, or store submission without direct authorization.
+- Source-complete provider, export, worker, delivery or release contracts are not activation authorization.
+- Do not claim physical-device, native-release, deployment, provider or production evidence unless it actually ran and was explicitly authorized.
+- Do not perform backend deployment/migration execution, provider activation, production data access, OTA/EAS publication, native build/install, credential/DNS changes, destructive production cleanup, HealthKit/Health Connect activation or store submission without direct authorization.
 
 ---
 
@@ -44,148 +50,34 @@ Release readiness remains lower than source completeness because physical-device
 - **Phase 6 provider-neutral agent foundation:** source-complete with safe disabled defaults.
 - **Phase 7 Social foundation:** base Social plus Stories list/view/authoring/delete complete for the current image-only v1 source scope.
 - **Phase 8 privacy/security hardening:** substantially complete for current source scope; environment/provider evidence remains external.
-- **Phase 9 release/privacy/data-access evidence:** separate cross-repository/release program, not implicitly activated by product work.
-- **Phase 10 Responsive Mobile UI Hardening:** complete for current source/CI scope; concrete responsive regressions found during later work remain valid bounded fixes.
-- **Phase 11 Liquid Glass + Home convergence:** source migration through LG-4 complete for the current approved scope; **LG-5 QA and bounded polish is active**.
+- **Phase 9 release/privacy/data-access evidence:** separate cross-repository/release program; source contracts are substantially advanced but product/provider/release activation remains external.
+- **Phase 10 Responsive Mobile UI Hardening:** complete for current source/CI scope; later concrete regressions remain valid bounded fixes.
+- **Phase 11 Liquid Glass + Home convergence:** source migration through LG-4 complete for the approved scope; **LG-5 QA and bounded polish is active**.
 
 ---
 
 # Phase 11 — Liquid Glass + Home convergence
 
-Home is now:
+Home remains:
 
 **compact personal daily metrics → server-authoritative Stories → server-authoritative chronological Following Feed**.
 
-Completed material/navigation milestones through LG-3I remain valid. Coach material debt is intentionally deferred.
-
-## LG-H2 Stories — complete
-
-### Backend foundation — complete
-
-Backend PR #214 established and validated:
-
-- strict versioned image-only Story DTO/API contracts and stable errors;
-- authenticated/idempotent create semantics;
-- one approved owned `story_image` asset per Story;
-- 24-hour server-authoritative expiry and active-only reads;
-- owner delete plus account-deletion cascade;
-- Following/self, private-profile, symmetric block and moderation restriction enforcement;
-- reuse of existing managed-media moderation/delivery/cleanup authority;
-- idempotent viewed state;
-- bounded ordering/pagination;
-- retention cleanup and privacy/data-export coverage;
-- forward migration source and PostgreSQL evidence in CI.
-
-No deployment or production migration execution was performed.
-
-### Mobile read/view — complete
-
-Mobile PR #533 established and validated:
-
-- strict Story DTO/media/lifecycle parsing and Story error mapping;
-- authenticated Story API boundary;
-- bounded account-scoped two-minute cache with expiry filtering and backend revalidation;
-- separate `useSocialStories` ownership from Following feed state;
-- Home Story strip between daily metrics and Following;
-- backend ordering and server `viewed` seen/unseen state;
-- safe-area/content-driven Story viewer;
-- idempotent viewed acknowledgement;
-- localized loading/error/retry states;
-- source guards and exact-head Mobile CI #1984.
-
-The pre-contract `homeSocialFirst` guard was updated from “Stories must not exist” to “Stories must come from real server state; mock/demo Stories remain forbidden.”
-
-### Mobile authoring/delete — complete
-
-Mobile PR #535 completed the owner lifecycle on top of the existing managed-media authority:
-
-- managed-media contracts/API/parsers support `story_image` without a second uploader;
-- Story image selection/preparation reuses the existing image pipeline, including pending picker-result recovery after Android activity destruction;
-- unfinished unbound Story media is stored only as an account-scoped restart-safe draft containing the server asset ID and local preview URI;
-- signed upload, finalize and bounded server polling reuse the existing managed-media composition;
-- bounded pending/processing/review/approved/rejected/failed/deleted states are localized in the authoring surface;
-- publish is enabled only for an owned `approved` `story_image` and submits its exact current `stateVersion`;
-- Story creation uses deterministic asset-scoped idempotency and then revalidates the authoritative Home Story list;
-- owner deletion uses the merged server endpoint and revalidates Stories after success;
-- the Home Story strip always exposes a `Your story` authoring entry, including when the server list is empty;
-- v1 remains image-only with no caption, text overlay, video, arbitrary URL or client-authored expiry;
-- safe-area/content-driven UI, localization and source guards were added without backend/schema/release changes.
-
-PR #535 exact validated head `8045e96c07cb2f1fac6113b56d0061cb1547f4ee` passed Mobile CI #1990 and merged as `ad17cc9d8be896cf9610027a63018c07119b5b01`.
-
-### LG-H2 definition of done
-
-**Satisfied for the current image-only v1 source scope.** Backend lifecycle/privacy/media/viewed-state and mobile list/view/create/delete use the same strict server-authoritative contract; owner authoring reuses managed-media approval authority; exact-head CI is green; runtime Git history is recorded; no review blockers remained.
-
-Physical-device/native-release/production evidence remains separately gated and was not performed as part of LG-H2.
-
-## Progress/exercise secondary material — reassessment complete
-
-PR #537 closed the concrete active debt found during the post-Stories reassessment:
-
-- `ExerciseDetailScreen` consumes the active application theme through adaptive styles instead of hardcoded `Colors.dark`;
-- `MuscleMap` renders SVG/background/border/text from active semantic theme colors;
-- shared `StatChip` follows the active theme wherever reused;
-- Exercise Detail back navigation uses shared `LiquidGlassIconButton`;
-- the inert unimplemented More affordance was removed rather than exposing a false interactive control;
-- media, favorites, sharing, history/progress calculations, navigation, persistence and safe-area/content-driven behavior were preserved;
-- a source guard prevents hardcoded dark styling from returning to the boundary.
-
-PR #537 exact validated head `5ee5a3dfb1cf3591168821c3b4275b26e597aca4` passed Mobile CI #1992 and merged as `279a09e4b73e067a2cb0c1d836b8da809ce0b6b1`.
-
-The subsequent audit found no additional meaningful bounded debt in active Progress/exercise surfaces outside later Workouts packages and explicitly deferred Coach/planning surfaces.
-
-## LG-4 Workouts — source convergence complete
-
-LG-4 was implemented as bounded PRs #539–#557 rather than one broad rewrite.
-
-### Hub / Active Session / Finish
-
-- **#539:** Workouts hub Search, sticky Start/Resume and Create Program shell/actions moved to shared material.
-- **#540:** Active Session header became content-driven; magic `paddingBottom: 52` and timer `marginTop: 48` were removed; Back/overflow moved to shared glass controls.
-- **#541:** Active Session footer Add Exercises/Test GIF moved to shared primary/secondary controls; fixed footer-only positioning was removed.
-- **#545:** RPE sheet became adaptive with wrapping values and >=44 px targets while preserving the 6–10 value domain and selection lifecycle.
-- **#550:** Finish Share/Save moved to shared controls; Resume and clear-name accessibility were hardened while measured footer and completion lifecycle were preserved.
-- **#555:** Exercise/Workout overflow sheets moved to shared elevated material with semantic overlay; missing-session Back moved to a shared secondary action.
-
-### Pickers / workout creation / program surfaces
-
-- **#542:** replacement exercise picker moved from `ScrollView + slice(0,100).map` to bounded `FlatList`; the artificial cap was removed and safe-area/shared elevated material ownership added.
-- **#544:** workout creation picker/editor/builder boundary became active-theme adaptive without changing draft/save/reorder semantics.
-- **#546:** builder exercise Move/Duplicate/Delete actions were raised to the 44 px interaction minimum.
-- **#548:** New Routine picker retained `FlatList` virtualization but removed the artificial 100-item cap and gained bottom-safe-area/shared elevated material ownership.
-- **#549:** New Routine root Stack screen stopped reserving floating-tab clearance.
-- **#552:** Program Detail Back/More moved to shared glass controls and row Play/Remove actions gained full 44 px targets.
-- **#553:** New Routine exercise action menu moved from an opaque local panel to shared elevated material.
-- **#554:** Workout Builder root Stack screen stopped reserving floating-tab clearance and Start Next Workout was raised to >=44 px.
-
-### Detail / library / safety / history
-
-- **#547:** Workout Template Detail replaced 34 px header controls, absolute title and guessed `+116` footer clearance with shared 44 px controls, flex title, measured footer and shared Start action.
-- **#551:** Exercise Library Back/Add moved to shared controls; Details, filters and Retry were raised to usable targets while `FlatList` and measured footer were preserved.
-- **#556:** Workout History list/detail and Workout Safety Gate Back/filter controls were brought to shared/44 px contracts while preserving filtering and safety acknowledgement semantics.
-- **#557:** direct editable workout-history route moved from `ScrollView + map` to `SectionList`, off hardcoded `Colors.dark`, and off floating-tab/guessed `+120` bottom clearance while preserving edit/save/delete/unit-conversion behavior.
-
-### LG-4 definition of done
-
-**Satisfied for the current source/CI scope.** The final runtime package, PR #557, exact head `7c888c65bf5721fcf705888638d080937e979d17`, passed Mobile CI #2034: repository and changed-file line audits, TypeScript, full regression, expanded model smoke, Expo export and Expo Doctor. It merged as `fbdba5e64445b94081da6c4403858b34d7af7c30`.
-
-Preserved throughout LG-4:
-
-- tuned `Set / Previous / weight / reps / RPE` table semantics and active-session persistence;
-- RPE value domain and selection lifecycle;
-- workout/program draft, save, reorder, attach, favorite and delete semantics;
-- completed-history retention and editable-history save/delete behavior;
-- safety/recovery decision and acknowledgement behavior;
-- routes, synchronization schemas and backend contracts.
-
-No physical-device/native-release/production evidence is implied by source/CI completion.
+Completed LG-H2, Progress/exercise reassessment and LG-4 details are retained in `docs/roadmap/liquid-glass.md` and current Git history. Do not restart those phases without a new demonstrated defect or explicit product reprioritization.
 
 ## LG-5 — QA and bounded polish active
 
-LG-5 is validation-first. Do not create broad migration packages merely to continue changing source. Create runtime work only for a demonstrated defect.
+LG-5 is validation-first. Do not create broad migration packages merely to continue changing source. Runtime/source changes require a demonstrated defect.
 
-Required validation matrix:
+### Completed LG-5 source packages
+
+- **PR #559:** Create Program modal now owns keyboard avoidance, scroll reachability and safe-area-aware form clearance while preserving create/cancel/validation behavior.
+- **PR #560:** Program Add Workout choice mode is short-height/large-text safe; New Routine expanded notes meet the 44 px direct-interaction minimum. Existing keyboard-aware builder/editor/finish boundaries were reassessed without churn.
+- **PR #561:** shared `ListRow`, destructive/tertiary button labels and `SegmentedControl` labels are resilient to long/localized copy and increased text size without changing component APIs or behavior.
+- **PR #565:** shared `SectionHeader` resolves title/subtitle colors from `AppThemeProvider`, fixing the demonstrated active-app-theme mismatch while preserving layout and typography.
+
+These packages are source/CI evidence only. They do not constitute physical-device proof.
+
+### Required continuing validation matrix
 
 - light / dark / system appearance;
 - narrow phone width and short phone height;
@@ -199,22 +91,35 @@ Required validation matrix:
 - workout creation/edit/save/program attachment;
 - completed-history read/edit/delete flows.
 
-Source/CI validation does not replace physical-device evidence. Physical/native proof is collected only when separately authorized.
+### LG-5 execution rule
+
+1. Inspect a bounded surface or shared primitive against the responsive/material/accessibility contracts.
+2. If no concrete defect exists, record/reuse the no-change evidence and move on; do not churn source.
+3. If a concrete defect exists, create the smallest coherent package that fixes it without changing unrelated business logic.
+4. Runtime PRs require exact-head Mobile CI before merge.
+5. CI/source evidence never substitutes for authorization-gated physical-device/native evidence.
 
 ## LG-H3 Steps
 
-**Blocked.** Require a reviewed native health/activity source, dependency/permission disclosure and later separately authorized physical runtime evidence. Do not infer steps from workouts.
+**Blocked.** Require a reviewed native health/activity source, dependency and permission disclosure, plus later separately authorized physical runtime evidence. Do not infer steps from workouts.
 
 ## LG-H4 Feed retention/ranking
 
 Later. Preserve chronological Following semantics until a separately reviewed ranking contract exists.
 
-## Later Phase 11 execution
+## Deferred material
 
-1. Run LG-5 source/CI QA and fix only concrete defects it surfaces.
-2. Collect physical-device evidence only when separately authorized.
-3. Continue deferred Coach/material work only when reprioritized.
-4. LG-H3 Steps only after native capability review and authorization.
+Coach recovery/input/lookback/history/domain material remains deferred unless explicitly reprioritized.
+
+---
+
+# Backend / cross-repository execution
+
+- Backend runtime/source work follows backend `AGENTS.md`, ownership/privacy/idempotency/revision contracts and exact-head validation.
+- Backend PR #215 is infrastructure work only and must remain blocked until its required Hermes jobs actually execute and pass on the exact head intended for merge.
+- Do not route routine validation back to hosted runners merely to bypass an unavailable Hermes assignment unless a demonstrated outage/incompatibility is separately reviewed under the CI policy.
+- Older provider/staging/privacy/export documents may contain historical `next slice` wording. Later focused evidence plus current code override those intermediate statements; do not repeat already completed source work merely because an older planning note remains in history.
+- Mobile `docs/backend/*` is historical Architecture 1.0 design material; current backend behavior is authoritative in `ivangemini/smart-fitness-backend`.
 
 ---
 
@@ -225,3 +130,12 @@ Mobile runtime/code PRs require exact-head Mobile CI: repository and changed-fil
 Backend runtime/source work must follow backend `AGENTS.md`: routes → services → repositories → DB, strict validation, authenticated ownership, fail-closed privacy, forward-safe migration source, repository line limits, lint/format/build/tests and relevant PostgreSQL CI. Source work must not deploy or execute production migrations.
 
 Docs-only synchronization uses diff/ancestry verification; workflows may intentionally ignore Markdown-only changes. Because source tests may assert canonical documentation markers, docs-only rewrites must preserve or explicitly update those asserted contracts rather than relying on workflow path filters.
+
+# Next work
+
+1. Continue LG-5 source/CI QA across remaining secondary/shared surfaces.
+2. Fix only concrete defects with bounded PRs and exact-head validation.
+3. Keep backend #215 unmerged until exact-head Hermes validation is real and green.
+4. Collect physical-device evidence only when separately authorized.
+5. Resume deferred Coach/material work only after explicit reprioritization.
+6. Keep Steps and ranked-feed work behind their separate review/authorization boundaries.
