@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
 import OnboardingClientScreen from '@/features/onboarding/OnboardingClientScreen';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 
 export default function OnboardingRoute() {
   const [isClientReady, setIsClientReady] = useState(Platform.OS !== 'web');
+  const { colors } = useAppTheme();
 
   useEffect(() => {
     setIsClientReady(true);
   }, []);
 
   if (!isClientReady) {
-    return <View style={styles.placeholder} />;
+    return <View style={[styles.placeholder, { backgroundColor: colors.background }]} />;
   }
 
   return <OnboardingClientScreen />;
@@ -20,7 +21,6 @@ export default function OnboardingRoute() {
 
 const styles = StyleSheet.create({
   placeholder: {
-    backgroundColor: Colors.dark.background,
     flex: 1,
   },
 });

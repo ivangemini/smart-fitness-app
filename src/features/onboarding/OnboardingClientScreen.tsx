@@ -20,6 +20,7 @@ import { useAppActions, useAppInfrastructure } from '@/context/AppContext';
 import { useProfileState } from '@/context/ProfileStateContext';
 import type { ProfileActivityLevel } from '@/features/profile/profilePlan';
 import { useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import type { ProfileGoalType } from '@/types';
 import {
   displayWeightInputToKg,
@@ -37,22 +38,18 @@ const ACTIVITY_LEVELS: ProfileActivityLevel[] = [
 
 export default function OnboardingClientScreen() {
   const { completeOnboarding } = useAppActions();
-  const {
-    isRestoringState,
-    mutationFailure,
-    pendingMutationCount,
-  } = useAppInfrastructure();
+  const { isRestoringState, mutationFailure, pendingMutationCount } = useAppInfrastructure();
   const { onboardingCompleted, profile } = useProfileState();
   const { t } = useLocalization();
+  const { colors } = useAppTheme();
   const { weight: weightUnit } = useUnitPreferences();
   const insets = useSafeAreaInsets();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [ageInput, setAgeInput] = useState('');
   const [currentWeightInput, setCurrentWeightInput] = useState('');
   const [activityLevel, setActivityLevel] = useState<ProfileActivityLevel | null>(null);
   const [goalType, setGoalType] = useState<ProfileGoalType>(profile.goalType);
-  const [trainingDaysInput, setTrainingDaysInput] = useState(
-    `${profile.trainingDaysPerWeek}`,
-  );
+  const [trainingDaysInput, setTrainingDaysInput] = useState(`${profile.trainingDaysPerWeek}`);
   const [completionRequested, setCompletionRequested] = useState(false);
   const [completionAlertShown, setCompletionAlertShown] = useState(false);
 
@@ -261,6 +258,9 @@ function Field({
   placeholder: string;
   value: string;
 }) {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
@@ -269,7 +269,7 @@ function Field({
         keyboardType={keyboardType}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={Colors.dark.textMuted}
+        placeholderTextColor={colors.textMuted}
         style={styles.input}
         value={value}
       />
@@ -277,96 +277,97 @@ function Field({
   );
 }
 
-const styles = StyleSheet.create({
-  activityExplanation: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.caption.fontSize,
-    lineHeight: Typography.caption.lineHeight,
-  },
-  choice: {
-    alignItems: 'center',
-    backgroundColor: Colors.dark.surfaceSecondary,
-    borderColor: Colors.dark.borderSubtle,
-    borderRadius: Radii.medium,
-    borderWidth: StyleSheet.hairlineWidth,
-    flexBasis: 140,
-    flexGrow: 1,
-    justifyContent: 'center',
-    minHeight: 46,
-    minWidth: 0,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.one,
-  },
-  choiceBlock: { gap: Spacing.two, marginBottom: Spacing.three },
-  choiceGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.one },
-  choiceLabel: {
-    color: Colors.dark.textSecondary,
-    flexShrink: 1,
-    fontSize: Typography.label.fontSize,
-    fontWeight: Typography.label.fontWeight,
-    textAlign: 'center',
-  },
-  choiceLabelSelected: { color: Colors.dark.textPrimary },
-  choiceSelected: {
-    backgroundColor: Colors.dark.backgroundSelected,
-    borderColor: Colors.dark.accent,
-  },
-  container: { gap: Spacing.four, maxWidth: MaxContentWidth, width: '100%' },
-  content: {
-    alignItems: 'center',
-    flexGrow: 1,
-    paddingHorizontal: Spacing.three,
-  },
-  eyebrow: {
-    color: Colors.dark.accent,
-    fontSize: Typography.caption.fontSize,
-    fontWeight: '800',
-    letterSpacing: 1.1,
-  },
-  field: { gap: Spacing.one, marginBottom: Spacing.three },
-  goalChoice: {
-    flexBasis: 140,
-    flexGrow: 1,
-    minWidth: 0,
-  },
-  goalRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
-  header: { gap: Spacing.two },
-  helper: {
-    color: Colors.dark.textMuted,
-    fontSize: Typography.caption.fontSize,
-    lineHeight: Typography.caption.lineHeight,
-  },
-  input: {
-    backgroundColor: Colors.dark.surfacePrimary,
-    borderColor: Colors.dark.borderSubtle,
-    borderRadius: 12,
-    borderWidth: StyleSheet.hairlineWidth,
-    color: Colors.dark.textPrimary,
-    fontSize: Typography.body.fontSize,
-    minHeight: 52,
-    paddingHorizontal: Spacing.three,
-  },
-  label: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.body.fontSize,
-    fontWeight: '700',
-  },
-  pressed: { opacity: 0.72 },
-  screen: { backgroundColor: Colors.dark.background, flex: 1 },
-  subtitle: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.body.fontSize,
-    lineHeight: Typography.body.lineHeight,
-  },
-  title: {
-    color: Colors.dark.textPrimary,
-    fontSize: Typography.screenTitle.fontSize,
-    fontWeight: Typography.screenTitle.fontWeight,
-  },
-  validation: {
-    color: Colors.dark.warning,
-    fontSize: Typography.caption.fontSize,
-    lineHeight: Typography.caption.lineHeight,
-    marginBottom: Spacing.two,
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    activityExplanation: {
+      color: colors.textSecondary,
+      fontSize: Typography.caption.fontSize,
+      lineHeight: Typography.caption.lineHeight,
+    },
+    choice: {
+      alignItems: 'center',
+      backgroundColor: colors.surfaceSecondary,
+      borderColor: colors.borderSubtle,
+      borderRadius: Radii.medium,
+      borderWidth: StyleSheet.hairlineWidth,
+      flexBasis: 140,
+      flexGrow: 1,
+      justifyContent: 'center',
+      minHeight: 46,
+      minWidth: 0,
+      paddingHorizontal: Spacing.two,
+      paddingVertical: Spacing.one,
+    },
+    choiceBlock: { gap: Spacing.two, marginBottom: Spacing.three },
+    choiceGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.one },
+    choiceLabel: {
+      color: colors.textSecondary,
+      flexShrink: 1,
+      fontSize: Typography.label.fontSize,
+      fontWeight: Typography.label.fontWeight,
+      textAlign: 'center',
+    },
+    choiceLabelSelected: { color: colors.textPrimary },
+    choiceSelected: {
+      backgroundColor: colors.backgroundSelected,
+      borderColor: colors.accent,
+    },
+    container: { gap: Spacing.four, maxWidth: MaxContentWidth, width: '100%' },
+    content: {
+      alignItems: 'center',
+      flexGrow: 1,
+      paddingHorizontal: Spacing.three,
+    },
+    eyebrow: {
+      color: colors.accent,
+      fontSize: Typography.caption.fontSize,
+      fontWeight: '800',
+      letterSpacing: 1.1,
+    },
+    field: { gap: Spacing.one, marginBottom: Spacing.three },
+    goalChoice: {
+      flexBasis: 140,
+      flexGrow: 1,
+      minWidth: 0,
+    },
+    goalRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
+    header: { gap: Spacing.two },
+    helper: {
+      color: colors.textMuted,
+      fontSize: Typography.caption.fontSize,
+      lineHeight: Typography.caption.lineHeight,
+    },
+    input: {
+      backgroundColor: colors.surfacePrimary,
+      borderColor: colors.borderSubtle,
+      borderRadius: 12,
+      borderWidth: StyleSheet.hairlineWidth,
+      color: colors.textPrimary,
+      fontSize: Typography.body.fontSize,
+      minHeight: 52,
+      paddingHorizontal: Spacing.three,
+    },
+    label: {
+      color: colors.textSecondary,
+      fontSize: Typography.body.fontSize,
+      fontWeight: '700',
+    },
+    pressed: { opacity: 0.72 },
+    screen: { backgroundColor: colors.background, flex: 1 },
+    subtitle: {
+      color: colors.textSecondary,
+      fontSize: Typography.body.fontSize,
+      lineHeight: Typography.body.lineHeight,
+    },
+    title: {
+      color: colors.textPrimary,
+      fontSize: Typography.screenTitle.fontSize,
+      fontWeight: Typography.screenTitle.fontWeight,
+    },
+    validation: {
+      color: colors.warning,
+      fontSize: Typography.caption.fontSize,
+      lineHeight: Typography.caption.lineHeight,
+      marginBottom: Spacing.two,
+    },
+  });
