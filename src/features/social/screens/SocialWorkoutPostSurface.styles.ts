@@ -130,6 +130,15 @@ export const createSocialWorkoutPostSurfaceStyles = (
       flexDirection: "row",
       gap: Spacing.three,
     },
+    listFooter: {
+      gap: Spacing.two,
+      marginTop: Spacing.four,
+      maxWidth: MaxContentWidth,
+      width: "100%",
+    },
+    listHeaderWithItems: { marginBottom: Spacing.four },
+    listItem: { maxWidth: MaxContentWidth, width: "100%" },
+    listSeparator: { height: Spacing.four },
     metaText: {
       color: colors.textSecondary,
       flexShrink: 1,
