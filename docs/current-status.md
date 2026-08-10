@@ -5,15 +5,16 @@ Updated: 2026-08-10
 ## Verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current runtime `main`: `0c1454d182483c5e297315529e897d4f4246220d`.
-- Latest runtime merge: PR #581 — Coach Run History now virtualizes its up-to-50 run collection through one top-level `FlatList` boundary.
-- PR #581 exact validated head: `ded513d37f527641c3bf972f234018c1cd6e02f1`; Mobile CI #2084 passed before merge.
-- PR #580 made the embedded Progress body-measurement form keyboard-aware without changing measurement persistence or floating-tab clearance.
-- PR #579 virtualized the arbitrary workout-template exercise collection while preserving workout-template actions and start lifecycle.
-- PR #576 established completed workout history as an immutable read surface for current LG-5 scope and added focused scope evidence.
+- Current runtime `main`: `8e8effabe1d7b1cc3b7ccee870b9886d3e2fb64b`.
+- Latest runtime merge: PR #586 — Active Session now owns one top-level `FlatList` for arbitrary exercise count instead of `ScrollView + visibleExercises.map()`.
+- PR #586 exact validated head: `1ccbe7eb42df0ed0810508d4471865f6cd2714e2`; Mobile CI #2095 passed before merge.
+- PR #585 moved Sync Conflict Review to the `/sync-backup` screen-level `FlatList` boundary while preserving durable conflict-resolution behavior; exact head `a5e61c2312d42c9dcd6e110030c516e270db8354`, Mobile CI #2094 green.
+- PR #584 virtualized the unbounded User Limitations collection while preserving its visually grouped material section and keyboard-aware add form; exact head `392bcb0c237cda6cb55265c12585d265f389a294`, Mobile CI #2089 green.
+- PR #583 virtualized Account Sessions with stable session IDs while preserving refresh/revocation behavior; exact head `d8d829d1f65e928314a042a16777b78c8b2b6673`, Mobile CI #2087 green.
+- Canonical roadmap checkpoint: PR #587. Latest handoff sync: PR #588.
 - Backend repo: `ivangemini/smart-fitness-backend`.
 - Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
-- Backend PR #215 is the only open backend project PR at this checkpoint. It remains draft and must not merge without exact-head required Hermes validation.
+- Backend PR #215 remains draft/open and must not merge without exact-head required Hermes validation actually running and passing.
 - **LG-H2 Stories is complete for the current image-only v1 source scope.**
 - **Progress/exercise secondary-material reassessment is complete for the current active source scope.**
 - **LG-4 Workouts source convergence is complete.**
@@ -119,6 +120,34 @@ This is bounded LG-5/RUI-5 QA on an existing Coach surface; it does not resume d
 
 Exact validated head: `ded513d37f527641c3bf972f234018c1cd6e02f1`; Mobile CI #2084 green before merge.
 
+### PR #583 — Account Sessions virtualization
+
+Account Sessions previously rendered the active-session collection eagerly. The screen now owns one top-level `FlatList` keyed by stable session IDs while preserving pull-to-refresh, current-session presentation, per-session revocation and revoke-all-other-sessions actions.
+
+Exact validated head: `d8d829d1f65e928314a042a16777b78c8b2b6673`; Mobile CI #2087 green before merge.
+
+### PR #584 — User Limitations virtualization
+
+`userLimitations` has no explicit collection cap and was previously rendered through `ScrollView + userLimitations.map()`. The screen now owns one top-level `FlatList` keyed by limitation ID. Current Records remains one visually contiguous Liquid Glass material group rather than unrelated per-record cards; status/delete/sync behavior and the keyboard-aware add form are preserved.
+
+Exact validated head: `392bcb0c237cda6cb55265c12585d265f389a294`; Mobile CI #2089 green before merge.
+
+### PR #585 — Sync Conflict Review virtualization
+
+Both unresolved conflict storage and durable resolution-intent storage are unbounded, while Sync Conflict Review previously eagerly mapped all review items inside the parent `/sync-backup` `ScrollView`. `/sync-backup` now owns the sole top-level `FlatList` keyed by `conflictId`; conflict header/rows/footer remain one contiguous material group. Existing explicit-choice confirmation, durable resume, retry and sync semantics are preserved in the extracted review controller.
+
+The first exact-head run exposed three stale source guards that still expected the old monolithic card. Those guards were updated to assert the new screen/presentation/controller boundary without weakening behavior or privacy assertions. Final exact-head validation then passed.
+
+Exact validated head: `a5e61c2312d42c9dcd6e110030c516e270db8354`; Mobile CI #2094 green before merge.
+
+### PR #586 — Active Session exercise virtualization
+
+Active Session previously rendered arbitrary `visibleExercises` through a vertical `ScrollView + visibleExercises.map()`. `WorkoutSessionBody` now owns one top-level `FlatList` keyed by stable exercise ID. `SessionHeader`, empty-workout actions, set entry, RPE, exercise replacement, finish/discard lifecycle, keyboard insets and footer actions remain preserved.
+
+The canonical list-virtualization source guard now covers Active Session so eager exercise rendering cannot be reintroduced silently.
+
+Exact validated head: `1ccbe7eb42df0ed0810508d4471865f6cd2714e2`; Mobile CI #2095 green before merge.
+
 ## CI execution changes
 
 These are validation-infrastructure changes, not product behavior:
@@ -131,7 +160,7 @@ These are validation-infrastructure changes, not product behavior:
 
 ## Documentation audit — 2026-08-10
 
-The project documentation was re-read across both repositories, including root instructions and the complete mobile/backend `docs/` trees.
+The project documentation was re-read across both repositories, including root instructions and the mobile/backend roadmap surfaces.
 
 Important interpretation rules from that audit:
 
@@ -161,12 +190,16 @@ Continue checking:
 - completed-history retention, list/detail navigation and read-only record review;
 - elevated material and blur/fallback behavior.
 
-Current follow-up evidence:
+Current bounded evidence:
 
-- Nutrition Add Food, Recovery Check-in, User Limitations, Social Profile Editor and Weight Entry already own keyboard-aware scroll behavior; do not churn them for RUI-4 without a new defect.
+- **There is no pre-authorized runtime package after PR #586.** Inspect first; source changes require a newly demonstrated defect.
+- Weight Details recent weigh-in rows are explicitly bounded to 10 entries; its `ScrollView` does not establish a long-collection defect by itself.
 - `ProgramDetailScreen` is semantically bounded by the seven-day `WeekdayKey` program structure; do not virtualize it merely because it contains `.map()`.
-- User Limitations remains a legitimate RUI-5 candidate because `userLimitations` has no explicit collection cap, but its rows are visually grouped inside one shared `AppCard`. Any future virtualization must preserve that material grouping rather than converting rows into unrelated cards as a shortcut.
-- Sync Conflict Review may also require long-collection reassessment, but its screen/card boundary must be established before changing source.
+- Nutrition Add Food, Recovery Check-in, User Limitations, Social Profile Editor and Weight Entry already own keyboard-aware scroll behavior; do not churn them for RUI-4 without a new defect.
+- User Limitations and Sync Conflict Review long-collection candidates are resolved by PRs #584 and #585.
+- Active Session arbitrary exercise-count virtualization is resolved by PR #586; further session changes require separate demonstrated layout/interaction evidence and must preserve workout lifecycle semantics.
+
+If inspection shows no defect, record/reuse no-change evidence and move on. If it shows a concrete defect, fix the smallest coherent boundary and merge only an exact fully green runtime head.
 
 Physical-device evidence remains separately authorization-gated.
 
@@ -178,5 +211,5 @@ Physical-device evidence remains separately authorization-gated.
 
 - LG-H3 Steps remains blocked until a reviewed native health/activity provider and permission contract exist.
 - LG-H4 feed ranking remains later; preserve chronological Following semantics.
-- Coach product/material expansion remains intentionally deferred; bounded QA fixes on existing live surfaces do not reprioritize it.
-- No OTA/EAS publication, native build/install, backend deployment, migration execution, provider/production activation, credential/DNS changes or store submission without direct authorization.
+- Coach product/material expansion remains deferred.
+- Do not perform OTA/EAS publication, native build/install, backend deployment, migration execution, production/provider activation, credential/DNS changes, destructive production cleanup, HealthKit/Health Connect activation or store submission without direct authorization.
