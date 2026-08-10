@@ -1,10 +1,11 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
+import { FormField } from '@/components/ui/FormField';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useAppActions } from '@/context/AppContext';
@@ -65,19 +66,17 @@ export default function WeightEntryScreen() {
         <SectionHeader title={copy.title} />
         <AppCard>
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>{copy.weightLabel(weightUnit)}</Text>
-            <TextInput
+            <FormField
+              errorMessage={error || null}
               keyboardType="decimal-pad"
+              label={copy.weightLabel(weightUnit)}
               onChangeText={(value) => {
                 setWeight(value);
                 if (error) setError('');
               }}
               placeholder={weightUnit === 'lb' ? '182.3' : '82.7'}
-              placeholderTextColor={colors.textSecondary}
-              style={styles.input}
               value={weight}
             />
-            {error ? <Text style={styles.error}>{error}</Text> : null}
           </View>
           <AppButton label={copy.save} onPress={saveWeight} />
         </AppCard>
@@ -91,24 +90,6 @@ const createStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
     container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
     content: { alignItems: 'center', flexGrow: 1, padding: Spacing.three },
-    error: {
-      color: colors.error,
-      fontSize: 13,
-      lineHeight: 18,
-      marginTop: Spacing.one,
-    },
-    fieldGroup: { gap: Spacing.one, marginBottom: Spacing.two },
-    input: {
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.borderSubtle,
-      borderCurve: 'continuous',
-      borderRadius: 8,
-      borderWidth: 1,
-      color: colors.textPrimary,
-      fontSize: 16,
-      minHeight: 48,
-      paddingHorizontal: Spacing.two,
-    },
-    label: { color: colors.textSecondary, fontSize: 13, fontWeight: '700' },
+    fieldGroup: { marginBottom: Spacing.two },
     screen: { backgroundColor: colors.background, flex: 1 },
   });
