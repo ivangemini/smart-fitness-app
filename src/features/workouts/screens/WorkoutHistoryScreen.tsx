@@ -11,6 +11,7 @@ import { useWorkoutState } from '@/context/AppContext';
 import { useLocalization } from '@/localization';
 import { getWorkoutHistoryCopy } from '@/localization/workoutHistoryCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import { weightFromKg, useUnitPreferences } from '@/units';
 import {
   buildWorkoutHistoryProgramOptions,
@@ -41,14 +42,22 @@ const getToneColor = (
 };
 
 function FilterChip({ label, onPress, selected }: { label: string; onPress(): void; selected: boolean }) {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createFilterChipStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createFilterChipStyles(colors, glass), [colors, glass]);
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityState={{ selected }}
       onPress={onPress}
-      style={({ pressed }) => [styles.chip, selected && styles.chipSelected, pressed && styles.pressed]}>
+      style={({ pressed }) => [
+        styles.chip,
+        selected && styles.chipSelected,
+        pressed && (selected ? styles.chipSelectedPressed : styles.chipPressed),
+      ]}>
       <Text style={[styles.label, selected && styles.labelSelected]}>{label}</Text>
     </Pressable>
   );
@@ -74,8 +83,12 @@ export default function WorkoutHistoryScreen() {
   const { formatDate, formatNumber, locale } = useLocalization();
   const copy = getWorkoutHistoryCopy(locale);
   const { weight: weightUnit } = useUnitPreferences();
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createWorkoutHistoryScreenStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createWorkoutHistoryScreenStyles(colors, glass), [colors, glass]);
   const insets = useSafeAreaInsets();
   const [period, setPeriod] = useState<WorkoutHistoryPeriodFilter>('all');
   const [programId, setProgramId] = useState<WorkoutHistoryProgramFilter>('all');
@@ -182,7 +195,7 @@ export default function WorkoutHistoryScreen() {
             <Pressable
               accessibilityRole="button"
               onPress={clearFilters}
-              style={({ pressed }) => [styles.clearButton, pressed && styles.pressed]}>
+              style={({ pressed }) => [styles.clearButton, pressed && styles.controlPressed]}>
               <Text style={styles.clearLabel}>{copy.clear}</Text>
             </Pressable>
           ) : null}
@@ -221,7 +234,10 @@ export default function WorkoutHistoryScreen() {
         <Text style={styles.cardTitle}>{workoutSessions.length === 0 ? copy.noCompletedTitle : copy.noMatches}</Text>
         <Text style={styles.bodyText}>{workoutSessions.length === 0 ? copy.noCompletedBody : copy.noMatchesBody}</Text>
         {workoutSessions.length > 0 ? (
-          <Pressable accessibilityRole="button" onPress={clearFilters} style={({ pressed }) => [styles.resetButton, pressed && styles.pressed]}>
+          <Pressable
+            accessibilityRole="button"
+            onPress={clearFilters}
+            style={({ pressed }) => [styles.resetButton, pressed && styles.controlPressed]}>
             <Text style={styles.resetLabel}>{copy.clearFilters}</Text>
           </Pressable>
         ) : null}
@@ -262,41 +278,42 @@ export default function WorkoutHistoryScreen() {
                 accessibilityRole="button"
                 onPress={() =>
                   router.push({ pathname: '/workout-history/[sessionId]', params: { sessionId: item.session.id } })
-                }
-                style={({ pressed }) => [pressed && styles.pressed]}>
-                <AppCard style={styles.historyCard}>
-                  <View style={styles.cardHeader}>
-                    <View style={styles.cardHeaderCopy}>
-                      <Text numberOfLines={1} style={styles.cardTitle}>{item.session.workoutTitle}</Text>
-                      <Text style={styles.metaText}>{dateLabel}</Text>
+                }>
+                {({ pressed }) => (
+                  <AppCard style={[styles.historyCard, pressed && styles.historyCardPressed]}>
+                    <View style={styles.cardHeader}>
+                      <View style={styles.cardHeaderCopy}>
+                        <Text numberOfLines={1} style={styles.cardTitle}>{item.session.workoutTitle}</Text>
+                        <Text style={styles.metaText}>{dateLabel}</Text>
+                      </View>
+                      <Text style={[styles.safetyBadge, { color: getToneColor(item.safetyTone, colors) }]}>
+                        {copy.safetyHistoryLabel(safetyMetadata?.gateKind ?? null, safetyMetadata?.reviewStatus ?? null)}
+                      </Text>
                     </View>
-                    <Text style={[styles.safetyBadge, { color: getToneColor(item.safetyTone, colors) }]}>
-                      {copy.safetyHistoryLabel(safetyMetadata?.gateKind ?? null, safetyMetadata?.reviewStatus ?? null)}
-                    </Text>
-                  </View>
-                  <View style={styles.metricsRow}>
-                    <View style={styles.metricCell}>
-                      <Text style={styles.metricValue}>{formatDuration(getWorkoutDurationMinutes(item.session))}</Text>
-                      <Text style={styles.metricLabel}>{copy.duration}</Text>
+                    <View style={styles.metricsRow}>
+                      <View style={styles.metricCell}>
+                        <Text style={styles.metricValue}>{formatDuration(getWorkoutDurationMinutes(item.session))}</Text>
+                        <Text style={styles.metricLabel}>{copy.duration}</Text>
+                      </View>
+                      <View style={styles.metricCell}>
+                        <Text style={styles.metricValue}>{formatNumber(item.setCount, { maximumFractionDigits: 0 })}</Text>
+                        <Text style={styles.metricLabel}>{copy.sets(item.setCount, '')}</Text>
+                      </View>
+                      <View style={styles.metricCell}>
+                        <Text style={styles.metricValue}>{formatNumber(item.exerciseCount, { maximumFractionDigits: 0 })}</Text>
+                        <Text style={styles.metricLabel}>{copy.exercises}</Text>
+                      </View>
+                      <View style={styles.metricCell}>
+                        <Text style={styles.metricValue}>{formatVolume(item.volume)}</Text>
+                        <Text style={styles.metricLabel}>{copy.volumeLabel}</Text>
+                      </View>
                     </View>
-                    <View style={styles.metricCell}>
-                      <Text style={styles.metricValue}>{formatNumber(item.setCount, { maximumFractionDigits: 0 })}</Text>
-                      <Text style={styles.metricLabel}>{copy.sets(item.setCount, '')}</Text>
+                    <View style={styles.openRow}>
+                      <Text style={styles.openLabel}>{copy.viewDetails}</Text>
+                      <Text style={styles.chevron}>›</Text>
                     </View>
-                    <View style={styles.metricCell}>
-                      <Text style={styles.metricValue}>{formatNumber(item.exerciseCount, { maximumFractionDigits: 0 })}</Text>
-                      <Text style={styles.metricLabel}>{copy.exercises}</Text>
-                    </View>
-                    <View style={styles.metricCell}>
-                      <Text style={styles.metricValue}>{formatVolume(item.volume)}</Text>
-                      <Text style={styles.metricLabel}>{copy.volumeLabel}</Text>
-                    </View>
-                  </View>
-                  <View style={styles.openRow}>
-                    <Text style={styles.openLabel}>{copy.viewDetails}</Text>
-                    <Text style={styles.chevron}>›</Text>
-                  </View>
-                </AppCard>
+                  </AppCard>
+                )}
               </Pressable>
             </View>
           );
