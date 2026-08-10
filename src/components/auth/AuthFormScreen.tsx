@@ -26,6 +26,7 @@ import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { Colors, MaxContentWidth, Radii, Spacing, Typography } from '@/constants/theme';
 import { localizeAuthSubmission, localizeAuthValidation } from '@/localization/authCopy';
 import { useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import type { ProfileTrainingExperience } from '@/types';
 import { displayLengthInputToCm, useUnitPreferences } from '@/units';
 
@@ -49,7 +50,9 @@ const EXPERIENCE_VALUES: ProfileTrainingExperience[] = [
 export function AuthFormScreen({ mode, onBack, onSubmit, onSwitchMode }: AuthFormScreenProps) {
   const safeAreaInsets = useSafeAreaInsets();
   const { t } = useLocalization();
+  const { colors } = useAppTheme();
   const { length: lengthUnit } = useUnitPreferences();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const copy =
     mode === 'login'
       ? {
@@ -154,7 +157,9 @@ export function AuthFormScreen({ mode, onBack, onSubmit, onSwitchMode }: AuthFor
               label={t('common.email')}
               onChangeText={(value) => {
                 setEmail(value);
-                if (fieldErrors.email) setFieldErrors((current) => ({ ...current, email: undefined }));
+                if (fieldErrors.email) {
+                  setFieldErrors((current) => ({ ...current, email: undefined }));
+                }
               }}
               placeholder={t('auth.emailPlaceholder')}
               textContentType="emailAddress"
@@ -168,7 +173,9 @@ export function AuthFormScreen({ mode, onBack, onSubmit, onSwitchMode }: AuthFor
               label={t('common.password')}
               onChangeText={(value) => {
                 setPassword(value);
-                if (fieldErrors.password) setFieldErrors((current) => ({ ...current, password: undefined }));
+                if (fieldErrors.password) {
+                  setFieldErrors((current) => ({ ...current, password: undefined }));
+                }
               }}
               placeholder="••••••••"
               secureTextEntry
@@ -185,7 +192,9 @@ export function AuthFormScreen({ mode, onBack, onSubmit, onSwitchMode }: AuthFor
                   label={t('auth.confirmPassword')}
                   onChangeText={(value) => {
                     setConfirmPassword(value);
-                    if (fieldErrors.confirmPassword) setFieldErrors((current) => ({ ...current, confirmPassword: undefined }));
+                    if (fieldErrors.confirmPassword) {
+                      setFieldErrors((current) => ({ ...current, confirmPassword: undefined }));
+                    }
                   }}
                   placeholder="••••••••"
                   secureTextEntry
@@ -201,7 +210,9 @@ export function AuthFormScreen({ mode, onBack, onSubmit, onSwitchMode }: AuthFor
                   label={t('auth.displayName')}
                   onChangeText={(value) => {
                     setDisplayName(value);
-                    if (fieldErrors.displayName) setFieldErrors((current) => ({ ...current, displayName: undefined }));
+                    if (fieldErrors.displayName) {
+                      setFieldErrors((current) => ({ ...current, displayName: undefined }));
+                    }
                   }}
                   placeholder={t('auth.displayNamePlaceholder')}
                   textContentType="name"
@@ -214,7 +225,9 @@ export function AuthFormScreen({ mode, onBack, onSubmit, onSwitchMode }: AuthFor
                   label={t('auth.height', { unit: lengthUnit })}
                   onChangeText={(value) => {
                     setHeightInput(value);
-                    if (fieldErrors.heightCm) setFieldErrors((current) => ({ ...current, heightCm: undefined }));
+                    if (fieldErrors.heightCm) {
+                      setFieldErrors((current) => ({ ...current, heightCm: undefined }));
+                    }
                   }}
                   placeholder={lengthUnit === 'in' ? '69' : '175'}
                   textContentType="none"
@@ -233,21 +246,32 @@ export function AuthFormScreen({ mode, onBack, onSubmit, onSwitchMode }: AuthFor
                           accessibilityState={{ checked: selected }}
                           onPress={() => {
                             setTrainingExperience(experience);
-                            if (fieldErrors.trainingExperience) setFieldErrors((current) => ({ ...current, trainingExperience: undefined }));
+                            if (fieldErrors.trainingExperience) {
+                              setFieldErrors((current) => ({
+                                ...current,
+                                trainingExperience: undefined,
+                              }));
+                            }
                           }}
                           style={({ pressed }) => [
                             styles.experienceChoice,
                             selected && styles.experienceChoiceSelected,
                             pressed && styles.pressed,
                           ]}>
-                          <Text style={[styles.experienceLabel, selected && styles.experienceLabelSelected]}>
+                          <Text
+                            style={[
+                              styles.experienceLabel,
+                              selected && styles.experienceLabelSelected,
+                            ]}>
                             {t(`profile.experience.${experience}`)}
                           </Text>
                         </Pressable>
                       );
                     })}
                   </View>
-                  <InlineError message={localizeAuthValidation(fieldErrors.trainingExperience, t)} />
+                  <InlineError
+                    message={localizeAuthValidation(fieldErrors.trainingExperience, t)}
+                  />
                 </View>
               </>
             ) : null}
@@ -266,60 +290,61 @@ export function AuthFormScreen({ mode, onBack, onSubmit, onSwitchMode }: AuthFor
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    maxWidth: MaxContentWidth,
-    width: '100%',
-  },
-  experienceChoice: {
-    alignItems: 'center',
-    backgroundColor: Colors.dark.surfaceSecondary,
-    borderColor: Colors.dark.borderSubtle,
-    borderRadius: Radii.medium,
-    borderWidth: StyleSheet.hairlineWidth,
-    flexBasis: 120,
-    flexGrow: 1,
-    justifyContent: 'center',
-    minHeight: 48,
-    minWidth: 0,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.one,
-  },
-  experienceChoiceSelected: {
-    backgroundColor: Colors.dark.backgroundSelected,
-    borderColor: Colors.dark.accent,
-  },
-  experienceField: { gap: Spacing.one },
-  experienceLabel: {
-    color: Colors.dark.textSecondary,
-    flexShrink: 1,
-    fontSize: Typography.label.fontSize,
-    fontWeight: Typography.label.fontWeight,
-    textAlign: 'center',
-  },
-  experienceLabelSelected: { color: Colors.dark.textPrimary },
-  experienceRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.one,
-  },
-  fieldLabel: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.label.fontSize,
-    fontWeight: Typography.label.fontWeight,
-  },
-  keyboardRoot: {
-    flex: 1,
-  },
-  pressed: { opacity: 0.72 },
-  screen: {
-    backgroundColor: Colors.dark.background,
-    flex: 1,
-  },
-  scrollContent: {
-    alignItems: 'center',
-    flexGrow: 1,
-    padding: Spacing.three,
-    paddingTop: Spacing.four,
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    container: {
+      maxWidth: MaxContentWidth,
+      width: '100%',
+    },
+    experienceChoice: {
+      alignItems: 'center',
+      backgroundColor: colors.surfaceSecondary,
+      borderColor: colors.borderSubtle,
+      borderRadius: Radii.medium,
+      borderWidth: StyleSheet.hairlineWidth,
+      flexBasis: 120,
+      flexGrow: 1,
+      justifyContent: 'center',
+      minHeight: 48,
+      minWidth: 0,
+      paddingHorizontal: Spacing.two,
+      paddingVertical: Spacing.one,
+    },
+    experienceChoiceSelected: {
+      backgroundColor: colors.backgroundSelected,
+      borderColor: colors.accent,
+    },
+    experienceField: { gap: Spacing.one },
+    experienceLabel: {
+      color: colors.textSecondary,
+      flexShrink: 1,
+      fontSize: Typography.label.fontSize,
+      fontWeight: Typography.label.fontWeight,
+      textAlign: 'center',
+    },
+    experienceLabelSelected: { color: colors.textPrimary },
+    experienceRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: Spacing.one,
+    },
+    fieldLabel: {
+      color: colors.textSecondary,
+      fontSize: Typography.label.fontSize,
+      fontWeight: Typography.label.fontWeight,
+    },
+    keyboardRoot: {
+      flex: 1,
+    },
+    pressed: { opacity: 0.72 },
+    screen: {
+      backgroundColor: colors.background,
+      flex: 1,
+    },
+    scrollContent: {
+      alignItems: 'center',
+      flexGrow: 1,
+      padding: Spacing.three,
+      paddingTop: Spacing.four,
+    },
+  });

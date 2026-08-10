@@ -1,7 +1,9 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import { resolveButtonState } from './button-state';
 
 type TertiaryButtonProps = {
@@ -14,7 +16,17 @@ type TertiaryButtonProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-export function TertiaryButton({ accessibilityHint, accessibilityLabel, disabled, label, loading, onPress, style }: TertiaryButtonProps) {
+export function TertiaryButton({
+  accessibilityHint,
+  accessibilityLabel,
+  disabled,
+  label,
+  loading,
+  onPress,
+  style,
+}: TertiaryButtonProps) {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const state = resolveButtonState({ disabled, loading });
 
   return (
@@ -25,38 +37,44 @@ export function TertiaryButton({ accessibilityHint, accessibilityLabel, disabled
       accessibilityState={state.accessibilityState}
       disabled={state.disabled}
       onPress={state.disabled ? undefined : onPress}
-      style={({ pressed }) => [styles.button, pressed && !state.disabled && styles.pressed, state.disabled && styles.disabled, style]}>
+      style={({ pressed }) => [
+        styles.button,
+        pressed && !state.disabled && styles.pressed,
+        state.disabled && styles.disabled,
+        style,
+      ]}>
       <Text style={styles.label}>{loading ? `${label}…` : label}</Text>
     </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
-  button: {
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    borderRadius: Radii.pill,
-    flexShrink: 1,
-    justifyContent: 'center',
-    maxWidth: '100%',
-    minHeight: 44,
-    minWidth: 0,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.one,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  label: {
-    color: Colors.dark.accent,
-    flexShrink: 1,
-    fontSize: Typography.label.fontSize,
-    fontWeight: Typography.label.fontWeight,
-    lineHeight: Typography.label.lineHeight,
-    minWidth: 0,
-    textAlign: 'center',
-  },
-  pressed: {
-    backgroundColor: Colors.dark.accentSoft,
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    button: {
+      alignItems: 'center',
+      alignSelf: 'flex-start',
+      borderRadius: Radii.pill,
+      flexShrink: 1,
+      justifyContent: 'center',
+      maxWidth: '100%',
+      minHeight: 44,
+      minWidth: 0,
+      paddingHorizontal: Spacing.two,
+      paddingVertical: Spacing.one,
+    },
+    disabled: {
+      opacity: 0.5,
+    },
+    label: {
+      color: colors.accent,
+      flexShrink: 1,
+      fontSize: Typography.label.fontSize,
+      fontWeight: Typography.label.fontWeight,
+      lineHeight: Typography.label.lineHeight,
+      minWidth: 0,
+      textAlign: 'center',
+    },
+    pressed: {
+      backgroundColor: colors.accentSoft,
+    },
+  });

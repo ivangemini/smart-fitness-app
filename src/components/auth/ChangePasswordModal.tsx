@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Modal,
@@ -23,6 +23,7 @@ import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { localizeChangePasswordMessage } from '@/localization/authCopy';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 
 type ChangePasswordModalProps = {
   visible: boolean;
@@ -31,6 +32,8 @@ type ChangePasswordModalProps = {
   onChanged(): void;
 };
 
+type ChangePasswordStyles = ReturnType<typeof createStyles>;
+
 export function ChangePasswordModal({
   visible,
   onClose,
@@ -38,6 +41,8 @@ export function ChangePasswordModal({
   onChanged,
 }: ChangePasswordModalProps) {
   const { t } = useLocalization();
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const insets = useSafeAreaInsets();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -137,12 +142,16 @@ export function ChangePasswordModal({
               error={localizeChangePasswordMessage(errors.currentPassword, t)}
               label={t('changePassword.current')}
               onChangeText={(value) => updateField('currentPassword', value)}
+              placeholderTextColor={colors.textMuted}
+              styles={styles}
               value={currentPassword}
             />
             <PasswordField
               error={localizeChangePasswordMessage(errors.newPassword, t)}
               label={t('changePassword.new')}
               onChangeText={(value) => updateField('newPassword', value)}
+              placeholderTextColor={colors.textMuted}
+              styles={styles}
               value={newPassword}
             />
             <PasswordField
@@ -150,6 +159,8 @@ export function ChangePasswordModal({
               label={t('changePassword.confirm')}
               onChangeText={(value) => updateField('confirmPassword', value)}
               onSubmitEditing={() => void submit()}
+              placeholderTextColor={colors.textMuted}
+              styles={styles}
               value={confirmPassword}
             />
 
@@ -177,6 +188,8 @@ type PasswordFieldProps = {
   error?: string;
   onChangeText(value: string): void;
   onSubmitEditing?(): void;
+  placeholderTextColor: string;
+  styles: ChangePasswordStyles;
 };
 
 function PasswordField({
@@ -185,6 +198,8 @@ function PasswordField({
   error,
   onChangeText,
   onSubmitEditing,
+  placeholderTextColor,
+  styles,
 }: PasswordFieldProps) {
   return (
     <View style={styles.fieldGroup}>
@@ -197,7 +212,7 @@ function PasswordField({
         onChangeText={onChangeText}
         onSubmitEditing={onSubmitEditing}
         placeholder={label}
-        placeholderTextColor={Colors.dark.textMuted}
+        placeholderTextColor={placeholderTextColor}
         returnKeyType={onSubmitEditing ? 'done' : 'next'}
         secureTextEntry
         style={[styles.input, error ? styles.inputError : null]}
@@ -208,71 +223,72 @@ function PasswordField({
   );
 }
 
-const styles = StyleSheet.create({
-  body: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.body.fontSize,
-    lineHeight: Typography.body.lineHeight,
-  },
-  content: {
-    flexGrow: 1,
-    gap: Spacing.three,
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.four,
-  },
-  eyebrow: {
-    color: Colors.dark.textMuted,
-    fontSize: Typography.metricSmall.fontSize,
-    fontWeight: Typography.metricSmall.fontWeight,
-    letterSpacing: 0.8,
-  },
-  fieldError: {
-    color: Colors.dark.error,
-    fontSize: Typography.caption.fontSize,
-    lineHeight: Typography.caption.lineHeight,
-  },
-  fieldGroup: {
-    gap: Spacing.one,
-  },
-  input: {
-    backgroundColor: Colors.dark.surfaceSecondary,
-    borderColor: Colors.dark.border,
-    borderRadius: Radii.large,
-    borderWidth: StyleSheet.hairlineWidth,
-    color: Colors.dark.text,
-    fontSize: Typography.body.fontSize,
-    minHeight: 50,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-  },
-  inputError: {
-    borderColor: Colors.dark.error,
-  },
-  label: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.caption.fontSize,
-    fontWeight: '700',
-  },
-  screen: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  scrim: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: 'rgba(0, 0, 0, 0.72)',
-  },
-  sheet: {
-    backgroundColor: Colors.dark.surface,
-    borderColor: Colors.dark.border,
-    borderTopLeftRadius: Radii.xlarge,
-    borderTopRightRadius: Radii.xlarge,
-    borderWidth: StyleSheet.hairlineWidth,
-    maxHeight: '92%',
-  },
-  title: {
-    color: Colors.dark.text,
-    fontSize: 25,
-    fontWeight: '800',
-    lineHeight: 31,
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    body: {
+      color: colors.textSecondary,
+      fontSize: Typography.body.fontSize,
+      lineHeight: Typography.body.lineHeight,
+    },
+    content: {
+      flexGrow: 1,
+      gap: Spacing.three,
+      paddingHorizontal: Spacing.four,
+      paddingTop: Spacing.four,
+    },
+    eyebrow: {
+      color: colors.textMuted,
+      fontSize: Typography.metricSmall.fontSize,
+      fontWeight: Typography.metricSmall.fontWeight,
+      letterSpacing: 0.8,
+    },
+    fieldError: {
+      color: colors.error,
+      fontSize: Typography.caption.fontSize,
+      lineHeight: Typography.caption.lineHeight,
+    },
+    fieldGroup: {
+      gap: Spacing.one,
+    },
+    input: {
+      backgroundColor: colors.surfaceSecondary,
+      borderColor: colors.border,
+      borderRadius: Radii.large,
+      borderWidth: StyleSheet.hairlineWidth,
+      color: colors.text,
+      fontSize: Typography.body.fontSize,
+      minHeight: 50,
+      paddingHorizontal: Spacing.three,
+      paddingVertical: Spacing.two,
+    },
+    inputError: {
+      borderColor: colors.error,
+    },
+    label: {
+      color: colors.textSecondary,
+      fontSize: Typography.caption.fontSize,
+      fontWeight: '700',
+    },
+    screen: {
+      flex: 1,
+      justifyContent: 'flex-end',
+    },
+    scrim: {
+      ...StyleSheet.absoluteFill,
+      backgroundColor: 'rgba(0, 0, 0, 0.72)',
+    },
+    sheet: {
+      backgroundColor: colors.surfacePrimary,
+      borderColor: colors.border,
+      borderTopLeftRadius: Radii.xlarge,
+      borderTopRightRadius: Radii.xlarge,
+      borderWidth: StyleSheet.hairlineWidth,
+      maxHeight: '92%',
+    },
+    title: {
+      color: colors.text,
+      fontSize: 25,
+      fontWeight: '800',
+      lineHeight: 31,
+    },
+  });

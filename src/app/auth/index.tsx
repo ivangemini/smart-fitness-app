@@ -1,12 +1,9 @@
 import { router } from 'expo-router';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import {
-  CapabilityStatusNotice,
-  useCapabilityGate,
-} from '@/capabilities';
+import { CapabilityStatusNotice, useCapabilityGate } from '@/capabilities';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
 import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme';
@@ -14,6 +11,7 @@ import { useAppInfrastructure } from '@/context/AppContext';
 import { useProfileState } from '@/context/ProfileStateContext';
 import { useAuthSession } from '@/hooks/useAuthSession';
 import { useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 
 export default function AuthLandingScreen() {
   const { isRestoringState } = useAppInfrastructure();
@@ -21,7 +19,9 @@ export default function AuthLandingScreen() {
   const { isAuthenticated, ready } = useAuthSession();
   const passwordReset = useCapabilityGate('passwordReset');
   const { t } = useLocalization();
+  const { colors } = useAppTheme();
   const insets = useSafeAreaInsets();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   useEffect(() => {
     if (!ready || isRestoringState || !isAuthenticated) return;
@@ -75,26 +75,27 @@ export default function AuthLandingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { gap: Spacing.four, maxWidth: MaxContentWidth, width: '100%' },
-  content: { alignItems: 'center', paddingHorizontal: Spacing.three },
-  eyebrow: {
-    color: Colors.dark.accent,
-    fontSize: Typography.caption.fontSize,
-    fontWeight: '800',
-    letterSpacing: 1.1,
-  },
-  header: { gap: Spacing.two },
-  screen: { backgroundColor: Colors.dark.background, flex: 1 },
-  subtitle: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.body.fontSize,
-    lineHeight: Typography.body.lineHeight,
-  },
-  title: {
-    color: Colors.dark.textPrimary,
-    fontSize: Typography.screenTitle.fontSize,
-    fontWeight: Typography.screenTitle.fontWeight,
-    lineHeight: Typography.screenTitle.lineHeight,
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    container: { gap: Spacing.four, maxWidth: MaxContentWidth, width: '100%' },
+    content: { alignItems: 'center', paddingHorizontal: Spacing.three },
+    eyebrow: {
+      color: colors.accent,
+      fontSize: Typography.caption.fontSize,
+      fontWeight: '800',
+      letterSpacing: 1.1,
+    },
+    header: { gap: Spacing.two },
+    screen: { backgroundColor: colors.background, flex: 1 },
+    subtitle: {
+      color: colors.textSecondary,
+      fontSize: Typography.body.fontSize,
+      lineHeight: Typography.body.lineHeight,
+    },
+    title: {
+      color: colors.textPrimary,
+      fontSize: Typography.screenTitle.fontSize,
+      fontWeight: Typography.screenTitle.fontWeight,
+      lineHeight: Typography.screenTitle.lineHeight,
+    },
+  });

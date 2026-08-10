@@ -1,8 +1,9 @@
-import { forwardRef, useState } from 'react';
+import { forwardRef, useMemo, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import type { TextInputProps } from 'react-native';
 
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import { InlineError } from './InlineError';
 
 type FormFieldProps = TextInputProps & {
@@ -14,8 +15,10 @@ type FormFieldProps = TextInputProps & {
 
 export const FormField = forwardRef<TextInput, FormFieldProps>(function FormField(
   { errorMessage, helperText, label, onBlur, onFocus, style, value, ...inputProps },
-  ref
+  ref,
 ) {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [focused, setFocused] = useState(false);
 
   return (
@@ -24,7 +27,7 @@ export const FormField = forwardRef<TextInput, FormFieldProps>(function FormFiel
       <TextInput
         ref={ref}
         accessibilityLabel={inputProps.accessibilityLabel ?? label}
-        placeholderTextColor={Colors.dark.textMuted}
+        placeholderTextColor={colors.textMuted}
         onBlur={(event) => {
           setFocused(false);
           onBlur?.(event);
@@ -33,7 +36,12 @@ export const FormField = forwardRef<TextInput, FormFieldProps>(function FormFiel
           setFocused(true);
           onFocus?.(event);
         }}
-        style={[styles.input, focused && styles.inputFocused, errorMessage && styles.inputError, style]}
+        style={[
+          styles.input,
+          focused && styles.inputFocused,
+          errorMessage && styles.inputError,
+          style,
+        ]}
         value={value}
         {...inputProps}
       />
@@ -43,39 +51,40 @@ export const FormField = forwardRef<TextInput, FormFieldProps>(function FormFiel
   );
 });
 
-const styles = StyleSheet.create({
-  container: {
-    gap: Spacing.one,
-  },
-  helper: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.caption.fontSize,
-    lineHeight: Typography.caption.lineHeight,
-  },
-  input: {
-    backgroundColor: Colors.dark.surfaceSecondary,
-    borderColor: Colors.dark.borderSubtle,
-    borderCurve: 'continuous',
-    borderRadius: Radii.medium,
-    borderWidth: StyleSheet.hairlineWidth,
-    color: Colors.dark.textPrimary,
-    fontSize: Typography.body.fontSize,
-    lineHeight: Typography.body.lineHeight,
-    minHeight: 48,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
-  },
-  inputError: {
-    borderColor: Colors.dark.error,
-  },
-  inputFocused: {
-    backgroundColor: Colors.dark.surfacePrimary,
-    borderColor: Colors.dark.accent,
-  },
-  label: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.label.fontSize,
-    fontWeight: Typography.label.fontWeight,
-    lineHeight: Typography.label.lineHeight,
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    container: {
+      gap: Spacing.one,
+    },
+    helper: {
+      color: colors.textSecondary,
+      fontSize: Typography.caption.fontSize,
+      lineHeight: Typography.caption.lineHeight,
+    },
+    input: {
+      backgroundColor: colors.surfaceSecondary,
+      borderColor: colors.borderSubtle,
+      borderCurve: 'continuous',
+      borderRadius: Radii.medium,
+      borderWidth: StyleSheet.hairlineWidth,
+      color: colors.textPrimary,
+      fontSize: Typography.body.fontSize,
+      lineHeight: Typography.body.lineHeight,
+      minHeight: 48,
+      paddingHorizontal: Spacing.four,
+      paddingVertical: Spacing.two,
+    },
+    inputError: {
+      borderColor: colors.error,
+    },
+    inputFocused: {
+      backgroundColor: colors.surfacePrimary,
+      borderColor: colors.accent,
+    },
+    label: {
+      color: colors.textSecondary,
+      fontSize: Typography.label.fontSize,
+      fontWeight: Typography.label.fontWeight,
+      lineHeight: Typography.label.lineHeight,
+    },
+  });

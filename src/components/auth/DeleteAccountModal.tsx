@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Modal,
@@ -23,6 +23,7 @@ import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { localizeAccountDeletionMessage } from '@/localization/authCopy';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 
 type DeleteAccountModalProps = {
   visible: boolean;
@@ -38,6 +39,8 @@ export function DeleteAccountModal({
   onDeleted,
 }: DeleteAccountModalProps) {
   const { t } = useLocalization();
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const insets = useSafeAreaInsets();
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -134,7 +137,7 @@ export function DeleteAccountModal({
                 }}
                 onSubmitEditing={() => void submit()}
                 placeholder={t('deleteAccount.placeholder')}
-                placeholderTextColor={Colors.dark.textMuted}
+                placeholderTextColor={colors.textMuted}
                 returnKeyType="done"
                 secureTextEntry
                 style={styles.input}
@@ -142,9 +145,7 @@ export function DeleteAccountModal({
               />
             </View>
 
-            {error ? (
-              <InlineError message={localizeAccountDeletionMessage(error, t)} />
-            ) : null}
+            {error ? <InlineError message={localizeAccountDeletionMessage(error, t)} /> : null}
 
             <DestructiveButton
               accessibilityHint={t('deleteAccount.hint')}
@@ -161,85 +162,86 @@ export function DeleteAccountModal({
   );
 }
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  scrim: {
-    backgroundColor: 'rgba(0, 0, 0, 0.72)',
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-  },
-  sheet: {
-    backgroundColor: Colors.dark.surface,
-    borderColor: Colors.dark.border,
-    borderTopLeftRadius: Radii.xlarge,
-    borderTopRightRadius: Radii.xlarge,
-    borderWidth: StyleSheet.hairlineWidth,
-    maxHeight: '92%',
-  },
-  sheetContent: {
-    flexGrow: 1,
-    gap: Spacing.three,
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.four,
-  },
-  eyebrow: {
-    color: Colors.dark.textMuted,
-    fontSize: Typography.metricSmall.fontSize,
-    fontWeight: Typography.metricSmall.fontWeight,
-    letterSpacing: 0.8,
-  },
-  title: {
-    color: Colors.dark.text,
-    fontSize: 25,
-    fontWeight: '800',
-    lineHeight: 31,
-  },
-  body: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.body.fontSize,
-    lineHeight: Typography.body.lineHeight,
-  },
-  warningBox: {
-    backgroundColor: Colors.dark.errorSoft,
-    borderColor: Colors.dark.error,
-    borderRadius: Radii.large,
-    borderWidth: StyleSheet.hairlineWidth,
-    gap: Spacing.one,
-    padding: Spacing.three,
-  },
-  warningTitle: {
-    color: Colors.dark.error,
-    fontSize: Typography.bodyStrong.fontSize,
-    fontWeight: Typography.bodyStrong.fontWeight,
-  },
-  warningText: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.caption.fontSize,
-    lineHeight: Typography.caption.lineHeight,
-  },
-  fieldGroup: {
-    gap: Spacing.one,
-  },
-  label: {
-    color: Colors.dark.textSecondary,
-    fontSize: Typography.caption.fontSize,
-    fontWeight: '700',
-  },
-  input: {
-    backgroundColor: Colors.dark.surfaceSecondary,
-    borderColor: Colors.dark.border,
-    borderRadius: Radii.large,
-    borderWidth: StyleSheet.hairlineWidth,
-    color: Colors.dark.text,
-    fontSize: Typography.body.fontSize,
-    minHeight: 50,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-  },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    screen: {
+      flex: 1,
+      justifyContent: 'flex-end',
+    },
+    scrim: {
+      backgroundColor: 'rgba(0, 0, 0, 0.72)',
+      bottom: 0,
+      left: 0,
+      position: 'absolute',
+      right: 0,
+      top: 0,
+    },
+    sheet: {
+      backgroundColor: colors.surfacePrimary,
+      borderColor: colors.border,
+      borderTopLeftRadius: Radii.xlarge,
+      borderTopRightRadius: Radii.xlarge,
+      borderWidth: StyleSheet.hairlineWidth,
+      maxHeight: '92%',
+    },
+    sheetContent: {
+      flexGrow: 1,
+      gap: Spacing.three,
+      paddingHorizontal: Spacing.four,
+      paddingTop: Spacing.four,
+    },
+    eyebrow: {
+      color: colors.textMuted,
+      fontSize: Typography.metricSmall.fontSize,
+      fontWeight: Typography.metricSmall.fontWeight,
+      letterSpacing: 0.8,
+    },
+    title: {
+      color: colors.text,
+      fontSize: 25,
+      fontWeight: '800',
+      lineHeight: 31,
+    },
+    body: {
+      color: colors.textSecondary,
+      fontSize: Typography.body.fontSize,
+      lineHeight: Typography.body.lineHeight,
+    },
+    warningBox: {
+      backgroundColor: colors.errorSoft,
+      borderColor: colors.error,
+      borderRadius: Radii.large,
+      borderWidth: StyleSheet.hairlineWidth,
+      gap: Spacing.one,
+      padding: Spacing.three,
+    },
+    warningTitle: {
+      color: colors.error,
+      fontSize: Typography.bodyStrong.fontSize,
+      fontWeight: Typography.bodyStrong.fontWeight,
+    },
+    warningText: {
+      color: colors.textSecondary,
+      fontSize: Typography.caption.fontSize,
+      lineHeight: Typography.caption.lineHeight,
+    },
+    fieldGroup: {
+      gap: Spacing.one,
+    },
+    label: {
+      color: colors.textSecondary,
+      fontSize: Typography.caption.fontSize,
+      fontWeight: '700',
+    },
+    input: {
+      backgroundColor: colors.surfaceSecondary,
+      borderColor: colors.border,
+      borderRadius: Radii.large,
+      borderWidth: StyleSheet.hairlineWidth,
+      color: colors.text,
+      fontSize: Typography.body.fontSize,
+      minHeight: 50,
+      paddingHorizontal: Spacing.three,
+      paddingVertical: Spacing.two,
+    },
+  });

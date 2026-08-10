@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -7,10 +7,7 @@ import {
   resolvePasswordResetSubmissionError,
   validateForgotPassword,
 } from '@/auth/passwordResetModel';
-import {
-  CapabilityStatusNotice,
-  useCapabilityGate,
-} from '@/capabilities';
+import { CapabilityStatusNotice, useCapabilityGate } from '@/capabilities';
 import { AppCard } from '@/components/ui/AppCard';
 import { FormField } from '@/components/ui/FormField';
 import { InlineError } from '@/components/ui/InlineError';
@@ -19,16 +16,16 @@ import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useAuthSession } from '@/hooks/useAuthSession';
-import {
-  localizeAuthValidation,
-  localizePasswordResetMessage,
-} from '@/localization/authCopy';
+import { localizeAuthValidation, localizePasswordResetMessage } from '@/localization/authCopy';
 import { useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useLocalization();
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { requestPasswordReset } = useAuthSession();
   const passwordReset = useCapabilityGate('passwordReset');
   const [email, setEmail] = useState('');
@@ -140,13 +137,14 @@ export default function ForgotPasswordScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { gap: Spacing.four, maxWidth: MaxContentWidth, width: '100%' },
-  content: {
-    alignItems: 'center',
-    flexGrow: 1,
-    paddingHorizontal: Spacing.three,
-  },
-  keyboardRoot: { flex: 1 },
-  screen: { backgroundColor: Colors.dark.background, flex: 1 },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    container: { gap: Spacing.four, maxWidth: MaxContentWidth, width: '100%' },
+    content: {
+      alignItems: 'center',
+      flexGrow: 1,
+      paddingHorizontal: Spacing.three,
+    },
+    keyboardRoot: { flex: 1 },
+    screen: { backgroundColor: colors.background, flex: 1 },
+  });
