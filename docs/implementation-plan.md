@@ -7,20 +7,22 @@ This file is the **canonical forward roadmap**. Detailed current evidence belong
 ## Current verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current runtime mobile `main`: `975440b6098fb4aebf6d874acca87be581334ed4`.
-- Latest runtime merge: PR #565 — active-theme consistency for shared `SectionHeader`.
-- PR #565 exact validated head: `1a60e87b64db0d87ec99c6ad5c6f47002cf87dde`; Mobile CI #2049 passed before merge.
-- Additional merged LG-5 runtime packages: PR #559 Create Program keyboard safety, PR #560 Workouts short-height/large-text resilience, and PR #561 shared-control text resilience.
-- PR #561 exact validated head: `e16f8d961b4a128c4d7b1de5b4fc36d66342fd8e`; Mobile CI #2043 passed before merge.
-- Mobile CI execution is now routed through Hermes by PR #562; PR #563 skips only duplicate merge-generated post-merge runs; PR #564 persists that policy for future agents.
+- Current runtime mobile `main`: `dcc62356d946f4e2c309aa24666322e9a671f067`.
+- Latest runtime merge: PR #574 — workout-post comments now use the post-detail screen as their single virtualized list boundary.
+- PR #574 exact validated head: `3d959128c63b46948cef946895352d96658732fa`; Mobile CI #2077 passed before merge.
+- PR #573 exact validated head: `e5769c5e579dc1da9963f7a6e2433214c996dc4a`; Mobile CI #2073 passed before merge after virtualizing the other four cursor-paginated Social collection surfaces.
+- Other merged LG-5 batches after the prior checkpoint: PR #567 shared state theme consistency, #568 auth appearance consistency, #569 onboarding appearance consistency, #570 Exercise Detail loading-state ownership, #571 Share Workout state/theme resilience and #572 Coach history theme consistency.
+- PR #572 exact validated head: `76276d6ecc6a435339064adcdfd84e51a9c65be3`; Mobile CI #2065 passed before merge.
+- Earlier LG-5 packages remain: PR #559 Create Program keyboard safety, #560 Workouts short-height/large-text resilience, #561 shared-control text resilience and #565 shared `SectionHeader` theme consistency.
+- Mobile CI execution remains routed through Hermes by PR #562; PR #563 skips only duplicate merge-generated post-merge runs; PR #564 persists that policy for future agents.
 - Backend repo: `ivangemini/smart-fitness-backend`.
 - Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
-- Backend PR #215 remains draft/open at exact head `0826ff18dac7d4afe78943d9881c5a530507f1af`; its required Hermes CI jobs remain queued and it is not merge-ready.
+- Backend PR #215 remains draft/open at exact head `0826ff18dac7d4afe78943d9881c5a530507f1af`; Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI remain queued and it is not merge-ready.
 - **LG-H2 Stories is complete for the current image-only v1 source scope.**
 - **Progress/exercise secondary-material reassessment is complete for the current active source scope.**
 - **LG-4 Workouts source convergence is complete.**
 - **LG-5 QA and bounded polish is the active Phase 11 priority.**
-- **Coach material is deferred by explicit product priority.**
+- **Coach product/material expansion remains deferred; bounded live-surface QA fixes do not reopen that phase.**
 
 Release readiness remains lower than source completeness because physical-device, native-release, deployed-backend, provider and production evidence are separately gated.
 
@@ -31,6 +33,7 @@ Release readiness remains lower than source completeness because physical-device
 - Preserve routes, IDs, private persistence/sync contracts, calculations, auth/session semantics, workout/program lifecycle, Social authority/privacy and backend API contracts unless a task explicitly changes them.
 - Follow `docs/architecture/responsive-mobile-ui.md` and `docs/architecture/liquid-glass-ui.md`.
 - Use shared navigation/safe-area geometry and material primitives; avoid screen-local magic clearances and repeated native blur.
+- Potentially long collections must use a suitable virtualized list boundary with stable IDs; do not replace an eager list with a same-axis nested virtualized list.
 - Local AsyncStorage remains the active storage strategy; architecture-only design options are not implementation authorization. Reviewed decision evidence: `docs/architecture/local-state-performance-decision.md`. There is no remaining approved autonomous source-refactor phase. In equivalent explicit terms, **no separate autonomous source-refactor phase is currently authorized**.
 - Stories remain in the server-authoritative Social boundary and must not be added to private revisioned `AppState` sync.
 - Analytics/telemetry collection remains disabled until its separate consent/evidence gate is explicitly satisfied.
@@ -70,10 +73,18 @@ LG-5 is validation-first. Do not create broad migration packages merely to conti
 
 ### Completed LG-5 source packages
 
-- **PR #559:** Create Program modal now owns keyboard avoidance, scroll reachability and safe-area-aware form clearance while preserving create/cancel/validation behavior.
-- **PR #560:** Program Add Workout choice mode is short-height/large-text safe; New Routine expanded notes meet the 44 px direct-interaction minimum. Existing keyboard-aware builder/editor/finish boundaries were reassessed without churn.
-- **PR #561:** shared `ListRow`, destructive/tertiary button labels and `SegmentedControl` labels are resilient to long/localized copy and increased text size without changing component APIs or behavior.
-- **PR #565:** shared `SectionHeader` resolves title/subtitle colors from `AppThemeProvider`, fixing the demonstrated active-app-theme mismatch while preserving layout and typography.
+- **PR #559:** Create Program modal keyboard avoidance, scroll reachability and safe-area-aware form clearance.
+- **PR #560:** Program Add Workout short-height/large-text resilience plus New Routine notes 44 px interaction minimum.
+- **PR #561:** resilient long/localized text behavior for shared `ListRow`, destructive/tertiary buttons and `SegmentedControl`.
+- **PR #565:** shared `SectionHeader` active-theme consistency.
+- **PR #567:** shared `EmptyState`, `InlineError` and `LoadingState` active-theme consistency.
+- **PR #568:** active-theme auth/account screens, shared form/header/action primitives and account modals.
+- **PR #569:** active-theme onboarding readiness and client flow.
+- **PR #570:** Exercise Detail loading-state theme and safe-area ownership.
+- **PR #571:** Share Workout restore/loading safe-area resilience plus theme-aware disclosure switches.
+- **PR #572:** bounded Coach history filter/detail/input-summary theme consistency without resuming deferred Coach product work.
+- **PR #573:** top-level `FlatList` boundaries for cursor-paginated Notifications, Following Feed, public-profile workout posts and relationship lists.
+- **PR #574:** post-detail owns the sole `FlatList` for cursor-paginated workout comments; comment list/create/delete/report and post/reaction behavior remain separated and preserved.
 
 These packages are source/CI evidence only. They do not constitute physical-device proof.
 
@@ -85,7 +96,7 @@ These packages are source/CI evidence only. They do not constitute physical-devi
 - increased text size and long EN/RU copy;
 - keyboard-open forms/editors;
 - populated / empty / loading / error / disabled states;
-- long exercise/history/program collections;
+- long collections, pagination and stable-identity virtualization boundaries;
 - elevated material and blur/fallback behavior;
 - Active Session set entry, RPE, replacement, finish and discard flows;
 - workout creation/edit/save/program attachment;
@@ -109,7 +120,7 @@ Later. Preserve chronological Following semantics until a separately reviewed ra
 
 ## Deferred material
 
-Coach recovery/input/lookback/history/domain material remains deferred unless explicitly reprioritized.
+Coach recovery/input/lookback/history/domain product/material expansion remains deferred unless explicitly reprioritized. Bounded LG-5 fixes to demonstrated defects on existing live Coach surfaces are allowed only as QA corrections and do not reopen that phase.
 
 ---
 
@@ -138,4 +149,3 @@ Docs-only synchronization uses diff/ancestry verification; workflows may intenti
 3. Keep backend #215 unmerged until exact-head Hermes validation is real and green.
 4. Collect physical-device evidence only when separately authorized.
 5. Resume deferred Coach/material work only after explicit reprioritization.
-6. Keep Steps and ranked-feed work behind their separate review/authorization boundaries.
