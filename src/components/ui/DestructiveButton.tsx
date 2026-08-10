@@ -56,9 +56,12 @@ const styles = StyleSheet.create({
   },
   label: {
     color: Colors.dark.error,
+    flexShrink: 1,
     fontSize: Typography.button.fontSize,
     fontWeight: Typography.button.fontWeight,
     lineHeight: Typography.button.lineHeight,
+    minWidth: 0,
+    textAlign: 'center',
   },
   pressed: {
     backgroundColor: Colors.dark.errorSoft,
