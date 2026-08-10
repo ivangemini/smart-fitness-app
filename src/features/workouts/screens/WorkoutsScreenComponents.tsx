@@ -1,11 +1,22 @@
 import { router } from 'expo-router';
 import { Dumbbell, Heart, Plus } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
-import { Modal, Pressable, Text, TextInput, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppCard } from '@/components/ui/AppCard';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
+import { Spacing } from '@/constants/theme';
 import type {
   WorkoutProgramSummary,
   WorkoutTemplateSummary,
@@ -193,6 +204,7 @@ export function CreateProgramModal({
 }) {
   const { colors } = useAppTheme();
   const { t } = useLocalization();
+  const insets = useSafeAreaInsets();
   const styles = useMemo(() => createModalStyles(colors), [colors]);
   const [name, setName] = useState('');
 
@@ -206,46 +218,60 @@ export function CreateProgramModal({
 
   return (
     <Modal animationType="fade" transparent visible={visible} onRequestClose={onClose}>
-      <View style={styles.overlay}>
-        <AppCard style={styles.panel}>
-          <Text style={styles.title}>{t('workouts.createProgramTitle')}</Text>
-          <TextInput
-            autoCapitalize="words"
-            autoFocus
-            onChangeText={setName}
-            accessibilityLabel={t('workouts.programName')}
-            placeholder={t('workouts.programName')}
-            placeholderTextColor={colors.textMuted}
-            returnKeyType="done"
-            selectionColor={colors.accent}
-            style={styles.input}
-            value={name}
-            onSubmitEditing={() => {
-              if (canCreate) {
-                onCreate(name);
-              }
-            }}
-          />
-          {!canCreate ? (
-            <Text accessibilityLiveRegion="polite" style={styles.modalHelperText}>
-              {t('workouts.programNameRequired')}
-            </Text>
-          ) : null}
-          <View style={styles.actions}>
-            <SecondaryButton
-              label={t('common.cancel')}
-              onPress={onClose}
-              style={styles.modalAction}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardAvoidingView}>
+        <ScrollView
+          contentContainerStyle={[
+            styles.overlay,
+            {
+              paddingBottom: insets.bottom + Spacing.three,
+              paddingTop: insets.top + Spacing.three,
+            },
+          ]}
+          keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}>
+          <AppCard style={styles.panel}>
+            <Text style={styles.title}>{t('workouts.createProgramTitle')}</Text>
+            <TextInput
+              autoCapitalize="words"
+              autoFocus
+              onChangeText={setName}
+              accessibilityLabel={t('workouts.programName')}
+              placeholder={t('workouts.programName')}
+              placeholderTextColor={colors.textMuted}
+              returnKeyType="done"
+              selectionColor={colors.accent}
+              style={styles.input}
+              value={name}
+              onSubmitEditing={() => {
+                if (canCreate) {
+                  onCreate(name);
+                }
+              }}
             />
-            <PrimaryButton
-              disabled={!canCreate}
-              label={t('workouts.create')}
-              onPress={() => onCreate(name)}
-              style={styles.modalAction}
-            />
-          </View>
-        </AppCard>
-      </View>
+            {!canCreate ? (
+              <Text accessibilityLiveRegion="polite" style={styles.modalHelperText}>
+                {t('workouts.programNameRequired')}
+              </Text>
+            ) : null}
+            <View style={styles.actions}>
+              <SecondaryButton
+                label={t('common.cancel')}
+                onPress={onClose}
+                style={styles.modalAction}
+              />
+              <PrimaryButton
+                disabled={!canCreate}
+                label={t('workouts.create')}
+                onPress={() => onCreate(name)}
+                style={styles.modalAction}
+              />
+            </View>
+          </AppCard>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

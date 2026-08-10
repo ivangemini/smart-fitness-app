@@ -124,6 +124,9 @@ export const createModalStyles = (colors: typeof Colors.light) =>
       minHeight: 52,
       paddingHorizontal: Spacing.three,
     },
+    keyboardAvoidingView: {
+      flex: 1,
+    },
     modalAction: {
       flexBasis: 140,
       flexGrow: 1,
@@ -136,11 +139,11 @@ export const createModalStyles = (colors: typeof Colors.light) =>
       lineHeight: 19,
     },
     overlay: {
-      ...StyleSheet.absoluteFill,
       alignItems: 'center',
       backgroundColor: colors.overlay,
+      flexGrow: 1,
       justifyContent: 'center',
-      padding: Spacing.three,
+      paddingHorizontal: Spacing.three,
     },
     panel: {
       gap: Spacing.three,
