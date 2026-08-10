@@ -19,20 +19,24 @@ const detail = readSource(
 );
 
 describe('Workout history detail UX', () => {
-  it('uses one top-level virtualized boundary for completed-workout exercise groups', () => {
+  it('uses one top-level virtualized boundary for completed-workout and Safety rows', () => {
     expect(detail).toContain("import { FlatList, Text, View } from 'react-native';");
-    expect(detail).toContain('<FlatList');
-    expect(detail).toContain('data={session && summary ? exerciseGroups : []}');
+    expect(detail.match(/<FlatList/g)).toHaveLength(1);
+    expect(detail).toContain('data={rows}');
+    expect(detail).toContain('keyExtractor={(item) => item.id}');
     expect(detail).toContain(
-      'keyExtractor={(group) => `${group.exerciseId}-${group.exerciseName}`}',
+      'buildWorkoutSafetyListRows(metadata.restrictions, metadata.issues)',
     );
     expect(detail).not.toContain('<ScrollView');
-    expect(detail).not.toContain('exerciseGroups.map(');
+    expect(detail).not.toContain('metadata.restrictions.map(');
+    expect(detail).not.toContain('metadata.issues.map(');
   });
 
-  it('keeps completed history read-only while retaining safety context', () => {
+  it('keeps completed history read-only while retaining virtualized safety context', () => {
     expect(detail).toContain('workoutSessions.find((item) => item.id === sessionId)');
-    expect(detail).toContain('<SafetyHistoryCard');
+    expect(detail).toContain('<WorkoutHistorySafetySummaryCard');
+    expect(detail).toContain('<WorkoutHistorySafetyRestrictionRow');
+    expect(detail).toContain('<WorkoutHistorySafetyIssueRow');
     expect(detail).not.toContain('deleteWorkout');
     expect(detail).not.toContain('updateWorkout');
     expect(detail).not.toContain('saveWorkout');

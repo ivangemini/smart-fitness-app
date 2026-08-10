@@ -1,7 +1,7 @@
 import { router, useFocusEffect } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { FlatList, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppCard } from '@/components/ui/AppCard';
@@ -26,6 +26,7 @@ import {
   buildWorkoutSafetyGateDecision,
   type WorkoutSafetyGateDecision,
 } from '../workoutSafetyGateModel';
+import { buildWorkoutSafetyListRows } from '../workoutSafetyListModel';
 import { createWorkoutSafetyGateStyles } from './workoutSafetyGateScreen.styles';
 
 const boundedLabel = (
@@ -91,6 +92,10 @@ export default function WorkoutSafetyGateScreen({
       }),
     [recoveryCheckIns, snapshot, userId, userLimitations],
   );
+  const safetyRows = useMemo(
+    () => buildWorkoutSafetyListRows(decision.restrictions, decision.issues),
+    [decision.issues, decision.restrictions],
+  );
 
   useEffect(() => {
     setAcknowledged(false);
@@ -138,6 +143,7 @@ export default function WorkoutSafetyGateScreen({
       : decision.reviewStatus === 'blocked'
         ? colors.error
         : colors.warning;
+  const blockedCardStyle = decision.reviewStatus === 'blocked' ? styles.blockedCard : undefined;
 
   return (
     <View style={styles.screen}>
@@ -153,180 +159,197 @@ export default function WorkoutSafetyGateScreen({
         </View>
       </View>
 
-      <ScrollView
+      <FlatList
         contentContainerStyle={[
           styles.content,
           { paddingBottom: insets.bottom + Spacing.eight },
         ]}
-        showsVerticalScrollIndicator={false}>
-        <View style={styles.container}>
-          <AppCard>
-            <Text style={styles.eyebrow}>{copy.workout}</Text>
-            <Text style={styles.workoutTitle}>{draft.workoutTitle}</Text>
-            <Text style={styles.bodyText}>{copy.sessionContext}</Text>
-          </AppCard>
+        data={safetyRows}
+        keyExtractor={(item) => item.id}
+        ListHeaderComponent={
+          <View style={styles.container}>
+            <AppCard>
+              <Text style={styles.eyebrow}>{copy.workout}</Text>
+              <Text style={styles.workoutTitle}>{draft.workoutTitle}</Text>
+              <Text style={styles.bodyText}>{copy.sessionContext}</Text>
+            </AppCard>
 
-          <AppCard style={decision.reviewStatus === 'blocked' ? styles.blockedCard : undefined}>
-            <View style={styles.resultHeader}>
-              <View style={styles.headerCopy}>
-                <Text style={styles.cardTitle}>{decisionPresentation.title}</Text>
-                {decisionPresentation.message ? (
-                  <Text style={styles.bodyText}>{decisionPresentation.message}</Text>
-                ) : null}
-              </View>
-              <Text style={[styles.statusBadge, { color: statusColor }]}>
-                {decisionPresentation.statusLabel}
-              </Text>
-            </View>
-
-            {decision.recommendedLoadPercent !== null ? (
-              <View style={styles.metricRow}>
-                <View>
-                  <Text style={styles.metricValue}>
-                    {formatNumber(decision.recommendedLoadPercent, {
-                      maximumFractionDigits: 0,
-                    })}%
-                  </Text>
-                  <Text style={styles.metricLabel}>{copy.reviewedLoadCeiling}</Text>
+            <AppCard style={blockedCardStyle}>
+              <View style={styles.resultHeader}>
+                <View style={styles.headerCopy}>
+                  <Text style={styles.cardTitle}>{decisionPresentation.title}</Text>
+                  {decisionPresentation.message ? (
+                    <Text style={styles.bodyText}>{decisionPresentation.message}</Text>
+                  ) : null}
                 </View>
-                <View>
-                  <Text style={styles.metricValue}>
-                    {formatNumber(decision.restrictions.length, {
-                      maximumFractionDigits: 0,
-                    })}
-                  </Text>
-                  <Text style={styles.metricLabel}>{copy.restrictions}</Text>
-                </View>
+                <Text style={[styles.statusBadge, { color: statusColor }]}>
+                  {decisionPresentation.statusLabel}
+                </Text>
               </View>
-            ) : null}
 
-            {decision.restrictions.length > 0 ? (
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>{copy.structuredRestrictions}</Text>
-                {decision.restrictions.map((restriction) => {
-                  const percent = formatNumber(
-                    Math.round(restriction.maximumLoadMultiplier * 100),
-                    { maximumFractionDigits: 0 },
-                  );
-                  return (
-                    <View key={restriction.limitationId} style={styles.listRow}>
-                      <View style={styles.listCopy}>
-                        <Text style={styles.listTitle}>
-                          {boundedLabel(
-                            limitationCopy.bodyRegionLabels as Record<string, string>,
-                            restriction.bodyRegion,
-                            copy.notSpecified,
-                          )}{' '}
-                          ·{' '}
-                          {boundedLabel(
-                            limitationCopy.sideLabels as Record<string, string>,
-                            restriction.side,
-                            copy.notSpecified,
-                          )}
+              {decision.recommendedLoadPercent !== null ? (
+                <View style={styles.metricRow}>
+                  <View>
+                    <Text style={styles.metricValue}>
+                      {formatNumber(decision.recommendedLoadPercent, {
+                        maximumFractionDigits: 0,
+                      })}%
+                    </Text>
+                    <Text style={styles.metricLabel}>{copy.reviewedLoadCeiling}</Text>
+                  </View>
+                  <View>
+                    <Text style={styles.metricValue}>
+                      {formatNumber(decision.restrictions.length, {
+                        maximumFractionDigits: 0,
+                      })}
+                    </Text>
+                    <Text style={styles.metricLabel}>{copy.restrictions}</Text>
+                  </View>
+                </View>
+              ) : null}
+            </AppCard>
+          </View>
+        }
+        ListFooterComponent={
+          <View style={[styles.container, { paddingTop: Spacing.four }]}>
+            <AppCard style={blockedCardStyle}>
+              {loadError ? <Text style={styles.errorText}>{loadError}</Text> : null}
+
+              {decision.requiresAcknowledgement && !loading ? (
+                <Pressable
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: acknowledged }}
+                  onPress={() => setAcknowledged((current) => !current)}
+                  style={({ pressed }) => [styles.acknowledgement, pressed && styles.pressed]}>
+                  <View style={[styles.checkbox, acknowledged && styles.checkboxSelected]}>
+                    <Text style={styles.checkboxLabel}>{acknowledged ? '✓' : ''}</Text>
+                  </View>
+                  <Text style={styles.acknowledgementText}>{copy.acknowledgement}</Text>
+                </Pressable>
+              ) : null}
+
+              <PrimaryButton
+                disabled={loading || (decision.requiresAcknowledgement && !acknowledged)}
+                label={
+                  decision.reviewStatus === 'blocked'
+                    ? copy.continueDespiteHardBlock
+                    : copy.enterWorkout
+                }
+                loading={continuing}
+                onPress={() => void continueToWorkout()}
+              />
+            </AppCard>
+
+            <AppCard>
+              <Text style={styles.cardTitle}>{copy.updateReview}</Text>
+              <Text style={styles.bodyText}>{copy.updateReviewBody}</Text>
+              <SecondaryButton
+                label={copy.openSafetyRecovery}
+                onPress={() => router.push('/profile/safety-recovery')}
+              />
+              <View style={styles.actionRow}>
+                <Pressable
+                  onPress={() => router.push('/profile/recovery-check-in')}
+                  style={({ pressed }) => [styles.smallAction, pressed && styles.pressed]}>
+                  <Text style={styles.smallActionLabel}>{copy.recoveryCheckIn}</Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => router.push('/profile/limitations')}
+                  style={({ pressed }) => [styles.smallAction, pressed && styles.pressed]}>
+                  <Text style={styles.smallActionLabel}>{copy.limitations}</Text>
+                </Pressable>
+              </View>
+            </AppCard>
+
+            <Text style={styles.disclaimer}>{copy.disclaimer}</Text>
+          </View>
+        }
+        renderItem={({ item }) => (
+          <View style={[styles.container, { paddingTop: Spacing.four }]}>
+            <AppCard style={blockedCardStyle}>
+              {item.kind === 'restriction' ? (
+                <>
+                  {item.index === 0 ? (
+                    <Text style={styles.sectionTitle}>{copy.structuredRestrictions}</Text>
+                  ) : null}
+                  <View style={styles.listRow}>
+                    <View style={styles.listCopy}>
+                      <Text style={styles.listTitle}>
+                        {boundedLabel(
+                          limitationCopy.bodyRegionLabels as Record<string, string>,
+                          item.restriction.bodyRegion,
+                          copy.notSpecified,
+                        )}{' '}
+                        ·{' '}
+                        {boundedLabel(
+                          limitationCopy.sideLabels as Record<string, string>,
+                          item.restriction.side,
+                          copy.notSpecified,
+                        )}
+                      </Text>
+                      <Text style={styles.bodyText}>
+                        {reviewCopy.actionLabels[item.restriction.action]} ·{' '}
+                        {copy.affectedLoadUpTo(
+                          formatNumber(
+                            Math.round(item.restriction.maximumLoadMultiplier * 100),
+                            { maximumFractionDigits: 0 },
+                          ),
+                        )}
+                      </Text>
+                      {item.restriction.movementPatterns.length > 0 ? (
+                        <Text style={styles.metaText}>
+                          {reviewCopy.movements}:{' '}
+                          {item.restriction.movementPatterns
+                            .map((movement) =>
+                              boundedLabel(
+                                limitationCopy.movementLabels as Record<string, string>,
+                                movement,
+                                copy.notSpecified,
+                              ),
+                            )
+                            .join(', ')}
                         </Text>
-                        <Text style={styles.bodyText}>
-                          {reviewCopy.actionLabels[restriction.action]} ·{' '}
-                          {copy.affectedLoadUpTo(percent)}
-                        </Text>
-                        {restriction.movementPatterns.length > 0 ? (
-                          <Text style={styles.metaText}>
-                            {reviewCopy.movements}:{' '}
-                            {restriction.movementPatterns
-                              .map((movement) =>
-                                boundedLabel(
-                                  limitationCopy.movementLabels as Record<string, string>,
-                                  movement,
-                                  copy.notSpecified,
-                                ),
-                              )
-                              .join(', ')}
-                          </Text>
-                        ) : null}
-                      </View>
-                      <Text style={[styles.rowBadge, { color: colors.warning }]}>
-                        {limitationCopy.severityLabels[restriction.severity]}
+                      ) : null}
+                    </View>
+                    <Text style={[styles.rowBadge, { color: colors.warning }]}>
+                      {limitationCopy.severityLabels[item.restriction.severity]}
+                    </Text>
+                  </View>
+                </>
+              ) : (
+                <>
+                  {item.index === 0 ? (
+                    <Text style={styles.sectionTitle}>{copy.reviewFindings}</Text>
+                  ) : null}
+                  <View style={styles.listRow}>
+                    <View style={styles.listCopy}>
+                      <Text style={styles.listTitle}>
+                        {reviewCopy.issueCopy(item.issue.code).title}
+                      </Text>
+                      <Text style={styles.bodyText}>
+                        {reviewCopy.issueCopy(item.issue.code).message}
                       </Text>
                     </View>
-                  );
-                })}
-              </View>
-            ) : null}
-
-            {decision.issues.length > 0 ? (
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>{copy.reviewFindings}</Text>
-                {decision.issues.map((issue, index) => {
-                  const issuePresentation = reviewCopy.issueCopy(issue.code);
-                  return (
-                    <View key={`${issue.code}-${index}`} style={styles.listRow}>
-                      <View style={styles.listCopy}>
-                        <Text style={styles.listTitle}>{issuePresentation.title}</Text>
-                        <Text style={styles.bodyText}>{issuePresentation.message}</Text>
-                      </View>
-                      <Text
-                        style={[
-                          styles.rowBadge,
-                          { color: issue.severity === 'hard_block' ? colors.error : colors.warning },
-                        ]}>
-                        {reviewCopy.issueSeverityLabels[issue.severity]}
-                      </Text>
-                    </View>
-                  );
-                })}
-              </View>
-            ) : null}
-
-            {loadError ? <Text style={styles.errorText}>{loadError}</Text> : null}
-
-            {decision.requiresAcknowledgement && !loading ? (
-              <Pressable
-                accessibilityRole="checkbox"
-                accessibilityState={{ checked: acknowledged }}
-                onPress={() => setAcknowledged((current) => !current)}
-                style={({ pressed }) => [styles.acknowledgement, pressed && styles.pressed]}>
-                <View style={[styles.checkbox, acknowledged && styles.checkboxSelected]}>
-                  <Text style={styles.checkboxLabel}>{acknowledged ? '✓' : ''}</Text>
-                </View>
-                <Text style={styles.acknowledgementText}>{copy.acknowledgement}</Text>
-              </Pressable>
-            ) : null}
-
-            <PrimaryButton
-              disabled={loading || (decision.requiresAcknowledgement && !acknowledged)}
-              label={
-                decision.reviewStatus === 'blocked'
-                  ? copy.continueDespiteHardBlock
-                  : copy.enterWorkout
-              }
-              loading={continuing}
-              onPress={() => void continueToWorkout()}
-            />
-          </AppCard>
-
-          <AppCard>
-            <Text style={styles.cardTitle}>{copy.updateReview}</Text>
-            <Text style={styles.bodyText}>{copy.updateReviewBody}</Text>
-            <SecondaryButton
-              label={copy.openSafetyRecovery}
-              onPress={() => router.push('/profile/safety-recovery')}
-            />
-            <View style={styles.actionRow}>
-              <Pressable
-                onPress={() => router.push('/profile/recovery-check-in')}
-                style={({ pressed }) => [styles.smallAction, pressed && styles.pressed]}>
-                <Text style={styles.smallActionLabel}>{copy.recoveryCheckIn}</Text>
-              </Pressable>
-              <Pressable
-                onPress={() => router.push('/profile/limitations')}
-                style={({ pressed }) => [styles.smallAction, pressed && styles.pressed]}>
-                <Text style={styles.smallActionLabel}>{copy.limitations}</Text>
-              </Pressable>
-            </View>
-          </AppCard>
-
-          <Text style={styles.disclaimer}>{copy.disclaimer}</Text>
-        </View>
-      </ScrollView>
+                    <Text
+                      style={[
+                        styles.rowBadge,
+                        {
+                          color:
+                            item.issue.severity === 'hard_block'
+                              ? colors.error
+                              : colors.warning,
+                        },
+                      ]}>
+                      {reviewCopy.issueSeverityLabels[item.issue.severity]}
+                    </Text>
+                  </View>
+                </>
+              )}
+            </AppCard>
+          </View>
+        )}
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   );
 }
