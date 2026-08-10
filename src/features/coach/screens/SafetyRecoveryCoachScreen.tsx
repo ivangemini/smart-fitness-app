@@ -95,7 +95,7 @@ export default function SafetyRecoveryCoachScreen() {
         restriction,
       })),
       ...resultReadiness.issues.map((issue, index) => ({
-        id: `issue:${issue.code}:${resultReadiness.issueKeys?.[index] ?? issue.message}`,
+        id: `issue:${issue.code}:${resultReadiness.issueKeys?.[index] ?? index}`,
         issue,
         kind: 'issue' as const,
       })),
