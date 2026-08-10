@@ -50,6 +50,11 @@ export const createWorkoutHistoryDetailStyles = (colors: typeof Colors.light) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
     },
+    exerciseListItem: {
+      maxWidth: MaxContentWidth,
+      paddingTop: Spacing.four,
+      width: '100%',
+    },
     eyebrow: {
       color: colors.textMuted,
       fontSize: Typography.caption.fontSize,
@@ -89,10 +94,18 @@ export const createWorkoutHistoryDetailStyles = (colors: typeof Colors.light) =>
       lineHeight: Typography.callout.lineHeight,
       textAlign: 'right',
     },
+    list: {
+      flex: 1,
+    },
     listCopy: {
       flex: 1,
       gap: 3,
       minWidth: 0,
+    },
+    listFooter: {
+      alignItems: 'center',
+      paddingTop: Spacing.four,
+      width: '100%',
     },
     listRow: {
       alignItems: 'flex-start',
