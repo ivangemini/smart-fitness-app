@@ -5,50 +5,50 @@ Updated: 2026-08-10
 ## Checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current runtime `main`: `fbdba5e64445b94081da6c4403858b34d7af7c30`.
-- Latest runtime merge: PR #557 `Make editable workout history responsive`.
-- PR #557 exact validated head: `7c888c65bf5721fcf705888638d080937e979d17`; Mobile CI #2034 passed the full required gate before merge.
+- Current runtime `main`: `975440b6098fb4aebf6d874acca87be581334ed4`.
+- Latest runtime merge: PR #565 `Fix LG-5 SectionHeader theme consistency`.
+- PR #565 exact validated head: `1a60e87b64db0d87ec99c6ad5c6f47002cf87dde`; Mobile CI #2049 passed before merge.
 - Backend repo: `ivangemini/smart-fitness-backend`.
-- Last recorded Stories backend foundation remains PR #214 merge `2339f6ce…`, exact validated head `9a5af3aba1f4470f261eb9ea00a6e2f2f8979bfe`; LG-4 did not modify/revalidate backend runtime state.
+- Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
+- Only open project PR at this checkpoint: backend #215 `Route routine backend CI to Hermes`, draft at exact head `0826ff18dac7d4afe78943d9881c5a530507f1af`.
+- #215 remains blocked: its Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI runs are queued and have not produced exact-head validation evidence.
 - **LG-H2 Stories is complete for the current image-only v1 source scope.**
-- **Progress/exercise secondary-material reassessment is complete for current active surfaces.**
-- **LG-4 Workouts source convergence is complete through PR #557.**
+- **LG-4 Workouts source convergence is complete.**
 - Active priority: **LG-5 QA and bounded polish, validation-first.**
 - **Coach material remains deferred.**
 
-## What LG-4 completed
+## What changed after the LG-4 checkpoint
 
-PRs #539–#557 closed the concrete Workouts responsive/material debt found during the current source pass while preserving domain behavior.
+LG-5 has already produced four bounded runtime fixes from demonstrated defects:
 
-Key outcomes:
+- **PR #559:** Create Program keyboard/safe-area reachability on short-height/increased-text layouts.
+- **PR #560:** Program Add Workout choice-mode short-height/large-text scrolling plus New Routine notes 44 px interaction minimum; already-correct builder/editor/finish keyboard boundaries were deliberately left unchanged.
+- **PR #561:** resilient long/localized text behavior for shared `ListRow`, destructive/tertiary buttons and `SegmentedControl`. Exact head `e16f8d961b4a128c4d7b1de5b4fc36d66342fd8e`; Mobile CI #2043 green.
+- **PR #565:** shared `SectionHeader` now follows `AppThemeProvider` instead of `Colors.dark`. Exact head `1a60e87b64db0d87ec99c6ad5c6f47002cf87dde`; Mobile CI #2049 green.
 
-- Workouts hub Search/Start/Create Program chrome uses shared material.
-- Active Session header/footer are content-driven and safe-area-aware; Back/overflow/footer controls use shared primitives.
-- Active Session overflow sheets and replacement picker use shared elevated material; replacement list is virtualized without an artificial 100-item cap.
-- RPE values wrap on narrow screens with >=44 px targets while preserving the established values and selection lifecycle.
-- Workout creation picker/editor/builder boundary is theme-adaptive; builder row actions and Start Next meet the touch-target contract.
-- Workout Template Detail uses shared 44 px header controls, content-driven title and measured sticky-footer clearance.
-- New Routine picker is virtualized across the full collection, owns bottom safe area and uses shared elevated material; its root Stack screen no longer reserves floating-tab clearance.
-- Finish Share/Save use shared controls; Resume/clear-name accessibility was hardened without changing completion/save/share lifecycle.
-- Exercise Library Back/Add use shared controls and Details/filter/Retry targets meet the interaction minimum.
-- Program Detail navigation uses shared glass controls and row secondary actions have full 44 px targets.
-- Workout History list/detail and Safety Gate use shared Back controls; history filter actions meet the 44 px minimum.
-- Direct editable `workouts/history` now uses `SectionList`, active semantic theme and stack-safe bottom clearance while preserving edit/save/delete/unit behavior.
+CI execution also changed without product behavior:
 
-## LG-4 validation evidence
+- #562 moved routine authoritative Mobile CI to Hermes;
+- #563 removed only duplicate merge-generated post-merge Mobile CI runs;
+- #564 persisted the runner policy in `AGENTS.md`;
+- backend #216 persisted the backend policy, but backend #215 still requires real exact-head Hermes execution before merge.
 
-Every runtime package was exact-head validated before merge. Final evidence:
+## Documentation audit result
 
-- PR #557 exact head: `7c888c65bf5721fcf705888638d080937e979d17`.
-- Mobile CI #2034: repository line audit, changed-file line limit, TypeScript, full regression, expanded model smoke, Expo export, Expo Doctor — all green.
-- Merge: `fbdba5e64445b94081da6c4403858b34d7af7c30`.
-- No blocking review threads remained.
+The root instructions and complete documentation trees of both repositories were re-read on 2026-08-10.
 
-Source/CI completion is not physical-device/release proof.
+Use these interpretation rules going forward:
 
-## Contracts preserved
+- `docs/implementation-plan.md` + `docs/current-status.md` + this handoff + `docs/roadmap/liquid-glass.md` are the current Phase 11 source of truth.
+- Old `ROADMAP_PROGRESS.md` Provider/P5 sequencing was stale and has been synchronized by the current docs checkpoint branch.
+- Focused later backend privacy/export evidence overrides earlier planning notes that still label now-implemented source slices as future work.
+- Historical documents remain historical; do not infer current work merely from an old `next slice` paragraph.
+- Provider/staging/deployment/native/product activation remains authorization-gated even when source contracts are complete.
+- Mobile `docs/backend/*` is historical design material; use the actual backend repo for current backend behavior.
 
-Do not casually rewrite these during LG-5:
+## Contracts to preserve during LG-5
+
+Do not casually rewrite:
 
 - tuned `Set / Previous / weight / reps / RPE` table semantics;
 - active-session persistence and finish/discard lifecycle;
@@ -56,29 +56,32 @@ Do not casually rewrite these during LG-5:
 - workout/program create/edit/save/reorder/attach/favorite/delete semantics;
 - completed-history retention and editable-history save/delete behavior;
 - safety/recovery decision and acknowledgement behavior;
-- private persistence/sync schemas, Social authority/privacy and backend APIs.
+- private persistence/sync schemas;
+- Social server authority/privacy;
+- backend API/revision/idempotency/ownership contracts.
 
-## LG-5 next work
+## Next work
 
-LG-5 is validation-first. Inspect source/CI and only create runtime packages for demonstrated defects.
-
-Priority validation matrix:
+Continue LG-5 by inspecting bounded secondary/shared surfaces against:
 
 - light / dark / system appearance;
-- narrow phone and short phone geometry;
-- iPhone/Android safe areas;
+- narrow/short phone geometry and safe areas;
 - increased text size and long EN/RU copy;
 - keyboard-open forms/editors;
 - populated / empty / loading / error / disabled states;
 - long exercise/history/program collections;
-- Active Session set-entry/RPE/replace/finish/discard flows;
+- Active Session set-entry/RPE/replace/finish/discard;
 - workout create/edit/save/program attachment;
 - completed-history read/edit/delete;
-- elevated material and blur fallback performance.
+- elevated material and blur/fallback behavior.
 
-Do not infer physical-device evidence from source or Expo export. Native build/install and device QA require separate authorization.
+If inspection shows no defect, do not create churn. If it shows a concrete defect, fix the smallest coherent boundary and merge only an exact fully green runtime head.
 
-## Stories / other priorities
+## Backend #215
+
+Do not merge #215 merely because the workflow files look correct. Required validation must actually run on the exact intended head. Do not move routine validation back to GitHub-hosted runners just to bypass an unavailable Hermes assignment unless the CI policy's demonstrated-outage/incompatibility exception is genuinely met and separately reviewed.
+
+## Other priorities
 
 - Stories image-only v1 remains source-complete and server-authoritative; no mock/demo Stories.
 - LG-H3 Steps remains blocked until a reviewed native health/activity provider and permission contract exist.
@@ -91,4 +94,4 @@ Keep `docs/architecture/local-state-performance-decision.md` referenced from `do
 
 ## Authorization boundaries
 
-Do not perform OTA/EAS publication, native build/install, backend deployment, migration execution, production/provider activation, credentials/DNS changes, destructive production cleanup, HealthKit/Health Connect activation, or store submission without direct authorization.
+Do not perform OTA/EAS publication, native build/install, backend deployment, migration execution, production/provider activation, credentials/DNS changes, destructive production cleanup, HealthKit/Health Connect activation or store submission without direct authorization.
