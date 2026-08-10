@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
+import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 import {
   useAppActions,
@@ -76,13 +77,13 @@ export default function WorkoutTemplateDetailScreen() {
       <View style={styles.screen}>
         <View style={styles.loadingState}>
           <Text style={styles.emptyTitle}>{copy.notFound}</Text>
-          <Pressable
-            accessibilityLabel={copy.backToWorkouts}
-            accessibilityRole="button"
-            onPress={() => router.replace('/workouts')}
-            style={({ pressed }) => [styles.backToWorkouts, pressed && styles.pressed]}>
-            <Text style={styles.backToWorkoutsLabel}>{copy.backToWorkouts}</Text>
-          </Pressable>
+          <View style={styles.backToWorkoutsAction}>
+            <SecondaryButton
+              accessibilityLabel={copy.backToWorkouts}
+              label={copy.backToWorkouts}
+              onPress={() => router.replace('/workouts')}
+            />
+          </View>
         </View>
       </View>
     );
@@ -236,19 +237,10 @@ export default function WorkoutTemplateDetailScreen() {
 
 const createStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
-    backToWorkouts: {
-      alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderCurve: 'continuous',
-      borderRadius: 999,
+    backToWorkoutsAction: {
       marginTop: Spacing.two,
-      paddingHorizontal: Spacing.three,
-      paddingVertical: 10,
-    },
-    backToWorkoutsLabel: {
-      color: colors.textPrimary,
-      fontSize: 14,
-      fontWeight: '900',
+      maxWidth: MaxContentWidth,
+      width: '100%',
     },
     container: {
       maxWidth: MaxContentWidth,
@@ -377,9 +369,6 @@ const createStyles = (colors: typeof Colors.light) =>
       flex: 1,
       justifyContent: 'center',
       padding: Spacing.three,
-    },
-    pressed: {
-      opacity: 0.72,
     },
     screen: {
       backgroundColor: colors.background,
