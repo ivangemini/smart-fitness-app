@@ -27,7 +27,7 @@ Exact code, tests and current Git history override stale historical prose.
 
 ### Mobile
 
-- Current `main`: `dcc62356d946f4e2c309aa24666322e9a671f067`.
+- Current runtime checkpoint: `dcc62356d946f4e2c309aa24666322e9a671f067` (latest runtime/source merge PR #574; this documentation-only checkpoint does not change runtime behavior).
 - Latest runtime merge: PR #574 — workout-post comment pagination now uses the post-detail screen as the sole virtualized list boundary.
 - PR #574 exact validated head: `3d959128c63b46948cef946895352d96658732fa`; Mobile CI #2077 passed before merge.
 - PR #573 exact validated head: `e5769c5e579dc1da9963f7a6e2433214c996dc4a`; Mobile CI #2073 passed before merge after virtualizing the other four cursor-paginated Social collection surfaces.
