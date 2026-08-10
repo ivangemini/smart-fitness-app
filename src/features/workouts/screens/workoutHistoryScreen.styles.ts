@@ -22,7 +22,7 @@ export const createFilterChipStyles = (
       backgroundColor: glass.controlPressedFill,
     },
     chipSelected: {
-      backgroundColor: glass.accentSoft,
+      backgroundColor: glass.semanticAccentFill,
       borderColor: glass.accentBorder,
     },
     chipSelectedPressed: {
@@ -200,7 +200,7 @@ export const createWorkoutHistoryScreenStyles = (
     resetButton: {
       alignItems: 'center',
       alignSelf: 'flex-start',
-      backgroundColor: glass.accentSoft,
+      backgroundColor: glass.semanticAccentFill,
       borderColor: glass.accentBorder,
       borderRadius: Radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
