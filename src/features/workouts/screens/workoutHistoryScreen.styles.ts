@@ -1,22 +1,33 @@
 import { StyleSheet } from 'react-native';
 
 import { Colors, MaxContentWidth, Radii, Spacing, Typography } from '@/constants/theme';
+import type { LiquidGlassPalette } from '@/theme/liquidGlass';
 
-export const createFilterChipStyles = (colors: typeof Colors.light) =>
+export const createFilterChipStyles = (
+  colors: typeof Colors.light,
+  glass: LiquidGlassPalette,
+) =>
   StyleSheet.create({
     chip: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderRadius: Radii.pill,
       borderWidth: StyleSheet.hairlineWidth,
       justifyContent: 'center',
       minHeight: 44,
       paddingHorizontal: Spacing.three,
     },
+    chipPressed: {
+      backgroundColor: glass.controlPressedFill,
+    },
     chipSelected: {
-      backgroundColor: colors.accentSoft,
-      borderColor: colors.accent,
+      backgroundColor: glass.accentSoft,
+      borderColor: glass.accentBorder,
+    },
+    chipSelectedPressed: {
+      backgroundColor: glass.controlPressedFill,
+      borderColor: glass.accentBorder,
     },
     label: {
       color: colors.textSecondary,
@@ -26,9 +37,6 @@ export const createFilterChipStyles = (colors: typeof Colors.light) =>
     },
     labelSelected: {
       color: colors.accent,
-    },
-    pressed: {
-      opacity: 0.68,
     },
   });
 
@@ -49,7 +57,10 @@ export const createFilterRowStyles = (colors: typeof Colors.light) =>
     },
   });
 
-export const createWorkoutHistoryScreenStyles = (colors: typeof Colors.light) =>
+export const createWorkoutHistoryScreenStyles = (
+  colors: typeof Colors.light,
+  glass: LiquidGlassPalette,
+) =>
   StyleSheet.create({
     bodyText: {
       color: colors.textSecondary,
@@ -80,10 +91,14 @@ export const createWorkoutHistoryScreenStyles = (colors: typeof Colors.light) =>
     },
     clearButton: {
       alignItems: 'center',
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
+      borderRadius: Radii.pill,
+      borderWidth: StyleSheet.hairlineWidth,
       flexShrink: 0,
       justifyContent: 'center',
       minHeight: 44,
-      paddingHorizontal: Spacing.one,
+      paddingHorizontal: Spacing.two,
     },
     clearLabel: {
       color: colors.accent,
@@ -100,6 +115,9 @@ export const createWorkoutHistoryScreenStyles = (colors: typeof Colors.light) =>
       alignItems: 'center',
       paddingHorizontal: Spacing.three,
       paddingTop: Spacing.three,
+    },
+    controlPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     filtersCard: {
       gap: Spacing.three,
@@ -133,6 +151,9 @@ export const createWorkoutHistoryScreenStyles = (colors: typeof Colors.light) =>
     },
     historyCard: {
       gap: Spacing.three,
+    },
+    historyCardPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     list: {
       gap: Spacing.three,
@@ -176,14 +197,11 @@ export const createWorkoutHistoryScreenStyles = (colors: typeof Colors.light) =>
       justifyContent: 'space-between',
       paddingTop: Spacing.two,
     },
-    pressed: {
-      opacity: 0.68,
-    },
     resetButton: {
       alignItems: 'center',
       alignSelf: 'flex-start',
-      backgroundColor: colors.accentSoft,
-      borderColor: colors.accent,
+      backgroundColor: glass.accentSoft,
+      borderColor: glass.accentBorder,
       borderRadius: Radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
       justifyContent: 'center',
