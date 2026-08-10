@@ -18,8 +18,6 @@ export const createNutritionTargetProposalStyles = (colors: typeof Colors.light)
       fontWeight: '800',
       textTransform: 'uppercase',
     },
-    backButton: { alignItems: 'center', height: 42, justifyContent: 'center', width: 42 },
-    backLabel: { color: colors.textPrimary, fontSize: 42, fontWeight: '300', lineHeight: 42 },
     badge: {
       backgroundColor: colors.backgroundSelected,
       borderRadius: Radii.pill,

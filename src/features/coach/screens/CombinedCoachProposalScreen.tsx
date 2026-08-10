@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,6 +10,7 @@ import {
   type CoachRunEnvelope,
 } from '@/api/coach';
 import { AppCard } from '@/components/ui/AppCard';
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme';
@@ -230,13 +231,11 @@ export default function CombinedCoachProposalScreen() {
   return (
     <View style={themed.screen}>
       <View style={[themed.header, { paddingTop: insets.top + Spacing.two }]}>
-        <Pressable
+        <LiquidGlassIconButton
           accessibilityLabel={copy.back}
-          accessibilityRole="button"
+          Icon={ChevronLeft}
           onPress={() => router.back()}
-          style={themed.backButton}>
-          <ChevronLeft color={colors.textPrimary} size={24} strokeWidth={2} />
-        </Pressable>
+        />
         <View style={themed.flexCopy}>
           <Text style={themed.title}>{copy.title}</Text>
           <Text style={themed.subtitle}>{copy.subtitle}</Text>
@@ -296,15 +295,6 @@ export default function CombinedCoachProposalScreen() {
 
 const createStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
-    backButton: {
-      alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderRadius: 999,
-      height: 44,
-      justifyContent: 'center',
-      width: 44,
-    },
-    backLabel: { color: colors.textPrimary, fontSize: 24, lineHeight: 25 },
     body: {
       color: colors.textSecondary,
       fontSize: Typography.body.fontSize,
