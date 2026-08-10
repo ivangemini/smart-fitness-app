@@ -131,6 +131,22 @@ Provider-backed models are capability-gated by the backend. Mobile remains provi
 
 Automatic application is prohibited. Do not invent a client-only compensating revert. A safe revert requires an explicit backend contract covering ownership, revisions, idempotency, conflicts, and audit history.
 
+## CI runner and Actions cost policy
+
+This is a permanent cross-repository execution rule, not a temporary optimization note.
+
+- Routine authoritative **Mobile CI** must run on the dedicated self-hosted runner label `[self-hosted, linux, x64, hermes-mobile-ci]`.
+- Routine **Backend CI**, **Backend PostgreSQL CI**, and **Account Deletion Receipt CI** must also use the Hermes self-hosted runner once the corresponding backend policy change is merged.
+- Do **not** move routine validation back to `ubuntu-latest` or another GitHub-hosted runner for convenience, diagnostics, or ordinary PR work. A hosted fallback requires an explicit demonstrated Hermes outage or incompatibility and must be bounded to the affected validation.
+- Do not run hosted and Hermes copies of the same authoritative gate in parallel.
+- Preserve `concurrency.cancel-in-progress: true` and documentation-only path filters.
+- Avoid intermediate pushes after a PR is opened when they are not necessary: each new head can trigger another complete validation run.
+- After an exact-head PR validation succeeds, do not repeat the same full Mobile CI merely because GitHub created a `Merge pull request #…` merge commit. Preserve CI for direct/non-merge pushes to `main` and manual dispatches. The canonical deduplication contract is documented in `docs/architecture/mobile-ci-runner-policy.md`.
+- Never create temporary per-task GitHub Actions workflows when an existing permanent workflow or local/self-hosted execution can perform the work.
+- Optimizing runner usage must not weaken the authoritative validation surface: TypeScript, regression tests, required model smoke, Expo export/Doctor, backend lint/format/build/tests, and relevant PostgreSQL validation remain required where applicable.
+
+When starting a new chat or agent session, assume this policy is active unless exact current Git history shows that it was deliberately superseded. Do not require the user to restate it.
+
 ## Required workflow
 
 Before changes:
