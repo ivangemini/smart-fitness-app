@@ -9,11 +9,13 @@ Scope: bounded source-level LG-5 review of shared UI primitives outside the prev
 - `src/components/ui/AppButton.tsx`
 - `src/components/ui/PrimaryButton.tsx`
 - `src/components/ui/SecondaryButton.tsx`
+- `src/components/ui/TertiaryButton.tsx`
 - `src/components/ui/DestructiveButton.tsx`
 - `src/components/ui/EmptyState.tsx`
 - `src/components/ui/FormField.tsx`
 - `src/components/ui/ListRow.tsx`
 - `src/components/ui/QuickActionsCard.tsx`
+- `src/components/ui/SegmentedControl.tsx`
 
 ## Concrete fixes
 
@@ -26,6 +28,14 @@ The batch adds bounded flex shrink/min-width behavior to the title, detail, badg
 ### DestructiveButton
 
 Primary and secondary shared buttons already allowed their labels to shrink and center inside a minimum-height control. `DestructiveButton` did not. The destructive label now uses the same `flexShrink`, `minWidth: 0`, and centered-text pattern so larger Dynamic Type or longer localized labels can wrap instead of forcing horizontal overflow.
+
+### TertiaryButton
+
+The tertiary control now gives both its pressable and label explicit shrink/min-width bounds, caps the control to its available width, and centers wrapped text. This preserves its existing minimum touch height while preventing a long action label from forcing horizontal overflow.
+
+### SegmentedControl
+
+Equal-width segments now expose `minWidth: 0` and labels can shrink, wrap, and remain centered. This keeps the existing row layout and minimum touch height while making long localized labels and larger Dynamic Type less likely to overflow their segment.
 
 ## No-change findings
 
