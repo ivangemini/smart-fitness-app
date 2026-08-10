@@ -52,15 +52,39 @@ describe('list virtualization boundaries', () => {
     expect(browser).toContain('keyExtractor={(exercise) => exercise.id}');
   });
 
-  test('Social notifications keep one FlatList across paginated results', () => {
-    const source = readSource(
+  test('paginated Social surfaces keep virtualized list boundaries', () => {
+    const notifications = readSource(
       'src/features/social/screens/SocialNotificationScreen.tsx',
     );
-    expect(source).toContain('FlatList');
-    expect(source).toContain('data={listData}');
-    expect(source).toContain('keyExtractor={(notification) => notification.id}');
-    expect(source).not.toContain('notifications.map(');
-    expect(source).not.toContain('<ScrollView');
+    const following = readSource(
+      'src/features/social/screens/SocialFollowingFeedScreen.tsx',
+    );
+    const profilePosts = readSource(
+      'src/features/social/screens/SocialProfileWorkoutPostsScreen.tsx',
+    );
+    const relationships = readSource(
+      'src/features/social/screens/SocialRelationshipListsScreen.tsx',
+    );
+
+    expect(notifications).toContain('FlatList');
+    expect(notifications).toContain('keyExtractor={(notification) => notification.id}');
+    expect(notifications).not.toContain('notifications.map(');
+    expect(notifications).not.toContain('<ScrollView');
+
+    expect(following).toContain('FlatList');
+    expect(following).toContain('keyExtractor={(post) => post.id}');
+    expect(following).not.toContain('feed.posts.map(');
+    expect(following).not.toContain('<ScrollView');
+
+    expect(profilePosts).toContain('FlatList');
+    expect(profilePosts).toContain('keyExtractor={(post) => post.id}');
+    expect(profilePosts).not.toContain('posts.map(');
+    expect(profilePosts).not.toContain('<ScrollView');
+
+    expect(relationships).toContain('FlatList');
+    expect(relationships).toContain('keyExtractor={(item) => item.profile.username}');
+    expect(relationships).not.toContain('items.map(');
+    expect(relationships).not.toContain('<ScrollView');
   });
 
   test('bounded secondary nutrition and progress surfaces stay bounded', () => {
