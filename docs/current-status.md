@@ -5,9 +5,10 @@ Updated: 2026-08-10
 ## Verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current runtime `main`: `975440b6098fb4aebf6d874acca87be581334ed4`.
-- Latest runtime merge: PR #565 — shared `SectionHeader` active-theme consistency.
-- PR #565 exact validated head: `1a60e87b64db0d87ec99c6ad5c6f47002cf87dde`; Mobile CI #2049 passed before merge.
+- Current runtime `main`: `dcc62356d946f4e2c309aa24666322e9a671f067`.
+- Latest runtime merge: PR #574 — workout-post comments now use the post-detail screen as their single virtualized list boundary.
+- PR #574 exact validated head: `3d959128c63b46948cef946895352d96658732fa`; Mobile CI #2077 passed before merge.
+- PR #573 exact validated head: `e5769c5e579dc1da9963f7a6e2433214c996dc4a`; Mobile CI #2073 passed before merge.
 - Backend repo: `ivangemini/smart-fitness-backend`.
 - Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
 - Backend PR #215 is the only open project PR at this checkpoint. It remains draft/unvalidated at head `0826ff18dac7d4afe78943d9881c5a530507f1af`; Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI are still queued on Hermes.
@@ -15,7 +16,7 @@ Updated: 2026-08-10
 - **Progress/exercise secondary-material reassessment is complete for the current active source scope.**
 - **LG-4 Workouts source convergence is complete.**
 - **LG-5 QA and bounded polish is active.**
-- **Coach material remains deferred by explicit product priority.**
+- **Coach product/material expansion remains deferred.**
 
 Exact code, tests and current Git history override this checkpoint if it becomes stale.
 
@@ -25,13 +26,7 @@ Exact code, tests and current Git history override this checkpoint if it becomes
 
 Confirmed defect: the auto-focused program-name input could open the keyboard inside a centered non-scrollable modal without keyboard avoidance or modal safe-area ownership, making actions unreachable on short-height/increased-text layouts.
 
-Fix:
-
-- `KeyboardAvoidingView` around the form;
-- vertically scrollable modal content;
-- handled keyboard taps;
-- runtime safe-area top/bottom clearance;
-- existing validation/create/cancel behavior preserved.
+Fix: keyboard avoidance, scrollable content, handled keyboard taps and runtime safe-area clearance while preserving create/cancel/validation behavior.
 
 ### PR #560 — Workouts short-height and large-text resilience
 
@@ -40,29 +35,59 @@ Confirmed defects:
 - Program Add Workout choice mode could clip its lower action because a max-height/overflow-hidden panel contained non-scrollable localized choice content;
 - New Routine expanded exercise notes had a 42 px direct-interaction minimum instead of the established 44 px minimum.
 
-Fixes were bounded to those defects. The main Workout Builder, Workout Editor overlay and Finish keyboard/safe-area behavior were reassessed and left unchanged because they already satisfied the relevant source contracts.
+The main Workout Builder, Workout Editor overlay and Finish keyboard/safe-area behavior were reassessed and left unchanged because they already satisfied the source contracts.
 
 ### PR #561 — shared UI text resilience
 
-Confirmed shared-control resilience debt was fixed in:
-
-- `ListRow` flex/min-width behavior for long/localized values and large Dynamic Type;
-- destructive/tertiary button label wrapping;
-- equal-width `SegmentedControl` labels.
+Fixed long/localized text and increased-text-size resilience in shared `ListRow`, destructive/tertiary buttons and `SegmentedControl` labels without changing public behavior.
 
 Exact validated head: `e16f8d961b4a128c4d7b1de5b4fc36d66342fd8e`; Mobile CI #2043 green before merge.
 
 ### PR #565 — shared SectionHeader theme consistency
 
-Confirmed defect: live theme-aware surfaces such as Coach could render `SectionHeader` title/subtitle using the legacy `Colors.dark` palette while the surrounding screen used the active app palette.
-
-Fix:
-
-- `SectionHeader` now resolves colors from `useAppTheme()`;
-- style generation is keyed to the active palette;
-- layout, typography, action ownership and public API remain unchanged.
+Shared `SectionHeader` now resolves semantic title/subtitle colors from `useAppTheme()` instead of `Colors.dark` while preserving layout, typography, action ownership and API.
 
 Exact validated head: `1a60e87b64db0d87ec99c6ad5c6f47002cf87dde`; Mobile CI #2049 green before merge.
+
+### PR #567 — shared state theme consistency
+
+`EmptyState`, `InlineError` and `LoadingState` now use active semantic colors, eliminating mixed dark-palette state UI inside light/system theme-aware screens.
+
+### PR #568 — auth appearance consistency
+
+Auth/account screens, shared auth form/header/action primitives and account modals now follow the selected app appearance while preserving auth/session, password-reset and account-deletion semantics.
+
+### PR #569 — onboarding appearance consistency
+
+The onboarding readiness placeholder and full client flow now follow `AppThemeProvider`, preserving validation, units, completion payload/persistence, navigation, keyboard and safe-area behavior.
+
+### PR #570 — Exercise Detail loading-state resilience
+
+The initial Exercise Detail loading branch now owns the same active-theme full-screen and runtime safe-area boundary as its error/populated states.
+
+### PR #571 — Share Workout state/theme resilience
+
+Restore/auth-readiness loading now has runtime safe-area ownership and live share-field switches use active semantic colors. Share selection, media/moderation/publication, sync and idempotency semantics are unchanged.
+
+### PR #572 — Coach history theme consistency
+
+Coach Run History filter chips, detail rows and `CoachInputSummaryCard` now use active semantic colors. This was bounded LG-5 presentation hardening only and did not resume deferred Coach product/material work.
+
+Exact validated head: `76276d6ecc6a435339064adcdfd84e51a9c65be3`; Mobile CI #2065 green before merge.
+
+### PR #573 — paginated Social collection virtualization
+
+Notifications, Following Feed, public-profile workout posts and relationship lists now use one top-level `FlatList` per cursor-paginated screen with stable identities. Existing pagination, retry/error/empty/auth/cache/pull-to-refresh/notification-read/relationship-action behavior is preserved.
+
+Exact validated head: `e5769c5e579dc1da9963f7a6e2433214c996dc4a`; Mobile CI #2073 green before merge.
+
+### PR #574 — workout-post comment virtualization
+
+Workout-post detail now owns the sole top-level `FlatList` for cursor-paginated comments rather than eagerly mapping accumulated pages inside a `ScrollView`. Comment list/create/delete/report, retry/load-more, post reactions/report/delete, profile-required, safe-area and keyboard behavior remain preserved.
+
+The first exact-head regression run exposed two source guards that still expected the removed monolithic comments component. They were updated to verify the new single-list architecture and retained comment API ownership; the final exact head passed all gates.
+
+Exact validated head: `3d959128c63b46948cef946895352d96658732fa`; Mobile CI #2077 green before merge.
 
 ## CI execution changes
 
@@ -82,14 +107,11 @@ Important interpretation rules from that audit:
 
 - current Phase 11/LG-5 plans override old roadmap prose that still names Provider/Release P5 as the active autonomous program;
 - later focused evidence files and current code override older privacy/export notes that still describe already-implemented source slices as future work;
-- the complete Social account-data projection now has reviewed implementation/PostgreSQL evidence, while early Social disposition/source-plan files intentionally remain historical non-authorization boundaries;
-- account-deletion durable receipt/status source exists even though an older cross-surface deletion planning document still calls it a next slice;
+- historical documents remain historical; do not infer active work merely from an old `next slice` paragraph;
 - provider, worker, storage, moderation, password-reset and staging source readiness never authorizes real credentials, provider calls, environment activation or deployment;
 - mobile `docs/backend/*` is historical Architecture 1.0 design material; current backend implementation/documentation is authoritative in `ivangemini/smart-fitness-backend`;
 - analytics/telemetry remains fail-closed with no production event registry authorization;
 - local-state performance evidence still supports the existing AsyncStorage `AppState` snapshot; no storage rewrite is authorized without new measured evidence.
-
-Historical documents are retained as evidence rather than rewritten to pretend their earlier state never existed.
 
 ## LG-5 active next work
 
@@ -102,7 +124,7 @@ Continue checking:
 - increased text size and long EN/RU copy;
 - keyboard-open forms/editors;
 - populated / empty / loading / error / disabled states;
-- long exercise/history/program collections;
+- long collections, pagination and stable-identity virtualization boundaries;
 - Active Session set entry, RPE, replacement, finish and discard flows;
 - workout creation/edit/save/program attachment;
 - completed-history read/edit/delete flows;
@@ -118,6 +140,5 @@ Physical-device evidence remains separately authorization-gated.
 
 - LG-H3 Steps remains blocked until a reviewed native health/activity provider and permission contract exist.
 - LG-H4 feed ranking remains later; preserve chronological Following semantics.
-- Coach material remains intentionally deferred.
-- Analytics/telemetry collection remains disabled until separately authorized evidence/consent work exists.
-- Do not perform OTA/EAS publication, native build/install, backend deployment, migration execution, production/provider activation, credentials/DNS changes, destructive production cleanup, HealthKit/Health Connect activation or store submission without direct authorization.
+- Coach product/material expansion remains intentionally deferred; bounded QA fixes on existing live surfaces do not reprioritize it.
+- No OTA/EAS publication, native build/install, backend deployment, migration execution, provider/production activation, credential/DNS changes or store submission without direct authorization.
