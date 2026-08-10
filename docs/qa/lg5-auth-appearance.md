@@ -11,6 +11,7 @@ The auth navigation stack already resolves its container background from `AppThe
 - `src/components/ui/FormField.tsx`;
 - `src/components/ui/ScreenHeader.tsx`;
 - `src/components/ui/TertiaryButton.tsx`;
+- `src/components/ui/DestructiveButton.tsx`;
 - `src/app/auth/index.tsx`;
 - `src/components/auth/AuthFormScreen.tsx`, used by sign-in and registration;
 - `src/app/auth/forgot-password.tsx`;
@@ -19,7 +20,7 @@ The auth navigation stack already resolves its container background from `AppThe
 - `src/components/auth/ChangePasswordModal.tsx`;
 - `src/components/auth/DeleteAccountModal.tsx`.
 
-This created mixed-palette UI in light app appearance: the stack/AppCard/buttons could use the active light palette while screen backgrounds, headers, fields, metadata, warnings and modal sheets remained on dark semantic colors.
+This created mixed-palette UI in light app appearance: the stack/AppCard/primary and secondary buttons could use the active light palette while screen backgrounds, headers, fields, destructive actions, metadata, warnings and modal sheets remained on dark semantic colors.
 
 ## Fix
 
@@ -29,6 +30,7 @@ The affected presentation boundaries now resolve semantic colors through `useApp
 - headers, labels, body copy and metadata use active text colors;
 - form fields preserve existing focus/error behavior while using active surface, border, accent, error and placeholder colors;
 - tertiary actions use active accent/accent-soft colors;
+- destructive actions use active error/error-soft plus active disabled surface/border/text colors;
 - registration experience choices use active surface, selected, border, accent and text colors;
 - change-password/delete-account modal sheets, inputs and warning states use the active semantic palette.
 
