@@ -87,6 +87,22 @@ describe('list virtualization boundaries', () => {
     expect(relationships).not.toContain('<ScrollView');
   });
 
+  test('workout post comments use the detail FlatList as their sole list boundary', () => {
+    const detail = readSource(
+      'src/features/social/screens/SocialWorkoutPostDetailScreen.tsx',
+    );
+    const comments = readSource(
+      'src/features/social/SocialWorkoutCommentsCard.tsx',
+    );
+
+    expect(detail).toContain('FlatList');
+    expect(detail).toContain('data={commentListData}');
+    expect(detail).toContain('keyExtractor={(comment) => comment.id}');
+    expect(detail).not.toContain('<ScrollView');
+    expect(comments).not.toContain('comments.map(');
+    expect(comments).not.toContain('FlatList');
+  });
+
   test('bounded secondary nutrition and progress surfaces stay bounded', () => {
     const addFood = readSource('src/app/nutrition/add-food.tsx');
     const addFoodModel = readSource('src/features/nutrition/addFoodModel.ts');

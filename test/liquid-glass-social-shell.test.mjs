@@ -77,6 +77,7 @@ describe('LG-3D Social shell Liquid Glass controls', () => {
       'src/features/social/screens/SocialProfileWorkoutPostsScreen.tsx',
     );
     const detail = readSource('src/features/social/screens/SocialWorkoutPostDetailScreen.tsx');
+    const comments = readSource('src/features/social/SocialWorkoutCommentsCard.tsx');
     const styles = readSource('src/features/social/screens/SocialWorkoutPostSurface.styles.ts');
 
     for (const source of [feed, profilePosts, detail]) {
@@ -91,7 +92,13 @@ describe('LG-3D Social shell Liquid Glass controls', () => {
     expect(profilePosts).toContain('socialApi.listWorkoutPosts(username');
     expect(detail).toContain('socialApi.getWorkoutPost(postId)');
     expect(detail).toContain('socialApi.deleteWorkoutPost(postId)');
-    expect(detail).toContain('<SocialWorkoutCommentsCard');
+    expect(detail).toContain('useSocialWorkoutComments({');
+    expect(detail).toContain('<SocialWorkoutCommentsHeader');
+    expect(detail).toContain('<SocialWorkoutCommentRow');
+    expect(detail).toContain('<SocialWorkoutCommentsControls');
+    expect(comments).toContain('socialApi.listWorkoutPostComments(postId');
+    expect(comments).toContain('socialApi.createWorkoutPostComment(postId, pending)');
+    expect(comments).toContain('socialApi.deleteWorkoutPostComment(postId, commentId)');
     expect(detail).toContain('<SocialReportModal');
     expect(styles).not.toContain('backButton:');
     expect(styles).toContain('pressed: { opacity: 0.72 }');

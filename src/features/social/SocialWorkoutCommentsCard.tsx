@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
 
-import type {
-  SocialApi,
-  SocialWorkoutCommentDto,
-} from '@/api/social';
+import type { SocialApi, SocialWorkoutCommentDto } from '@/api/social';
 import { AppCard } from '@/components/ui/AppCard';
 import { FormField } from '@/components/ui/FormField';
 import { InlineError } from '@/components/ui/InlineError';
@@ -29,37 +26,25 @@ import {
 
 type CommentStatus = 'loading' | 'ready' | 'error';
 
-type SocialWorkoutCommentsCardProps = {
+type UseSocialWorkoutCommentsInput = {
   canComment: boolean;
-  cancelLabel: string;
   copy: SocialWorkoutPostSurfaceCopy;
-  isPostOwner: boolean;
+  enabled: boolean;
   locale: SupportedLocale;
-  onCreateProfile: () => void;
-  onReportComment: (commentId: string) => void;
-  ownUsername: string | null;
   postId: string;
-  reportLabel: string;
   socialApi: SocialApi;
-  styles: SocialWorkoutPostSurfaceStyles;
 };
 
 const PAGE_SIZE = 20;
 
-export function SocialWorkoutCommentsCard({
+export function useSocialWorkoutComments({
   canComment,
-  cancelLabel,
   copy,
-  isPostOwner,
+  enabled,
   locale,
-  onCreateProfile,
-  onReportComment,
-  ownUsername,
   postId,
-  reportLabel,
   socialApi,
-  styles,
-}: SocialWorkoutCommentsCardProps) {
+}: UseSocialWorkoutCommentsInput) {
   const requestSequence = useRef(0);
   const pendingSubmission = useRef<PendingSocialWorkoutComment | null>(null);
   const [status, setStatus] = useState<CommentStatus>('loading');
@@ -77,6 +62,7 @@ export function SocialWorkoutCommentsCard({
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const loadInitial = useCallback(async () => {
+    if (!enabled) return;
     const sequence = ++requestSequence.current;
     setStatus('loading');
     setComments([]);
@@ -98,17 +84,32 @@ export function SocialWorkoutCommentsCard({
       setLoadError(getSocialWorkoutCommentLoadError(error));
       setStatus('error');
     }
-  }, [postId, socialApi]);
+  }, [enabled, postId, socialApi]);
 
   useEffect(() => {
+    if (!enabled) {
+      requestSequence.current += 1;
+      pendingSubmission.current = null;
+      setStatus('loading');
+      setComments([]);
+      setNextCursor(null);
+      setLoadError(null);
+      setLoadMoreError(null);
+      setDraft('');
+      setSubmitBusy(false);
+      setSubmitError(null);
+      setDeletingId(null);
+      setDeleteError(null);
+      return;
+    }
     void loadInitial();
     return () => {
       requestSequence.current += 1;
     };
-  }, [loadInitial]);
+  }, [enabled, loadInitial]);
 
   const loadMore = async () => {
-    if (!nextCursor || loadMoreBusy) return;
+    if (!enabled || !nextCursor || loadMoreBusy) return;
     const sequence = requestSequence.current;
     setLoadMoreBusy(true);
     setLoadMoreError(null);
@@ -131,7 +132,9 @@ export function SocialWorkoutCommentsCard({
   };
 
   const submit = async () => {
-    if (!canComment || submitBusy || draft.trim().length === 0) return;
+    if (!enabled || !canComment || submitBusy || draft.trim().length === 0) {
+      return;
+    }
     const sequence = requestSequence.current;
     const pending = buildPendingSocialWorkoutComment(
       pendingSubmission.current,
@@ -157,7 +160,7 @@ export function SocialWorkoutCommentsCard({
   };
 
   const deleteComment = async (commentId: string) => {
-    if (deletingId) return;
+    if (!enabled || deletingId) return;
     const sequence = requestSequence.current;
     setDeletingId(commentId);
     setDeleteError(null);
@@ -181,164 +184,237 @@ export function SocialWorkoutCommentsCard({
     }
   };
 
-  const confirmDelete = (commentId: string) => {
+  return {
+    comments,
+    deleteComment,
+    deleteError,
+    deletingId,
+    draft,
+    loadError,
+    loadInitial,
+    loadMore,
+    loadMoreBusy,
+    loadMoreError,
+    nextCursor,
+    setDraft,
+    status,
+    submit,
+    submitBusy,
+    submitError,
+  };
+}
+
+export type SocialWorkoutCommentsController = ReturnType<
+  typeof useSocialWorkoutComments
+>;
+
+const errorMessage = (
+  copy: SocialWorkoutPostSurfaceCopy,
+  error: SocialWorkoutCommentLoadError | null,
+): string => {
+  if (error === 'invalid_cursor') return copy.commentsLoadCursor;
+  if (error === 'offline') return copy.commentsLoadOffline;
+  if (error === 'session_expired') return copy.commentsLoadSession;
+  if (error === 'private') return copy.commentsLoadPrivate;
+  if (error === 'blocked') return copy.commentsLoadBlocked;
+  if (error === 'not_found') return copy.commentsLoadNotFound;
+  return copy.commentsLoadGeneric;
+};
+
+export function SocialWorkoutCommentsHeader({
+  controller,
+  copy,
+  styles,
+}: {
+  controller: SocialWorkoutCommentsController;
+  copy: SocialWorkoutPostSurfaceCopy;
+  styles: SocialWorkoutPostSurfaceStyles;
+}) {
+  return (
+    <AppCard>
+      <Text style={styles.cardTitle}>{copy.commentsTitle}</Text>
+      <Text style={styles.body}>{copy.commentsBody}</Text>
+      {controller.status === 'loading' ? (
+        <LoadingState label={copy.commentsLoading} />
+      ) : null}
+      {controller.status === 'error' ? (
+        <>
+          <InlineError message={errorMessage(copy, controller.loadError)} />
+          <SecondaryButton
+            label={copy.retry}
+            onPress={() => void controller.loadInitial()}
+          />
+        </>
+      ) : null}
+      {controller.status === 'ready' && controller.comments.length === 0 ? (
+        <Text style={styles.body}>{copy.commentsEmpty}</Text>
+      ) : null}
+    </AppCard>
+  );
+}
+
+export function SocialWorkoutCommentRow({
+  cancelLabel,
+  comment,
+  controller,
+  copy,
+  isPostOwner,
+  locale,
+  onReportComment,
+  ownUsername,
+  reportLabel,
+  styles,
+}: {
+  cancelLabel: string;
+  comment: SocialWorkoutCommentDto;
+  controller: SocialWorkoutCommentsController;
+  copy: SocialWorkoutPostSurfaceCopy;
+  isPostOwner: boolean;
+  locale: SupportedLocale;
+  onReportComment: (commentId: string) => void;
+  ownUsername: string | null;
+  reportLabel: string;
+  styles: SocialWorkoutPostSurfaceStyles;
+}) {
+  const isOwnComment = comment.author.username === ownUsername;
+  const canDelete = isPostOwner || isOwnComment;
+  const canReport = !isOwnComment;
+  const confirmDelete = () => {
     Alert.alert(copy.commentsDeleteTitle, copy.commentsDeleteBody, [
       { text: cancelLabel, style: 'cancel' },
       {
         text: copy.commentsDeleteConfirm,
         style: 'destructive',
-        onPress: () => deleteComment(commentId),
+        onPress: () => void controller.deleteComment(comment.id),
       },
     ]);
   };
 
-  const errorMessage = (error: SocialWorkoutCommentLoadError | null): string => {
-    if (error === 'invalid_cursor') return copy.commentsLoadCursor;
-    if (error === 'offline') return copy.commentsLoadOffline;
-    if (error === 'session_expired') return copy.commentsLoadSession;
-    if (error === 'private') return copy.commentsLoadPrivate;
-    if (error === 'blocked') return copy.commentsLoadBlocked;
-    if (error === 'not_found') return copy.commentsLoadNotFound;
-    return copy.commentsLoadGeneric;
-  };
+  return (
+    <View style={styles.commentCard}>
+      <View style={styles.commentHeader}>
+        <View style={styles.commentHeaderCopy}>
+          <Text style={styles.username}>@{comment.author.username}</Text>
+          <Text style={styles.metaText}>
+            {formatSocialWorkoutCommentDate(comment.createdAt, locale)}
+          </Text>
+        </View>
+        {canDelete || canReport ? (
+          <View style={styles.commentActions}>
+            {canReport ? (
+              <Pressable
+                accessibilityLabel={reportLabel}
+                accessibilityRole="button"
+                onPress={() => onReportComment(comment.id)}
+                style={({ pressed }) => [
+                  styles.commentReportButton,
+                  pressed && styles.pressed,
+                ]}>
+                <Text style={styles.commentReportLabel}>{reportLabel}</Text>
+              </Pressable>
+            ) : null}
+            {canDelete ? (
+              <Pressable
+                accessibilityLabel={copy.commentsDelete}
+                accessibilityRole="button"
+                disabled={controller.deletingId !== null}
+                onPress={confirmDelete}
+                style={({ pressed }) => [
+                  styles.commentDeleteButton,
+                  pressed && styles.pressed,
+                ]}>
+                <Text style={styles.commentDeleteLabel}>
+                  {controller.deletingId === comment.id
+                    ? `${copy.commentsDelete}…`
+                    : copy.commentsDelete}
+                </Text>
+              </Pressable>
+            ) : null}
+          </View>
+        ) : null}
+      </View>
+      <Text style={styles.commentBody}>{comment.body}</Text>
+    </View>
+  );
+}
+
+export function SocialWorkoutCommentsControls({
+  canComment,
+  controller,
+  copy,
+  onCreateProfile,
+  styles,
+}: {
+  canComment: boolean;
+  controller: SocialWorkoutCommentsController;
+  copy: SocialWorkoutPostSurfaceCopy;
+  onCreateProfile: () => void;
+  styles: SocialWorkoutPostSurfaceStyles;
+}) {
+  if (controller.status !== 'ready') return null;
 
   return (
     <AppCard>
-      <Text style={styles.cardTitle}>{copy.commentsTitle}</Text>
-      <Text style={styles.body}>{copy.commentsBody}</Text>
-
-      {status === 'loading' ? (
-        <LoadingState label={copy.commentsLoading} />
-      ) : null}
-      {status === 'error' ? (
+      <InlineError message={controller.deleteError} />
+      {controller.nextCursor ? (
         <>
-          <InlineError message={errorMessage(loadError)} />
-          <SecondaryButton label={copy.retry} onPress={loadInitial} />
+          <InlineError
+            message={
+              controller.loadMoreError
+                ? errorMessage(copy, controller.loadMoreError)
+                : null
+            }
+          />
+          <SecondaryButton
+            disabled={controller.loadMoreBusy}
+            label={
+              controller.loadMoreError === 'invalid_cursor'
+                ? copy.commentsReload
+                : copy.commentsLoadMore
+            }
+            loading={controller.loadMoreBusy}
+            onPress={
+              controller.loadMoreError === 'invalid_cursor'
+                ? () => void controller.loadInitial()
+                : () => void controller.loadMore()
+            }
+          />
         </>
       ) : null}
 
-      {status === 'ready' ? (
+      {canComment ? (
         <>
-          {comments.length === 0 ? (
-            <Text style={styles.body}>{copy.commentsEmpty}</Text>
-          ) : (
-            comments.map((comment) => {
-              const isOwnComment = comment.author.username === ownUsername;
-              const canDelete = isPostOwner || isOwnComment;
-              const canReport = !isOwnComment;
-              return (
-                <View key={comment.id} style={styles.commentCard}>
-                  <View style={styles.commentHeader}>
-                    <View style={styles.commentHeaderCopy}>
-                      <Text style={styles.username}>
-                        @{comment.author.username}
-                      </Text>
-                      <Text style={styles.metaText}>
-                        {formatSocialWorkoutCommentDate(
-                          comment.createdAt,
-                          locale,
-                        )}
-                      </Text>
-                    </View>
-                    {canDelete || canReport ? (
-                      <View style={styles.commentActions}>
-                        {canReport ? (
-                          <Pressable
-                            accessibilityLabel={reportLabel}
-                            accessibilityRole="button"
-                            onPress={() => onReportComment(comment.id)}
-                            style={({ pressed }) => [
-                              styles.commentReportButton,
-                              pressed && styles.pressed,
-                            ]}>
-                            <Text style={styles.commentReportLabel}>
-                              {reportLabel}
-                            </Text>
-                          </Pressable>
-                        ) : null}
-                        {canDelete ? (
-                          <Pressable
-                            accessibilityLabel={copy.commentsDelete}
-                            accessibilityRole="button"
-                            disabled={deletingId !== null}
-                            onPress={() => confirmDelete(comment.id)}
-                            style={({ pressed }) => [
-                              styles.commentDeleteButton,
-                              pressed && styles.pressed,
-                            ]}>
-                            <Text style={styles.commentDeleteLabel}>
-                              {deletingId === comment.id
-                                ? `${copy.commentsDelete}…`
-                                : copy.commentsDelete}
-                            </Text>
-                          </Pressable>
-                        ) : null}
-                      </View>
-                    ) : null}
-                  </View>
-                  <Text style={styles.commentBody}>{comment.body}</Text>
-                </View>
-              );
-            })
-          )}
-
-          <InlineError message={deleteError} />
-
-          {nextCursor ? (
-            <>
-              <InlineError
-                message={loadMoreError ? errorMessage(loadMoreError) : null}
-              />
-              <SecondaryButton
-                disabled={loadMoreBusy}
-                label={
-                  loadMoreError === 'invalid_cursor'
-                    ? copy.commentsReload
-                    : copy.commentsLoadMore
-                }
-                loading={loadMoreBusy}
-                onPress={
-                  loadMoreError === 'invalid_cursor' ? loadInitial : loadMore
-                }
-              />
-            </>
-          ) : null}
-
-          {canComment ? (
-            <>
-              <FormField
-                accessibilityLabel={copy.commentsInputLabel}
-                helperText={`${draft.length}/500`}
-                label={copy.commentsInputLabel}
-                maxLength={500}
-                multiline
-                onChangeText={setDraft}
-                placeholder={copy.commentsInputPlaceholder}
-                style={styles.commentInput}
-                textAlignVertical="top"
-                value={draft}
-              />
-              <InlineError message={submitError} />
-              <PrimaryButton
-                disabled={submitBusy || draft.trim().length === 0}
-                label={copy.commentsSubmit}
-                loading={submitBusy}
-                onPress={submit}
-              />
-            </>
-          ) : (
-            <>
-              <Text style={styles.body}>
-                {copy.commentsProfileRequired}
-              </Text>
-              <SecondaryButton
-                label={copy.commentsCreateProfile}
-                onPress={onCreateProfile}
-              />
-            </>
-          )}
+          <FormField
+            accessibilityLabel={copy.commentsInputLabel}
+            helperText={`${controller.draft.length}/500`}
+            label={copy.commentsInputLabel}
+            maxLength={500}
+            multiline
+            onChangeText={controller.setDraft}
+            placeholder={copy.commentsInputPlaceholder}
+            style={styles.commentInput}
+            textAlignVertical="top"
+            value={controller.draft}
+          />
+          <InlineError message={controller.submitError} />
+          <PrimaryButton
+            disabled={
+              controller.submitBusy || controller.draft.trim().length === 0
+            }
+            label={copy.commentsSubmit}
+            loading={controller.submitBusy}
+            onPress={() => void controller.submit()}
+          />
         </>
-      ) : null}
+      ) : (
+        <>
+          <Text style={styles.body}>{copy.commentsProfileRequired}</Text>
+          <SecondaryButton
+            label={copy.commentsCreateProfile}
+            onPress={onCreateProfile}
+          />
+        </>
+      )}
     </AppCard>
   );
 }
