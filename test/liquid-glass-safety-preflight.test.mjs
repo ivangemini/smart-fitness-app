@@ -56,7 +56,7 @@ describe('residual Coach navigation material', () => {
       'src/features/coach/screens/CoachRunHistoryDetailScreen.tsx',
     );
 
-    expect(source).toContain('api.getRun(runId)');
+    expect(source).toMatch(/api\s*\.\s*getRun\(runId\)/);
     expect(source).toContain('<CoachRunTrustCard');
     expect(source).toContain('<CoachInputSummaryCard');
     expect(source).toContain('<CoachAppliedChangeCard');
