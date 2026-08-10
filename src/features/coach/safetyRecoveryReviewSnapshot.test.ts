@@ -88,7 +88,6 @@ const viewModel: SafetyRecoveryViewModel = {
     issues: [
       {
         code: 'RECOVERY_LOAD_REDUCTION_REQUIRED',
-        path: 'recoveryCheckIns',
         severity: 'modify',
         message: 'Reduce reviewed training load.',
       },
