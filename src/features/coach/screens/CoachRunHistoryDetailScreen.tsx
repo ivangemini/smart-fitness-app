@@ -134,14 +134,8 @@ export default function CoachRunHistoryDetailScreen() {
             <>
               <AppCard>
                 <Text style={styles.cardTitle}>{copy.domain(run.run.domain)}</Text>
-                <Row
-                  label={copy.requestType}
-                  value={run.run.requestType.replaceAll('_', ' ')}
-                />
-                <Row
-                  label={copy.statusLabel}
-                  value={copy.status(run.run.status)}
-                />
+                <Row label={copy.requestType} value={run.run.requestType.replaceAll('_', ' ')} />
+                <Row label={copy.statusLabel} value={copy.status(run.run.status)} />
                 <Row
                   label={copy.requested}
                   value={formatDate(run.run.requestedAt, {
@@ -196,9 +190,7 @@ export default function CoachRunHistoryDetailScreen() {
                           label={copy.appliedRevision}
                           value={`${copy.entity(item.appliedEntity.entityType)} · ${copy.revision(item.appliedEntity.revision)}`}
                         />
-                        <Text style={styles.provenanceNote}>
-                          {copy.fingerprintRecorded}
-                        </Text>
+                        <Text style={styles.provenanceNote}>{copy.fingerprintRecorded}</Text>
                       </View>
                     ))
                   )}
@@ -226,10 +218,7 @@ export default function CoachRunHistoryDetailScreen() {
                       <Text style={styles.agentName}>
                         {agent.sequence}. {agent.agentName}
                       </Text>
-                      <Row
-                        label={copy.statusLabel}
-                        value={copy.status(agent.status)}
-                      />
+                      <Row label={copy.statusLabel} value={copy.status(agent.status)} />
                       {agent.policyVersion ? (
                         <Row label={copy.policies} value={agent.policyVersion} />
                       ) : null}
@@ -246,17 +235,18 @@ export default function CoachRunHistoryDetailScreen() {
 }
 
 function Row({ label, value }: { label: string; value: string }) {
+  const { colors } = useAppTheme();
+
   return (
     <View style={stylesStatic.row}>
-      <Text style={stylesStatic.label}>{label}</Text>
-      <Text style={stylesStatic.value}>{value}</Text>
+      <Text style={[stylesStatic.label, { color: colors.textSecondary }]}>{label}</Text>
+      <Text style={[stylesStatic.value, { color: colors.textPrimary }]}>{value}</Text>
     </View>
   );
 }
 
 const stylesStatic = StyleSheet.create({
   label: {
-    color: Colors.dark.textSecondary,
     flex: 1,
     fontSize: Typography.caption.fontSize,
   },
@@ -267,7 +257,6 @@ const stylesStatic = StyleSheet.create({
     justifyContent: 'space-between',
   },
   value: {
-    color: Colors.dark.textPrimary,
     flex: 1,
     fontSize: Typography.caption.fontSize,
     textAlign: 'right',
