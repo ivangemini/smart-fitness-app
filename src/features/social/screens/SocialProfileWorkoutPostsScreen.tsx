@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -152,9 +152,11 @@ export default function SocialProfileWorkoutPostsScreen() {
         : loadError === 'invalid_cursor'
           ? copy.loadErrorCursor
           : copy.loadErrorGeneric;
+  const showReadyState = ready && isAuthenticated && status === 'ready';
+  const listData = showReadyState ? posts : [];
 
   return (
-    <ScrollView
+    <FlatList
       contentContainerStyle={[
         styles.content,
         {
@@ -162,92 +164,106 @@ export default function SocialProfileWorkoutPostsScreen() {
           paddingTop: insets.top + Spacing.four,
         },
       ]}
-      style={styles.screen}>
-      <View style={styles.container}>
-        <View style={styles.headerRow}>
-          <LiquidGlassIconButton
-            accessibilityLabel={t('common.back')}
-            Icon={ChevronLeft}
-            onPress={() => router.back()}
-          />
-          <View style={styles.headerCopy}>
-            <Text style={styles.eyebrow}>{copy.listEyebrow}</Text>
-            <Text style={styles.title}>@{username}</Text>
-            <Text style={styles.subtitle}>{copy.listSubtitle}</Text>
-          </View>
-        </View>
-
-        {!ready || (ready && isAuthenticated && (status === 'idle' || status === 'loading')) ? (
-          <AppCard>
-            <LoadingState label={copy.loading} />
-          </AppCard>
-        ) : null}
-
-        {ready && !isAuthenticated ? (
-          <StateCard body={copy.signInBody} styles={styles} title={copy.signInTitle}>
-            <PrimaryButton
-              label={copy.signInAction}
-              onPress={() => router.push('/auth/sign-in')}
-            />
-          </StateCard>
-        ) : null}
-
-        {ready && isAuthenticated && status === 'private' ? (
-          <StateCard body={copy.privateBody} styles={styles} title={copy.privateTitle} />
-        ) : null}
-
-        {ready && isAuthenticated && status === 'blocked' ? (
-          <StateCard body={copy.blockedBody} styles={styles} title={copy.blockedTitle} />
-        ) : null}
-
-        {ready && isAuthenticated && status === 'not_found' ? (
-          <StateCard body={copy.notFoundBody} styles={styles} title={copy.notFoundTitle} />
-        ) : null}
-
-        {ready && isAuthenticated && status === 'error' ? (
-          <StateCard body={errorMessage} styles={styles} title={copy.loadErrorTitle}>
-            <SecondaryButton label={copy.retry} onPress={() => void loadPosts(true)} />
-          </StateCard>
-        ) : null}
-
-        {ready && isAuthenticated && status === 'ready' && posts.length === 0 ? (
-          <StateCard body={copy.emptyBody} styles={styles} title={copy.emptyTitle} />
-        ) : null}
-
-        {ready && isAuthenticated && status === 'ready'
-          ? posts.map((post) => (
-              <SocialWorkoutPostCard
-                copy={copy}
-                key={post.id}
-                locale={locale}
-                onOpen={openPost}
-                post={post}
-                styles={styles}
-              />
-            ))
-          : null}
-
-        {ready && isAuthenticated && status === 'ready' && loadError ? (
-          <>
+      data={listData}
+      ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
+      keyExtractor={(post) => post.id}
+      ListFooterComponent={
+        showReadyState && loadError ? (
+          <View style={styles.listFooter}>
             <InlineError message={errorMessage} />
             <SecondaryButton label={copy.retry} onPress={() => void loadPosts(true)} />
-          </>
-        ) : null}
+          </View>
+        ) : showReadyState && nextCursor ? (
+          <View style={styles.listFooter}>
+            <SecondaryButton
+              disabled={loadingMore}
+              label={copy.loadMore}
+              loading={loadingMore}
+              onPress={() => void loadPosts(false)}
+            />
+          </View>
+        ) : null
+      }
+      ListHeaderComponent={
+        <View
+          style={[
+            styles.container,
+            listData.length > 0 && styles.listHeaderWithItems,
+          ]}>
+          <View style={styles.headerRow}>
+            <LiquidGlassIconButton
+              accessibilityLabel={t('common.back')}
+              Icon={ChevronLeft}
+              onPress={() => router.back()}
+            />
+            <View style={styles.headerCopy}>
+              <Text style={styles.eyebrow}>{copy.listEyebrow}</Text>
+              <Text style={styles.title}>@{username}</Text>
+              <Text style={styles.subtitle}>{copy.listSubtitle}</Text>
+            </View>
+          </View>
 
-        {ready &&
-        isAuthenticated &&
-        status === 'ready' &&
-        nextCursor &&
-        !loadError ? (
-          <SecondaryButton
-            disabled={loadingMore}
-            label={copy.loadMore}
-            loading={loadingMore}
-            onPress={() => void loadPosts(false)}
+          {!ready ||
+          (ready && isAuthenticated && (status === 'idle' || status === 'loading')) ? (
+            <AppCard>
+              <LoadingState label={copy.loading} />
+            </AppCard>
+          ) : null}
+
+          {ready && !isAuthenticated ? (
+            <StateCard
+              body={copy.signInBody}
+              styles={styles}
+              title={copy.signInTitle}>
+              <PrimaryButton
+                label={copy.signInAction}
+                onPress={() => router.push('/auth/sign-in')}
+              />
+            </StateCard>
+          ) : null}
+
+          {ready && isAuthenticated && status === 'private' ? (
+            <StateCard body={copy.privateBody} styles={styles} title={copy.privateTitle} />
+          ) : null}
+
+          {ready && isAuthenticated && status === 'blocked' ? (
+            <StateCard body={copy.blockedBody} styles={styles} title={copy.blockedTitle} />
+          ) : null}
+
+          {ready && isAuthenticated && status === 'not_found' ? (
+            <StateCard body={copy.notFoundBody} styles={styles} title={copy.notFoundTitle} />
+          ) : null}
+
+          {ready && isAuthenticated && status === 'error' ? (
+            <StateCard
+              body={errorMessage}
+              styles={styles}
+              title={copy.loadErrorTitle}>
+              <SecondaryButton
+                label={copy.retry}
+                onPress={() => void loadPosts(true)}
+              />
+            </StateCard>
+          ) : null}
+
+          {showReadyState && posts.length === 0 ? (
+            <StateCard body={copy.emptyBody} styles={styles} title={copy.emptyTitle} />
+          ) : null}
+        </View>
+      }
+      renderItem={({ item: post }) => (
+        <View style={styles.listItem}>
+          <SocialWorkoutPostCard
+            copy={copy}
+            locale={locale}
+            onOpen={openPost}
+            post={post}
+            styles={styles}
           />
-        ) : null}
-      </View>
-    </ScrollView>
+        </View>
+      )}
+      style={styles.screen}
+    />
   );
 }
 

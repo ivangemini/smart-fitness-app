@@ -1,5 +1,5 @@
-import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import { useMemo } from 'react';
+import { FlatList, RefreshControl, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -42,9 +42,12 @@ export default function SocialFollowingFeedScreen() {
         : feed.loadError === 'invalid_cursor'
           ? copy.loadErrorCursor
           : copy.loadErrorGeneric;
+  const showReadyState =
+    feed.ready && feed.isAuthenticated && feed.status === 'ready';
+  const listData = showReadyState ? feed.posts : [];
 
   return (
-    <ScrollView
+    <FlatList
       contentContainerStyle={[
         styles.content,
         {
@@ -52,6 +55,103 @@ export default function SocialFollowingFeedScreen() {
           paddingTop: insets.top + Spacing.four,
         },
       ]}
+      data={listData}
+      ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
+      keyExtractor={(post) => post.id}
+      ListFooterComponent={
+        showReadyState && feed.loadError ? (
+          <View style={styles.listFooter}>
+            <InlineError message={errorMessage} />
+            <SecondaryButton
+              label={copy.retry}
+              onPress={() => void feed.loadFirstPage(true)}
+            />
+          </View>
+        ) : showReadyState &&
+          feed.nextCursor &&
+          !feed.showingCachedFeed ? (
+          <View style={styles.listFooter}>
+            <SecondaryButton
+              disabled={feed.loadingMore}
+              label={copy.loadMore}
+              loading={feed.loadingMore}
+              onPress={() => void feed.loadMore()}
+            />
+          </View>
+        ) : null
+      }
+      ListHeaderComponent={
+        <View
+          style={[
+            styles.container,
+            listData.length > 0 && styles.listHeaderWithItems,
+          ]}>
+          <View style={styles.headerRow}>
+            <LiquidGlassIconButton
+              accessibilityLabel={t('common.back')}
+              Icon={ChevronLeft}
+              onPress={() => router.back()}
+            />
+            <View style={styles.headerCopy}>
+              <Text style={styles.eyebrow}>{copy.eyebrow}</Text>
+              <Text style={styles.title}>{copy.title}</Text>
+              <Text style={styles.subtitle}>{copy.subtitle}</Text>
+            </View>
+          </View>
+
+          {!feed.ready ||
+          (feed.ready &&
+            feed.isAuthenticated &&
+            (feed.status === 'idle' || feed.status === 'loading')) ? (
+            <AppCard>
+              <LoadingState label={copy.loading} />
+            </AppCard>
+          ) : null}
+
+          {feed.ready && !feed.isAuthenticated ? (
+            <StateCard
+              body={copy.signInBody}
+              styles={styles}
+              title={copy.signInTitle}>
+              <PrimaryButton
+                label={copy.signInAction}
+                onPress={() => router.push('/auth/sign-in')}
+              />
+            </StateCard>
+          ) : null}
+
+          {feed.ready && feed.isAuthenticated && feed.status === 'error' ? (
+            <StateCard
+              body={errorMessage}
+              styles={styles}
+              title={copy.loadErrorTitle}>
+              <SecondaryButton
+                label={copy.retry}
+                onPress={() => void feed.loadFirstPage(false)}
+              />
+            </StateCard>
+          ) : null}
+
+          {showReadyState && feed.showingCachedFeed ? (
+            <AppCard>
+              <Text style={styles.body}>{copy.cachedNotice}</Text>
+            </AppCard>
+          ) : null}
+
+          {showReadyState && feed.posts.length === 0 ? (
+            <StateCard body={copy.emptyBody} styles={styles} title={copy.emptyTitle}>
+              <PrimaryButton
+                label={copy.findProfiles}
+                onPress={() => router.push('/social')}
+              />
+              <SecondaryButton
+                label={copy.manageFollowing}
+                onPress={() => router.push('/social/relationships')}
+              />
+            </StateCard>
+          ) : null}
+        </View>
+      }
       refreshControl={
         feed.ready && feed.isAuthenticated ? (
           <RefreshControl
@@ -62,108 +162,19 @@ export default function SocialFollowingFeedScreen() {
           />
         ) : undefined
       }
-      style={styles.screen}>
-      <View style={styles.container}>
-        <View style={styles.headerRow}>
-          <LiquidGlassIconButton
-            accessibilityLabel={t('common.back')}
-            Icon={ChevronLeft}
-            onPress={() => router.back()}
+      renderItem={({ item: post }) => (
+        <View style={styles.listItem}>
+          <SocialWorkoutPostCard
+            copy={postCopy}
+            locale={locale}
+            onOpen={openPost}
+            post={post}
+            styles={styles}
           />
-          <View style={styles.headerCopy}>
-            <Text style={styles.eyebrow}>{copy.eyebrow}</Text>
-            <Text style={styles.title}>{copy.title}</Text>
-            <Text style={styles.subtitle}>{copy.subtitle}</Text>
-          </View>
         </View>
-
-        {!feed.ready ||
-        (feed.ready &&
-          feed.isAuthenticated &&
-          (feed.status === 'idle' || feed.status === 'loading')) ? (
-          <AppCard>
-            <LoadingState label={copy.loading} />
-          </AppCard>
-        ) : null}
-
-        {feed.ready && !feed.isAuthenticated ? (
-          <StateCard body={copy.signInBody} styles={styles} title={copy.signInTitle}>
-            <PrimaryButton
-              label={copy.signInAction}
-              onPress={() => router.push('/auth/sign-in')}
-            />
-          </StateCard>
-        ) : null}
-
-        {feed.ready && feed.isAuthenticated && feed.status === 'error' ? (
-          <StateCard body={errorMessage} styles={styles} title={copy.loadErrorTitle}>
-            <SecondaryButton
-              label={copy.retry}
-              onPress={() => void feed.loadFirstPage(false)}
-            />
-          </StateCard>
-        ) : null}
-
-        {feed.ready &&
-        feed.isAuthenticated &&
-        feed.status === 'ready' &&
-        feed.showingCachedFeed ? (
-          <AppCard>
-            <Text style={styles.body}>{copy.cachedNotice}</Text>
-          </AppCard>
-        ) : null}
-
-        {feed.ready &&
-        feed.isAuthenticated &&
-        feed.status === 'ready' &&
-        feed.posts.length === 0 ? (
-          <StateCard body={copy.emptyBody} styles={styles} title={copy.emptyTitle}>
-            <PrimaryButton label={copy.findProfiles} onPress={() => router.push('/social')} />
-            <SecondaryButton
-              label={copy.manageFollowing}
-              onPress={() => router.push('/social/relationships')}
-            />
-          </StateCard>
-        ) : null}
-
-        {feed.ready && feed.isAuthenticated && feed.status === 'ready'
-          ? feed.posts.map((post) => (
-              <SocialWorkoutPostCard
-                copy={postCopy}
-                key={post.id}
-                locale={locale}
-                onOpen={openPost}
-                post={post}
-                styles={styles}
-              />
-            ))
-          : null}
-
-        {feed.ready && feed.isAuthenticated && feed.status === 'ready' && feed.loadError ? (
-          <>
-            <InlineError message={errorMessage} />
-            <SecondaryButton
-              label={copy.retry}
-              onPress={() => void feed.loadFirstPage(true)}
-            />
-          </>
-        ) : null}
-
-        {feed.ready &&
-        feed.isAuthenticated &&
-        feed.status === 'ready' &&
-        feed.nextCursor &&
-        !feed.loadError &&
-        !feed.showingCachedFeed ? (
-          <SecondaryButton
-            disabled={feed.loadingMore}
-            label={copy.loadMore}
-            loading={feed.loadingMore}
-            onPress={() => void feed.loadMore()}
-          />
-        ) : null}
-      </View>
-    </ScrollView>
+      )}
+      style={styles.screen}
+    />
   );
 }
 

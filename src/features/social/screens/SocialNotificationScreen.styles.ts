@@ -51,6 +51,18 @@ export const createSocialNotificationScreenStyles = (
       flexDirection: 'row',
       gap: Spacing.three,
     },
+    itemSeparator: {
+      height: Spacing.four,
+    },
+    listFooter: {
+      gap: Spacing.two,
+      marginTop: Spacing.four,
+      maxWidth: MaxContentWidth,
+      width: '100%',
+    },
+    listHeaderWithItems: {
+      marginBottom: Spacing.four,
+    },
     message: {
       color: colors.textPrimary,
       flex: 1,
@@ -64,7 +76,9 @@ export const createSocialNotificationScreenStyles = (
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
       gap: Spacing.three,
+      maxWidth: MaxContentWidth,
       padding: Spacing.four,
+      width: '100%',
     },
     notificationHeader: {
       alignItems: 'flex-start',

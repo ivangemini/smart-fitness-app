@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { FlatList, Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -204,9 +204,11 @@ export default function SocialRelationshipListsScreen() {
           ? copy.loadErrorCursor
           : copy.loadErrorGeneric;
   const empty = emptyCopy();
+  const showReadyState = ready && isAuthenticated && status === 'ready';
+  const listData = showReadyState ? items : [];
 
   return (
-    <ScrollView
+    <FlatList
       contentContainerStyle={[
         styles.content,
         {
@@ -214,130 +216,144 @@ export default function SocialRelationshipListsScreen() {
           paddingTop: insets.top + Spacing.four,
         },
       ]}
-      style={styles.screen}>
-      <View style={styles.container}>
-        <View style={styles.headerRow}>
-          <LiquidGlassIconButton
-            accessibilityLabel={t('common.back')}
-            Icon={ChevronLeft}
-            onPress={() => router.back()}
-          />
-          <View style={styles.headerCopy}>
-            <Text style={styles.eyebrow}>{copy.eyebrow}</Text>
-            <Text style={styles.title}>{copy.title}</Text>
-            <Text style={styles.subtitle}>{copy.subtitle}</Text>
-          </View>
-        </View>
-
-        {!ready ? (
-          <AppCard>
-            <LoadingState label={copy.loading} />
-          </AppCard>
-        ) : null}
-
-        {ready && !isAuthenticated ? (
-          <AppCard>
-            <Text style={styles.cardTitle}>{copy.signInTitle}</Text>
-            <Text style={styles.body}>{copy.signInBody}</Text>
-            <PrimaryButton
-              label={copy.signInAction}
-              onPress={() => router.push('/auth/sign-in')}
+      data={listData}
+      ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
+      keyExtractor={(item) => item.profile.username}
+      ListFooterComponent={
+        showReadyState &&
+        (actionError || (items.length > 0 && loadError) || (nextCursor && !loadError)) ? (
+          <View style={styles.listFooter}>
+            <InlineError
+              message={
+                actionError ?? (items.length > 0 && loadError ? loadErrorMessage : null)
+              }
             />
-          </AppCard>
-        ) : null}
-
-        {ready && isAuthenticated ? (
-          <View style={styles.tabs}>
-            {SOCIAL_RELATIONSHIP_LIST_KINDS.map((value) => {
-              const active = value === kind;
-              return (
-                <Pressable
-                  accessibilityRole="tab"
-                  accessibilityState={{ selected: active }}
-                  key={value}
-                  onPress={() => selectKind(value)}
-                  style={({ pressed }) => [
-                    styles.tab,
-                    active && styles.tabActive,
-                    pressed && (active ? styles.tabActivePressed : styles.tabPressed),
-                  ]}>
-                  <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>
-                    {tabLabel(value)}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        ) : null}
-
-        {ready && isAuthenticated && (status === 'idle' || status === 'loading') ? (
-          <AppCard>
-            <LoadingState label={copy.loading} />
-          </AppCard>
-        ) : null}
-
-        {ready && isAuthenticated && status === 'error' ? (
-          <AppCard>
-            <Text style={styles.cardTitle}>{copy.loadErrorTitle}</Text>
-            <Text style={styles.body}>{loadErrorMessage}</Text>
-            <SecondaryButton label={copy.retry} onPress={() => void loadList(true)} />
-          </AppCard>
-        ) : null}
-
-        {ready && isAuthenticated && status === 'ready' && items.length === 0 ? (
-          <AppCard>
-            <Text style={styles.cardTitle}>{empty.title}</Text>
-            <Text style={styles.body}>{empty.body}</Text>
-          </AppCard>
-        ) : null}
-
-        {ready && isAuthenticated && status === 'ready'
-          ? items.map((item) => (
-              <SocialRelationshipListCard
-                busy={busyUsername === item.profile.username}
-                copy={copy}
-                item={item}
-                key={item.profile.username}
-                kind={kind}
-                onApprove={(username) => void runAction('approve', username)}
-                onCancel={(username) => void runAction('cancel', username)}
-                onOpen={openProfile}
-                onReject={(username) => void runAction('reject', username)}
-                onUnfollow={(username) => void runAction('unfollow', username)}
-                styles={styles}
+            {items.length > 0 && loadError ? (
+              <SecondaryButton
+                label={copy.retry}
+                onPress={() => void loadList(true)}
               />
-            ))
-          : null}
+            ) : null}
+            {nextCursor && !loadError ? (
+              <SecondaryButton
+                disabled={loadingMore}
+                label={copy.loadMore}
+                loading={loadingMore}
+                onPress={() => void loadList(false)}
+              />
+            ) : null}
+          </View>
+        ) : null
+      }
+      ListHeaderComponent={
+        <View
+          style={[
+            styles.container,
+            listData.length > 0 && styles.listHeaderWithItems,
+          ]}>
+          <View style={styles.headerRow}>
+            <LiquidGlassIconButton
+              accessibilityLabel={t('common.back')}
+              Icon={ChevronLeft}
+              onPress={() => router.back()}
+            />
+            <View style={styles.headerCopy}>
+              <Text style={styles.eyebrow}>{copy.eyebrow}</Text>
+              <Text style={styles.title}>{copy.title}</Text>
+              <Text style={styles.subtitle}>{copy.subtitle}</Text>
+            </View>
+          </View>
 
-        {ready && isAuthenticated && status === 'ready' ? (
-          <InlineError
-            message={
-              actionError ?? (items.length > 0 && loadError ? loadErrorMessage : null)
-            }
+          {!ready ? (
+            <AppCard>
+              <LoadingState label={copy.loading} />
+            </AppCard>
+          ) : null}
+
+          {ready && !isAuthenticated ? (
+            <AppCard>
+              <Text style={styles.cardTitle}>{copy.signInTitle}</Text>
+              <Text style={styles.body}>{copy.signInBody}</Text>
+              <PrimaryButton
+                label={copy.signInAction}
+                onPress={() => router.push('/auth/sign-in')}
+              />
+            </AppCard>
+          ) : null}
+
+          {ready && isAuthenticated ? (
+            <View style={styles.tabs}>
+              {SOCIAL_RELATIONSHIP_LIST_KINDS.map((value) => {
+                const active = value === kind;
+                return (
+                  <Pressable
+                    accessibilityRole="tab"
+                    accessibilityState={{ selected: active }}
+                    key={value}
+                    onPress={() => selectKind(value)}
+                    style={({ pressed }) => [
+                      styles.tab,
+                      active && styles.tabActive,
+                      pressed &&
+                        (active ? styles.tabActivePressed : styles.tabPressed),
+                    ]}>
+                    <Text
+                      style={[
+                        styles.tabLabel,
+                        active && styles.tabLabelActive,
+                      ]}>
+                      {tabLabel(value)}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          ) : null}
+
+          {ready &&
+          isAuthenticated &&
+          (status === 'idle' || status === 'loading') ? (
+            <AppCard>
+              <LoadingState label={copy.loading} />
+            </AppCard>
+          ) : null}
+
+          {ready && isAuthenticated && status === 'error' ? (
+            <AppCard>
+              <Text style={styles.cardTitle}>{copy.loadErrorTitle}</Text>
+              <Text style={styles.body}>{loadErrorMessage}</Text>
+              <SecondaryButton
+                label={copy.retry}
+                onPress={() => void loadList(true)}
+              />
+            </AppCard>
+          ) : null}
+
+          {showReadyState && items.length === 0 ? (
+            <AppCard>
+              <Text style={styles.cardTitle}>{empty.title}</Text>
+              <Text style={styles.body}>{empty.body}</Text>
+            </AppCard>
+          ) : null}
+        </View>
+      }
+      renderItem={({ item }) => (
+        <View style={styles.listItem}>
+          <SocialRelationshipListCard
+            busy={busyUsername === item.profile.username}
+            copy={copy}
+            item={item}
+            kind={kind}
+            onApprove={(username) => void runAction('approve', username)}
+            onCancel={(username) => void runAction('cancel', username)}
+            onOpen={openProfile}
+            onReject={(username) => void runAction('reject', username)}
+            onUnfollow={(username) => void runAction('unfollow', username)}
+            styles={styles}
           />
-        ) : null}
-
-        {ready &&
-        isAuthenticated &&
-        status === 'ready' &&
-        items.length > 0 &&
-        loadError ? (
-          <SecondaryButton label={copy.retry} onPress={() => void loadList(true)} />
-        ) : null}
-
-        {ready &&
-        isAuthenticated &&
-        status === 'ready' &&
-        nextCursor &&
-        !loadError ? (
-          <SecondaryButton
-            disabled={loadingMore}
-            label={copy.loadMore}
-            loading={loadingMore}
-            onPress={() => void loadList(false)}
-          />
-        ) : null}
-      </View>
-    </ScrollView>
+        </View>
+      )}
+      style={styles.screen}
+    />
   );
 }

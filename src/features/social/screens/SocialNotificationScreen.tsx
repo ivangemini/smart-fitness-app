@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  FlatList,
   Pressable,
   RefreshControl,
-  ScrollView,
   Text,
   View,
 } from 'react-native';
@@ -219,8 +219,47 @@ export default function SocialNotificationScreen() {
     return copy.loadGeneric;
   };
 
+  const showReadyState = ready && isAuthenticated && status === 'ready';
+  const listData = showReadyState ? notifications : [];
+
+  const renderNotification = ({ item: notification }: { item: SocialNotificationDto }) => {
+    const unread = notification.readAt === null;
+    const message = getSocialNotificationMessage(copy, notification.type);
+    const accessibilityLabel = `${unread ? copy.unread : copy.read}. ${
+      notification.actor.displayName
+    } ${message}`;
+
+    return (
+      <Pressable
+        accessibilityHint={copy.open}
+        accessibilityLabel={accessibilityLabel}
+        accessibilityRole="button"
+        onPress={() => openNotification(notification)}
+        style={({ pressed }) => [
+          styles.notificationCard,
+          pressed && styles.notificationPressed,
+        ]}>
+        <View style={styles.notificationHeader}>
+          {unread ? <View style={styles.unreadDot} /> : null}
+          <Text style={styles.message}>
+            <Text style={styles.username}>{notification.actor.displayName}</Text>{' '}
+            {message}
+          </Text>
+        </View>
+        <View style={styles.notificationMeta}>
+          <Text style={styles.timestamp}>
+            {formatLocalizedDateTime(notification.createdAt, locale)}
+          </Text>
+          <Text style={unread ? styles.unreadLabel : styles.readLabel}>
+            {unread ? copy.unread : copy.read}
+          </Text>
+        </View>
+      </Pressable>
+    );
+  };
+
   return (
-    <ScrollView
+    <FlatList
       contentContainerStyle={[
         styles.content,
         {
@@ -228,8 +267,106 @@ export default function SocialNotificationScreen() {
           paddingTop: insets.top + Spacing.four,
         },
       ]}
+      data={listData}
+      ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
+      keyExtractor={(notification) => notification.id}
+      ListFooterComponent={
+        showReadyState && nextCursor ? (
+          <View style={styles.listFooter}>
+            <InlineError
+              message={loadMoreError ? errorMessage(loadMoreError) : null}
+            />
+            <SecondaryButton
+              disabled={loadMoreBusy}
+              label={loadMoreError === 'invalid_cursor' ? copy.reload : copy.loadMore}
+              loading={loadMoreBusy}
+              onPress={
+                loadMoreError === 'invalid_cursor'
+                  ? () => void loadInitial()
+                  : loadMore
+              }
+            />
+          </View>
+        ) : null
+      }
+      ListHeaderComponent={
+        <View style={[styles.container, listData.length > 0 && styles.listHeaderWithItems]}>
+          <View style={styles.headerRow}>
+            <LiquidGlassIconButton
+              accessibilityLabel={t('common.back')}
+              Icon={ChevronLeft}
+              onPress={() => router.back()}
+            />
+            <View style={styles.headerCopy}>
+              <Text style={styles.eyebrow}>{copy.eyebrow}</Text>
+              <Text style={styles.title}>{copy.title}</Text>
+              <Text style={styles.subtitle}>{copy.subtitle}</Text>
+            </View>
+          </View>
+
+          {!ready || (ready && isAuthenticated && status === 'loading') ? (
+            <AppCard>
+              <LoadingState label={copy.loading} />
+            </AppCard>
+          ) : null}
+
+          {ready && !isAuthenticated ? (
+            <StateCard body={copy.signInBody} styles={styles} title={copy.signInTitle}>
+              <PrimaryButton
+                label={copy.signInAction}
+                onPress={() => router.push('/auth/sign-in')}
+              />
+            </StateCard>
+          ) : null}
+
+          {ready &&
+          isAuthenticated &&
+          status === 'error' &&
+          loadError === 'profile_required' ? (
+            <StateCard
+              body={copy.profileRequiredBody}
+              styles={styles}
+              title={copy.profileRequiredTitle}>
+              <PrimaryButton
+                label={copy.profileRequiredAction}
+                onPress={() => router.push('/settings/social-profile')}
+              />
+            </StateCard>
+          ) : null}
+
+          {ready &&
+          isAuthenticated &&
+          status === 'error' &&
+          loadError !== 'profile_required' ? (
+            <StateCard
+              body={errorMessage(loadError)}
+              styles={styles}
+              title={copy.title}>
+              <SecondaryButton
+                label={copy.retry}
+                onPress={() => void loadInitial()}
+              />
+            </StateCard>
+          ) : null}
+
+          {showReadyState ? (
+            <>
+              <InlineError
+                message={loadError ? errorMessage(loadError) : readError}
+              />
+              {notifications.length === 0 ? (
+                <StateCard
+                  body={copy.emptyBody}
+                  styles={styles}
+                  title={copy.emptyTitle}
+                />
+              ) : null}
+            </>
+          ) : null}
+        </View>
+      }
       refreshControl={
-        ready && isAuthenticated && status === 'ready' ? (
+        showReadyState ? (
           <RefreshControl
             accessibilityLabel={copy.refresh}
             onRefresh={() => void loadInitial(true)}
@@ -238,153 +375,9 @@ export default function SocialNotificationScreen() {
           />
         ) : undefined
       }
-      style={styles.screen}>
-      <View style={styles.container}>
-        <View style={styles.headerRow}>
-          <LiquidGlassIconButton
-            accessibilityLabel={t('common.back')}
-            Icon={ChevronLeft}
-            onPress={() => router.back()}
-          />
-          <View style={styles.headerCopy}>
-            <Text style={styles.eyebrow}>{copy.eyebrow}</Text>
-            <Text style={styles.title}>{copy.title}</Text>
-            <Text style={styles.subtitle}>{copy.subtitle}</Text>
-          </View>
-        </View>
-
-        {!ready || (ready && isAuthenticated && status === 'loading') ? (
-          <AppCard>
-            <LoadingState label={copy.loading} />
-          </AppCard>
-        ) : null}
-
-        {ready && !isAuthenticated ? (
-          <StateCard body={copy.signInBody} styles={styles} title={copy.signInTitle}>
-            <PrimaryButton
-              label={copy.signInAction}
-              onPress={() => router.push('/auth/sign-in')}
-            />
-          </StateCard>
-        ) : null}
-
-        {ready &&
-        isAuthenticated &&
-        status === 'error' &&
-        loadError === 'profile_required' ? (
-          <StateCard
-            body={copy.profileRequiredBody}
-            styles={styles}
-            title={copy.profileRequiredTitle}>
-            <PrimaryButton
-              label={copy.profileRequiredAction}
-              onPress={() => router.push('/settings/social-profile')}
-            />
-          </StateCard>
-        ) : null}
-
-        {ready &&
-        isAuthenticated &&
-        status === 'error' &&
-        loadError !== 'profile_required' ? (
-          <StateCard
-            body={errorMessage(loadError)}
-            styles={styles}
-            title={copy.title}>
-            <SecondaryButton
-              label={copy.retry}
-              onPress={() => void loadInitial()}
-            />
-          </StateCard>
-        ) : null}
-
-        {ready && isAuthenticated && status === 'ready' ? (
-          <>
-            <InlineError
-              message={loadError ? errorMessage(loadError) : readError}
-            />
-            {notifications.length === 0 ? (
-              <StateCard
-                body={copy.emptyBody}
-                styles={styles}
-                title={copy.emptyTitle}
-              />
-            ) : (
-              notifications.map((notification) => {
-                const unread = notification.readAt === null;
-                const message = getSocialNotificationMessage(
-                  copy,
-                  notification.type,
-                );
-                const accessibilityLabel = `${
-                  unread ? copy.unread : copy.read
-                }. ${notification.actor.displayName} ${message}`;
-                return (
-                  <Pressable
-                    accessibilityHint={copy.open}
-                    accessibilityLabel={accessibilityLabel}
-                    accessibilityRole="button"
-                    key={notification.id}
-                    onPress={() => openNotification(notification)}
-                    style={({ pressed }) => [
-                      styles.notificationCard,
-                      pressed && styles.notificationPressed,
-                    ]}>
-                    <View style={styles.notificationHeader}>
-                      {unread ? <View style={styles.unreadDot} /> : null}
-                      <Text style={styles.message}>
-                        <Text style={styles.username}>
-                          {notification.actor.displayName}
-                        </Text>{' '}
-                        {message}
-                      </Text>
-                    </View>
-                    <View style={styles.notificationMeta}>
-                      <Text style={styles.timestamp}>
-                        {formatLocalizedDateTime(
-                          notification.createdAt,
-                          locale,
-                        )}
-                      </Text>
-                      <Text
-                        style={
-                          unread ? styles.unreadLabel : styles.readLabel
-                        }>
-                        {unread ? copy.unread : copy.read}
-                      </Text>
-                    </View>
-                  </Pressable>
-                );
-              })
-            )}
-
-            {nextCursor ? (
-              <>
-                <InlineError
-                  message={
-                    loadMoreError ? errorMessage(loadMoreError) : null
-                  }
-                />
-                <SecondaryButton
-                  disabled={loadMoreBusy}
-                  label={
-                    loadMoreError === 'invalid_cursor'
-                      ? copy.reload
-                      : copy.loadMore
-                  }
-                  loading={loadMoreBusy}
-                  onPress={
-                    loadMoreError === 'invalid_cursor'
-                      ? () => void loadInitial()
-                      : loadMore
-                  }
-                />
-              </>
-            ) : null}
-          </>
-        ) : null}
-      </View>
-    </ScrollView>
+      renderItem={renderNotification}
+      style={styles.screen}
+    />
   );
 }
 
