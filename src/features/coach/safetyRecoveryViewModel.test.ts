@@ -68,7 +68,7 @@ describe('Safety Recovery view model', () => {
     });
   });
 
-  it('preserves movement restrictions and load reduction metadata', () => {
+  it('preserves movement restrictions and stable issue paths', () => {
     const viewModel = buildSafetyRecoveryViewModel(
       makeEnvelope('completed', {
         kind: 'safety-recovery-review',
@@ -111,6 +111,12 @@ describe('Safety Recovery view model', () => {
             bodyRegion: 'shoulder',
             action: 'avoid_movement',
             movementPatterns: ['vertical_press'],
+          },
+        ],
+        issues: [
+          {
+            code: 'LIMITATION_MOVEMENT_AVOIDANCE_REQUIRED',
+            path: 'limitations.33333333-3333-4333-8333-333333333333',
           },
         ],
       },
