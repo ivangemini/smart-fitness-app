@@ -21,6 +21,7 @@ import {
   createSafetyRecoveryReviewStore,
 } from '@/storage';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
 import {
   buildWorkoutSafetyGateDecision,
@@ -45,12 +46,16 @@ export default function WorkoutSafetyGateScreen({
     explicitlyAcknowledged: boolean,
   ): Promise<void> | void;
 }) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { formatNumber, locale } = useLocalization();
   const copy = useMemo(() => getWorkoutSafetyGateCopy(locale), [locale]);
   const reviewCopy = useMemo(() => getSafetyRecoveryReviewCopy(locale), [locale]);
   const limitationCopy = useMemo(() => getUserLimitationsCopy(locale), [locale]);
-  const styles = useMemo(() => createWorkoutSafetyGateStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createWorkoutSafetyGateStyles(colors, glass), [colors, glass]);
   const insets = useSafeAreaInsets();
   const { recoveryCheckIns, userLimitations } = useSafetyRecoveryState();
   const { session } = useAuthSession();
@@ -220,7 +225,10 @@ export default function WorkoutSafetyGateScreen({
                   accessibilityRole="checkbox"
                   accessibilityState={{ checked: acknowledged }}
                   onPress={() => setAcknowledged((current) => !current)}
-                  style={({ pressed }) => [styles.acknowledgement, pressed && styles.pressed]}>
+                  style={({ pressed }) => [
+                    styles.acknowledgement,
+                    pressed && styles.acknowledgementPressed,
+                  ]}>
                   <View style={[styles.checkbox, acknowledged && styles.checkboxSelected]}>
                     <Text style={styles.checkboxLabel}>{acknowledged ? '✓' : ''}</Text>
                   </View>
@@ -250,12 +258,18 @@ export default function WorkoutSafetyGateScreen({
               <View style={styles.actionRow}>
                 <Pressable
                   onPress={() => router.push('/profile/recovery-check-in')}
-                  style={({ pressed }) => [styles.smallAction, pressed && styles.pressed]}>
+                  style={({ pressed }) => [
+                    styles.smallAction,
+                    pressed && styles.smallActionPressed,
+                  ]}>
                   <Text style={styles.smallActionLabel}>{copy.recoveryCheckIn}</Text>
                 </Pressable>
                 <Pressable
                   onPress={() => router.push('/profile/limitations')}
-                  style={({ pressed }) => [styles.smallAction, pressed && styles.pressed]}>
+                  style={({ pressed }) => [
+                    styles.smallAction,
+                    pressed && styles.smallActionPressed,
+                  ]}>
                   <Text style={styles.smallActionLabel}>{copy.limitations}</Text>
                 </Pressable>
               </View>

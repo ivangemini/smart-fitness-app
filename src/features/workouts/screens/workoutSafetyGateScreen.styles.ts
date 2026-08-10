@@ -1,18 +1,25 @@
 import { StyleSheet } from 'react-native';
 
 import { Colors, MaxContentWidth, Radii, Spacing, Typography } from '@/constants/theme';
+import type { LiquidGlassPalette } from '@/theme/liquidGlass';
 
-export const createWorkoutSafetyGateStyles = (colors: typeof Colors.light) =>
+export const createWorkoutSafetyGateStyles = (
+  colors: typeof Colors.light,
+  glass: LiquidGlassPalette,
+) =>
   StyleSheet.create({
     acknowledgement: {
       alignItems: 'flex-start',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderRadius: Radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
       flexDirection: 'row',
       gap: Spacing.two,
       padding: Spacing.three,
+    },
+    acknowledgementPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     acknowledgementText: {
       color: colors.textSecondary,
@@ -136,9 +143,6 @@ export const createWorkoutSafetyGateStyles = (colors: typeof Colors.light) =>
       fontWeight: '900',
       lineHeight: 30,
     },
-    pressed: {
-      opacity: 0.68,
-    },
     resultHeader: {
       alignItems: 'flex-start',
       flexDirection: 'row',
@@ -168,14 +172,17 @@ export const createWorkoutSafetyGateStyles = (colors: typeof Colors.light) =>
     },
     smallAction: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderRadius: Radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
       flex: 1,
       minHeight: 44,
       justifyContent: 'center',
       paddingHorizontal: Spacing.two,
+    },
+    smallActionPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     smallActionLabel: {
       color: colors.textPrimary,
