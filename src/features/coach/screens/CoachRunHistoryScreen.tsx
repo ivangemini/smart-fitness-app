@@ -79,7 +79,7 @@ export default function CoachRunHistoryScreen() {
 
   return (
     <View style={styles.screen}>
-      <View style={[styles.header, { paddingTop: insets.top + Spacing.two }]}>
+      <View style={[styles.header, { paddingTop: insets.top + Spacing.two }]}> 
         <LiquidGlassIconButton
           accessibilityLabel={t('common.back')}
           Icon={ChevronLeft}
@@ -91,23 +91,17 @@ export default function CoachRunHistoryScreen() {
         </View>
       </View>
       <FlatList
-        contentContainerStyle={[
-          styles.content,
-          { paddingBottom: insets.bottom + Spacing.eight },
-        ]}
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing.eight }]}
         data={ready && isAuthenticated ? items : []}
         ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
         keyExtractor={(item) => item.id}
         ListHeaderComponent={
-          <View style={styles.listHeader}>
+          <View style={styles.container}>
             {!ready ? <Text style={styles.body}>{copy.loading}</Text> : null}
             {ready && !isAuthenticated ? (
               <AppCard>
                 <Text style={styles.body}>{copy.signIn}</Text>
-                <PrimaryButton
-                  label={locale === 'ru' ? 'Войти' : 'Sign in'}
-                  onPress={() => router.push('/auth/sign-in')}
-                />
+                <PrimaryButton label={locale === 'ru' ? 'Войти' : 'Sign in'} onPress={() => router.push('/auth/sign-in')} />
               </AppCard>
             ) : null}
             {ready && isAuthenticated ? (
@@ -136,14 +130,13 @@ export default function CoachRunHistoryScreen() {
                   </AppCard>
                 ) : null}
                 {!loading && !error && items.length === 0 ? (
-                  <AppCard>
-                    <Text style={styles.body}>{copy.empty}</Text>
-                  </AppCard>
+                  <AppCard><Text style={styles.body}>{copy.empty}</Text></AppCard>
                 ) : null}
               </>
             ) : null}
           </View>
         }
+        ListHeaderComponentStyle={styles.listHeader}
         renderItem={({ item }) => (
           <View style={styles.listItem}>
             <Pressable
@@ -184,10 +177,7 @@ function FilterRow<T extends string>({
   const { colors } = useAppTheme();
 
   return (
-    <ScrollView
-      contentContainerStyle={stylesStatic.filters}
-      horizontal
-      showsHorizontalScrollIndicator={false}>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={stylesStatic.filters}>
       {labels.map((option) => (
         <Pressable
           accessibilityRole="button"
@@ -198,9 +188,7 @@ function FilterRow<T extends string>({
             stylesStatic.filter,
             { borderColor: option.value === value ? colors.accent : colors.borderSubtle },
           ]}>
-          <Text style={[stylesStatic.filterLabel, { color: colors.textPrimary }]}>
-            {option.label}
-          </Text>
+          <Text style={[stylesStatic.filterLabel, { color: colors.textPrimary }]}>{option.label}</Text>
         </Pressable>
       ))}
     </ScrollView>
@@ -222,52 +210,20 @@ const stylesStatic = StyleSheet.create({
 });
 
 const createStyles = (colors: typeof Colors.light) => StyleSheet.create({
-  body: {
-    color: colors.textSecondary,
-    fontSize: Typography.body.fontSize,
-    lineHeight: Typography.body.lineHeight,
-  },
-  cardHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: Spacing.two,
-    justifyContent: 'space-between',
-  },
-  cardTitle: {
-    color: colors.textPrimary,
-    fontSize: Typography.cardTitle.fontSize,
-    fontWeight: Typography.cardTitle.fontWeight,
-  },
+  body: { color: colors.textSecondary, fontSize: Typography.body.fontSize, lineHeight: Typography.body.lineHeight },
+  cardHeader: { alignItems: 'center', flexDirection: 'row', gap: Spacing.two, justifyContent: 'space-between' },
+  cardTitle: { color: colors.textPrimary, fontSize: Typography.cardTitle.fontSize, fontWeight: Typography.cardTitle.fontWeight },
+  container: { alignSelf: 'center', gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
   content: { paddingHorizontal: Spacing.three, paddingTop: Spacing.three },
-  header: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: Spacing.three,
-    paddingBottom: Spacing.two,
-    paddingHorizontal: Spacing.three,
-  },
+  header: { alignItems: 'center', flexDirection: 'row', gap: Spacing.three, paddingBottom: Spacing.two, paddingHorizontal: Spacing.three },
   headerCopy: { flex: 1, gap: Spacing.one },
   itemSeparator: { height: Spacing.three },
   list: { flex: 1 },
-  listHeader: {
-    alignSelf: 'center',
-    gap: Spacing.three,
-    marginBottom: Spacing.three,
-    maxWidth: MaxContentWidth,
-    width: '100%',
-  },
-  listItem: {
-    alignSelf: 'center',
-    maxWidth: MaxContentWidth,
-    width: '100%',
-  },
+  listHeader: { marginBottom: Spacing.three },
+  listItem: { alignSelf: 'center', maxWidth: MaxContentWidth, width: '100%' },
   meta: { color: colors.textMuted, fontSize: Typography.caption.fontSize },
   screen: { backgroundColor: colors.background, flex: 1 },
   status: { color: colors.accent, fontSize: Typography.caption.fontSize, fontWeight: '700' },
   subtitle: { color: colors.textSecondary, fontSize: Typography.caption.fontSize },
-  title: {
-    color: colors.textPrimary,
-    fontSize: Typography.screenTitle.fontSize,
-    fontWeight: Typography.screenTitle.fontWeight,
-  },
+  title: { color: colors.textPrimary, fontSize: Typography.screenTitle.fontSize, fontWeight: Typography.screenTitle.fontWeight },
 });
