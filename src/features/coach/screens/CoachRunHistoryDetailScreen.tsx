@@ -246,17 +246,18 @@ export default function CoachRunHistoryDetailScreen() {
 }
 
 function Row({ label, value }: { label: string; value: string }) {
+  const { colors } = useAppTheme();
+
   return (
     <View style={stylesStatic.row}>
-      <Text style={stylesStatic.label}>{label}</Text>
-      <Text style={stylesStatic.value}>{value}</Text>
+      <Text style={[stylesStatic.label, { color: colors.textSecondary }]}>{label}</Text>
+      <Text style={[stylesStatic.value, { color: colors.textPrimary }]}>{value}</Text>
     </View>
   );
 }
 
 const stylesStatic = StyleSheet.create({
   label: {
-    color: Colors.dark.textSecondary,
     flex: 1,
     fontSize: Typography.caption.fontSize,
   },
@@ -267,7 +268,6 @@ const stylesStatic = StyleSheet.create({
     justifyContent: 'space-between',
   },
   value: {
-    color: Colors.dark.textPrimary,
     flex: 1,
     fontSize: Typography.caption.fontSize,
     textAlign: 'right',
