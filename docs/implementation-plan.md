@@ -7,15 +7,17 @@ This file is the **canonical forward roadmap**. Detailed current evidence belong
 ## Current verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current runtime mobile `main`: `57565185031b4b0fd1b2c17798947d3500c57976`.
-- Latest runtime merge: PR #577 — completed-workout detail now uses one top-level `FlatList` boundary for exercise groups.
-- PR #577 exact validated head: `93e6affdd5293720dafa59b2f3645be8b0462a2a`; Mobile CI #2079 passed before merge.
-- PR #576 established completed workout history as a read-only current-product surface and recorded the focused scope evidence in `docs/qa/lg5-completed-history-scope.md`.
-- Earlier LG-5 packages remain: #559, #560, #561, #565, #567-#574; exact evidence is retained in `docs/current-status.md` and Git history.
+- Current runtime mobile `main`: `0c1454d182483c5e297315529e897d4f4246220d`.
+- Latest runtime merge: PR #581 — Coach Run History now uses one top-level `FlatList` boundary for its up-to-50 run collection.
+- PR #581 exact validated head: `ded513d37f527641c3bf972f234018c1cd6e02f1`; Mobile CI #2084 passed before merge.
+- PR #580 added keyboard-inset ownership to the embedded Progress body-measurement form; exact head `025aa3727ca651afcf3971e0726402100f3e93c9`, Mobile CI #2083 green.
+- PR #579 virtualized Workout Template Detail exercises; exact head `5e243e1d97701938621027382e56d5ff35392d53`, Mobile CI #2081 green.
+- PR #576 established completed workout history as a read-only current-product surface and recorded focused scope evidence in `docs/qa/lg5-completed-history-scope.md`.
+- Earlier LG-5 packages remain #559, #560, #561, #565, #567-#574 and #577; exact evidence is retained in `docs/current-status.md` and Git history.
 - Mobile CI execution remains routed through Hermes by PR #562; PR #563 skips only duplicate merge-generated post-merge runs; PR #564 persists that policy for future agents.
 - Backend repo: `ivangemini/smart-fitness-backend`.
 - Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
-- Backend PR #215 remains draft/open at exact head `0826ff18dac7d4afe78943d9881c5a530507f1af`; it is not merge-ready without real exact-head required Hermes validation.
+- Backend PR #215 remains draft/open and is not merge-ready without real exact-head required Hermes validation.
 - **LG-H2 Stories is complete for the current image-only v1 source scope.**
 - **Progress/exercise secondary-material reassessment is complete for the current active source scope.**
 - **LG-4 Workouts source convergence is complete.**
@@ -32,6 +34,7 @@ Release readiness remains lower than source completeness because physical-device
 - Follow `docs/architecture/responsive-mobile-ui.md` and `docs/architecture/liquid-glass-ui.md`.
 - Use shared navigation/safe-area geometry and material primitives; avoid screen-local magic clearances and repeated native blur.
 - Potentially long collections must use a suitable virtualized list boundary with stable IDs; do not replace an eager list with a same-axis nested virtualized list.
+- Keyboard-open forms must keep the active input and required primary action reachable while preserving safe-area and floating-navigation clearance.
 - Local AsyncStorage remains the active storage strategy; architecture-only design options are not implementation authorization. Reviewed decision evidence: `docs/architecture/local-state-performance-decision.md`. There is no remaining approved autonomous source-refactor phase. In equivalent explicit terms, **no separate autonomous source-refactor phase is currently authorized**.
 - Stories remain in the server-authoritative Social boundary and must not be added to private revisioned `AppState` sync.
 - Analytics/telemetry collection remains disabled until its separate consent/evidence gate is explicitly satisfied.
@@ -84,6 +87,9 @@ LG-5 is validation-first. Do not create broad migration packages merely to conti
 - **PR #573:** top-level `FlatList` boundaries for cursor-paginated Notifications, Following Feed, public-profile workout posts and relationship lists.
 - **PR #574:** post-detail owns the sole `FlatList` for cursor-paginated workout comments; comment list/create/delete/report and post/reaction behavior remain separated and preserved.
 - **PR #577:** completed-workout detail owns one top-level `FlatList` for exercise groups instead of eager `ScrollView + .map()` rendering; summary, per-set/RPE data and immutable historical Safety & Recovery context remain preserved.
+- **PR #579:** Workout Template Detail owns one top-level `FlatList` for arbitrary workout exercises; target-set copy, template actions, start lifecycle, safe-area and fixed-footer behavior remain preserved.
+- **PR #580:** Progress owns automatic keyboard insets and interactive/on-drag dismissal for the embedded body-measurement form while retaining floating-tab clearance and measurement persistence.
+- **PR #581:** Coach Run History owns one top-level `FlatList` for its bounded 50-run API collection; filters/auth/loading/error/empty/retry/navigation behavior remains preserved. This is QA correction only, not a Coach product reprioritization.
 
 PR #576 was a documentation/scope correction, not a runtime package: completed workout history is intentionally read-only in the current product contract. See `docs/qa/lg5-completed-history-scope.md`.
 
@@ -102,6 +108,13 @@ These packages are source/CI evidence only. They do not constitute physical-devi
 - Active Session set entry, RPE, replacement, finish and discard flows;
 - workout creation/edit/save/program attachment;
 - completed-history retention, list/detail navigation and read-only record review.
+
+### Current bounded follow-up candidates
+
+- **User Limitations long collection:** `userLimitations` is not explicitly capped, but its rows are currently one visually grouped `AppCard`. A future RUI-5 fix must preserve the shared material grouping rather than splitting records into unrelated cards solely to gain virtualization.
+- **Sync Conflict Review long collection:** reassess the collection/card boundary and conflict-store behavior before changing source; do not virtualize blindly inside the existing parent `ScrollView`.
+- Existing Nutrition Add Food, Recovery Check-in, User Limitations, Social Profile Editor and Weight Entry keyboard behavior is already keyboard-aware; no RUI-4 churn without new evidence.
+- `ProgramDetailScreen` is semantically bounded by the seven-day `WeekdayKey` structure; `.map()` alone is not evidence for virtualization work.
 
 ### LG-5 execution rule
 
@@ -147,6 +160,7 @@ Docs-only synchronization uses diff/ancestry verification; workflows may intenti
 
 1. Continue LG-5 source/CI QA across remaining secondary/shared surfaces.
 2. Fix only concrete defects with bounded PRs and exact-head validation.
-3. Keep backend #215 unmerged until exact-head Hermes validation is real and green.
-4. Collect physical-device evidence only when separately authorized.
-5. Resume deferred Coach/material work only after explicit reprioritization.
+3. Resolve the User Limitations and Sync Conflict Review long-collection boundaries only after preserving their current material/interaction semantics is demonstrated.
+4. Keep backend #215 unmerged until exact-head Hermes validation is real and green.
+5. Collect physical-device evidence only when separately authorized.
+6. Resume deferred Coach/material work only after explicit reprioritization.
