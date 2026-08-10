@@ -1,7 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useMemo } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppCard } from '@/components/ui/AppCard';
@@ -92,108 +92,125 @@ export default function WorkoutHistoryDetailScreen() {
         </View>
       </View>
 
-      <ScrollView
+      <FlatList
         contentContainerStyle={[
           styles.content,
           { paddingBottom: insets.bottom + Spacing.eight },
         ]}
-        showsVerticalScrollIndicator={false}>
-        <View style={styles.container}>
-          {!session || !summary ? (
-            <AppCard>
-              <Text style={styles.cardTitle}>{copy.notFoundTitle}</Text>
-              <Text style={styles.bodyText}>{copy.notFoundBody}</Text>
-            </AppCard>
-          ) : (
-            <>
+        data={session && summary ? exerciseGroups : []}
+        keyExtractor={(group) => `${group.exerciseId}-${group.exerciseName}`}
+        ListHeaderComponent={
+          <View style={styles.container}>
+            {!session || !summary ? (
               <AppCard>
-                <Text style={styles.eyebrow}>{copy.completedWorkoutEyebrow}</Text>
-                <Text style={styles.workoutTitle}>{session.workoutTitle}</Text>
-                <Text style={styles.metaText}>{formatTimestamp(session.finishedAt)}</Text>
-                <View style={styles.metricGrid}>
-                  <Metric
-                    label={copy.duration}
-                    value={formatDuration(getWorkoutDurationMinutes(session))}
-                    styles={styles}
-                  />
-                  <Metric
-                    label={copy.sets(summary.setCount, '').trim()}
-                    value={formatNumber(summary.setCount, { maximumFractionDigits: 0 })}
-                    styles={styles}
-                  />
-                  <Metric
-                    label={copy.exercises}
-                    value={formatNumber(summary.exerciseCount, { maximumFractionDigits: 0 })}
-                    styles={styles}
-                  />
-                  <Metric label={copy.volumeLabel} value={formatVolume(summary.volume)} styles={styles} />
-                </View>
-                {session.notes ? (
-                  <View style={styles.notesBlock}>
-                    <Text style={styles.sectionTitle}>{copy.workoutNotes}</Text>
-                    <Text style={styles.bodyText}>{session.notes}</Text>
-                  </View>
-                ) : null}
+                <Text style={styles.cardTitle}>{copy.notFoundTitle}</Text>
+                <Text style={styles.bodyText}>{copy.notFoundBody}</Text>
               </AppCard>
+            ) : (
+              <>
+                <AppCard>
+                  <Text style={styles.eyebrow}>{copy.completedWorkoutEyebrow}</Text>
+                  <Text style={styles.workoutTitle}>{session.workoutTitle}</Text>
+                  <Text style={styles.metaText}>{formatTimestamp(session.finishedAt)}</Text>
+                  <View style={styles.metricGrid}>
+                    <Metric
+                      label={copy.duration}
+                      value={formatDuration(getWorkoutDurationMinutes(session))}
+                      styles={styles}
+                    />
+                    <Metric
+                      label={copy.sets(summary.setCount, '').trim()}
+                      value={formatNumber(summary.setCount, { maximumFractionDigits: 0 })}
+                      styles={styles}
+                    />
+                    <Metric
+                      label={copy.exercises}
+                      value={formatNumber(summary.exerciseCount, { maximumFractionDigits: 0 })}
+                      styles={styles}
+                    />
+                    <Metric
+                      label={copy.volumeLabel}
+                      value={formatVolume(summary.volume)}
+                      styles={styles}
+                    />
+                  </View>
+                  {session.notes ? (
+                    <View style={styles.notesBlock}>
+                      <Text style={styles.sectionTitle}>{copy.workoutNotes}</Text>
+                      <Text style={styles.bodyText}>{session.notes}</Text>
+                    </View>
+                  ) : null}
+                </AppCard>
 
-              <AppCard>
-                <View style={styles.sectionHeader}>
-                  <Text style={styles.cardTitle}>{copy.loggedExercises}</Text>
+                <AppCard>
+                  <View style={styles.sectionHeader}>
+                    <Text style={styles.cardTitle}>{copy.loggedExercises}</Text>
+                    <Text style={styles.metaText}>
+                      {copy.total(
+                        formatNumber(exerciseGroups.length, { maximumFractionDigits: 0 }),
+                      )}
+                    </Text>
+                  </View>
+                </AppCard>
+              </>
+            )}
+          </View>
+        }
+        ListFooterComponent={
+          session && summary ? (
+            <View style={styles.listFooter}>
+              <View style={styles.container}>
+                <SafetyHistoryCard
+                  metadata={session.safetyRecovery}
+                  styles={styles}
+                  colors={colors}
+                />
+              </View>
+            </View>
+          ) : null
+        }
+        renderItem={({ item: group }) => (
+          <View style={styles.exerciseListItem}>
+            <AppCard>
+              <View style={styles.exerciseHeader}>
+                <View style={styles.exerciseCopy}>
+                  <Text style={styles.sectionTitle}>{group.exerciseName}</Text>
                   <Text style={styles.metaText}>
-                    {copy.total(
-                      formatNumber(exerciseGroups.length, { maximumFractionDigits: 0 }),
-                    )}
+                    {copy.sets(
+                      group.completedSetCount,
+                      formatNumber(group.completedSetCount, { maximumFractionDigits: 0 }),
+                    )}{' '}
+                    · {formatVolume(group.volume)}
                   </Text>
                 </View>
-                {exerciseGroups.map((group) => (
-                  <View key={`${group.exerciseId}-${group.exerciseName}`} style={styles.exerciseBlock}>
-                    <View style={styles.exerciseHeader}>
-                      <View style={styles.exerciseCopy}>
-                        <Text style={styles.sectionTitle}>{group.exerciseName}</Text>
-                        <Text style={styles.metaText}>
-                          {copy.sets(
-                            group.completedSetCount,
-                            formatNumber(group.completedSetCount, { maximumFractionDigits: 0 }),
-                          )}{' '}
-                          · {formatVolume(group.volume)}
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={styles.setTableHeader}>
-                      <Text style={[styles.tableHeaderLabel, styles.setColumn]}>{copy.tableSet}</Text>
-                      <Text style={styles.tableHeaderLabel}>{weightUnit.toUpperCase()}</Text>
-                      <Text style={styles.tableHeaderLabel}>{copy.tableReps}</Text>
-                      <Text style={styles.tableHeaderLabel}>RPE</Text>
-                    </View>
-                    {group.sets.map((set, index) => (
-                      <View key={set.id} style={styles.setRow}>
-                        <Text style={[styles.setValue, styles.setColumn]}>
-                          {formatNumber(index + 1, { maximumFractionDigits: 0 })}
-                        </Text>
-                        <Text style={styles.setValue}>{formatWeightValue(set.weight)}</Text>
-                        <Text style={styles.setValue}>
-                          {formatNumber(set.reps, { maximumFractionDigits: 0 })}
-                        </Text>
-                        <Text style={styles.setValue}>
-                          {set.actualRpe === undefined
-                            ? '—'
-                            : formatNumber(set.actualRpe, { maximumFractionDigits: 0 })}
-                        </Text>
-                      </View>
-                    ))}
-                  </View>
-                ))}
-              </AppCard>
-
-              <SafetyHistoryCard
-                metadata={session.safetyRecovery}
-                styles={styles}
-                colors={colors}
-              />
-            </>
-          )}
-        </View>
-      </ScrollView>
+              </View>
+              <View style={styles.setTableHeader}>
+                <Text style={[styles.tableHeaderLabel, styles.setColumn]}>{copy.tableSet}</Text>
+                <Text style={styles.tableHeaderLabel}>{weightUnit.toUpperCase()}</Text>
+                <Text style={styles.tableHeaderLabel}>{copy.tableReps}</Text>
+                <Text style={styles.tableHeaderLabel}>RPE</Text>
+              </View>
+              {group.sets.map((set, index) => (
+                <View key={set.id} style={styles.setRow}>
+                  <Text style={[styles.setValue, styles.setColumn]}>
+                    {formatNumber(index + 1, { maximumFractionDigits: 0 })}
+                  </Text>
+                  <Text style={styles.setValue}>{formatWeightValue(set.weight)}</Text>
+                  <Text style={styles.setValue}>
+                    {formatNumber(set.reps, { maximumFractionDigits: 0 })}
+                  </Text>
+                  <Text style={styles.setValue}>
+                    {set.actualRpe === undefined
+                      ? '—'
+                      : formatNumber(set.actualRpe, { maximumFractionDigits: 0 })}
+                  </Text>
+                </View>
+              ))}
+            </AppCard>
+          </View>
+        )}
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   );
 }
