@@ -8,14 +8,15 @@ import {
 const STORY_ID = '11111111-1111-4111-8111-111111111111';
 
 describe('Story Like privacy surface model', () => {
-  it('selects owner summary only for the current Story author', () => {
+  it('selects a surface only when current ownership is known', () => {
     expect(getSocialStoryLikeSurfaceMode('owner', 'owner')).toBe(
       'owner_summary',
     );
     expect(getSocialStoryLikeSurfaceMode('viewer', 'owner')).toBe(
       'viewer_state',
     );
-    expect(getSocialStoryLikeSurfaceMode(null, 'owner')).toBe('viewer_state');
+    expect(getSocialStoryLikeSurfaceMode(null, 'owner')).toBeNull();
+    expect(getSocialStoryLikeSurfaceMode('   ', 'owner')).toBeNull();
   });
 
   it('never loads viewer Like state for the Story owner', async () => {
