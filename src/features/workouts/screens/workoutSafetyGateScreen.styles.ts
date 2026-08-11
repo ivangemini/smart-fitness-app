@@ -128,8 +128,13 @@ export const createWorkoutSafetyGateStyles = (
       fontSize: Typography.caption.fontSize,
       lineHeight: Typography.caption.lineHeight,
     },
+    metricCell: {
+      flex: 1,
+      minWidth: 0,
+    },
     metricLabel: {
       color: colors.textMuted,
+      flexShrink: 1,
       fontSize: Typography.caption.fontSize,
       lineHeight: Typography.caption.lineHeight,
     },
@@ -179,15 +184,19 @@ export const createWorkoutSafetyGateStyles = (
       flex: 1,
       minHeight: 44,
       justifyContent: 'center',
+      minWidth: 0,
       paddingHorizontal: Spacing.two,
+      paddingVertical: Spacing.one,
     },
     smallActionPressed: {
       backgroundColor: glass.controlPressedFill,
     },
     smallActionLabel: {
       color: colors.textPrimary,
+      flexShrink: 1,
       fontSize: Typography.label.fontSize,
       fontWeight: Typography.label.fontWeight,
+      textAlign: 'center',
     },
     statusBadge: {
       flexShrink: 0,
