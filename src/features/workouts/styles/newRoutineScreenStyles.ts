@@ -1,35 +1,46 @@
 import { StyleSheet } from 'react-native';
 
 import { Colors, MaxContentWidth, Radii, Spacing } from '@/constants/theme';
+import type { LiquidGlassPalette } from '@/theme/liquidGlass';
 
-export const createStyles = (colors: typeof Colors.light) =>
+export const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     addButton: {
       alignItems: 'center',
-      backgroundColor: colors.accent,
+      alignSelf: 'stretch',
+      backgroundColor: glass.accentFill,
+      borderColor: glass.accentBorder,
       borderCurve: 'continuous',
       borderRadius: 18,
-      alignSelf: 'stretch',
+      borderWidth: StyleSheet.hairlineWidth,
       justifyContent: 'center',
       minHeight: 52,
       overflow: 'hidden',
       paddingHorizontal: Spacing.three,
     },
     addButtonLabel: {
-      color: colors.textOnAccent,
+      color: glass.accentText,
       flexShrink: 1,
       fontSize: 17,
       fontWeight: '900',
       textAlign: 'center',
     },
+    addButtonPressed: {
+      backgroundColor: glass.accentPressedFill,
+    },
     addSetButton: {
       alignItems: 'center',
-      backgroundColor: colors.backgroundSecondary,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 999,
+      borderWidth: StyleSheet.hairlineWidth,
       justifyContent: 'center',
       minHeight: 56,
       paddingHorizontal: Spacing.three,
+    },
+    addSetButtonPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     addSetLabel: {
       color: colors.textPrimary,
@@ -86,6 +97,9 @@ export const createStyles = (colors: typeof Colors.light) =>
     deleteLabel: {
       color: colors.error,
     },
+    deleteMenuActionPressed: {
+      backgroundColor: colors.errorSoft,
+    },
     disabled: {
       opacity: 0.35,
     },
@@ -115,8 +129,13 @@ export const createStyles = (colors: typeof Colors.light) =>
       flex: 1,
       minWidth: 0,
     },
+    exerciseHeaderPressed: {
+      backgroundColor: glass.controlPressedFill,
+    },
     exerciseHeaderRow: {
       alignItems: 'flex-start',
+      borderCurve: 'continuous',
+      borderRadius: Radii.medium,
       flexDirection: 'row',
       gap: Spacing.three,
       minHeight: 72,
@@ -135,10 +154,15 @@ export const createStyles = (colors: typeof Colors.light) =>
     },
     exerciseMenuButton: {
       alignItems: 'center',
+      borderCurve: 'continuous',
+      borderRadius: 21,
       flexShrink: 0,
       height: 42,
       justifyContent: 'center',
       width: 42,
+    },
+    exerciseMenuButtonPressed: {
+      backgroundColor: glass.semanticAccentFill,
     },
     exerciseMenuLabel: {
       color: colors.accent,
@@ -200,14 +224,20 @@ export const createStyles = (colors: typeof Colors.light) =>
       textAlign: 'center',
     },
     menuAction: {
-      minHeight: 50,
+      borderCurve: 'continuous',
+      borderRadius: Radii.medium,
       justifyContent: 'center',
+      minHeight: 50,
+      paddingHorizontal: Spacing.one,
     },
     menuActionLabel: {
       color: colors.textPrimary,
       flexShrink: 1,
       fontSize: 17,
       fontWeight: '800',
+    },
+    menuActionPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     menuOverlay: {
       ...StyleSheet.absoluteFill,
@@ -232,6 +262,8 @@ export const createStyles = (colors: typeof Colors.light) =>
     },
     navButton: {
       alignItems: 'center',
+      borderCurve: 'continuous',
+      borderRadius: Radii.medium,
       flexShrink: 0,
       justifyContent: 'center',
       maxWidth: 96,
@@ -246,6 +278,9 @@ export const createStyles = (colors: typeof Colors.light) =>
       fontSize: 17,
       fontWeight: '600',
       textAlign: 'center',
+    },
+    navButtonPressed: {
+      backgroundColor: glass.semanticAccentFill,
     },
     notesInput: {
       color: colors.textPrimary,
@@ -280,9 +315,12 @@ export const createStyles = (colors: typeof Colors.light) =>
     },
     pickerRow: {
       alignItems: 'center',
+      borderCurve: 'continuous',
+      borderRadius: Radii.medium,
       flexDirection: 'row',
       gap: Spacing.three,
       minHeight: 64,
+      paddingHorizontal: Spacing.one,
     },
     pickerRowCopy: {
       flex: 1,
@@ -294,6 +332,9 @@ export const createStyles = (colors: typeof Colors.light) =>
       fontSize: 13,
       fontWeight: '700',
       marginTop: 3,
+    },
+    pickerRowPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     pickerRowTitle: {
       color: colors.textPrimary,
@@ -343,9 +384,6 @@ export const createStyles = (colors: typeof Colors.light) =>
       flexDirection: 'row',
       gap: Spacing.three,
     },
-    pressed: {
-      opacity: 0.72,
-    },
     restTimer: {
       color: colors.accent,
       fontSize: 18,
@@ -362,11 +400,13 @@ export const createStyles = (colors: typeof Colors.light) =>
       fontWeight: '700',
     },
     textButton: {
+      borderCurve: 'continuous',
+      borderRadius: Radii.medium,
       flexShrink: 0,
       justifyContent: 'center',
       maxWidth: 96,
       minHeight: 44,
-      paddingHorizontal: Spacing.one,
+      paddingHorizontal: Spacing.two,
       paddingVertical: Spacing.two,
     },
     textButtonLabel: {
@@ -375,6 +415,9 @@ export const createStyles = (colors: typeof Colors.light) =>
       fontSize: 16,
       fontWeight: '800',
       textAlign: 'center',
+    },
+    textButtonPressed: {
+      backgroundColor: glass.semanticAccentFill,
     },
     titleInput: {
       color: colors.textPrimary,

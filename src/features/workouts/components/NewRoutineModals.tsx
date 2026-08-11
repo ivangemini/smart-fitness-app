@@ -7,6 +7,7 @@ import { Spacing } from '@/constants/theme';
 import { createStyles } from '@/features/workouts/styles/newRoutineScreenStyles';
 import type { ProgramRoutineCopy } from '@/localization/programRoutineCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import type { Exercise } from '@/types';
 
 export type RoutinePickerMode =
@@ -33,9 +34,13 @@ export function RoutineExercisePickerModal({
   onReplace(exerciseId: string, replacement: Exercise): void;
   selectedExerciseIds: Set<string>;
 }) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const insets = useSafeAreaInsets();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   return (
     <Modal
@@ -56,7 +61,10 @@ export function RoutineExercisePickerModal({
               accessibilityLabel={copy.done}
               accessibilityRole="button"
               onPress={onClose}
-              style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}>
+              style={({ pressed }) => [
+                styles.textButton,
+                pressed && styles.textButtonPressed,
+              ]}>
               <Text numberOfLines={2} style={styles.textButtonLabel}>
                 {copy.done}
               </Text>
@@ -82,7 +90,10 @@ export function RoutineExercisePickerModal({
                     }
                     onAdd(exercise);
                   }}
-                  style={({ pressed }) => [styles.pickerRow, pressed && styles.pressed]}>
+                  style={({ pressed }) => [
+                    styles.pickerRow,
+                    pressed && styles.pickerRowPressed,
+                  ]}>
                   <View style={styles.pickerRowCopy}>
                     <Text numberOfLines={2} style={styles.pickerRowTitle}>
                       {exercise.name}
@@ -120,9 +131,13 @@ export function RoutineExerciseMenuModal({
   onDelete(exerciseId: string): void;
   onReplace(exerciseId: string): void;
 }) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const insets = useSafeAreaInsets();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   return (
     <Modal
@@ -145,7 +160,10 @@ export function RoutineExerciseMenuModal({
                 if (!exercise) return;
                 onReplace(exercise.id);
               }}
-              style={({ pressed }) => [styles.menuAction, pressed && styles.pressed]}>
+              style={({ pressed }) => [
+                styles.menuAction,
+                pressed && styles.menuActionPressed,
+              ]}>
               <Text style={styles.menuActionLabel}>{copy.replaceExercise}</Text>
             </Pressable>
             <Pressable
@@ -162,7 +180,10 @@ export function RoutineExerciseMenuModal({
                   },
                 ]);
               }}
-              style={({ pressed }) => [styles.menuAction, pressed && styles.pressed]}>
+              style={({ pressed }) => [
+                styles.menuAction,
+                pressed && styles.deleteMenuActionPressed,
+              ]}>
               <Text style={[styles.menuActionLabel, styles.deleteLabel]}>
                 {copy.deleteExercise}
               </Text>
