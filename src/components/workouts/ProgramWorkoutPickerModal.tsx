@@ -11,6 +11,10 @@ import { getWorkoutsHubWorkoutTitle } from '@/features/workouts/workoutsHubLocal
 import { useLocalization } from '@/localization';
 import { getWorkoutBuilderCopy } from '@/localization/workoutBuilderCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 import type { Workout } from '@/types';
 
 type ProgramWorkoutPickerModalProps = {
@@ -28,11 +32,15 @@ export function ProgramWorkoutPickerModal({
   onClose,
   onCreateNew,
 }: ProgramWorkoutPickerModalProps) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { formatNumber, locale, t } = useLocalization();
   const insets = useSafeAreaInsets();
   const copy = getWorkoutBuilderCopy(locale);
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const [mode, setMode] = useState<'choice' | 'existing'>('choice');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const selectedCount = useMemo(() => selectedIds.length, [selectedIds]);
@@ -93,7 +101,10 @@ export function ProgramWorkoutPickerModal({
               accessibilityLabel={copy.chooseExistingWorkout}
               accessibilityRole="button"
               onPress={() => setMode('existing')}
-              style={({ pressed }) => [styles.choiceButton, pressed && styles.pressed]}>
+              style={({ pressed }) => [
+                styles.choiceButton,
+                pressed && styles.choiceButtonPressed,
+              ]}>
               <Text style={styles.choiceTitle}>{copy.chooseExistingWorkout}</Text>
               <Text style={styles.choiceSubtitle}>{copy.chooseExistingWorkoutBody}</Text>
             </Pressable>
@@ -101,7 +112,10 @@ export function ProgramWorkoutPickerModal({
               accessibilityLabel={copy.createNewWorkout}
               accessibilityRole="button"
               onPress={onCreateNew}
-              style={({ pressed }) => [styles.choiceButton, pressed && styles.pressed]}>
+              style={({ pressed }) => [
+                styles.choiceButton,
+                pressed && styles.choiceButtonPressed,
+              ]}>
               <Text style={styles.choiceTitle}>{copy.createNewWorkout}</Text>
               <Text style={styles.choiceSubtitle}>{copy.createNewWorkoutBody}</Text>
             </Pressable>
@@ -112,7 +126,10 @@ export function ProgramWorkoutPickerModal({
               accessibilityLabel={copy.back}
               accessibilityRole="button"
               onPress={() => setMode('choice')}
-              style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}>
+              style={({ pressed }) => [
+                styles.backButton,
+                pressed && styles.backButtonPressed,
+              ]}>
               <Text style={styles.backLabel}>{copy.back}</Text>
             </Pressable>
 
@@ -141,7 +158,7 @@ export function ProgramWorkoutPickerModal({
                       style={({ pressed }) => [
                         styles.row,
                         selected && styles.rowSelected,
-                        pressed && styles.pressed,
+                        pressed && styles.rowPressed,
                       ]}>
                       <View style={styles.rowCopy}>
                         <Text numberOfLines={2} style={styles.rowTitle}>
@@ -185,14 +202,19 @@ export function ProgramWorkoutPickerModal({
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     backButton: {
       alignSelf: 'flex-start',
+      borderCurve: 'continuous',
+      borderRadius: 12,
       minHeight: 44,
       justifyContent: 'center',
       paddingHorizontal: Spacing.one,
       paddingVertical: Spacing.one,
+    },
+    backButtonPressed: {
+      backgroundColor: glass.semanticAccentFill,
     },
     backLabel: {
       color: colors.accent,
@@ -208,14 +230,17 @@ const createStyles = (colors: typeof Colors.light) =>
       textAlign: 'right',
     },
     choiceButton: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 18,
       borderWidth: StyleSheet.hairlineWidth,
       gap: Spacing.half,
       paddingHorizontal: Spacing.three,
       paddingVertical: Spacing.four,
+    },
+    choiceButtonPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     choiceGroup: {
       flexGrow: 1,
@@ -300,13 +325,10 @@ const createStyles = (colors: typeof Colors.light) =>
       padding: Spacing.three,
       width: '100%',
     },
-    pressed: {
-      opacity: 0.72,
-    },
     row: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 18,
       borderWidth: StyleSheet.hairlineWidth,
@@ -328,7 +350,11 @@ const createStyles = (colors: typeof Colors.light) =>
       fontWeight: '700',
       marginTop: Spacing.half,
     },
+    rowPressed: {
+      backgroundColor: glass.controlPressedFill,
+    },
     rowSelected: {
+      backgroundColor: glass.semanticAccentFill,
       borderColor: colors.accent,
       borderWidth: 1,
     },

@@ -5,6 +5,10 @@ import { Colors, Spacing } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { getWorkoutBuilderCopy } from '@/localization/workoutBuilderCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 import type { DraftWorkoutExercise } from './workout-builder-types';
 
@@ -20,19 +24,25 @@ type WorkoutBuilderExerciseRowProps = {
 
 type ExerciseRowStyles = ReturnType<typeof createStyles>;
 
+type MiniActionTone = 'control' | 'destructive';
+
 function MiniAction({
   accessibilityLabel,
   disabled = false,
   label,
   onPress,
   styles,
+  tone = 'control',
 }: {
   accessibilityLabel: string;
   disabled?: boolean;
   label: string;
   onPress: () => void;
   styles: ExerciseRowStyles;
+  tone?: MiniActionTone;
 }) {
+  const destructive = tone === 'destructive';
+
   return (
     <Pressable
       accessibilityLabel={accessibilityLabel}
@@ -42,10 +52,18 @@ function MiniAction({
       onPress={onPress}
       style={({ pressed }) => [
         styles.miniAction,
-        disabled && styles.disabled,
-        pressed && !disabled && styles.pressed,
+        destructive && styles.destructiveAction,
+        disabled && styles.miniActionDisabled,
+        pressed && !disabled &&
+          (destructive ? styles.destructiveActionPressed : styles.miniActionPressed),
       ]}>
-      <Text numberOfLines={2} style={styles.miniActionLabel}>
+      <Text
+        numberOfLines={2}
+        style={[
+          styles.miniActionLabel,
+          destructive && styles.destructiveActionLabel,
+          disabled && styles.miniActionDisabledLabel,
+        ]}>
         {label}
       </Text>
     </Pressable>
@@ -61,10 +79,14 @@ export function WorkoutBuilderExerciseRow({
   onDuplicate,
   onMove,
 }: WorkoutBuilderExerciseRowProps) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { locale } = useLocalization();
   const copy = getWorkoutBuilderCopy(locale);
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   return (
     <View style={styles.row}>
@@ -171,6 +193,7 @@ export function WorkoutBuilderExerciseRow({
           label={copy.delete}
           onPress={() => onDelete(exercise.id)}
           styles={styles}
+          tone="destructive"
         />
       </View>
 
@@ -185,7 +208,7 @@ export function WorkoutBuilderExerciseRow({
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     actionCluster: {
       flexDirection: 'row',
@@ -199,8 +222,14 @@ const createStyles = (colors: typeof Colors.light) =>
       gap: Spacing.one,
       justifyContent: 'space-between',
     },
-    disabled: {
-      opacity: 0.4,
+    destructiveAction: {
+      borderColor: colors.error,
+    },
+    destructiveActionLabel: {
+      color: colors.error,
+    },
+    destructiveActionPressed: {
+      backgroundColor: colors.errorSoft,
     },
     exerciseIndex: {
       color: colors.textSecondary,
@@ -211,11 +240,11 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     handle: {
       alignItems: 'center',
-      backgroundColor: colors.backgroundSelected,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 12,
-      borderWidth: 1,
+      borderWidth: StyleSheet.hairlineWidth,
       flexShrink: 0,
       justifyContent: 'center',
       paddingHorizontal: Spacing.two,
@@ -265,16 +294,23 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     miniAction: {
       alignItems: 'center',
-      backgroundColor: colors.backgroundSelected,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 999,
-      borderWidth: 1,
+      borderWidth: StyleSheet.hairlineWidth,
       justifyContent: 'center',
       minHeight: 44,
       maxWidth: '100%',
       paddingHorizontal: Spacing.two,
       paddingVertical: Spacing.one,
+    },
+    miniActionDisabled: {
+      backgroundColor: glass.disabledFill,
+      borderColor: glass.disabledBorder,
+    },
+    miniActionDisabledLabel: {
+      color: colors.textMuted,
     },
     miniActionLabel: {
       color: colors.textPrimary,
@@ -282,6 +318,9 @@ const createStyles = (colors: typeof Colors.light) =>
       fontSize: 12,
       fontWeight: '700',
       textAlign: 'center',
+    },
+    miniActionPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     nameInput: {
       color: colors.textPrimary,
@@ -303,9 +342,6 @@ const createStyles = (colors: typeof Colors.light) =>
       paddingHorizontal: Spacing.two,
       paddingVertical: Spacing.two,
       textAlignVertical: 'top',
-    },
-    pressed: {
-      opacity: 0.78,
     },
     row: {
       backgroundColor: colors.backgroundElement,

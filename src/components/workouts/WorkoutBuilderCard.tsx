@@ -8,6 +8,10 @@ import { Colors, Spacing } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { getWorkoutBuilderCopy } from '@/localization/workoutBuilderCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 import type { DraftWorkoutExercise } from './workout-builder-types';
 import { WorkoutBuilderExerciseRow } from './WorkoutBuilderExerciseRow';
@@ -53,10 +57,14 @@ export function WorkoutBuilderCard({
   workoutDescription,
   workoutTitle,
 }: WorkoutBuilderCardProps) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { locale } = useLocalization();
   const copy = getWorkoutBuilderCopy(locale);
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const sectionTitle = editingWorkoutId ? copy.editWorkout : copy.workoutBuilder;
 
   const formFields = (
@@ -153,7 +161,10 @@ export function WorkoutBuilderCard({
         accessibilityRole="button"
         accessibilityState={{ expanded: isExpanded }}
         onPress={onToggleExpanded}
-        style={styles.collapsibleHeader}>
+        style={({ pressed }) => [
+          styles.collapsibleHeader,
+          pressed && styles.collapsibleHeaderPressed,
+        ]}>
         <View style={styles.headerRow}>
           <View style={styles.headerContent}>
             <Text style={styles.sectionTitle}>{sectionTitle}</Text>
@@ -202,10 +213,15 @@ export function WorkoutBuilderCard({
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     collapsibleHeader: {
+      borderCurve: 'continuous',
+      borderRadius: 12,
       paddingBottom: Spacing.two,
+    },
+    collapsibleHeaderPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     emptyState: {
       paddingBottom: Spacing.two,
