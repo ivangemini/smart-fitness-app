@@ -1,7 +1,10 @@
 import { parseSocialMediaPublicDescriptorDto } from './media-parsers';
 import { parseSocialProfileDto } from './parsers';
 import {
+  SOCIAL_STORY_CAPTION_MAX_LENGTH,
+  SOCIAL_STORY_CAPTION_SCHEMA_VERSION,
   SOCIAL_STORY_DTO_SCHEMA_VERSION,
+  type SocialStoryCaptionDto,
   type SocialStoryDto,
   type SocialStoryImageDescriptorDto,
   type SocialStoryPageDto,
@@ -17,6 +20,7 @@ const STORY_KEYS = [
   'expiresAt',
 ] as const;
 const STORY_PAGE_KEYS = ['items', 'nextCursor'] as const;
+const STORY_CAPTION_KEYS = ['schemaVersion', 'storyId', 'caption'] as const;
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u;
 const STORY_LIFETIME_MS = 24 * 60 * 60 * 1000;
@@ -81,6 +85,31 @@ export const parseSocialStoryDto = (value: unknown): SocialStoryDto => {
     viewed: value.viewed,
     createdAt: value.createdAt,
     expiresAt: value.expiresAt,
+  };
+};
+
+export const parseSocialStoryCaptionResponse = (
+  value: unknown,
+): SocialStoryCaptionDto => {
+  if (!isRecord(value) || !hasExactKeys(value, STORY_CAPTION_KEYS)) {
+    throw new Error('Invalid Social Story caption response');
+  }
+  if (
+    value.schemaVersion !== SOCIAL_STORY_CAPTION_SCHEMA_VERSION ||
+    typeof value.storyId !== 'string' ||
+    !UUID_PATTERN.test(value.storyId) ||
+    (value.caption !== null &&
+      (typeof value.caption !== 'string' ||
+        value.caption.length < 1 ||
+        value.caption.length > SOCIAL_STORY_CAPTION_MAX_LENGTH ||
+        value.caption !== value.caption.trim()))
+  ) {
+    throw new Error('Invalid Social Story caption response');
+  }
+  return {
+    schemaVersion: SOCIAL_STORY_CAPTION_SCHEMA_VERSION,
+    storyId: value.storyId,
+    caption: value.caption,
   };
 };
 
