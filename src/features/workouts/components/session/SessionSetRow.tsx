@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Colors } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette, type LiquidGlassPalette } from '@/theme/liquidGlass';
 import type { WorkoutRpe } from '@/types';
 import { useUnitPreferences } from '@/units';
 
@@ -36,10 +37,14 @@ export const SessionSetRow = memo(function SessionSetRow({
   onWeightChange,
   previousLabel,
 }: SessionSetRowProps) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { formatNumber, t } = useLocalization();
   const { weight } = useUnitPreferences();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const isDark = colors.background === Colors.dark.background;
   const setLabel = formatNumber(index + 1, { maximumFractionDigits: 0 });
 
@@ -99,7 +104,10 @@ export const SessionSetRow = memo(function SessionSetRow({
               accessibilityRole="button"
               hitSlop={8}
               onPress={onEditRpe}
-              style={({ pressed }) => [styles.rpeBadge, pressed && styles.pressed]}>
+              style={({ pressed }) => [
+                styles.rpeBadge,
+                pressed && styles.rpeBadgePressed,
+              ]}>
               <Text style={styles.rpeBadgeLabel}>{actualRpe}</Text>
             </Pressable>
           ) : null}
@@ -119,9 +127,18 @@ export const SessionSetRow = memo(function SessionSetRow({
             style={({ pressed }) => [
               styles.iconCell,
               completed && (isDark ? styles.iconCellCompletedDark : styles.iconCellCompletedLight),
-              pressed && styles.pressed,
+              pressed && (completed ? styles.iconCellCompletedPressed : styles.iconCellPressed),
             ]}>
-            <Text style={[styles.checkLabel, completed && styles.checkLabelCompleted]}>✓</Text>
+            {({ pressed }) => (
+              <Text
+                style={[
+                  styles.checkLabel,
+                  completed && styles.checkLabelCompleted,
+                  pressed && completed && styles.checkLabelCompletedPressed,
+                ]}>
+                ✓
+              </Text>
+            )}
           </Pressable>
         </View>
       </View>
@@ -129,7 +146,7 @@ export const SessionSetRow = memo(function SessionSetRow({
   );
 });
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     cell: {
       color: colors.textPrimary,
@@ -146,6 +163,9 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     checkLabelCompleted: {
       color: colors.textOnAccent,
+    },
+    checkLabelCompletedPressed: {
+      color: colors.success,
     },
     colCompletion: {
       marginLeft: SESSION_TABLE_GAPS.repsToCompletion,
@@ -193,6 +213,14 @@ const createStyles = (colors: typeof Colors.light) =>
     iconCellCompletedLight: {
       backgroundColor: '#2DBA20',
     },
+    iconCellCompletedPressed: {
+      backgroundColor: glass.semanticPositiveFill,
+      borderColor: glass.semanticPositiveBorder,
+      borderWidth: StyleSheet.hairlineWidth,
+    },
+    iconCellPressed: {
+      backgroundColor: glass.controlPressedFill,
+    },
     inputCell: {
       backgroundColor: colors.background,
       borderColor: colors.borderSubtle,
@@ -219,9 +247,6 @@ const createStyles = (colors: typeof Colors.light) =>
       color: colors.textMuted,
       fontSize: 15,
       lineHeight: 48,
-    },
-    pressed: {
-      opacity: 0.72,
     },
     row: {
       alignItems: 'center',
@@ -252,6 +277,8 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     rpeBadge: {
       alignItems: 'center',
+      borderCurve: 'continuous',
+      borderRadius: 9,
       minHeight: 18,
       minWidth: 18,
       position: 'absolute',
@@ -265,5 +292,8 @@ const createStyles = (colors: typeof Colors.light) =>
       fontWeight: '900',
       lineHeight: 15,
       textAlign: 'center',
+    },
+    rpeBadgePressed: {
+      backgroundColor: glass.semanticAccentFill,
     },
   });
