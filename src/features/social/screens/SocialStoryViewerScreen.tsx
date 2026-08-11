@@ -4,7 +4,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { createSocialApi, type SocialStoryDto } from '@/api/social';
+import {
+  createSocialApi,
+  type SocialStoryDto,
+  type SocialStoryOverlayValueDto,
+} from '@/api/social';
 import { AppCard } from '@/components/ui/AppCard';
 import { InlineError } from '@/components/ui/InlineError';
 import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
@@ -17,6 +21,7 @@ import { useAppTheme } from '@/theme/AppThemeProvider';
 import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
 import { getSocialStoryCopy } from '../socialStoryCopy';
+import { SocialStoryOverlayView } from '../SocialStoryOverlayView';
 import { requestSocialStoryRefresh } from '../socialStoryRefreshSignal';
 import { getSocialStoryLoadError } from '../socialStorySurfaceModel';
 
@@ -88,6 +93,7 @@ export default function SocialStoryViewerScreen() {
   const socialApi = useMemo(() => createSocialApi(auth), [auth]);
   const [story, setStory] = useState<SocialStoryDto | null>(null);
   const [caption, setCaption] = useState<string | null>(null);
+  const [overlay, setOverlay] = useState<SocialStoryOverlayValueDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
   const [canDelete, setCanDelete] = useState(false);
@@ -98,6 +104,7 @@ export default function SocialStoryViewerScreen() {
     if (!isAuthenticated || !storyId) {
       setStory(null);
       setCaption(null);
+      setOverlay(null);
       setCanDelete(false);
       setLoading(false);
       setErrorMessage(copy.storyUnavailable);
@@ -106,14 +113,19 @@ export default function SocialStoryViewerScreen() {
     setLoading(true);
     setErrorMessage(null);
     try {
-      const [nextStory, ownProfile, captionResult] = await Promise.all([
-        socialApi.getStory(storyId),
-        socialApi.getOwnProfile().catch(() => null),
-        socialApi.getStoryCaption(storyId).catch(() => null),
-      ]);
+      const [nextStory, ownProfile, captionResult, overlayResult] =
+        await Promise.all([
+          socialApi.getStory(storyId),
+          socialApi.getOwnProfile().catch(() => null),
+          socialApi.getStoryCaption(storyId).catch(() => null),
+          socialApi.getStoryOverlay(storyId).catch(() => null),
+        ]);
       setStory(nextStory);
       setCaption(
         captionResult?.storyId === nextStory.id ? captionResult.caption : null,
+      );
+      setOverlay(
+        overlayResult?.storyId === nextStory.id ? overlayResult.overlay : null,
       );
       setCanDelete(ownProfile?.username === nextStory.author.username);
       setLoading(false);
@@ -125,6 +137,7 @@ export default function SocialStoryViewerScreen() {
     } catch (error) {
       setStory(null);
       setCaption(null);
+      setOverlay(null);
       setCanDelete(false);
       setLoading(false);
       const mapped = getSocialStoryLoadError(error);
@@ -218,6 +231,7 @@ export default function SocialStoryViewerScreen() {
                 source={{ uri: variant.url }}
                 style={styles.storyImage}
               />
+              <SocialStoryOverlayView overlay={overlay} />
             </View>
             {caption ? <Text style={styles.caption}>{caption}</Text> : null}
             {errorMessage ? <InlineError message={errorMessage} /> : null}
