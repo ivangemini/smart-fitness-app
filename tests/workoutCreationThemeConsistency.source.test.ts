@@ -25,7 +25,10 @@ describe('workout creation theme consistency', () => {
     expect(boundary).not.toContain('Colors.dark');
     for (const source of [picker, editor, builder, exerciseRow]) {
       expect(source).toContain('useAppTheme');
-      expect(source).toContain('createStyles(colors)');
+      expect(source).toMatch(/createStyles\(colors(?:, glass)?\)/);
+    }
+    for (const source of [picker, builder, exerciseRow]) {
+      expect(source).toContain('resolveLiquidGlassPalette(resolvedAppearance)');
     }
     expect(builder).toContain('placeholderTextColor={colors.textMuted}');
     expect(exerciseRow).toContain('placeholderTextColor={colors.textMuted}');
