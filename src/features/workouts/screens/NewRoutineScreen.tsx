@@ -16,6 +16,7 @@ import { formatWorkoutPlanDescription, getWorkoutProgramById } from '@/lib/worko
 import { useLocalization } from '@/localization';
 import { getProgramRoutineCopy } from '@/localization/programRoutineCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import type { Exercise, Workout } from '@/types';
 import { useUnitPreferences } from '@/units';
 
@@ -30,12 +31,16 @@ type RoutinePlanExercise = {
 export function NewRoutineScreen() {
   const params = useLocalSearchParams<{ programId?: string }>();
   const programId = Array.isArray(params.programId) ? params.programId[0] : params.programId;
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { formatNumber, locale } = useLocalization();
   const copy = getProgramRoutineCopy(locale);
   const { weight } = useUnitPreferences();
   const insets = useSafeAreaInsets();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const { addWorkoutTemplate, saveTrainingProgram } = useAppActions();
   const { exercises, trainingPrograms, workouts } = useWorkoutState();
   const program = useMemo(
@@ -158,7 +163,10 @@ export function NewRoutineScreen() {
           accessibilityLabel={copy.backToWorkouts}
           accessibilityRole="button"
           onPress={() => router.replace('/workouts')}
-          style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}>
+          style={({ pressed }) => [
+            styles.textButton,
+            pressed && styles.textButtonPressed,
+          ]}>
           <Text style={styles.textButtonLabel}>{copy.backToWorkouts}</Text>
         </Pressable>
       </View>
@@ -172,7 +180,7 @@ export function NewRoutineScreen() {
           accessibilityLabel={copy.cancel}
           accessibilityRole="button"
           onPress={() => router.back()}
-          style={({ pressed }) => [styles.navButton, pressed && styles.pressed]}>
+          style={({ pressed }) => [styles.navButton, pressed && styles.navButtonPressed]}>
           <Text numberOfLines={2} style={styles.navButtonLabel}>
             {copy.cancel}
           </Text>
@@ -189,7 +197,7 @@ export function NewRoutineScreen() {
           style={({ pressed }) => [
             styles.navButton,
             !canSave && styles.disabled,
-            pressed && canSave && styles.pressed,
+            pressed && canSave && styles.navButtonPressed,
           ]}>
           <Text numberOfLines={2} style={styles.navButtonLabel}>
             {copy.save}
@@ -253,7 +261,7 @@ export function NewRoutineScreen() {
                       }
                       style={({ pressed }) => [
                         styles.exerciseHeaderRow,
-                        pressed && styles.pressed,
+                        pressed && styles.exerciseHeaderPressed,
                       ]}>
                       <View style={styles.exerciseThumb}>
                         <Text style={styles.exerciseThumbLabel}>
@@ -286,7 +294,7 @@ export function NewRoutineScreen() {
                         onPress={() => setExerciseMenu(item.exercise)}
                         style={({ pressed }) => [
                           styles.exerciseMenuButton,
-                          pressed && styles.pressed,
+                          pressed && styles.exerciseMenuButtonPressed,
                         ]}>
                         <Text style={styles.exerciseMenuLabel}>•••</Text>
                       </Pressable>
@@ -367,7 +375,7 @@ export function NewRoutineScreen() {
                           }
                           style={({ pressed }) => [
                             styles.addSetButton,
-                            pressed && styles.pressed,
+                            pressed && styles.addSetButtonPressed,
                           ]}>
                           <Text style={styles.addSetLabel}>{copy.addSet}</Text>
                         </Pressable>
@@ -383,7 +391,10 @@ export function NewRoutineScreen() {
             accessibilityLabel={copy.addExercises}
             accessibilityRole="button"
             onPress={() => setPickerMode({ type: 'add' })}
-            style={({ pressed }) => [styles.addButton, pressed && styles.pressed]}>
+            style={({ pressed }) => [
+              styles.addButton,
+              pressed && styles.addButtonPressed,
+            ]}>
             <Text style={styles.addButtonLabel}>{copy.addExercises}</Text>
           </Pressable>
         </View>
