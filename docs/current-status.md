@@ -5,115 +5,69 @@ Updated: 2026-08-11
 ## Verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Latest runtime `main`: `2e9d46baf5c311a16f8399b1f885bad34317ee6f`.
-- Latest runtime merge: PR #607 — Workouts Exercise Library now follows the active light/dark/system theme and uses Liquid Glass material-specific interaction feedback while preserving `SectionList`, stable exercise IDs, favorites/search/filter/recent/similar/custom-exercise behavior, localization and safe-area ownership.
-- PR #607 exact validated head: `642102c89a6cc21bfd924e0ecfa6c5276613b124`; Mobile CI #2155 run `31465438807` passed repository/changed-file line limits, TypeScript, full regression, expanded model smoke, Expo export and Expo Doctor before merge.
+- Current mobile `main`: `a8b2c4530cbdc944e7a3821cdc7926296fb78f18`.
+- Latest runtime merge: PR #613 — Program Workout Picker and workout-builder direct interactions now use adaptive Liquid Glass control/accent/destructive/disabled material states instead of generic opacity-only feedback; picker/exercise virtualization, stable IDs, keyboard/safe-area behavior and create/edit/attach flows remain preserved.
+- PR #613 exact validated head: `fae10aa93a1d26279eabe9d56eaf1efeb7103974`; Mobile CI #2170 run `31476083264` passed repository/changed-file line limits, TypeScript, full regression, expanded model smoke, Expo export and Expo Doctor before merge.
+- PR #614 merged immediately before it at `d0f44018ea457a4acc2d33bc69fb608621b3fbe5`; exact head `ca2a9277cac376b52d6332798ce3cf6ebadadd11`; Mobile CI #2167 run `31474957650` was fully green.
+- PR #610 and #611 remain the preceding runtime virtualization batches: New Routine and Program Workout Editor respectively; both exact-head Mobile CI runs passed before merge.
+- Merged demonstrated-defect LG-5 runtime batches now total **38**.
 - Backend repo: `ivangemini/smart-fitness-backend`.
 - Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
-- Backend PR #215 remains draft/open at `0826ff18dac7d4afe78943d9881c5a530507f1af`; `Backend CI`, `PostgreSQL CI` and `Account Deletion Receipt CI` are still queued. Do not merge it until all required exact-head jobs execute and pass.
+- Backend PR #215 was rebased onto that exact main without changing its four-file CI-policy scope. Current exact head: `f5c7f2d4cd1d150f5894fcc60725e85f05631d22`. `Backend CI`, `Backend PostgreSQL CI`, and `Account Deletion Receipt CI` must all execute and pass before it is marked ready/merged.
 - **LG-H2 Stories is complete for the current image-only v1 source scope.**
 - **LG-4 Workouts source convergence is complete.**
-- **LG-5 QA and bounded polish is active, validation-first.**
-- **Coach product/material expansion remains deferred.**
+- **LG-5 validation-first source/CI QA is complete for the currently authorized source scope.**
+- **There is no remaining approved autonomous source-refactor phase.**
+- Coach product/material expansion remains deferred.
 
 Exact code, tests and current Git history override this checkpoint if it becomes stale.
 
-## LG-5 completed source/CI batches
+## LG-5 closure evidence
 
-Merged demonstrated-defect runtime batches now total **34** and run through PR #607:
+The first 34 demonstrated-defect runtime batches run through PR #607 and remain authoritative in Git history and earlier checkpoints. The final four source packages are:
 
-1. #559 Create Program keyboard/safe-area reachability.
-2. #560 Program Add Workout short-height/large-text resilience plus New Routine notes interaction minimum.
-3. #561 shared text resilience.
-4. #565 shared SectionHeader active-theme consistency.
-5. #567 shared state active-theme consistency.
-6. #568 auth/account appearance consistency.
-7. #569 onboarding appearance consistency.
-8. #570 Exercise Detail loading-state ownership.
-9. #571 Share Workout state/theme resilience.
-10. #572 bounded Coach history/detail/input-summary theme consistency.
-11. #573 paginated Social collection virtualization.
-12. #574 workout-post comment virtualization.
-13. #577 completed-workout exercise-group virtualization.
-14. #579 Workout Template Detail exercise virtualization.
-15. #580 Progress body-measurement keyboard reachability.
-16. #581 Coach Run History virtualization.
-17. #583 Account Sessions virtualization.
-18. #584 User Limitations virtualization.
-19. #585 Sync Conflict Review virtualization.
-20. #586 Active Session exercise virtualization.
-21. #590 Safety & Recovery Review result virtualization.
-22. #591 residual Coach navigation material convergence.
-23. #593 Workouts History floating material convergence.
-24. #595 Weight Entry shared-form/accessibility convergence.
-25. #597 Workout History filter/action/row material convergence.
-26. #598 completed-history and pre-workout Safety row single-virtualization boundaries.
-27. #599 Safety Gate + Workout Session Finish direct-action material feedback.
-28. #600 Workout Template Detail not-found shared action.
-29. #601 Program Detail + Program Builder interaction materials.
-30. #602 New Routine editor/picker/action-menu interaction materials.
-31. #603 Exercise Library retry/row/details/filter interaction materials.
-32. #605 Active Session interaction-material convergence.
-33. #606 workout-session preparation-state localization.
-34. #607 Workouts Exercise Library active-theme/material convergence.
+35. **PR #610 — New Routine virtualization.** The arbitrary exercise collection uses the intended virtualized owner and stable identity.
+36. **PR #611 — Program Workout Editor virtualization.** Arbitrary draft exercise rows use the intended virtualized owner while preserving editor behavior.
+37. **PR #614 — Safety Gate responsive/accessibility hardening.** Narrow EN/RU metric cells share width safely; Recovery Check-in and Limitations actions expose button semantics and shrinkable labels without changing Safety & Recovery decision logic.
+38. **PR #613 — Program Editor interaction-material convergence.** Picker choices/rows, builder exercise actions and collapsible header use adaptive control/accent/destructive/disabled material states; focused guards prevent opacity-only regression.
 
-PR #576 remains a scope/documentation audit rather than a runtime package. PR #604 is the docs-only LG-5 checkpoint through PR #603. Completed workout history remains an immutable read surface; do not invent edit/delete UI from generic session state actions. See `docs/qa/lg5-completed-history-scope.md`.
+PR #612 is **not** a runtime batch. Its proposed Program Detail/Builder virtualization was rejected after confirming those program-day collections are semantically bounded by the seven-day `WeekdayKey` domain; its branch was reset instead of merging a speculative refactor.
 
-## Recent runtime evidence
+## Final LG-5 no-change evidence
 
-### PR #605 — Active Session interaction materials
+The post-#611 audit also rechecked the remaining live Workouts boundaries against the current responsive, material, localization, accessibility, stable-identity, safe-area and virtualization contracts.
 
-The previously confirmed Active Session package is complete. Exercise expand/menu/rest/Add Set interactions, set-completion/RPE interactions, RPE selection and overflow/replacement interactions now use material-specific Liquid Glass feedback. Active-session draft persistence, set calculations, completion/RPE timing and semantics, replacement/discard behavior, routes and virtualization boundaries remain unchanged.
+- Program Detail/Builder program-day rows are bounded by the seven-day model; no virtualization rewrite is justified.
+- Workout History list/detail already owns appropriate `FlatList` boundaries, stable IDs, read-only completed-history semantics and responsive metric layout.
+- Workout Template Detail already owns the intended exercise virtualization and stable IDs.
+- Existing guards cover Workouts Hub, Program Detail, creation/editor stack, picker responsiveness, Exercise Library, History Detail, Template Detail, active-session header/footer/overflow/finish/RPE/replacement flows and list virtualization.
+- `QuickActionsCard` label-as-key remains non-actionable unless live usage is established; do not refactor candidate/legacy code speculatively.
+- Home/Profile/Coach/Nutrition/Settings controls previously audited remain no-change evidence unless a new reproduced defect appears.
 
-Exact head `aabfe05b4572f1dbb5c9c83f557a454a6e0a4a3c`; Mobile CI #2150 run `31462888466`; merge `f46f9ed0e9de02aa4431edd428415762752ffdcf`.
-
-### PR #606 — workout-session preparation localization
-
-The live `/workout-session` preparation state now uses the existing localized Safety Gate copy boundary instead of hard-coded English. Draft hydration, acknowledgement lookup/capture, Safety metadata persistence and gate/session routing remain unchanged.
-
-Exact head `10a67c251d681ca69355ef0354ce3017b864459c`; Mobile CI #2152 run `31463444416`; merge `b41f7a0762281bd28a1c1b12e6e4b5cc4f3a4a51`.
-
-### PR #607 — Workouts Exercise Library theme/material
-
-The live `/workouts/exercise-library` route, virtualized browser, filters, favorites, detail sheet and custom-exercise controls now derive active colors from `AppThemeProvider` and Liquid Glass material tokens instead of hard-coded dark colors/generic opacity. During exact-head validation, a stale legacy `WorkoutExerciseLibraryCard` import of the removed named `styles` export was found and corrected to use `createWorkoutExerciseLibraryCardStyles`; TypeScript and the complete Hermes gate then passed.
-
-Exact head `642102c89a6cc21bfd924e0ecfa6c5276613b124`; Mobile CI #2155 run `31465438807`; merge `2e9d46baf5c311a16f8399b1f885bad34317ee6f`.
+A future concrete regression can still receive a bounded fix. Completion here means there is no remaining **pre-authorized** source package to manufacture solely to continue changing code.
 
 ## CI execution
 
 - PR #562 routes authoritative routine Mobile CI to `[self-hosted, linux, x64, hermes-mobile-ci]` while preserving the complete gate.
-- PR #563 skips only GitHub-generated merge-push duplicates after an already exact-head validated PR.
-- PR #564 persists that policy in mobile `AGENTS.md`.
+- PR #563 skips only duplicate merge-generated post-merge validation after an already exact-head validated PR.
+- PR #564 persists that mobile policy in `AGENTS.md`.
 - Backend PR #216 persists the backend counterpart policy.
-- Backend PR #215 remains blocked by queued required exact-head workflows; do not weaken runner policy or merge around the gate.
+- Backend PR #215 may merge only after its new exact-head Hermes workflows pass; do not weaken the runner policy to clear a queue.
 
-## LG-5 active next work
+## Remaining roadmap / authorization gates
 
-LG-5 remains **validation-first**. The previously confirmed Active Session package is complete in #605, and the two subsequently demonstrated Workouts defects are complete in #606 and #607.
+There is **no separate autonomous source-refactor phase currently authorized**. Remaining work is deliberately gated or deferred:
 
-There is **no pre-authorized broad runtime restyle/refactor package after #607**. Continue by validating remaining live surfaces against the existing contracts, then open only the smallest coherent package for a reproduced or source-demonstrated defect.
+1. Physical-device, standalone/native-release, Android/system-navigation, second-device/offline-restart, deployment/provider and production evidence only when explicitly authorized. Source/CI evidence does not substitute for these checks.
+2. **LG-H3 Steps:** blocked until a reviewed native health/activity provider, dependency and permission contract exists, followed by separately authorized physical runtime evidence. Do not infer steps from workouts.
+3. **LG-H4 feed retention/ranking:** later. Preserve chronological Following semantics until a separate ranking contract is reviewed.
+4. **Coach product/material expansion:** deferred until explicit reprioritization. Bounded regressions on existing live Coach surfaces remain valid QA fixes but do not reopen the product phase.
+5. Backend CI infrastructure #215 remains a separate cross-repository gate until exact-head validation is green.
 
-Current bounded evidence / inspection rules:
+## Durable documentation / architecture rule
 
-- Recheck Workouts-adjacent live routes for residual hard-coded appearance, generic opacity-only direct interaction, compact-height reachability, text scaling and safe-area ownership only where source or QA evidence demonstrates a mismatch.
-- Preserve one suitable virtualized owner for potentially long collections and stable semantic IDs.
-- Preserve workout/program lifecycle, active-session persistence, completed-history read-only semantics, exercise-provider/repository behavior and existing route contracts.
-- `QuickActionsCard` label-as-key remains a candidate only if live usage is established; do not refactor it speculatively.
-- Weight Details recent history remains intentionally capped at 10 entries with stable IDs and 44 pt rows.
-- Home/Profile header controls, Coach tab actions, Nutrition calendar/Today controls and Settings shared controls remain no-change evidence unless a new defect is demonstrated.
-- Program Detail remains bounded by the seven-day `WeekdayKey` domain.
+`docs/implementation-plan.md` must retain the reviewed local-state decision reference `docs/architecture/local-state-performance-decision.md`. The architecture decision remains the existing AsyncStorage-backed local-state strategy unless measured evidence explicitly reopens it. In equivalent explicit terms, **no separate autonomous source-refactor phase is currently authorized**.
 
-If inspection shows no defect, record/reuse no-change evidence and move on. If it shows a concrete defect, fix the smallest coherent boundary and merge only an exact fully green runtime head.
+## Safety / activation boundaries
 
-Physical-device evidence remains separately authorization-gated.
-
-## Durable documentation / CI rule
-
-`docs/implementation-plan.md` must retain the reviewed local-state decision reference `docs/architecture/local-state-performance-decision.md`. It must also retain the explicit source-refactor authorization markers unless that contract is deliberately changed: `There is no remaining approved autonomous source-refactor phase` and `no separate autonomous source-refactor phase is currently authorized`.
-
-## Boundaries
-
-- LG-H3 Steps remains blocked until a reviewed native health/activity provider and permission contract exist.
-- LG-H4 feed ranking remains later; preserve chronological Following semantics.
-- Coach product/material expansion remains deferred.
-- Do not perform OTA/EAS publication, native build/install, backend deployment, migration execution, production/provider activation, credential/DNS changes, destructive production cleanup, HealthKit/Health Connect activation or store submission without direct authorization.
+Do not perform OTA/EAS publication, native build/install, backend deployment, migration execution, production/provider activation, credential/DNS changes, destructive production cleanup, HealthKit/Health Connect activation or store submission without direct authorization.
