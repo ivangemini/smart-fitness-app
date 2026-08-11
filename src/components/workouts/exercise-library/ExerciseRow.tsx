@@ -60,7 +60,10 @@ export const ExerciseRow = memo(function ExerciseRow({
       <Pressable
         accessibilityLabel={copy.openDetails(exercise.name)}
         onPress={() => onOpenDetail(exercise.id)}
-        style={({ pressed }) => [styles.exerciseMain, pressed && styles.pressed]}>
+        style={({ pressed }) => [
+          styles.exerciseMain,
+          pressed && styles.exerciseMainPressed,
+        ]}>
         <View style={styles.exerciseTitleRow}>
           <Text style={styles.exerciseName}>
             {buildQueryHighlight(exercise.name, query, styles)}
@@ -98,7 +101,7 @@ export const ExerciseRow = memo(function ExerciseRow({
           style={({ pressed }) => [
             styles.favoriteToggle,
             isFavorite && styles.favoriteToggleActive,
-            pressed && styles.pressed,
+            pressed && styles.favoriteTogglePressed,
           ]}>
           <Text
             style={[

@@ -49,7 +49,8 @@ const FilterChip = memo(function FilterChip({
       style={({ pressed }) => [
         styles.filterChip,
         selected && styles.filterChipSelected,
-        pressed && styles.pressed,
+        pressed &&
+          (selected ? styles.filterChipSelectedPressed : styles.filterChipPressed),
       ]}>
       <Text style={[styles.filterChipLabel, selected && styles.filterChipLabelSelected]}>
         {label}
@@ -101,7 +102,10 @@ export function ExerciseFilterBar({
           accessibilityLabel={copy.clearFiltersAccessibility}
           accessibilityRole="button"
           onPress={onClearFilters}
-          style={({ pressed }) => [styles.clearFiltersButton, pressed && styles.pressed]}>
+          style={({ pressed }) => [
+            styles.clearFiltersButton,
+            pressed && styles.clearFiltersButtonPressed,
+          ]}>
           <Text style={styles.clearFiltersText}>{copy.clearFilters}</Text>
         </Pressable>
       </View>

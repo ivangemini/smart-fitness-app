@@ -3,7 +3,7 @@ import { Pressable, SectionList, Text, TextInput, View } from 'react-native';
 
 import { AppButton } from '@/components/ui/AppButton';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import {
   loadWorkoutExerciseFavoriteIds,
   saveWorkoutExerciseFavoriteIds,
@@ -15,6 +15,8 @@ import {
 } from '@/lib/workouts';
 import { useLocalization } from '@/localization';
 import { getExerciseLibraryCopy } from '@/localization/exerciseLibraryCopy';
+import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import type { Exercise, WorkoutSession } from '@/types';
 
 import { ExerciseDetailSheet } from './exercise-library/ExerciseDetailSheet';
@@ -28,7 +30,7 @@ import {
   matchesFacet,
   type FilterValue,
 } from './exercise-library/exerciseLibraryUtils';
-import { styles } from './exercise-library/workoutExerciseLibraryCardStyles';
+import { createWorkoutExerciseLibraryCardStyles } from './exercise-library/workoutExerciseLibraryCardStyles';
 
 type Props = {
   exerciseName: string;
@@ -76,8 +78,17 @@ export function VirtualizedWorkoutExerciseLibrary(props: Props) {
     searchValue,
     workoutSessions,
   } = props;
+  const { colors, resolvedAppearance } = useAppTheme();
   const { locale } = useLocalization();
   const copy = getExerciseLibraryCopy(locale);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(
+    () => createWorkoutExerciseLibraryCardStyles(colors, glass),
+    [colors, glass],
+  );
   const [favoriteExerciseIds, setFavoriteExerciseIds] = useState<string[]>([]);
   const [isFavoritesReady, setIsFavoritesReady] = useState(false);
   const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null);
@@ -226,7 +237,14 @@ export function VirtualizedWorkoutExerciseLibrary(props: Props) {
 
   const header = (
     <View>
-      <Pressable accessibilityLabel={copy.toggleBrowser} accessibilityRole="button" onPress={onToggleExpanded} style={styles.collapsibleHeader}>
+      <Pressable
+        accessibilityLabel={copy.toggleBrowser}
+        accessibilityRole="button"
+        onPress={onToggleExpanded}
+        style={({ pressed }) => [
+          styles.collapsibleHeader,
+          pressed && styles.collapsibleHeaderPressed,
+        ]}>
         <View style={styles.headerRow}>
           <View style={styles.headerContent}>
             <Text style={styles.sectionTitle}>{`${copy.browserTitle} ${isExpanded ? '−' : '+'}`}</Text>
@@ -242,7 +260,7 @@ export function VirtualizedWorkoutExerciseLibrary(props: Props) {
             <TextInput
               onChangeText={onSearchChange}
               placeholder={copy.searchPlaceholder}
-              placeholderTextColor={Colors.dark.textSecondary}
+              placeholderTextColor={colors.textSecondary}
               style={styles.input}
               value={searchValue}
             />
@@ -293,7 +311,7 @@ export function VirtualizedWorkoutExerciseLibrary(props: Props) {
           <TextInput
             onChangeText={onExerciseNameChange}
             placeholder={copy.exerciseNamePlaceholder}
-            placeholderTextColor={Colors.dark.textSecondary}
+            placeholderTextColor={colors.textSecondary}
             style={styles.input}
             value={exerciseName}
           />
@@ -303,7 +321,7 @@ export function VirtualizedWorkoutExerciseLibrary(props: Props) {
           <TextInput
             onChangeText={onExerciseMuscleGroupChange}
             placeholder={copy.muscleGroupPlaceholder}
-            placeholderTextColor={Colors.dark.textSecondary}
+            placeholderTextColor={colors.textSecondary}
             style={styles.input}
             value={exerciseMuscleGroup}
           />
