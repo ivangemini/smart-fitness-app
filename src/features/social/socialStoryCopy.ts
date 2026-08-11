@@ -45,6 +45,7 @@ export type SocialStoryCopy = {
   selectingImage: string;
   stories: string;
   storyUnavailable: string;
+  takePhoto: string;
   uploadPending: string;
   uploadingImage: string;
   yourStory: string;
@@ -54,10 +55,10 @@ const copy: Record<SupportedLocale, SocialStoryCopy> = {
   en: {
     addStory: 'Add story',
     approved: 'Ready to publish.',
-    authorBody: 'Choose one image. It will be checked before it can be published.',
+    authorBody: 'Choose one photo from your library or take a new one. It will be checked before it can be published.',
     authorTitle: 'New story',
     cancel: 'Cancel',
-    chooseImage: 'Choose image',
+    chooseImage: 'Choose from library',
     close: 'Close story',
     completingImage: 'Finalizing image',
     deleteFailed: 'The story could not be deleted.',
@@ -69,7 +70,7 @@ const copy: Record<SupportedLocale, SocialStoryCopy> = {
     imageAlreadyAttached: 'This image is already attached to a story.',
     imageGenericError: 'The story image could not be prepared.',
     imageOffline: 'Connect to the internet and try again.',
-    imagePermissionDenied: 'Photo access is required to choose a story image.',
+    imagePermissionDenied: 'Camera or photo access is required to add a story image.',
     imageProcessingFailed: 'The image could not be processed.',
     imageRejected: 'This image cannot be published.',
     imageSelectionFailed: 'The image could not be selected.',
@@ -90,12 +91,13 @@ const copy: Record<SupportedLocale, SocialStoryCopy> = {
     refreshStatus: 'Refresh status',
     removeImage: 'Remove image',
     removingImage: 'Removing image',
-    replaceImage: 'Replace image',
+    replaceImage: 'Replace from library',
     retry: 'Retry',
     reviewRequired: 'This image needs review before it can be published.',
-    selectingImage: 'Opening photo library',
+    selectingImage: 'Selecting image',
     stories: 'Stories',
     storyUnavailable: 'This story is no longer available.',
+    takePhoto: 'Take photo',
     uploadPending: 'Waiting for upload processing.',
     uploadingImage: 'Uploading image',
     yourStory: 'Your story',
@@ -103,10 +105,10 @@ const copy: Record<SupportedLocale, SocialStoryCopy> = {
   ru: {
     addStory: 'Добавить историю',
     approved: 'Готово к публикации.',
-    authorBody: 'Выберите одно изображение. Перед публикацией оно пройдет проверку.',
+    authorBody: 'Выберите одно фото из медиатеки или снимите новое. Перед публикацией оно пройдет проверку.',
     authorTitle: 'Новая история',
     cancel: 'Отмена',
-    chooseImage: 'Выбрать изображение',
+    chooseImage: 'Выбрать из медиатеки',
     close: 'Закрыть историю',
     completingImage: 'Завершение загрузки',
     deleteFailed: 'Не удалось удалить историю.',
@@ -118,7 +120,7 @@ const copy: Record<SupportedLocale, SocialStoryCopy> = {
     imageAlreadyAttached: 'Это изображение уже прикреплено к истории.',
     imageGenericError: 'Не удалось подготовить изображение для истории.',
     imageOffline: 'Подключитесь к интернету и повторите попытку.',
-    imagePermissionDenied: 'Для выбора изображения нужен доступ к фото.',
+    imagePermissionDenied: 'Для добавления изображения в историю нужен доступ к камере или фото.',
     imageProcessingFailed: 'Не удалось обработать изображение.',
     imageRejected: 'Это изображение нельзя опубликовать.',
     imageSelectionFailed: 'Не удалось выбрать изображение.',
@@ -139,12 +141,13 @@ const copy: Record<SupportedLocale, SocialStoryCopy> = {
     refreshStatus: 'Обновить статус',
     removeImage: 'Удалить изображение',
     removingImage: 'Удаление изображения',
-    replaceImage: 'Заменить изображение',
+    replaceImage: 'Заменить из медиатеки',
     retry: 'Повторить',
     reviewRequired: 'Изображение требует проверки перед публикацией.',
-    selectingImage: 'Открытие медиатеки',
+    selectingImage: 'Выбор изображения',
     stories: 'Истории',
     storyUnavailable: 'Эта история больше недоступна.',
+    takePhoto: 'Снять фото',
     uploadPending: 'Ожидание обработки загрузки.',
     uploadingImage: 'Загрузка изображения',
     yourStory: 'Ваша история',

@@ -20,13 +20,15 @@ Exact code, migrations, tests and current Git history override this document if 
 
 Audited against:
 
-- mobile `main` `b354fb58f8b1759cca0e2dfd4cb68d48ad5b26b4`;
+- mobile `main` `3b3f1bdeb23e5bad6983f582bd44cea85de8aeb9` after PR #619 `docs: add audited Stories roadmap`;
 - backend `main` `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`;
 - backend PR #214 `Add server-authoritative Stories foundation`;
 - mobile PR #533 `Add server-backed Stories to Home`;
 - mobile PR #535 `Add managed Story authoring lifecycle`;
 - current mobile Story routes, API/parsers, cache, viewer, authoring hook and managed-media composition;
 - current backend Story routes/schemas/service and managed-media contracts.
+
+Direct camera capture is the first explicitly prioritized post-v1 Stories expansion. Its source contract is defined in S9-A. It reuses the existing image-only `story_image` lifecycle and does not reopen backend/media authority.
 
 ## Scope vocabulary
 
@@ -120,6 +122,33 @@ Status: **source-complete for image-only v1**.
 
 That statement is intentionally narrower than “Stories are fully done.” It means the source contract defined for LG-H2/image-only v1 is implemented. Release/runtime evidence and product expansion remain separate below.
 
+## S9-A — direct camera capture
+
+Status: **source-complete as the first explicitly prioritized Stories expansion; exact-head Mobile CI and physical runtime evidence remain separate layers.**
+
+Product/privacy contract:
+
+- [x] the native Story authoring surface offers `Take photo` in addition to media-library selection;
+- [x] web does not expose a camera action;
+- [x] camera access is requested only when the user explicitly chooses the camera action;
+- [x] camera cancellation returns to the authoring surface without publishing or creating Story state;
+- [x] capture remains **one still image only**; no video or audio capture is added;
+- [x] captured image metadata is validated before processing;
+- [x] captured images enter the same bounded resize/JPEG preprocessing used by existing Story images;
+- [x] captured images enter the same signed `story_image` upload/finalize/moderation polling lifecycle;
+- [x] publication still requires an owned approved managed asset with its exact current `stateVersion`;
+- [x] replacement/removal/restart-safe draft behavior remains unchanged;
+- [x] no Story-specific upload transport, backend endpoint, schema, visibility rule or moderation bypass is introduced;
+- [x] camera and photo-library permission disclosures explicitly cover the Social/Stories uses already present in source;
+- [x] microphone/audio permission remains disabled for this image-only capability.
+
+Native/runtime boundary:
+
+- the project already depends on `expo-camera` for barcode scanning, so this source package adds no dependency;
+- the camera permission disclosure in Expo native configuration now also names Story photo capture;
+- native configuration text only takes effect in a matching rebuilt binary, so **no physical/native completion is claimed until a separately authorized native build/device validation is performed**;
+- this package does not perform a build, install, OTA/EAS publication, backend deployment or provider activation.
+
 ## G1 — physical-device and standalone runtime evidence
 
 Status: **gated; not yet established by source CI**.
@@ -128,6 +157,8 @@ Run only with explicit authorization for native/physical runtime work. Evidence 
 
 - media-library permission allow/deny/retry;
 - image selection and cancellation;
+- camera permission allow/deny/retry and capture cancellation;
+- direct camera still-photo capture entering the same preview/upload path;
 - large-image preprocessing and preview behavior;
 - upload progress and interrupted-network recovery;
 - process/restart recovery of an in-flight managed-media draft;
@@ -172,9 +203,9 @@ Stories broad-release evidence must remain consistent with Social privacy/modera
 
 The capabilities below are **not part of the approved image-only v1 scope**. Their absence must not be reported as a v1 regression, but neither should the project claim that the full Stories product contains them.
 
-Each item requires an explicit product contract before source work begins:
+Direct camera capture is no longer merely inventory: it is the explicitly prioritized S9-A source capability above. The remaining items still require an explicit product contract before source work begins:
 
-1. **Richer authoring:** direct camera capture, captions/text overlays and richer composition controls.
+1. **Richer authoring after camera:** captions/text overlays and richer composition controls.
 2. **Story interactions:** Story-specific replies/reactions and their notification/privacy/moderation semantics.
 3. **Audience controls:** per-Story audience selection, Close Friends or equivalent visibility models.
 4. **Video Stories:** video acquisition, transcoding, moderation, delivery, duration/bandwidth limits and resumable/multipart upload where needed.

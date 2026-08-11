@@ -7,7 +7,7 @@ This file is the **canonical forward roadmap**. Verified evidence belongs in `do
 ## Current verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current repository/runtime `main`: `b354fb58f8b1759cca0e2dfd4cb68d48ad5b26b4`.
+- Current repository/runtime `main`: `3b3f1bdeb23e5bad6983f582bd44cea85de8aeb9` (PR #619 — audited Stories roadmap).
 - Latest runtime merge: PR #617 `fix(workouts): persist program builder state`.
 - PR #617 exact validated head: `4773f60339d70f4ee40163ecc92a492547c9ccc7`; Mobile CI #2179 run `31491962947` passed the complete Hermes mobile gate before merge.
 - PR #617 is a post-closure bounded regression fix and does not increase the LG-5 demonstrated-defect runtime batch count.
@@ -16,6 +16,7 @@ This file is the **canonical forward roadmap**. Verified evidence belongs in `do
 - Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
 - Backend PR #215 exact head remains `f5c7f2d4cd1d150f5894fcc60725e85f05631d22`; all three required exact-head Hermes workflows must actually execute and pass before ready/merge. Runner registration/access remains an infrastructure dependency, not permission to weaken validation.
 - **LG-H2 Stories is source-complete for the approved image-only v1 contract.** This is not a claim that the full long-term Stories product, physical-device evidence, deployed media/provider evidence or release evidence is complete. See `docs/roadmap/stories.md`.
+- **Stories S9-A direct camera capture is the first explicitly prioritized post-v1 expansion and is source-complete as an image-only mobile acquisition path.** It reuses the existing `story_image` pipeline; matching native/device evidence remains authorization-gated.
 - **Phase 10 Responsive Mobile UI Hardening is complete for current source/CI scope.**
 - **LG-4 Workouts source convergence is complete.**
 - **LG-5 QA and bounded polish is complete for the currently authorized source/CI scope.**
@@ -49,7 +50,7 @@ Release readiness remains lower than source completeness because physical-device
 - **Phase 4 product domain convergence:** complete for current source scope.
 - **Phase 5 deterministic Coach:** complete for current planned source scope.
 - **Phase 6 provider-neutral agent foundation:** source-complete with safe disabled defaults.
-- **Phase 7 Social foundation:** base Social plus the approved image-only Stories v1 source contract is complete. Full Stories product expansion and runtime/release evidence are tracked separately in `docs/roadmap/stories.md`.
+- **Phase 7 Social foundation:** base Social plus the approved image-only Stories v1 source contract is complete; S9-A direct camera capture is a separate source-complete post-v1 mobile expansion. Full Stories product expansion and runtime/release evidence are tracked separately in `docs/roadmap/stories.md`.
 - **Phase 8 privacy/security hardening:** substantially complete for current source scope; environment/provider evidence remains external.
 - **Phase 9 release/privacy/data-access evidence:** separate cross-repository/release program; source contracts are substantially advanced but product/provider/release activation remains external.
 - **Phase 10 Responsive Mobile UI Hardening:** complete for current source/CI scope; future concrete regressions remain valid bounded fixes.
@@ -70,11 +71,14 @@ The approved image-only v1 source contract is complete across backend authority,
 The focused audit is `docs/roadmap/stories.md` and is authoritative for Stories terminology:
 
 - approved image-only v1 source packages remaining: **0**;
+- S9-A direct camera capture: **source-complete mobile expansion**, still requiring exact-head CI before merge and separately authorized native/device evidence;
 - physical-device/standalone evidence: gated;
 - deployed storage/provider/moderation/release evidence: gated;
-- richer authoring, interactions, audience controls, video, archive/highlights, viewer surfaces and advanced media/analytics: product-expansion inventory only until explicitly prioritized and reviewed.
+- captions/text overlays, interactions, audience controls, video, archive/highlights, viewer surfaces and advanced media/analytics: product-expansion inventory only until explicitly prioritized and reviewed.
 
-Do not translate “image-only v1 source-complete” into “the full Stories product is complete.” Do not start an expansion candidate merely because it appears in the inventory.
+Direct camera capture does not create a new media pipeline: it supplies a still image to the same preprocessing, signed upload, moderation and approved `story_image` publication path used by media-library authoring. No audio/video capture is added.
+
+Do not translate “image-only v1 source-complete” or “S9-A source-complete” into “the full Stories product is complete.” Do not start another expansion candidate merely because it appears in the inventory.
 
 ## LG-5 closure
 
@@ -126,7 +130,7 @@ Coach recovery/input/lookback/history/domain product/material expansion remains 
 There is no additional numbered `LG-6` or `LG-7` source-refactor phase in the canonical roadmap. Remaining work is:
 
 1. **Backend CI infrastructure #215:** resolve backend Hermes runner registration/access; after that, exact-head validation and merge remain required.
-2. **Stories evidence/expansion boundary:** approved image-only v1 has no remaining autonomous source package. Physical-device/provider/release evidence is authorization-gated; product expansion starts only after one candidate in `docs/roadmap/stories.md` receives an explicit reviewed contract.
+2. **Stories evidence/expansion boundary:** approved image-only v1 has no remaining autonomous source package. S9-A direct camera capture is the selected source expansion; its physical/native evidence remains authorization-gated. Further product expansion starts only after another candidate in `docs/roadmap/stories.md` receives an explicit reviewed contract.
 3. **Authorization-gated validation/release evidence:** physical standalone/device, native-release, Android/system-navigation, second-device/offline-restart, backend deployment/provider and production evidence as applicable. Execute only when directly authorized.
 4. **LG-H3 Steps:** blocked on reviewed native capability/permission contract and later authorized runtime evidence.
 5. **LG-H4 ranking/retention:** later, after a separate product contract; chronological Following remains authoritative now.

@@ -15,6 +15,7 @@ import {
   saveSocialStoryMediaDraft,
 } from './socialStoryMediaDraftStore';
 import {
+  captureSocialStoryImage,
   prepareSocialStoryImage,
   recoverPendingSocialStoryImage,
   selectSocialStoryImage,
@@ -240,25 +241,31 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
     [api, asset, clearDraft, isCurrent, uploadSelected],
   );
 
-  const chooseImage = useCallback(async () => {
-    if (!accountId || !isAuthenticated || operation !== 'idle') return;
-    const requestSequence = sequence.current;
-    setErrorMessage(null);
-    setOperation('selecting');
-    try {
-      const selected = await selectSocialStoryImage();
-      if (!selected || !isCurrent(requestSequence)) {
-        if (isCurrent(requestSequence)) setOperation('idle');
-        return;
+  const chooseImage = useCallback(
+    async (source: 'library' | 'camera' = 'library') => {
+      if (!accountId || !isAuthenticated || operation !== 'idle') return;
+      const requestSequence = sequence.current;
+      setErrorMessage(null);
+      setOperation('selecting');
+      try {
+        const selected =
+          source === 'camera'
+            ? await captureSocialStoryImage()
+            : await selectSocialStoryImage();
+        if (!selected || !isCurrent(requestSequence)) {
+          if (isCurrent(requestSequence)) setOperation('idle');
+          return;
+        }
+        await replaceWithSelected(selected);
+      } catch (error) {
+        if (isCurrent(requestSequence)) {
+          setErrorMessage(getSocialStoryMediaErrorMessage(error, copy));
+          setOperation('idle');
+        }
       }
-      await replaceWithSelected(selected);
-    } catch (error) {
-      if (isCurrent(requestSequence)) {
-        setErrorMessage(getSocialStoryMediaErrorMessage(error, copy));
-        setOperation('idle');
-      }
-    }
-  }, [accountId, copy, isAuthenticated, isCurrent, operation, replaceWithSelected]);
+    },
+    [accountId, copy, isAuthenticated, isCurrent, operation, replaceWithSelected],
+  );
 
   useEffect(() => {
     if (!accountId || !isAuthenticated) {
