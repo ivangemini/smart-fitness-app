@@ -6,6 +6,8 @@ export type SocialStoryCopy = {
   authorBody: string;
   authorTitle: string;
   cancel: string;
+  captionLabel: string;
+  captionPlaceholder: string;
   chooseImage: string;
   close: string;
   completingImage: string;
@@ -55,9 +57,12 @@ const copy: Record<SupportedLocale, SocialStoryCopy> = {
   en: {
     addStory: 'Add story',
     approved: 'Ready to publish.',
-    authorBody: 'Choose one photo from your library or take a new one. It will be checked before it can be published.',
+    authorBody:
+      'Choose one photo from your library or take a new one. You can add an optional caption. The image will be checked before publishing.',
     authorTitle: 'New story',
     cancel: 'Cancel',
+    captionLabel: 'Caption',
+    captionPlaceholder: 'Add a caption',
     chooseImage: 'Choose from library',
     close: 'Close story',
     completingImage: 'Finalizing image',
@@ -105,9 +110,12 @@ const copy: Record<SupportedLocale, SocialStoryCopy> = {
   ru: {
     addStory: 'Добавить историю',
     approved: 'Готово к публикации.',
-    authorBody: 'Выберите одно фото из медиатеки или снимите новое. Перед публикацией оно пройдет проверку.',
+    authorBody:
+      'Выберите одно фото из медиатеки или снимите новое. При желании добавьте подпись. Перед публикацией изображение пройдет проверку.',
     authorTitle: 'Новая история',
     cancel: 'Отмена',
+    captionLabel: 'Подпись',
+    captionPlaceholder: 'Добавьте подпись',
     chooseImage: 'Выбрать из медиатеки',
     close: 'Закрыть историю',
     completingImage: 'Завершение загрузки',
