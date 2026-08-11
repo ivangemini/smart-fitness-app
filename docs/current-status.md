@@ -5,7 +5,8 @@ Updated: 2026-08-11
 ## Verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current mobile `main`: `a8b2c4530cbdc944e7a3821cdc7926296fb78f18`.
+- Current repository `main`: `5fdd144a67ee4706015fed5f939cfa299b49b46a` (docs-only PR #615).
+- Current runtime checkpoint: `a8b2c4530cbdc944e7a3821cdc7926296fb78f18` (merge PR #613).
 - Latest runtime merge: PR #613 — Program Workout Picker and workout-builder direct interactions now use adaptive Liquid Glass control/accent/destructive/disabled material states instead of generic opacity-only feedback; picker/exercise virtualization, stable IDs, keyboard/safe-area behavior and create/edit/attach flows remain preserved.
 - PR #613 exact validated head: `fae10aa93a1d26279eabe9d56eaf1efeb7103974`; Mobile CI #2170 run `31476083264` passed repository/changed-file line limits, TypeScript, full regression, expanded model smoke, Expo export and Expo Doctor before merge.
 - PR #614 merged immediately before it at `d0f44018ea457a4acc2d33bc69fb608621b3fbe5`; exact head `ca2a9277cac376b52d6332798ce3cf6ebadadd11`; Mobile CI #2167 run `31474957650` was fully green.
@@ -13,7 +14,7 @@ Updated: 2026-08-11
 - Merged demonstrated-defect LG-5 runtime batches now total **38**.
 - Backend repo: `ivangemini/smart-fitness-backend`.
 - Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
-- Backend PR #215 was rebased onto that exact main without changing its four-file CI-policy scope. Current exact head: `f5c7f2d4cd1d150f5894fcc60725e85f05631d22`. `Backend CI`, `Backend PostgreSQL CI`, and `Account Deletion Receipt CI` must all execute and pass before it is marked ready/merged.
+- Backend PR #215 was refreshed onto that exact main without changing its four-file CI-policy scope. Current exact head: `f5c7f2d4cd1d150f5894fcc60725e85f05631d22`. Its three required exact-head workflows are queued, but the `Backend CI` job `93730465556` requests `[self-hosted, linux, x64, hermes-mobile-ci]` while GitHub reports `runner_id: 0` and an empty runner name. The PR therefore remains draft/not merge-ready until runner registration/access infrastructure is resolved and all three gates actually execute and pass.
 - **LG-H2 Stories is complete for the current image-only v1 source scope.**
 - **LG-4 Workouts source convergence is complete.**
 - **LG-5 validation-first source/CI QA is complete for the currently authorized source scope.**
@@ -52,7 +53,7 @@ A future concrete regression can still receive a bounded fix. Completion here me
 - PR #563 skips only duplicate merge-generated post-merge validation after an already exact-head validated PR.
 - PR #564 persists that mobile policy in `AGENTS.md`.
 - Backend PR #216 persists the backend counterpart policy.
-- Backend PR #215 may merge only after its new exact-head Hermes workflows pass; do not weaken the runner policy to clear a queue.
+- Backend PR #215 is blocked at runner assignment rather than at a test failure: its current exact-head jobs have not been assigned a runner. Do not weaken the runner policy to clear the queue; resolve runner registration/access first, then require all three exact-head gates to execute and pass.
 
 ## Remaining roadmap / authorization gates
 
@@ -62,7 +63,7 @@ There is **no separate autonomous source-refactor phase currently authorized**. 
 2. **LG-H3 Steps:** blocked until a reviewed native health/activity provider, dependency and permission contract exists, followed by separately authorized physical runtime evidence. Do not infer steps from workouts.
 3. **LG-H4 feed retention/ranking:** later. Preserve chronological Following semantics until a separate ranking contract is reviewed.
 4. **Coach product/material expansion:** deferred until explicit reprioritization. Bounded regressions on existing live Coach surfaces remain valid QA fixes but do not reopen the product phase.
-5. Backend CI infrastructure #215 remains a separate cross-repository gate until exact-head validation is green.
+5. **Backend CI infrastructure #215:** blocked on Hermes runner registration/access for the backend repository; after that is resolved, its three exact-head checks must run and pass before merge.
 
 ## Durable documentation / architecture rule
 
