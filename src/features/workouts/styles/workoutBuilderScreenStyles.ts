@@ -1,19 +1,25 @@
 import { StyleSheet } from 'react-native';
 
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
+import type { LiquidGlassPalette } from '@/theme/liquidGlass';
 
-export const createStyles = (colors: typeof Colors.light) =>
+export const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     addWorkoutButton: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 18,
+      borderWidth: StyleSheet.hairlineWidth,
       marginTop: Spacing.two,
       minHeight: 48,
       justifyContent: 'center',
       paddingHorizontal: Spacing.three,
       paddingVertical: 14,
+    },
+    addWorkoutButtonPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     addWorkoutLabel: {
       color: colors.textPrimary,
@@ -89,11 +95,14 @@ export const createStyles = (colors: typeof Colors.light) =>
     },
     headerAction: {
       alignItems: 'flex-start',
+      borderCurve: 'continuous',
+      borderRadius: 10,
       flexShrink: 0,
       justifyContent: 'center',
       maxWidth: 100,
       minHeight: 44,
       minWidth: 56,
+      paddingHorizontal: Spacing.one,
       paddingVertical: 8,
     },
     headerActionLabel: {
@@ -101,6 +110,9 @@ export const createStyles = (colors: typeof Colors.light) =>
       flexShrink: 1,
       fontSize: 15,
       fontWeight: '800',
+    },
+    headerActionPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     headerTitle: {
       color: colors.textPrimary,
@@ -125,10 +137,15 @@ export const createStyles = (colors: typeof Colors.light) =>
     overflowButton: {
       alignItems: 'center',
       alignSelf: 'stretch',
+      borderCurve: 'continuous',
+      borderRadius: 14,
       flexShrink: 0,
       justifyContent: 'center',
       minWidth: 44,
       paddingHorizontal: Spacing.one,
+    },
+    overflowButtonPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     overflowLabel: {
       color: colors.textSecondary,
@@ -136,21 +153,23 @@ export const createStyles = (colors: typeof Colors.light) =>
       fontWeight: '900',
       marginTop: -2,
     },
-    pressed: {
-      opacity: 0.72,
-    },
     primaryButton: {
       alignItems: 'center',
-      backgroundColor: colors.accent,
+      backgroundColor: glass.accentFill,
+      borderColor: glass.accentBorder,
       borderCurve: 'continuous',
       borderRadius: 16,
+      borderWidth: StyleSheet.hairlineWidth,
       minHeight: 48,
       justifyContent: 'center',
       paddingHorizontal: Spacing.three,
       paddingVertical: 14,
     },
+    primaryButtonPressed: {
+      backgroundColor: glass.accentPressedFill,
+    },
     primaryLabel: {
-      color: colors.background,
+      color: glass.accentText,
       flexShrink: 1,
       fontSize: 15,
       fontWeight: '900',
@@ -158,11 +177,14 @@ export const createStyles = (colors: typeof Colors.light) =>
     },
     saveAction: {
       alignItems: 'flex-end',
+      borderCurve: 'continuous',
+      borderRadius: 10,
       flexShrink: 0,
       justifyContent: 'center',
       maxWidth: 100,
       minHeight: 44,
       minWidth: 56,
+      paddingHorizontal: Spacing.one,
       paddingVertical: 8,
     },
     saveActionDisabled: {
@@ -174,6 +196,9 @@ export const createStyles = (colors: typeof Colors.light) =>
       fontSize: 15,
       fontWeight: '900',
       textAlign: 'right',
+    },
+    saveActionPressed: {
+      backgroundColor: glass.semanticAccentFill,
     },
     screen: {
       flex: 1,
@@ -197,10 +222,16 @@ export const createStyles = (colors: typeof Colors.light) =>
       minWidth: 0,
     },
     startNextButton: {
+      borderCurve: 'continuous',
+      borderRadius: 10,
       flexShrink: 1,
       minHeight: 44,
       justifyContent: 'center',
+      paddingHorizontal: Spacing.one,
       paddingVertical: 6,
+    },
+    startNextButtonPressed: {
+      backgroundColor: glass.semanticAccentFill,
     },
     startNextLabel: {
       color: colors.accent,
@@ -215,9 +246,11 @@ export const createStyles = (colors: typeof Colors.light) =>
     },
     workoutRow: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 20,
+      borderWidth: StyleSheet.hairlineWidth,
       flexDirection: 'row',
       gap: Spacing.one,
       paddingLeft: Spacing.three,
@@ -226,11 +259,16 @@ export const createStyles = (colors: typeof Colors.light) =>
     },
     workoutRowBody: {
       alignItems: 'center',
+      borderCurve: 'continuous',
+      borderRadius: 14,
       flex: 1,
       flexDirection: 'row',
       gap: Spacing.two,
       minHeight: 44,
       minWidth: 0,
+    },
+    workoutRowBodyPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     workoutRowChevron: {
       color: colors.textSecondary,

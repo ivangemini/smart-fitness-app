@@ -44,7 +44,10 @@ export function WorkoutBuilderProgramWorkouts({
                 params: { workoutId: nextWorkout.id },
               })
             }
-            style={({ pressed }) => [styles.startNextButton, pressed && styles.pressed]}>
+            style={({ pressed }) => [
+              styles.startNextButton,
+              pressed && styles.startNextButtonPressed,
+            ]}>
             <Text numberOfLines={2} style={styles.startNextLabel}>
               {copy.startNextWorkout}
             </Text>
@@ -74,7 +77,10 @@ export function WorkoutBuilderProgramWorkouts({
                     params: { workoutId: row.workout.id },
                   });
                 }}
-                style={({ pressed }) => [styles.workoutRowBody, pressed && styles.pressed]}>
+                style={({ pressed }) => [
+                  styles.workoutRowBody,
+                  pressed && styles.workoutRowBodyPressed,
+                ]}>
                 <View style={styles.workoutRowCopy}>
                   <Text numberOfLines={2} style={styles.workoutRowTitle}>
                     {row.title}
@@ -115,7 +121,10 @@ export function WorkoutBuilderProgramWorkouts({
                     { text: copy.cancel, style: 'cancel' as const },
                   ]);
                 }}
-                style={({ pressed }) => [styles.overflowButton, pressed && styles.pressed]}>
+                style={({ pressed }) => [
+                  styles.overflowButton,
+                  pressed && styles.overflowButtonPressed,
+                ]}>
                 <Text style={styles.overflowLabel}>⋯</Text>
               </Pressable>
             </View>
@@ -127,7 +136,10 @@ export function WorkoutBuilderProgramWorkouts({
         accessibilityLabel={copy.addWorkout}
         accessibilityRole="button"
         onPress={onAddWorkout}
-        style={({ pressed }) => [styles.addWorkoutButton, pressed && styles.pressed]}>
+        style={({ pressed }) => [
+          styles.addWorkoutButton,
+          pressed && styles.addWorkoutButtonPressed,
+        ]}>
         <Text numberOfLines={2} style={styles.addWorkoutLabel}>
           + {copy.addWorkout}
         </Text>

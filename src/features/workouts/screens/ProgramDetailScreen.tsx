@@ -19,6 +19,7 @@ import { getWorkoutProgramById } from '@/lib/workouts';
 import { useLocalization } from '@/localization';
 import { getProgramRoutineCopy } from '@/localization/programRoutineCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import type { TrainingProgram } from '@/types';
 
 import { createProgramDetailScreenStyles } from './programDetailScreen.styles';
@@ -31,12 +32,19 @@ export default function ProgramDetailScreen() {
   const savedWorkout = Array.isArray(params.savedWorkout)
     ? params.savedWorkout[0]
     : params.savedWorkout;
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { formatNumber, locale, t } = useLocalization();
   const copy = getProgramRoutineCopy(locale);
   const insets = useSafeAreaInsets();
   const { height: viewportHeight } = useWindowDimensions();
-  const styles = useMemo(() => createProgramDetailScreenStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(
+    () => createProgramDetailScreenStyles(colors, glass),
+    [colors, glass],
+  );
   const [showSavedToast, setShowSavedToast] = useState(savedWorkout === '1');
   const { deleteTrainingProgram, saveTrainingProgram } = useAppActions();
   const { isRestoringState } = useAppInfrastructure();
@@ -70,7 +78,10 @@ export default function ProgramDetailScreen() {
           accessibilityLabel={copy.backToWorkouts}
           accessibilityRole="button"
           onPress={() => router.replace('/workouts')}
-          style={({ pressed }) => [styles.simpleButton, pressed && styles.pressed]}>
+          style={({ pressed }) => [
+            styles.simpleButton,
+            pressed && styles.simpleButtonPressed,
+          ]}>
           <Text style={styles.simpleButtonLabel}>{copy.backToWorkouts}</Text>
         </Pressable>
       </View>
@@ -214,7 +225,10 @@ export default function ProgramDetailScreen() {
                 params: { programId: program.id },
               })
             }
-            style={({ pressed }) => [styles.addRoutineRow, pressed && styles.pressed]}>
+            style={({ pressed }) => [
+              styles.addRoutineRow,
+              pressed && styles.addRoutineRowPressed,
+            ]}>
             <View style={styles.addRoutineIcon}>
               <Text style={styles.addRoutineIconLabel}>+</Text>
             </View>
@@ -233,7 +247,10 @@ export default function ProgramDetailScreen() {
                   accessibilityLabel={copy.openWorkout(row.title)}
                   accessibilityRole="button"
                   onPress={() => openWorkoutOrExplain(workoutId)}
-                  style={({ pressed }) => [styles.routineBody, pressed && styles.pressed]}>
+                  style={({ pressed }) => [
+                    styles.routineBody,
+                    pressed && styles.routineBodyPressed,
+                  ]}>
                   <View style={styles.routineIcon}>
                     <Text style={styles.routineIconLabel}>{getInitial(row.title)}</Text>
                   </View>
@@ -250,7 +267,10 @@ export default function ProgramDetailScreen() {
                   accessibilityLabel={copy.openWorkout(row.title)}
                   accessibilityRole="button"
                   onPress={() => openWorkoutOrExplain(workoutId)}
-                  style={({ pressed }) => [styles.playButton, pressed && styles.pressed]}>
+                  style={({ pressed }) => [
+                    styles.playButton,
+                    pressed && styles.iconButtonPressed,
+                  ]}>
                   <Text style={styles.playLabel}>▶</Text>
                 </Pressable>
                 <Pressable
@@ -266,7 +286,10 @@ export default function ProgramDetailScreen() {
                       { text: copy.cancel, style: 'cancel' },
                     ]);
                   }}
-                  style={({ pressed }) => [styles.moreButton, pressed && styles.pressed]}>
+                  style={({ pressed }) => [
+                    styles.moreButton,
+                    pressed && styles.iconButtonPressed,
+                  ]}>
                   <Text style={styles.moreLabel}>⋮</Text>
                 </Pressable>
               </View>
