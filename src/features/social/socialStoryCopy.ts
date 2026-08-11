@@ -31,6 +31,10 @@ export type SocialStoryCopy = {
   imageUploadExpired: string;
   imageUploadUnavailable: string;
   imageValidationFailed: string;
+  likeLoadFailed: string;
+  likeStory: string;
+  likeUpdateFailed: string;
+  likesCount: (count: number) => string;
   loadError: string;
   loading: string;
   openStory: string;
@@ -54,6 +58,7 @@ export type SocialStoryCopy = {
   stories: string;
   storyUnavailable: string;
   takePhoto: string;
+  unlikeStory: string;
   uploadPending: string;
   uploadingImage: string;
   yourStory: string;
@@ -92,6 +97,10 @@ const copy: Record<SupportedLocale, SocialStoryCopy> = {
     imageUploadExpired: 'The upload expired. Choose the image again.',
     imageUploadUnavailable: 'Image uploads are temporarily unavailable.',
     imageValidationFailed: 'The uploaded image did not pass validation.',
+    likeLoadFailed: 'Like status could not be loaded.',
+    likeStory: 'Like story',
+    likeUpdateFailed: 'The story Like could not be updated.',
+    likesCount: (count) => `${count} ${count === 1 ? 'like' : 'likes'}`,
     loadError: 'Stories could not be loaded.',
     loading: 'Loading story',
     openStory: 'Open story',
@@ -115,6 +124,7 @@ const copy: Record<SupportedLocale, SocialStoryCopy> = {
     stories: 'Stories',
     storyUnavailable: 'This story is no longer available.',
     takePhoto: 'Take photo',
+    unlikeStory: 'Unlike story',
     uploadPending: 'Waiting for upload processing.',
     uploadingImage: 'Uploading image',
     yourStory: 'Your story',
@@ -151,6 +161,10 @@ const copy: Record<SupportedLocale, SocialStoryCopy> = {
     imageUploadExpired: 'Время загрузки истекло. Выберите изображение снова.',
     imageUploadUnavailable: 'Загрузка изображений временно недоступна.',
     imageValidationFailed: 'Загруженное изображение не прошло проверку.',
+    likeLoadFailed: 'Не удалось загрузить состояние отметки «Нравится».',
+    likeStory: 'Отметить историю как понравившуюся',
+    likeUpdateFailed: 'Не удалось обновить отметку «Нравится».',
+    likesCount: (count) => `Отметок «Нравится»: ${count}`,
     loadError: 'Не удалось загрузить истории.',
     loading: 'Загрузка истории',
     openStory: 'Открыть историю',
@@ -174,6 +188,7 @@ const copy: Record<SupportedLocale, SocialStoryCopy> = {
     stories: 'Истории',
     storyUnavailable: 'Эта история больше недоступна.',
     takePhoto: 'Снять фото',
+    unlikeStory: 'Убрать отметку «Нравится»',
     uploadPending: 'Ожидание обработки загрузки.',
     uploadingImage: 'Загрузка изображения',
     yourStory: 'Ваша история',
