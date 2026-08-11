@@ -57,6 +57,7 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
   const abortController = useRef<AbortController | null>(null);
   const recoveredPendingAccount = useRef<string | null>(null);
   const [asset, setAsset] = useState<SocialMediaOwnerAssetDto | null>(null);
+  const [caption, setCaption] = useState('');
   const [previewUri, setPreviewUri] = useState<string | null>(null);
   const [operation, setOperation] = useState<SocialStoryMediaOperation>('loading');
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
@@ -71,6 +72,10 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
   );
   const api = useMemo(() => createSocialApi(auth), [auth]);
   const attachment = useMemo(() => getApprovedSocialStoryMediaInput(asset), [asset]);
+
+  useEffect(() => {
+    setCaption('');
+  }, [accountId]);
 
   const isCurrent = useCallback(
     (requestSequence: number): boolean => requestSequence === sequence.current,
@@ -328,17 +333,20 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
   const publish = useCallback(async (): Promise<string | null> => {
     if (!accountId || !attachment || operation !== 'idle') return null;
     const requestSequence = sequence.current;
+    const normalizedCaption = caption.trim();
     setErrorMessage(null);
     setOperation('publishing');
     try {
       const story = await api.createStory({
         schemaVersion: 1,
         idempotencyKey: createStoryIdempotencyKey(attachment.assetId),
+        ...(normalizedCaption ? { caption: normalizedCaption } : {}),
         image: attachment,
       });
       await clearSocialStoryMediaDraft(accountId);
       if (!isCurrent(requestSequence)) return story.id;
       setAsset(null);
+      setCaption('');
       setPreviewUri(null);
       requestSocialStoryRefresh();
       return story.id;
@@ -350,14 +358,16 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
     } finally {
       if (isCurrent(requestSequence)) setOperation('idle');
     }
-  }, [accountId, api, attachment, copy, isCurrent, operation]);
+  }, [accountId, api, attachment, caption, copy, isCurrent, operation]);
 
-  const previewAspectRatio = asset?.publicDescriptor?.aspectRatio ??
+  const previewAspectRatio =
+    asset?.publicDescriptor?.aspectRatio ??
     (asset?.source ? asset.source.width / asset.source.height : 1);
 
   return {
     asset,
     canPublish: Boolean(attachment) && operation === 'idle',
+    caption,
     errorMessage,
     isAuthenticated,
     operation,
@@ -370,5 +380,6 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
     publish,
     refreshStatus,
     removeImage,
+    setCaption,
   };
 }
