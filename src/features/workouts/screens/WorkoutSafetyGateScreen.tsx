@@ -194,7 +194,7 @@ export default function WorkoutSafetyGateScreen({
 
               {decision.recommendedLoadPercent !== null ? (
                 <View style={styles.metricRow}>
-                  <View>
+                  <View style={styles.metricCell}>
                     <Text style={styles.metricValue}>
                       {formatNumber(decision.recommendedLoadPercent, {
                         maximumFractionDigits: 0,
@@ -202,7 +202,7 @@ export default function WorkoutSafetyGateScreen({
                     </Text>
                     <Text style={styles.metricLabel}>{copy.reviewedLoadCeiling}</Text>
                   </View>
-                  <View>
+                  <View style={styles.metricCell}>
                     <Text style={styles.metricValue}>
                       {formatNumber(decision.restrictions.length, {
                         maximumFractionDigits: 0,
@@ -257,6 +257,8 @@ export default function WorkoutSafetyGateScreen({
               />
               <View style={styles.actionRow}>
                 <Pressable
+                  accessibilityLabel={copy.recoveryCheckIn}
+                  accessibilityRole="button"
                   onPress={() => router.push('/profile/recovery-check-in')}
                   style={({ pressed }) => [
                     styles.smallAction,
@@ -265,6 +267,8 @@ export default function WorkoutSafetyGateScreen({
                   <Text style={styles.smallActionLabel}>{copy.recoveryCheckIn}</Text>
                 </Pressable>
                 <Pressable
+                  accessibilityLabel={copy.limitations}
+                  accessibilityRole="button"
                   onPress={() => router.push('/profile/limitations')}
                   style={({ pressed }) => [
                     styles.smallAction,
