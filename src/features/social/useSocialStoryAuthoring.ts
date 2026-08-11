@@ -4,6 +4,7 @@ import {
   createSocialApi,
   uploadSignedSocialMedia,
   type SocialMediaOwnerAssetDto,
+  type SocialStoryOverlayPlacement,
 } from '@/api/social';
 import { useAuthSession } from '@/hooks/useAuthSession';
 
@@ -58,6 +59,9 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
   const recoveredPendingAccount = useRef<string | null>(null);
   const [asset, setAsset] = useState<SocialMediaOwnerAssetDto | null>(null);
   const [caption, setCaption] = useState('');
+  const [overlayText, setOverlayText] = useState('');
+  const [overlayPlacement, setOverlayPlacement] =
+    useState<SocialStoryOverlayPlacement>('center');
   const [previewUri, setPreviewUri] = useState<string | null>(null);
   const [operation, setOperation] = useState<SocialStoryMediaOperation>('loading');
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
@@ -75,6 +79,8 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
 
   useEffect(() => {
     setCaption('');
+    setOverlayText('');
+    setOverlayPlacement('center');
   }, [accountId]);
 
   const isCurrent = useCallback(
@@ -334,6 +340,7 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
     if (!accountId || !attachment || operation !== 'idle') return null;
     const requestSequence = sequence.current;
     const normalizedCaption = caption.trim();
+    const normalizedOverlayText = overlayText.trim();
     setErrorMessage(null);
     setOperation('publishing');
     try {
@@ -341,12 +348,23 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
         schemaVersion: 1,
         idempotencyKey: createStoryIdempotencyKey(attachment.assetId),
         ...(normalizedCaption ? { caption: normalizedCaption } : {}),
+        ...(normalizedOverlayText
+          ? {
+              overlay: {
+                schemaVersion: 1,
+                text: normalizedOverlayText,
+                placement: overlayPlacement,
+              },
+            }
+          : {}),
         image: attachment,
       });
       await clearSocialStoryMediaDraft(accountId);
       if (!isCurrent(requestSequence)) return story.id;
       setAsset(null);
       setCaption('');
+      setOverlayText('');
+      setOverlayPlacement('center');
       setPreviewUri(null);
       requestSocialStoryRefresh();
       return story.id;
@@ -358,7 +376,17 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
     } finally {
       if (isCurrent(requestSequence)) setOperation('idle');
     }
-  }, [accountId, api, attachment, caption, copy, isCurrent, operation]);
+  }, [
+    accountId,
+    api,
+    attachment,
+    caption,
+    copy,
+    isCurrent,
+    operation,
+    overlayPlacement,
+    overlayText,
+  ]);
 
   const previewAspectRatio =
     asset?.publicDescriptor?.aspectRatio ??
@@ -371,6 +399,8 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
     errorMessage,
     isAuthenticated,
     operation,
+    overlayPlacement,
+    overlayText,
     previewAspectRatio,
     previewUri,
     ready,
@@ -381,5 +411,7 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
     refreshStatus,
     removeImage,
     setCaption,
+    setOverlayPlacement,
+    setOverlayText,
   };
 }
