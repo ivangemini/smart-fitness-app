@@ -38,7 +38,8 @@ describe('workout builder stack responsiveness', () => {
   it('preserves program save, discard and workout-attachment contracts', () => {
     expect(screen).toContain("navigation.addListener('beforeRemove'");
     expect(screen).toContain('serializeProgramDraft(program)');
-    expect(screen).toContain('saveWorkoutProgram({');
+    expect(screen).toContain('saveTrainingProgram(saved);');
+    expect(screen).not.toContain('saveWorkoutProgram(');
     expect(screen).toContain('attachWorkoutsToProgramDraft(current, workouts, workoutIds)');
     expect(screen).toContain('addWorkoutTemplate({');
     expect(screen).toContain('updateWorkoutTemplate(workoutEditorTarget.id, payload)');
