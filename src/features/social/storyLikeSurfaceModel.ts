@@ -23,10 +23,13 @@ export type SocialStoryLikeSurfaceApi = {
 export const getSocialStoryLikeSurfaceMode = (
   ownUsername: string | null | undefined,
   authorUsername: string,
-): SocialStoryLikeSurfaceMode =>
-  ownUsername?.trim() === authorUsername.trim()
+): SocialStoryLikeSurfaceMode | null => {
+  const normalizedOwnUsername = ownUsername?.trim();
+  if (!normalizedOwnUsername) return null;
+  return normalizedOwnUsername === authorUsername.trim()
     ? 'owner_summary'
     : 'viewer_state';
+};
 
 export const loadSocialStoryLikeSurface = async (
   mode: SocialStoryLikeSurfaceMode,
