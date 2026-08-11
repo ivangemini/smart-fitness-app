@@ -1,9 +1,18 @@
 import { router } from 'expo-router';
 import { X } from 'lucide-react-native';
 import { useMemo } from 'react';
-import { Image, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Image,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { SOCIAL_STORY_CAPTION_MAX_LENGTH } from '@/api/social';
 import { AppCard } from '@/components/ui/AppCard';
 import { InlineError } from '@/components/ui/InlineError';
 import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
@@ -43,6 +52,39 @@ export default function SocialStoryAuthorScreen() {
           fontSize: Typography.body.fontSize,
           fontWeight: Typography.body.fontWeight,
           lineHeight: Typography.body.lineHeight,
+        },
+        captionCount: {
+          color: colors.textSecondary,
+          fontSize: Typography.caption.fontSize,
+          fontWeight: Typography.caption.fontWeight,
+          lineHeight: Typography.caption.lineHeight,
+        },
+        captionField: { gap: Spacing.one },
+        captionHeader: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          gap: Spacing.two,
+          justifyContent: 'space-between',
+        },
+        captionInput: {
+          backgroundColor: glass.controlFill,
+          borderColor: glass.controlBorder,
+          borderRadius: 16,
+          borderWidth: StyleSheet.hairlineWidth,
+          color: colors.textPrimary,
+          fontSize: Typography.body.fontSize,
+          fontWeight: Typography.body.fontWeight,
+          lineHeight: Typography.body.lineHeight,
+          minHeight: 96,
+          paddingHorizontal: Spacing.two,
+          paddingVertical: Spacing.two,
+          textAlignVertical: 'top',
+        },
+        captionLabel: {
+          color: colors.textPrimary,
+          fontSize: Typography.bodyEmphasized.fontSize,
+          fontWeight: Typography.bodyEmphasized.fontWeight,
+          lineHeight: Typography.bodyEmphasized.lineHeight,
         },
         content: {
           alignSelf: 'center',
@@ -112,6 +154,7 @@ export default function SocialStoryAuthorScreen() {
             paddingTop: safeAreaInsets.top + Spacing.two,
           },
         ]}
+        keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
@@ -147,6 +190,28 @@ export default function SocialStoryAuthorScreen() {
                   resizeMode="contain"
                   source={{ uri: displayUri }}
                   style={styles.previewImage}
+                />
+              </View>
+            ) : null}
+
+            {displayUri ? (
+              <View style={styles.captionField}>
+                <View style={styles.captionHeader}>
+                  <Text style={styles.captionLabel}>{copy.captionLabel}</Text>
+                  <Text style={styles.captionCount}>
+                    {authoring.caption.length}/{SOCIAL_STORY_CAPTION_MAX_LENGTH}
+                  </Text>
+                </View>
+                <TextInput
+                  accessibilityLabel={copy.captionLabel}
+                  editable={!busy}
+                  maxLength={SOCIAL_STORY_CAPTION_MAX_LENGTH}
+                  multiline
+                  onChangeText={authoring.setCaption}
+                  placeholder={copy.captionPlaceholder}
+                  placeholderTextColor={colors.textSecondary}
+                  style={styles.captionInput}
+                  value={authoring.caption}
                 />
               </View>
             ) : null}
