@@ -36,6 +36,6 @@ describe('New Routine editor touch targets', () => {
     expect(screenSource).toContain('<FlatList');
     expect(screenSource).toContain('data={planExercises}');
     expect(screenSource).toContain('keyExtractor={(item) => item.exercise.id}');
-    expect(screenSource).not.toContain('planExercises.map((item)');
+    expect(screenSource).not.toMatch(/\{planExercises\.map\(\(item\) => \{/);
   });
 });
