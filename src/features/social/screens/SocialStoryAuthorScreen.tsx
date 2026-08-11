@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { X } from 'lucide-react-native';
 import { useMemo } from 'react';
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppCard } from '@/components/ui/AppCard';
@@ -169,6 +169,13 @@ export default function SocialStoryAuthorScreen() {
                 label={displayUri ? copy.replaceImage : copy.chooseImage}
                 onPress={() => void authoring.chooseImage()}
               />
+              {Platform.OS !== 'web' ? (
+                <SecondaryButton
+                  disabled={busy}
+                  label={copy.takePhoto}
+                  onPress={() => void authoring.chooseImage('camera')}
+                />
+              ) : null}
               {canRefresh ? (
                 <SecondaryButton
                   label={copy.refreshStatus}
