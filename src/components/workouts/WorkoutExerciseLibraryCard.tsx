@@ -4,7 +4,6 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { Colors } from '@/constants/theme';
 import {
   loadWorkoutExerciseFavoriteIds,
   saveWorkoutExerciseFavoriteIds,
@@ -16,6 +15,8 @@ import {
 } from '@/lib/workouts';
 import { getExerciseLibraryCopy } from '@/localization/exerciseLibraryCopy';
 import { useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import type { Exercise, WorkoutSession } from '@/types';
 
 import { ExerciseDetailSheet } from './exercise-library/ExerciseDetailSheet';
@@ -29,7 +30,7 @@ import {
   matchesFacet,
   type FilterValue,
 } from './exercise-library/exerciseLibraryUtils';
-import { styles } from './exercise-library/workoutExerciseLibraryCardStyles';
+import { createWorkoutExerciseLibraryCardStyles } from './exercise-library/workoutExerciseLibraryCardStyles';
 
 type WorkoutExerciseLibraryCardProps = {
   exerciseName: string;
@@ -66,8 +67,17 @@ export const WorkoutExerciseLibraryCard = memo(function WorkoutExerciseLibraryCa
   searchValue,
   workoutSessions,
 }: WorkoutExerciseLibraryCardProps) {
+  const { colors, resolvedAppearance } = useAppTheme();
   const { locale } = useLocalization();
   const copy = getExerciseLibraryCopy(locale);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(
+    () => createWorkoutExerciseLibraryCardStyles(colors, glass),
+    [colors, glass],
+  );
   const [favoriteExerciseIds, setFavoriteExerciseIds] = useState<string[]>([]);
   const [isFavoritesReady, setIsFavoritesReady] = useState(false);
   const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null);
@@ -217,7 +227,10 @@ export const WorkoutExerciseLibraryCard = memo(function WorkoutExerciseLibraryCa
         accessibilityLabel={copy.toggleBrowser}
         accessibilityRole="button"
         onPress={onToggleExpanded}
-        style={styles.collapsibleHeader}>
+        style={({ pressed }) => [
+          styles.collapsibleHeader,
+          pressed && styles.collapsibleHeaderPressed,
+        ]}>
         <View style={styles.headerRow}>
           <View style={styles.headerContent}>
             <Text style={styles.sectionTitle}>{`${copy.browserTitle} ${isExpanded ? '−' : '+'}`}</Text>
@@ -236,7 +249,7 @@ export const WorkoutExerciseLibraryCard = memo(function WorkoutExerciseLibraryCa
             <TextInput
               onChangeText={onSearchChange}
               placeholder={copy.searchPlaceholder}
-              placeholderTextColor={Colors.dark.textSecondary}
+              placeholderTextColor={colors.textSecondary}
               style={styles.input}
               value={searchValue}
             />
@@ -356,7 +369,7 @@ export const WorkoutExerciseLibraryCard = memo(function WorkoutExerciseLibraryCa
                 <TextInput
                   onChangeText={onExerciseNameChange}
                   placeholder={copy.exerciseNamePlaceholder}
-                  placeholderTextColor={Colors.dark.textSecondary}
+                  placeholderTextColor={colors.textSecondary}
                   style={styles.input}
                   value={exerciseName}
                 />
@@ -368,7 +381,7 @@ export const WorkoutExerciseLibraryCard = memo(function WorkoutExerciseLibraryCa
                 <TextInput
                   onChangeText={onExerciseMuscleGroupChange}
                   placeholder={copy.muscleGroupPlaceholder}
-                  placeholderTextColor={Colors.dark.textSecondary}
+                  placeholderTextColor={colors.textSecondary}
                   style={styles.input}
                   value={exerciseMuscleGroup}
                 />
