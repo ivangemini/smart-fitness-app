@@ -65,7 +65,7 @@ export default function HomeScreen() {
     [resolvedAppearance],
   );
   const { bodyMeasurements, weightHistory } = useProgressState();
-  const { exercises, workoutSessions, workouts } = useWorkoutState();
+  const { exercises, trainingPrograms, workoutSessions, workouts } = useWorkoutState();
   const { foodEntries, nutritionTargets } = useNutritionState();
   const { onboardingCompleted, profile } = useProfileState();
   const { isRestoringState } = useAppInfrastructure();
@@ -101,7 +101,10 @@ export default function HomeScreen() {
     };
   }, []);
 
-  const currentProgram = useMemo(() => getWorkoutPrograms(workouts)[0] ?? null, [workouts]);
+  const currentProgram = useMemo(
+    () => getWorkoutPrograms(workouts, trainingPrograms)[0] ?? null,
+    [trainingPrograms, workouts],
+  );
   const programSchedule = useMemo(
     () => (currentProgram ? getWorkoutProgramSchedule(currentProgram) : null),
     [currentProgram],
