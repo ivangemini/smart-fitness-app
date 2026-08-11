@@ -66,7 +66,8 @@ describe('workout builder localization', () => {
     expect(screen).toContain("navigation.addListener('beforeRemove'");
     expect(screen).toContain('serializeProgramDraft');
     expect(screen).toContain('createProgramDraftFromProgram');
-    expect(screen).toContain('saveWorkoutProgram({');
+    expect(screen).toContain('saveTrainingProgram(saved);');
+    expect(screen).not.toContain('saveWorkoutProgram(');
     expect(screen).toContain('attachWorkoutsToProgramDraft');
     expect(screen).toContain('removeWorkoutFromProgramDraft');
     expect(screen).toContain('addWorkoutTemplate({');
