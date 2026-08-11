@@ -64,6 +64,8 @@ describe('list virtualization boundaries', () => {
 
     expect(modal).toContain('virtualizedExerciseList');
     expect(modal).not.toContain('<ScrollView');
+    expect(modal).toMatch(/editorBody:\s*\{[\s\S]*?flex: 1,[\s\S]*?minHeight: 0/);
+    expect(modal).toMatch(/panel:\s*\{[\s\S]*?flex: 1,[\s\S]*?minHeight: 0/);
     expect(card).toContain('<FlatList');
     expect(card).toContain('data={draftExercises}');
     expect(card).toContain('keyExtractor={(exercise) => exercise.id}');
