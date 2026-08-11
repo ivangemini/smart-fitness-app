@@ -3,9 +3,9 @@ import { describe, expect, it } from 'vitest';
 import {
   parseSocialStoryCaptionResponse,
   parseSocialStoryDto,
+  parseSocialStoryOverlayResponse,
   parseSocialStoryPageResponse,
   parseSocialStorySuccessResponse,
-  type SocialStoryDto,
 } from '@/api/social';
 import {
   createSocialStoryCacheStore,
@@ -144,6 +144,73 @@ describe('mobile Social Stories contract', () => {
     ).toThrow();
   });
 
+  it('parses the separate bounded Story overlay contract', () => {
+    expect(
+      parseSocialStoryOverlayResponse({
+        schemaVersion: 1,
+        storyId: STORY_ID,
+        overlay: {
+          schemaVersion: 1,
+          text: 'New personal record',
+          placement: 'center',
+        },
+      }),
+    ).toEqual({
+      schemaVersion: 1,
+      storyId: STORY_ID,
+      overlay: {
+        schemaVersion: 1,
+        text: 'New personal record',
+        placement: 'center',
+      },
+    });
+    expect(
+      parseSocialStoryOverlayResponse({
+        schemaVersion: 1,
+        storyId: STORY_ID,
+        overlay: null,
+      }).overlay,
+    ).toBeNull();
+
+    for (const placement of ['top', 'center', 'bottom']) {
+      expect(
+        parseSocialStoryOverlayResponse({
+          schemaVersion: 1,
+          storyId: STORY_ID,
+          overlay: {
+            schemaVersion: 1,
+            text: 'Lift',
+            placement,
+          },
+        }).overlay?.placement,
+      ).toBe(placement);
+    }
+
+    for (const overlay of [
+      { schemaVersion: 1, text: '', placement: 'top' },
+      { schemaVersion: 1, text: ' untrimmed ', placement: 'center' },
+      { schemaVersion: 1, text: 'x'.repeat(281), placement: 'bottom' },
+      { schemaVersion: 1, text: 'Lift', placement: 'free' },
+      { schemaVersion: 1, text: 'Lift', placement: 'top', color: '#fff' },
+    ]) {
+      expect(() =>
+        parseSocialStoryOverlayResponse({
+          schemaVersion: 1,
+          storyId: STORY_ID,
+          overlay,
+        }),
+      ).toThrow();
+    }
+    expect(() =>
+      parseSocialStoryOverlayResponse({
+        schemaVersion: 1,
+        storyId: STORY_ID,
+        overlay: null,
+        extra: true,
+      }),
+    ).toThrow();
+  });
+
   it('rejects wrong media type, lifecycle drift, extra keys and duplicate pages', () => {
     const wrongType = storyValue({
       image: { ...storyValue().image, assetType: 'workout_post_image' },
@@ -155,6 +222,12 @@ describe('mobile Social Stories contract', () => {
       ),
     ).toThrow();
     expect(() => parseSocialStoryDto({ ...storyValue(), caption: 'extra' })).toThrow();
+    expect(() =>
+      parseSocialStoryDto({
+        ...storyValue(),
+        overlay: { schemaVersion: 1, text: 'extra', placement: 'center' },
+      }),
+    ).toThrow();
     expect(() => parseSocialStoryDto({ ...storyValue(), extra: true })).toThrow();
     expect(() =>
       parseSocialStoryPageResponse({

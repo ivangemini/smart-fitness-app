@@ -12,7 +12,10 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { SOCIAL_STORY_CAPTION_MAX_LENGTH } from '@/api/social';
+import {
+  SOCIAL_STORY_CAPTION_MAX_LENGTH,
+  type SocialStoryOverlayValueDto,
+} from '@/api/social';
 import { AppCard } from '@/components/ui/AppCard';
 import { InlineError } from '@/components/ui/InlineError';
 import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
@@ -31,7 +34,12 @@ import {
   getSocialStoryMediaStatus,
   isSocialStoryMediaBusy,
 } from '../socialStoryMediaModel';
+import { SocialStoryOverlayEditor } from '../SocialStoryOverlayEditor';
+import { SocialStoryOverlayView } from '../SocialStoryOverlayView';
 import { useSocialStoryAuthoring } from '../useSocialStoryAuthoring';
+
+const normalizeOverlayPreviewText = (value: string): string =>
+  value.normalize('NFKC').replace(/\s+/gu, ' ').trim();
 
 export default function SocialStoryAuthorScreen() {
   const { locale } = useLocalization();
@@ -75,7 +83,7 @@ export default function SocialStoryAuthorScreen() {
           fontSize: Typography.body.fontSize,
           fontWeight: Typography.body.fontWeight,
           lineHeight: Typography.body.lineHeight,
-          minHeight: 96,
+          minHeight: Typography.body.lineHeight * 3 + Spacing.six,
           paddingHorizontal: Spacing.two,
           paddingVertical: Spacing.two,
           textAlignVertical: 'top',
@@ -137,6 +145,14 @@ export default function SocialStoryAuthorScreen() {
     authoring.asset?.publicDescriptor?.placeholder.type === 'average_color'
       ? authoring.asset.publicDescriptor.placeholder.value
       : undefined;
+  const normalizedOverlayText = normalizeOverlayPreviewText(authoring.overlayText);
+  const previewOverlay: SocialStoryOverlayValueDto | null = normalizedOverlayText
+    ? {
+        schemaVersion: 1,
+        text: normalizedOverlayText,
+        placement: authoring.overlayPlacement,
+      }
+    : null;
 
   const publishStory = async () => {
     const storyId = await authoring.publish();
@@ -191,7 +207,28 @@ export default function SocialStoryAuthorScreen() {
                   source={{ uri: displayUri }}
                   style={styles.previewImage}
                 />
+                <SocialStoryOverlayView overlay={previewOverlay} />
               </View>
+            ) : null}
+
+            {displayUri ? (
+              <SocialStoryOverlayEditor
+                copy={{
+                  label: copy.overlayLabel,
+                  placeholder: copy.overlayPlaceholder,
+                  placementLabel: copy.overlayPlacementLabel,
+                  placements: {
+                    top: copy.overlayTop,
+                    center: copy.overlayCenter,
+                    bottom: copy.overlayBottom,
+                  },
+                }}
+                disabled={busy}
+                onPlacementChange={authoring.setOverlayPlacement}
+                onTextChange={authoring.setOverlayText}
+                placement={authoring.overlayPlacement}
+                value={authoring.overlayText}
+              />
             ) : null}
 
             {displayUri ? (

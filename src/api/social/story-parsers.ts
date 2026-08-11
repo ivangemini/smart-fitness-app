@@ -4,9 +4,15 @@ import {
   SOCIAL_STORY_CAPTION_MAX_LENGTH,
   SOCIAL_STORY_CAPTION_SCHEMA_VERSION,
   SOCIAL_STORY_DTO_SCHEMA_VERSION,
+  SOCIAL_STORY_OVERLAY_MAX_LENGTH,
+  SOCIAL_STORY_OVERLAY_PLACEMENTS,
+  SOCIAL_STORY_OVERLAY_SCHEMA_VERSION,
   type SocialStoryCaptionDto,
   type SocialStoryDto,
   type SocialStoryImageDescriptorDto,
+  type SocialStoryOverlayDto,
+  type SocialStoryOverlayPlacement,
+  type SocialStoryOverlayValueDto,
   type SocialStoryPageDto,
 } from './story-contracts';
 
@@ -21,6 +27,8 @@ const STORY_KEYS = [
 ] as const;
 const STORY_PAGE_KEYS = ['items', 'nextCursor'] as const;
 const STORY_CAPTION_KEYS = ['schemaVersion', 'storyId', 'caption'] as const;
+const STORY_OVERLAY_RESPONSE_KEYS = ['schemaVersion', 'storyId', 'overlay'] as const;
+const STORY_OVERLAY_KEYS = ['schemaVersion', 'text', 'placement'] as const;
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u;
 const STORY_LIFETIME_MS = 24 * 60 * 60 * 1000;
@@ -39,6 +47,12 @@ const hasExactKeys = (
   );
 };
 
+const isOverlayPlacement = (
+  value: unknown,
+): value is SocialStoryOverlayPlacement =>
+  typeof value === 'string' &&
+  (SOCIAL_STORY_OVERLAY_PLACEMENTS as readonly string[]).includes(value);
+
 const parseStoryImage = (value: unknown): SocialStoryImageDescriptorDto => {
   if (!isRecord(value) || value.assetType !== 'story_image') {
     throw new Error('Invalid Social Story image response');
@@ -48,6 +62,27 @@ const parseStoryImage = (value: unknown): SocialStoryImageDescriptorDto => {
     assetType: 'workout_post_image',
   });
   return { ...descriptor, assetType: 'story_image' };
+};
+
+const parseStoryOverlay = (value: unknown): SocialStoryOverlayValueDto => {
+  if (!isRecord(value) || !hasExactKeys(value, STORY_OVERLAY_KEYS)) {
+    throw new Error('Invalid Social Story overlay response');
+  }
+  if (
+    value.schemaVersion !== SOCIAL_STORY_OVERLAY_SCHEMA_VERSION ||
+    typeof value.text !== 'string' ||
+    value.text.length < 1 ||
+    value.text.length > SOCIAL_STORY_OVERLAY_MAX_LENGTH ||
+    value.text !== value.text.trim() ||
+    !isOverlayPlacement(value.placement)
+  ) {
+    throw new Error('Invalid Social Story overlay response');
+  }
+  return {
+    schemaVersion: SOCIAL_STORY_OVERLAY_SCHEMA_VERSION,
+    text: value.text,
+    placement: value.placement,
+  };
 };
 
 export const parseSocialStoryDto = (value: unknown): SocialStoryDto => {
@@ -110,6 +145,26 @@ export const parseSocialStoryCaptionResponse = (
     schemaVersion: SOCIAL_STORY_CAPTION_SCHEMA_VERSION,
     storyId: value.storyId,
     caption: value.caption,
+  };
+};
+
+export const parseSocialStoryOverlayResponse = (
+  value: unknown,
+): SocialStoryOverlayDto => {
+  if (!isRecord(value) || !hasExactKeys(value, STORY_OVERLAY_RESPONSE_KEYS)) {
+    throw new Error('Invalid Social Story overlay response');
+  }
+  if (
+    value.schemaVersion !== SOCIAL_STORY_OVERLAY_SCHEMA_VERSION ||
+    typeof value.storyId !== 'string' ||
+    !UUID_PATTERN.test(value.storyId)
+  ) {
+    throw new Error('Invalid Social Story overlay response');
+  }
+  return {
+    schemaVersion: SOCIAL_STORY_OVERLAY_SCHEMA_VERSION,
+    storyId: value.storyId,
+    overlay: value.overlay === null ? null : parseStoryOverlay(value.overlay),
   };
 };
 

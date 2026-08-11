@@ -34,6 +34,12 @@ export type SocialStoryCopy = {
   loadError: string;
   loading: string;
   openStory: string;
+  overlayBottom: string;
+  overlayCenter: string;
+  overlayLabel: string;
+  overlayPlacementLabel: string;
+  overlayPlaceholder: string;
+  overlayTop: string;
   preparingImage: string;
   processing: string;
   publishStory: string;
@@ -58,7 +64,7 @@ const copy: Record<SupportedLocale, SocialStoryCopy> = {
     addStory: 'Add story',
     approved: 'Ready to publish.',
     authorBody:
-      'Choose one photo from your library or take a new one. You can add an optional caption. The image will be checked before publishing.',
+      'Choose one photo from your library or take a new one. You can add optional text over the image and a separate caption. Content is checked before publishing.',
     authorTitle: 'New story',
     cancel: 'Cancel',
     captionLabel: 'Caption',
@@ -89,6 +95,12 @@ const copy: Record<SupportedLocale, SocialStoryCopy> = {
     loadError: 'Stories could not be loaded.',
     loading: 'Loading story',
     openStory: 'Open story',
+    overlayBottom: 'Bottom',
+    overlayCenter: 'Center',
+    overlayLabel: 'Text overlay',
+    overlayPlacementLabel: 'Position',
+    overlayPlaceholder: 'Add text over the photo',
+    overlayTop: 'Top',
     preparingImage: 'Preparing image',
     processing: 'Your image is being checked.',
     publishStory: 'Publish story',
@@ -111,7 +123,7 @@ const copy: Record<SupportedLocale, SocialStoryCopy> = {
     addStory: 'Добавить историю',
     approved: 'Готово к публикации.',
     authorBody:
-      'Выберите одно фото из медиатеки или снимите новое. При желании добавьте подпись. Перед публикацией изображение пройдет проверку.',
+      'Выберите одно фото из медиатеки или снимите новое. Можно добавить текст поверх фото и отдельную подпись. Контент пройдет проверку перед публикацией.',
     authorTitle: 'Новая история',
     cancel: 'Отмена',
     captionLabel: 'Подпись',
@@ -142,6 +154,12 @@ const copy: Record<SupportedLocale, SocialStoryCopy> = {
     loadError: 'Не удалось загрузить истории.',
     loading: 'Загрузка истории',
     openStory: 'Открыть историю',
+    overlayBottom: 'Снизу',
+    overlayCenter: 'По центру',
+    overlayLabel: 'Текст на фото',
+    overlayPlacementLabel: 'Положение',
+    overlayPlaceholder: 'Добавьте текст поверх фото',
+    overlayTop: 'Сверху',
     preparingImage: 'Подготовка изображения',
     processing: 'Изображение проходит проверку.',
     publishStory: 'Опубликовать историю',

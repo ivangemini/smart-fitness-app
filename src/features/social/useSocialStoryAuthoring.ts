@@ -2,8 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   createSocialApi,
+  getSocialApiErrorCode,
   uploadSignedSocialMedia,
   type SocialMediaOwnerAssetDto,
+  type SocialStoryOverlayPlacement,
 } from '@/api/social';
 import { useAuthSession } from '@/hooks/useAuthSession';
 
@@ -27,6 +29,11 @@ import {
   getSocialStoryMediaErrorMessage,
   type SocialStoryMediaOperation,
 } from './socialStoryMediaModel';
+import {
+  resolveSocialStoryPublishIdentity,
+  shouldResetSocialStoryPublishIdentity,
+  type SocialStoryPublishIdentity,
+} from './socialStoryPublishIdentity';
 import { requestSocialStoryRefresh } from './socialStoryRefreshSignal';
 
 const POLL_ATTEMPTS = 12;
@@ -39,9 +46,6 @@ const createUploadIdempotencyKey = (): string => {
     .toString(36)
     .slice(2)}`;
 };
-
-const createStoryIdempotencyKey = (assetId: string): string =>
-  `story-create-${assetId}`;
 
 const isTerminal = (asset: SocialMediaOwnerAssetDto): boolean =>
   asset.state === 'approved' ||
@@ -56,8 +60,12 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
   const sequence = useRef(0);
   const abortController = useRef<AbortController | null>(null);
   const recoveredPendingAccount = useRef<string | null>(null);
+  const publishIdentity = useRef<SocialStoryPublishIdentity | null>(null);
   const [asset, setAsset] = useState<SocialMediaOwnerAssetDto | null>(null);
   const [caption, setCaption] = useState('');
+  const [overlayText, setOverlayText] = useState('');
+  const [overlayPlacement, setOverlayPlacement] =
+    useState<SocialStoryOverlayPlacement>('center');
   const [previewUri, setPreviewUri] = useState<string | null>(null);
   const [operation, setOperation] = useState<SocialStoryMediaOperation>('loading');
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
@@ -74,7 +82,10 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
   const attachment = useMemo(() => getApprovedSocialStoryMediaInput(asset), [asset]);
 
   useEffect(() => {
+    publishIdentity.current = null;
     setCaption('');
+    setOverlayText('');
+    setOverlayPlacement('center');
   }, [accountId]);
 
   const isCurrent = useCallback(
@@ -334,23 +345,52 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
     if (!accountId || !attachment || operation !== 'idle') return null;
     const requestSequence = sequence.current;
     const normalizedCaption = caption.trim();
+    const normalizedOverlayText = overlayText.trim();
+    const composition = {
+      assetId: attachment.assetId,
+      expectedStateVersion: attachment.expectedStateVersion,
+      caption: normalizedCaption || null,
+      overlay: normalizedOverlayText
+        ? { text: normalizedOverlayText, placement: overlayPlacement }
+        : null,
+    };
+    const identity = resolveSocialStoryPublishIdentity(
+      publishIdentity.current,
+      composition,
+    );
+    publishIdentity.current = identity;
     setErrorMessage(null);
     setOperation('publishing');
     try {
       const story = await api.createStory({
         schemaVersion: 1,
-        idempotencyKey: createStoryIdempotencyKey(attachment.assetId),
+        idempotencyKey: identity.idempotencyKey,
         ...(normalizedCaption ? { caption: normalizedCaption } : {}),
+        ...(normalizedOverlayText
+          ? {
+              overlay: {
+                schemaVersion: 1,
+                text: normalizedOverlayText,
+                placement: overlayPlacement,
+              },
+            }
+          : {}),
         image: attachment,
       });
+      publishIdentity.current = null;
       await clearSocialStoryMediaDraft(accountId);
       if (!isCurrent(requestSequence)) return story.id;
       setAsset(null);
       setCaption('');
+      setOverlayText('');
+      setOverlayPlacement('center');
       setPreviewUri(null);
       requestSocialStoryRefresh();
       return story.id;
     } catch (error) {
+      if (shouldResetSocialStoryPublishIdentity(getSocialApiErrorCode(error))) {
+        publishIdentity.current = null;
+      }
       if (isCurrent(requestSequence)) {
         setErrorMessage(getSocialStoryMediaErrorMessage(error, copy));
       }
@@ -358,7 +398,17 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
     } finally {
       if (isCurrent(requestSequence)) setOperation('idle');
     }
-  }, [accountId, api, attachment, caption, copy, isCurrent, operation]);
+  }, [
+    accountId,
+    api,
+    attachment,
+    caption,
+    copy,
+    isCurrent,
+    operation,
+    overlayPlacement,
+    overlayText,
+  ]);
 
   const previewAspectRatio =
     asset?.publicDescriptor?.aspectRatio ??
@@ -371,6 +421,8 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
     errorMessage,
     isAuthenticated,
     operation,
+    overlayPlacement,
+    overlayText,
     previewAspectRatio,
     previewUri,
     ready,
@@ -381,5 +433,7 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
     refreshStatus,
     removeImage,
     setCaption,
+    setOverlayPlacement,
+    setOverlayText,
   };
 }

@@ -5,6 +5,15 @@ export const SOCIAL_STORY_DTO_SCHEMA_VERSION = 1 as const;
 export const SOCIAL_STORY_MEDIA_SCHEMA_VERSION = 1 as const;
 export const SOCIAL_STORY_CAPTION_SCHEMA_VERSION = 1 as const;
 export const SOCIAL_STORY_CAPTION_MAX_LENGTH = 1000 as const;
+export const SOCIAL_STORY_OVERLAY_SCHEMA_VERSION = 1 as const;
+export const SOCIAL_STORY_OVERLAY_MAX_LENGTH = 280 as const;
+export const SOCIAL_STORY_OVERLAY_PLACEMENTS = [
+  'top',
+  'center',
+  'bottom',
+] as const;
+export type SocialStoryOverlayPlacement =
+  (typeof SOCIAL_STORY_OVERLAY_PLACEMENTS)[number];
 
 export type SocialStoryImageDescriptorDto = Omit<
   SocialMediaPublicDescriptorDto,
@@ -29,6 +38,18 @@ export type SocialStoryCaptionDto = {
   caption: string | null;
 };
 
+export type SocialStoryOverlayValueDto = {
+  schemaVersion: typeof SOCIAL_STORY_OVERLAY_SCHEMA_VERSION;
+  text: string;
+  placement: SocialStoryOverlayPlacement;
+};
+
+export type SocialStoryOverlayDto = {
+  schemaVersion: typeof SOCIAL_STORY_OVERLAY_SCHEMA_VERSION;
+  storyId: string;
+  overlay: SocialStoryOverlayValueDto | null;
+};
+
 export type SocialStoryPageDto = {
   items: SocialStoryDto[];
   nextCursor: string | null;
@@ -49,5 +70,6 @@ export type CreateSocialStoryInput = {
   schemaVersion: typeof SOCIAL_STORY_DTO_SCHEMA_VERSION;
   idempotencyKey: string;
   caption?: string | null;
+  overlay?: SocialStoryOverlayValueDto | null;
   image: SocialStoryMediaInput;
 };
