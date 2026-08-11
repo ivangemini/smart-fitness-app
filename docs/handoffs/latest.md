@@ -5,24 +5,26 @@ Updated: 2026-08-11
 ## Checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current repository/runtime `main`: `b354fb58f8b1759cca0e2dfd4cb68d48ad5b26b4`.
-- Latest runtime merge: PR #617 `fix(workouts): persist program builder state`.
-- PR #617 exact validated head: `4773f60339d70f4ee40163ecc92a492547c9ccc7`; Mobile CI #2179 run `31491962947` passed the full Hermes mobile gate.
-- PR #617 is a bounded post-LG-5 regression fix; LG-5 merged demonstrated-defect runtime batches remain **38**.
-- Backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
-- Backend PR #215 remains CI infrastructure at exact head `f5c7f2d4cd1d150f5894fcc60725e85f05631d22`; its three exact-head gates must execute and pass before merge. Backend Hermes runner registration/access remains the known infrastructure dependency.
-- LG-H2 Stories is **source-complete only for the approved image-only v1 contract**. `docs/roadmap/stories.md` is the focused Stories roadmap and prevents this from being confused with full product/release completion.
+- Current repository/runtime `main`: `d44bb5e709f089b120e2d1d07f778d32aac8df7d` after docs PR #627 synchronized the S9-D Stories checkpoint.
+- Latest runtime merge: PR #626 `feat(stories): add private Story Likes`, merge `708d5b48eff2807f33ef89fa57ad9fde6200d3de`.
+- PR #626 exact validated head: `f1c91e70f1adf99a32d331356a1d61f27cd926d0`; Mobile CI #2193 run `31529202769` passed the full Hermes mobile gate.
+- PR #617 remains a bounded post-LG-5 Workouts persistence regression fix; LG-5 merged demonstrated-defect runtime batches remain **38**.
+- Backend `main`: `2c2d46c255f8a0a47256d0f24bdb20608e859696` after PR #221 private Story Likes.
+- Backend PR #215 remains CI infrastructure. It was refreshed directly onto current backend `main`; exact head `5597152e821577d0cf2c9729ead2544532899db0` is ahead by four commits and behind by zero with exactly four CI-policy files changed. Backend CI #1598, PostgreSQL CI #205 and Account Deletion Receipt CI #287 are queued for `[self-hosted, linux, x64, hermes-mobile-ci]`, but GitHub reports no assigned runner. Runner registration/access therefore remains the known blocker and PR #215 remains draft/not merge-ready.
+- LG-H2 Stories is **source/CI-complete through the reviewed S9-D private Story Like contract**, not for deferred future product expansion or gated physical/deployed/release evidence. `docs/roadmap/stories.md` is authoritative for this boundary.
 - LG-4 Workouts source convergence remains complete.
 - **LG-5 validation-first source/CI QA is complete for the currently authorized source scope.**
 - **There is no remaining approved autonomous source-refactor phase.**
 - Coach product/material expansion remains deferred.
 - Mobile issue #618 tracks the unresolved Home active-training-program contract; do not substitute recency/favorite/order heuristics.
 
-## Stories audit handoff
+## Stories handoff
 
-The audited image-only v1 source surface is complete across both repositories.
+The image-only v1 source surface and the separately reviewed S9-A through S9-D source slices are complete across their documented backend/mobile boundaries.
 
-Backend PR #214/current backend source provides:
+### Image-only v1
+
+Backend authority provides:
 
 - authenticated/idempotent create;
 - 24-hour expiry and active-only reads;
@@ -31,7 +33,7 @@ Backend PR #214/current backend source provides:
 - owner deletion/account cleanup/rate limits;
 - managed-media `story_image` authority.
 
-Mobile PRs #533/#535/current source provide:
+Mobile provides:
 
 - strict Story contracts/API/parsers;
 - bounded account-scoped server-revalidated cache;
@@ -45,14 +47,21 @@ Mobile PRs #533/#535/current source provide:
 
 **Remaining autonomous source packages inside the already approved image-only v1 contract: 0.**
 
-Not complete by that statement:
+### Completed reviewed expansions
+
+- **S9-A direct camera:** one still-photo capture path reusing the same `story_image` upload/moderation/publication pipeline; source/CI-complete, native/device evidence gated.
+- **S9-B captions:** separate strict caption persistence/read surface, text moderation/export authority and bounded mobile authoring/viewer UI; source/CI-complete, migration/provider/runtime evidence gated.
+- **S9-C bounded overlay:** one optional 1–280 character top/center/bottom overlay, separate strict subresource, moderation/export authority, composition-sensitive publish idempotency and bounded mobile rendering; source/CI-complete, migration/provider/runtime evidence gated.
+- **S9-D private Story Like:** dedicated `social_story_likes` authority with idempotent Like/Unlike, owner-only aggregate, lifecycle/block/account cleanup, privacy-safe requester export and no liker list/notifications; mobile uses separate strict viewer-state/owner-summary contracts and privacy-separated UI. Backend PR #221 exact head `c508be7b39063dbefe88868701fe3516c94e4d17` passed Backend CI #1596, PostgreSQL CI #203 and Account Deletion Receipt CI #285 before merge `2c2d46c255f8a0a47256d0f24bdb20608e859696`. Mobile PR #626 exact head `f1c91e70f1adf99a32d331356a1d61f27cd926d0` passed Mobile CI #2193 before merge `708d5b48eff2807f33ef89fa57ad9fde6200d3de`.
+
+Not complete by those source/CI statements:
 
 1. physical-device/standalone runtime evidence;
-2. deployed storage/CDN/moderation/provider/migration evidence;
+2. deployed storage/CDN/moderation/provider/migration evidence, including migrations through `0045_social_story_likes`;
 3. broad release/privacy/legal/accessibility evidence;
-4. future product expansion such as richer authoring, Story interactions, audience controls, video, archive/highlights, viewer surfaces or advanced media/analytics.
+4. future product expansion such as richer composition, Story replies/DMs/emoji sets/liker lists/notifications, audience controls, video, archive/highlights, viewer surfaces or advanced media/analytics.
 
-Items 1–3 are authorization-gated. Item 4 is candidate inventory only until explicitly prioritized and reviewed.
+Items 1–3 are authorization-gated. Item 4 is deferred candidate inventory until explicitly prioritized and reviewed.
 
 ## Final LG-5 runtime sequence
 
@@ -68,8 +77,8 @@ PR #612 was intentionally rejected/reset after confirming Program Detail/Builder
 
 There is no broad or numbered follow-on source-refactor phase to start autonomously.
 
-1. Resolve backend #215 runner registration/access outside the source PR; then require Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI to execute and pass on exact head before ready/merge. Do not route routine validation back to hosted runners just to bypass the blocker.
-2. Keep the approved Stories image-only v1 source scope closed. Collect its physical-device/provider/release evidence only when separately authorized; start a Stories expansion candidate only after explicit product/privacy/media prioritization.
+1. Resolve backend #215 Hermes runner registration/access outside the source PR. The source branch is already refreshed to current backend `main` and preserves the S9-D permanent PostgreSQL Story Like gate. Once a runner is assigned, require all three exact-head workflows to execute and pass before ready/merge. Do not route routine validation back to hosted runners just to bypass the blocker.
+2. Keep Stories source scope closed at the completed reviewed S9-A through S9-D boundary. Collect physical-device/provider/release evidence only when separately authorized; start another Stories expansion candidate only after explicit product/privacy/media prioritization.
 3. Collect other physical-device/native/release/deployment/provider evidence only when separately authorized.
 4. Keep LG-H3 Steps blocked until a reviewed native health/activity source, dependency and permissions contract exists and physical runtime work is authorized.
 5. Preserve chronological Following semantics; LG-H4 ranking/retention remains later.
