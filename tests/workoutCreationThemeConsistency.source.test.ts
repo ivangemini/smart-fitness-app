@@ -45,7 +45,10 @@ describe('workout creation theme consistency', () => {
 
   it('preserves editor keyboard safety and save/draft mutation contracts', () => {
     expect(editor).toContain('<KeyboardAvoidingView');
-    expect(editor).toContain('automaticallyAdjustKeyboardInsets');
+    expect(editor).toContain('virtualizedExerciseList');
+    expect(editor).not.toContain('<ScrollView');
+    expect(builder).toContain('automaticallyAdjustKeyboardInsets');
+    expect(builder).toContain('keyboardShouldPersistTaps="handled"');
     expect(editor).toContain("workoutTitle.trim().length === 0 || draftExercises.length === 0");
     expect(editor).toContain('onSaveWorkout({');
     expect(editor).toContain('setDraftExercises((current) =>');
@@ -55,9 +58,11 @@ describe('workout creation theme consistency', () => {
   });
 
   it('preserves builder actions with usable wrapping touch targets', () => {
-    expect(builder).toContain('<AppCard>');
+    expect(builder).toContain('<AppCard');
     expect(builder).toContain('<AppButton');
-    expect(builder).toContain('draftExercises.map((exercise, index)');
+    expect(builder).toContain('<FlatList');
+    expect(builder).toContain('data={draftExercises}');
+    expect(builder).toContain('keyExtractor={(exercise) => exercise.id}');
     expect(exerciseRow).toContain('onPress={() => onMove(exercise.id, -1)}');
     expect(exerciseRow).toContain('onPress={() => onMove(exercise.id, 1)}');
     expect(exerciseRow).toContain('onPress={() => onDuplicate(exercise.id)}');

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
@@ -29,6 +29,7 @@ type WorkoutBuilderCardProps = {
   onToggleExpanded: () => void;
   onWorkoutDescriptionChange: (value: string) => void;
   onWorkoutTitleChange: (value: string) => void;
+  virtualizedExerciseList?: boolean;
   workoutDescription: string;
   workoutTitle: string;
 };
@@ -48,6 +49,7 @@ export function WorkoutBuilderCard({
   onToggleExpanded,
   onWorkoutDescriptionChange,
   onWorkoutTitleChange,
+  virtualizedExerciseList = false,
   workoutDescription,
   workoutTitle,
 }: WorkoutBuilderCardProps) {
@@ -57,8 +59,95 @@ export function WorkoutBuilderCard({
   const styles = useMemo(() => createStyles(colors), [colors]);
   const sectionTitle = editingWorkoutId ? copy.editWorkout : copy.workoutBuilder;
 
+  const formFields = (
+    <View style={styles.formFields}>
+      <View style={styles.inputGroup}>
+        <Text selectable style={styles.inputLabel}>
+          {copy.workoutTitle}
+        </Text>
+        <TextInput
+          accessibilityLabel={copy.workoutTitle}
+          onChangeText={onWorkoutTitleChange}
+          placeholder={copy.workoutTitlePlaceholder}
+          placeholderTextColor={colors.textMuted}
+          selectionColor={colors.accent}
+          style={styles.input}
+          value={workoutTitle}
+        />
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Text selectable style={styles.inputLabel}>
+          {copy.workoutNotes}
+        </Text>
+        <TextInput
+          accessibilityLabel={copy.workoutNotes}
+          multiline
+          onChangeText={onWorkoutDescriptionChange}
+          placeholder={copy.workoutNotesPlaceholder}
+          placeholderTextColor={colors.textMuted}
+          selectionColor={colors.accent}
+          style={styles.notesInput}
+          value={workoutDescription}
+        />
+      </View>
+
+      <View style={styles.quickAddRow}>
+        <View style={styles.quickAddField}>
+          <Text selectable style={styles.inputLabel}>
+            {copy.quickAddExercise}
+          </Text>
+          <TextInput
+            accessibilityLabel={copy.quickAddExercise}
+            onChangeText={onDraftExerciseNameChange}
+            placeholder={copy.exercisePlaceholder}
+            placeholderTextColor={colors.textMuted}
+            selectionColor={colors.accent}
+            style={styles.input}
+            value={draftExerciseName}
+          />
+        </View>
+        <View style={styles.quickAddAction}>
+          <AppButton
+            disabled={draftExerciseName.trim().length === 0}
+            label={copy.add}
+            onPress={onAddExercise}
+            variant="secondary"
+          />
+        </View>
+      </View>
+    </View>
+  );
+
+  const emptyState = (
+    <EmptyState
+      compact
+      description={copy.noExercisesInWorkoutBody}
+      message={copy.noExercisesInWorkout}
+      title={copy.startBuilding}
+    />
+  );
+
+  const footer = editingWorkoutId ? (
+    <View style={styles.footer}>
+      <AppButton label={copy.cancelEdit} onPress={onCancelEdit} variant="secondary" />
+    </View>
+  ) : null;
+
+  const renderExercise = (exercise: DraftWorkoutExercise, index: number) => (
+    <WorkoutBuilderExerciseRow
+      canMoveDown={index < draftExercises.length - 1}
+      canMoveUp={index > 0}
+      exercise={exercise}
+      onChange={onExerciseChange}
+      onDelete={onRemoveDraftExercise}
+      onDuplicate={onDuplicateExercise}
+      onMove={onMoveExercise}
+    />
+  );
+
   return (
-    <AppCard>
+    <AppCard style={virtualizedExerciseList ? styles.virtualizedCard : undefined}>
       <Pressable
         accessibilityLabel={isExpanded ? copy.collapseBuilder : copy.expandBuilder}
         accessibilityRole="button"
@@ -77,97 +166,37 @@ export function WorkoutBuilderCard({
       </Pressable>
 
       {isExpanded ? (
-        <>
-          <View style={styles.inputGroup}>
-            <Text selectable style={styles.inputLabel}>
-              {copy.workoutTitle}
-            </Text>
-            <TextInput
-              accessibilityLabel={copy.workoutTitle}
-              onChangeText={onWorkoutTitleChange}
-              placeholder={copy.workoutTitlePlaceholder}
-              placeholderTextColor={colors.textMuted}
-              selectionColor={colors.accent}
-              style={styles.input}
-              value={workoutTitle}
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text selectable style={styles.inputLabel}>
-              {copy.workoutNotes}
-            </Text>
-            <TextInput
-              accessibilityLabel={copy.workoutNotes}
-              multiline
-              onChangeText={onWorkoutDescriptionChange}
-              placeholder={copy.workoutNotesPlaceholder}
-              placeholderTextColor={colors.textMuted}
-              selectionColor={colors.accent}
-              style={styles.notesInput}
-              value={workoutDescription}
-            />
-          </View>
-
-          <View style={styles.quickAddRow}>
-            <View style={styles.quickAddField}>
-              <Text selectable style={styles.inputLabel}>
-                {copy.quickAddExercise}
-              </Text>
-              <TextInput
-                accessibilityLabel={copy.quickAddExercise}
-                onChangeText={onDraftExerciseNameChange}
-                placeholder={copy.exercisePlaceholder}
-                placeholderTextColor={colors.textMuted}
-                selectionColor={colors.accent}
-                style={styles.input}
-                value={draftExerciseName}
-              />
-            </View>
-            <View style={styles.quickAddAction}>
-              <AppButton
-                disabled={draftExerciseName.trim().length === 0}
-                label={copy.add}
-                onPress={onAddExercise}
-                variant="secondary"
-              />
-            </View>
-          </View>
-
-          {draftExercises.length === 0 ? (
-            <EmptyState
-              compact
-              description={copy.noExercisesInWorkoutBody}
-              message={copy.noExercisesInWorkout}
-              title={copy.startBuilding}
-            />
-          ) : (
-            <View style={styles.exerciseList}>
-              {draftExercises.map((exercise, index) => (
-                <WorkoutBuilderExerciseRow
-                  key={exercise.id}
-                  canMoveDown={index < draftExercises.length - 1}
-                  canMoveUp={index > 0}
-                  exercise={exercise}
-                  onChange={onExerciseChange}
-                  onDelete={onRemoveDraftExercise}
-                  onDuplicate={onDuplicateExercise}
-                  onMove={onMoveExercise}
-                />
-              ))}
-            </View>
-          )}
-
-          <View style={styles.footer}>
-            {editingWorkoutId ? (
-              <AppButton
-                label={copy.cancelEdit}
-                onPress={onCancelEdit}
-                variant="secondary"
-              />
-            ) : null}
-          </View>
-        </>
+        virtualizedExerciseList ? (
+          <FlatList
+            automaticallyAdjustKeyboardInsets
+            contentContainerStyle={styles.virtualizedContent}
+            data={draftExercises}
+            ItemSeparatorComponent={() => <View style={styles.exerciseSeparator} />}
+            keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+            keyboardShouldPersistTaps="handled"
+            keyExtractor={(exercise) => exercise.id}
+            ListEmptyComponent={<View style={styles.emptyState}>{emptyState}</View>}
+            ListFooterComponent={footer ? <View style={styles.virtualizedFooter}>{footer}</View> : null}
+            ListHeaderComponent={<View style={styles.virtualizedHeader}>{formFields}</View>}
+            renderItem={({ item, index }) => renderExercise(item, index)}
+            showsVerticalScrollIndicator={false}
+            style={styles.virtualizedList}
+          />
+        ) : (
+          <>
+            {formFields}
+            {draftExercises.length === 0 ? (
+              emptyState
+            ) : (
+              <View style={styles.exerciseList}>
+                {draftExercises.map((exercise, index) => (
+                  <View key={exercise.id}>{renderExercise(exercise, index)}</View>
+                ))}
+              </View>
+            )}
+            {footer}
+          </>
+        )
       ) : null}
     </AppCard>
   );
@@ -178,11 +207,20 @@ const createStyles = (colors: typeof Colors.light) =>
     collapsibleHeader: {
       paddingBottom: Spacing.two,
     },
+    emptyState: {
+      paddingBottom: Spacing.two,
+    },
     exerciseList: {
       gap: Spacing.two,
     },
+    exerciseSeparator: {
+      height: Spacing.two,
+    },
     footer: {
       gap: Spacing.two,
+    },
+    formFields: {
+      gap: Spacing.four,
     },
     headerContent: {
       flex: 1,
@@ -259,5 +297,22 @@ const createStyles = (colors: typeof Colors.light) =>
       flexShrink: 0,
       fontSize: 24,
       fontWeight: '700',
+    },
+    virtualizedCard: {
+      flex: 1,
+      minHeight: 0,
+    },
+    virtualizedContent: {
+      flexGrow: 1,
+    },
+    virtualizedFooter: {
+      paddingTop: Spacing.four,
+    },
+    virtualizedHeader: {
+      paddingBottom: Spacing.four,
+    },
+    virtualizedList: {
+      flex: 1,
+      minHeight: 0,
     },
   });

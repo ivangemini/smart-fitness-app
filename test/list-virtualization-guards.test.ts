@@ -58,6 +58,21 @@ describe('list virtualization boundaries', () => {
     expect(body).toContain('<WorkoutSessionFooterActions');
   });
 
+  test('Program workout editor keeps one FlatList boundary for arbitrary draft exercise count', () => {
+    const modal = readSource('src/components/workouts/ProgramWorkoutEditorModal.tsx');
+    const card = readSource('src/components/workouts/WorkoutBuilderCard.tsx');
+
+    expect(modal).toContain('virtualizedExerciseList');
+    expect(modal).not.toContain('<ScrollView');
+    expect(modal).toMatch(/editorBody:\s*\{[\s\S]*?flex: 1,[\s\S]*?minHeight: 0/);
+    expect(modal).toMatch(/panel:\s*\{[\s\S]*?flex: 1,[\s\S]*?minHeight: 0/);
+    expect(card).toContain('<FlatList');
+    expect(card).toContain('data={draftExercises}');
+    expect(card).toContain('keyExtractor={(exercise) => exercise.id}');
+    expect(card).toContain('automaticallyAdjustKeyboardInsets');
+    expect(card).toContain('keyboardShouldPersistTaps="handled"');
+  });
+
   test('Safety Recovery review virtualizes unbounded restriction and finding rows', () => {
     const screen = readSource(
       'src/features/coach/screens/SafetyRecoveryCoachScreen.tsx',
