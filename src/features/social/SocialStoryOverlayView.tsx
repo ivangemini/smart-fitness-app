@@ -26,6 +26,7 @@ export function SocialStoryOverlayView({
     <View
       pointerEvents="none"
       style={[
+        StyleSheet.absoluteFill,
         styles.overlay,
         { justifyContent: placementStyle(overlay.placement) },
       ]}
@@ -43,7 +44,6 @@ export function SocialStoryOverlayView({
 
 const styles = StyleSheet.create({
   overlay: {
-    ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.six,
