@@ -1,13 +1,6 @@
 import { X } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
@@ -169,12 +162,7 @@ export function ProgramWorkoutEditorModal({
             </View>
           </View>
 
-          <ScrollView
-            automaticallyAdjustKeyboardInsets
-            contentContainerStyle={styles.scrollContent}
-            keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}>
+          <View style={styles.editorBody}>
             <WorkoutBuilderCard
               draftExerciseName={draftExerciseName}
               draftExercises={draftExercises}
@@ -192,10 +180,11 @@ export function ProgramWorkoutEditorModal({
               onToggleExpanded={() => setExpanded((current) => !current)}
               onWorkoutDescriptionChange={setWorkoutDescription}
               onWorkoutTitleChange={setWorkoutTitle}
+              virtualizedExerciseList
               workoutDescription={workoutDescription}
               workoutTitle={workoutTitle}
             />
-          </ScrollView>
+          </View>
         </LiquidGlassSurface>
       </KeyboardAvoidingView>
     </View>
@@ -204,6 +193,11 @@ export function ProgramWorkoutEditorModal({
 
 const createStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
+    editorBody: {
+      flex: 1,
+      minHeight: 0,
+      paddingBottom: Spacing.two,
+    },
     fill: {
       alignItems: 'center',
       flex: 1,
@@ -237,8 +231,10 @@ const createStyles = (colors: typeof Colors.light) =>
       paddingHorizontal: Spacing.three,
     },
     panel: {
+      flex: 1,
       maxHeight: '94%',
       maxWidth: 560,
+      minHeight: 0,
       overflow: 'hidden',
       padding: Spacing.three,
       width: '100%',
@@ -246,10 +242,6 @@ const createStyles = (colors: typeof Colors.light) =>
     saveAction: {
       alignSelf: 'auto',
       minWidth: 88,
-    },
-    scrollContent: {
-      flexGrow: 1,
-      paddingBottom: Spacing.two,
     },
     subtitle: {
       color: colors.textSecondary,
