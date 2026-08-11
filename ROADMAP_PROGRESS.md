@@ -15,7 +15,10 @@ Use it together with:
 - `docs/current-status.md` for current evidence;
 - `docs/handoffs/latest.md` for the active handoff;
 - `docs/roadmap/liquid-glass.md` for Phase 11 evidence and history;
-- focused release, localization, data-quality, provider, Social, privacy and architecture documents for retained contracts;
+- `docs/roadmap/release-and-account.md` for release/account evidence;
+- `docs/roadmap/localization-settings.md` for localization/settings scope;
+- `docs/roadmap/data-quality-and-scale.md` for data-quality/scale scope;
+- focused provider, Social, privacy and architecture documents for retained contracts;
 - backend `AGENTS.md` and focused backend documentation when backend work is required.
 
 Exact code, tests and current Git history override stale historical prose.
