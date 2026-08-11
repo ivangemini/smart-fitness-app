@@ -15,6 +15,7 @@ Use it together with:
 - `docs/current-status.md` for current evidence;
 - `docs/handoffs/latest.md` for the active handoff;
 - `docs/roadmap/liquid-glass.md` for Phase 11 evidence and history;
+- `docs/roadmap/stories.md` for the audited Stories source/release/expansion boundary;
 - `docs/roadmap/release-and-account.md` for release/account evidence;
 - `docs/roadmap/localization-settings.md` for localization/settings scope;
 - `docs/roadmap/data-quality-and-scale.md` for data-quality/scale scope;
@@ -27,12 +28,12 @@ Exact code, tests and current Git history override stale historical prose.
 
 ### Mobile
 
-- Current runtime `main`: `a8b2c4530cbdc944e7a3821cdc7926296fb78f18`.
-- Latest runtime merge: PR #613 — Program Editor/Picker interaction-material convergence.
-- PR #613 exact validated head: `fae10aa93a1d26279eabe9d56eaf1efeb7103974`; Mobile CI #2170 run `31476083264` passed the full Hermes gate before merge.
-- PR #614 immediately preceded it: exact head `ca2a9277cac376b52d6332798ce3cf6ebadadd11`; Mobile CI #2167 run `31474957650`; merge `d0f44018ea457a4acc2d33bc69fb608621b3fbe5`.
-- LG-5 demonstrated-defect runtime packages total **38**.
-- Final package sequence: #610 New Routine virtualization, #611 Program Workout Editor virtualization, #614 Safety Gate responsive/accessibility hardening, #613 Program Editor interaction-material convergence.
+- Current repository/runtime `main`: `b354fb58f8b1759cca0e2dfd4cb68d48ad5b26b4`.
+- Latest runtime merge: PR #617 — Program Builder persisted-state boundary fix.
+- PR #617 exact validated head: `4773f60339d70f4ee40163ecc92a492547c9ccc7`; Mobile CI #2179 run `31491962947` passed the full Hermes gate before merge.
+- PR #617 is a bounded post-LG-5 regression fix, not LG-5 runtime package #39.
+- LG-5 demonstrated-defect runtime packages remain **38**.
+- Final LG-5 package sequence: #610 New Routine virtualization, #611 Program Workout Editor virtualization, #614 Safety Gate responsive/accessibility hardening, #613 Program Editor interaction-material convergence.
 - PR #612 was rejected/reset as speculative after confirming Program Detail/Builder day collections are bounded by the seven-day `WeekdayKey` model.
 - Routine authoritative Mobile CI remains on `[self-hosted, linux, x64, hermes-mobile-ci]`; merge-generated duplicate validation remains deduplicated under the existing policy.
 
@@ -40,7 +41,7 @@ Exact code, tests and current Git history override stale historical prose.
 
 - Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
 - Backend PR #216 persists the CI-runner policy in `AGENTS.md`.
-- Backend PR #215 remains CI infrastructure only. It has been refreshed directly onto current backend main at exact head `f5c7f2d4cd1d150f5894fcc60725e85f05631d22` and is mergeable, but its Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI must all execute and pass before ready/merge.
+- Backend PR #215 remains CI infrastructure only. It has been refreshed directly onto current backend main at exact head `f5c7f2d4cd1d150f5894fcc60725e85f05631d22`; Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI must all execute and pass before ready/merge.
 
 Always re-check exact `main`, open PRs and exact-head workflow state before changing source.
 
@@ -52,7 +53,7 @@ Always re-check exact `main`, open PRs and exact-head workflow state before chan
 - Phase 4 product-domain convergence: complete for current source scope.
 - Phase 5 deterministic Coach: complete for current planned source scope.
 - Phase 6 provider-neutral agent foundation: source-complete with safe disabled defaults.
-- Phase 7 Social foundation: base Social plus image-only v1 Stories source scope complete.
+- Phase 7 Social foundation: base Social plus the **approved image-only Stories v1 source scope** is complete. This does **not** mean the full long-term Stories product or its runtime/release evidence is complete; use `docs/roadmap/stories.md`.
 - Phase 8 privacy/security hardening: substantially complete for current source scope; environment/provider evidence remains external.
 - Phase 9 release/privacy/data-access evidence: separate cross-repository program with source contracts substantially advanced; product/provider/release activation remains separately gated.
 - Phase 10 Responsive Mobile UI Hardening: complete for current source/CI scope.
@@ -62,12 +63,30 @@ Always re-check exact `main`, open PRs and exact-head workflow state before chan
 
 **None.** There is no remaining approved autonomous source-refactor phase and no implicit `LG-6`/`LG-7` continuation.
 
+The audited Stories roadmap also has **0 remaining autonomous source packages inside the already approved image-only v1 contract**. Future Stories expansion requires an explicitly prioritized product/privacy/media contract; missing physical-device/provider/release evidence remains gated rather than an excuse for speculative source churn.
+
 Future source work requires one of:
 
 - a concrete reproduced/source-demonstrated regression, fixed as the smallest coherent package; or
 - an explicitly prioritized and reviewed new product/architecture scope.
 
 Compliant surfaces remain no-change evidence instead of targets for cosmetic churn.
+
+## Stories boundary
+
+`docs/roadmap/stories.md` is the focused Stories roadmap.
+
+Current source-complete image-only v1 includes:
+
+- server-authoritative 24-hour lifecycle, active-only reads, viewed state, privacy/block/restriction enforcement, cursor pagination and owner deletion;
+- managed `story_image` ownership and approved-media publication;
+- mobile media-library selection, bounded image preprocessing, signed upload/finalize/polling, restart-safe draft recovery and explicit publish;
+- Home Story strip, viewer/progress/advance/view acknowledgement and authoritative revalidation after create/delete.
+
+Still separate from that source-complete claim:
+
+- authorization-gated physical-device/standalone and deployed provider/storage/moderation evidence;
+- future product candidates such as richer authoring, Story interactions, audience controls, video, archive/highlights and viewer/analytics surfaces. These are inventory only until explicitly prioritized.
 
 ## LG-5 closure evidence
 
@@ -85,11 +104,12 @@ Source/CI evidence does **not** establish physical-device or release evidence.
 ## Current execution order
 
 1. Finish backend PR #215 only after all three exact-head Hermes workflows pass; do not weaken validation to clear a queue.
-2. Perform physical-device/native/release/deployment/provider evidence only with explicit authorization.
-3. Keep LG-H3 Steps blocked until a reviewed native health/activity provider/dependency/permission contract exists and the required physical runtime work is separately authorized.
-4. Preserve chronological Following semantics; LG-H4 ranking/retention remains later until a separate reviewed contract exists.
-5. Keep Coach product/material expansion deferred until explicit reprioritization.
-6. Treat future concrete source regressions as bounded fixes, not as a new autonomous migration phase.
+2. Keep the approved Stories image-only v1 source scope closed; collect its physical-device/provider/release evidence only with explicit authorization, and do not start product-expansion candidates until one receives an explicit reviewed contract.
+3. Perform other physical-device/native/release/deployment/provider evidence only with explicit authorization.
+4. Keep LG-H3 Steps blocked until a reviewed native health/activity provider/dependency/permission contract exists and the required physical runtime work is separately authorized.
+5. Preserve chronological Following semantics; LG-H4 ranking/retention remains later until a separate reviewed contract exists.
+6. Keep Coach product/material expansion deferred until explicit reprioritization.
+7. Treat future concrete source regressions as bounded fixes, not as a new autonomous migration phase.
 
 ## Working rules
 
@@ -97,7 +117,7 @@ Source/CI evidence does **not** establish physical-device or release evidence.
 - Use branches and pull requests; merge runtime code only after an exact fully green head.
 - Preserve routes, stable IDs, persistence/sync schemas, authentication/session semantics, revisions, idempotency, conflict behavior, completed-history immutability, explicit Coach confirmations, media state versions, leases, retention, legal holds and immutable audit unless a task explicitly changes them.
 - Keep private fitness data in the existing offline-first/revision-aware boundary.
-- Keep Social server-authoritative.
+- Keep Social and Stories server-authoritative.
 - Keep provider calls and credentials backend-only.
 - Potentially long collections use suitable virtualized list boundaries with stable IDs; bounded collections are not virtualization targets by default.
 - New user-facing copy must use the localization layer and bounded display mappings.
@@ -137,5 +157,6 @@ Do not begin without explicit product prioritization:
 - automatic workout publication;
 - public nutrition, weight, measurements, limitation, recovery or Coach data;
 - public health/body leaderboards;
-- multi-image/advanced media formats before the bounded image pipeline is proven;
+- Stories expansion candidates listed in `docs/roadmap/stories.md` beyond the approved image-only v1 contract;
+- multi-image/advanced media formats before the bounded image pipeline is proven in authorized runtime evidence;
 - lab-analysis, diagnosis, pharmacology, hormone or supplement protocol product features.
