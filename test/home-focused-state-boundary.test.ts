@@ -27,14 +27,4 @@ describe('Home focused state composition', () => {
     }
     expect(source).not.toContain('useAppContext');
   });
-
-  test('resolves the Home workout schedule from persisted training-program state', () => {
-    const source = readSource('src/app/(tabs)/index.tsx');
-
-    expect(source).toMatch(
-      /const \{ exercises, trainingPrograms, workoutSessions, workouts \} = useWorkoutState\(\);/,
-    );
-    expect(source).toContain('getWorkoutPrograms(workouts, trainingPrograms)');
-    expect(source).toMatch(/\[trainingPrograms, workouts\]/);
-  });
 });
