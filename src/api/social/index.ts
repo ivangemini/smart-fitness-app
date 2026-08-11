@@ -83,6 +83,15 @@ export {
   type SocialStoryPageDto,
 } from "./story-contracts";
 export {
+  SOCIAL_STORY_LIKE_SCHEMA_VERSION,
+  type SocialStoryLikeStateDto,
+  type SocialStoryLikeSummaryDto,
+} from "./story-like-contracts";
+export {
+  parseSocialStoryLikeStateResponse,
+  parseSocialStoryLikeSummaryResponse,
+} from "./story-like-parsers";
+export {
   parseSocialStoryCaptionResponse,
   parseSocialStoryDto,
   parseSocialStoryOverlayResponse,
