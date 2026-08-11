@@ -65,7 +65,8 @@ describe('LG-5 program interaction materials', () => {
     expect(detailScreen).toContain("pathname: '/workouts/template/[workoutId]'");
 
     expect(builderScreen).toContain("navigation.addListener('beforeRemove'");
-    expect(builderScreen).toContain('saveWorkoutProgram({');
+    expect(builderScreen).toContain('saveTrainingProgram(saved);');
+    expect(builderScreen).not.toContain('saveWorkoutProgram(');
     expect(builderScreen).toContain('attachWorkoutsToProgramDraft(current, workouts, workoutIds)');
     expect(builderScreen).toContain('<KeyboardAvoidingView');
     expect(builderScreen).toContain('automaticallyAdjustKeyboardInsets');

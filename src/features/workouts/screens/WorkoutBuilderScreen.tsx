@@ -26,11 +26,7 @@ import {
 import { createStyles } from '@/features/workouts/styles/workoutBuilderScreenStyles';
 import { useWorkoutTheme } from '@/features/workouts/workoutTheme';
 import { getWorkoutsHubWorkoutTitle } from '@/features/workouts/workoutsHubLocalization';
-import {
-  getWorkoutProgramById,
-  getWorkoutProgramSchedule,
-  saveWorkoutProgram,
-} from '@/lib/workouts';
+import { getWorkoutProgramById, getWorkoutProgramSchedule } from '@/lib/workouts';
 import { useLocalization } from '@/localization';
 import { getWorkoutBuilderCopy } from '@/localization/workoutBuilderCopy';
 import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
@@ -44,8 +40,8 @@ const createDefaultProgramDraft = () => createBlankProgramDraft();
 export function WorkoutBuilderScreen() {
   const params = useLocalSearchParams<{ programId?: string }>();
   const programId = Array.isArray(params.programId) ? params.programId[0] : params.programId;
-  const { addWorkoutTemplate, updateWorkoutTemplate } = useAppActions();
-  const { workouts } = useWorkoutState();
+  const { addWorkoutTemplate, saveTrainingProgram, updateWorkoutTemplate } = useAppActions();
+  const { trainingPrograms, workouts } = useWorkoutState();
   const { colors, isWorkoutDarkMode } = useWorkoutTheme();
   const { formatNumber, locale, t } = useLocalization();
   const copy = useMemo(() => getWorkoutBuilderCopy(locale), [locale]);
@@ -58,8 +54,9 @@ export function WorkoutBuilderScreen() {
   const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   const existingProgram = useMemo(
-    () => (programId ? getWorkoutProgramById(programId, workouts) : null),
-    [programId, workouts],
+    () =>
+      programId ? getWorkoutProgramById(programId, workouts, trainingPrograms) : null,
+    [programId, trainingPrograms, workouts],
   );
   const [programDraft, setProgramDraft] = useState<TrainingProgram | null>(
     () => existingProgram ?? createDefaultProgramDraft(),
@@ -165,7 +162,7 @@ export function WorkoutBuilderScreen() {
 
     setIsSavingProgram(true);
     const now = new Date().toISOString();
-    const saved = saveWorkoutProgram({
+    const saved: TrainingProgram = {
       ...program,
       days: program.days.map((day) => {
         if (day.restDay || !day.workoutTemplateId) return { ...day };
@@ -178,7 +175,8 @@ export function WorkoutBuilderScreen() {
       createdAt: program.createdAt ?? now,
       updatedAt: now,
       isCustom: true,
-    });
+    };
+    saveTrainingProgram(saved);
 
     if (!programId) initialSnapshotRef.current = serializeProgramDraft(saved);
     router.replace({
