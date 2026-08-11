@@ -1,8 +1,12 @@
 import { StyleSheet } from 'react-native';
 
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
+import type { LiquidGlassPalette } from '@/theme/liquidGlass';
 
-export const createProgramDetailScreenStyles = (colors: typeof Colors.light) =>
+export const createProgramDetailScreenStyles = (
+  colors: typeof Colors.light,
+  glass: LiquidGlassPalette,
+) =>
   StyleSheet.create({
     addRoutineIcon: {
       alignItems: 'center',
@@ -28,10 +32,15 @@ export const createProgramDetailScreenStyles = (colors: typeof Colors.light) =>
     },
     addRoutineRow: {
       alignItems: 'center',
+      borderCurve: 'continuous',
+      borderRadius: 14,
       flexDirection: 'row',
       gap: Spacing.three,
       marginTop: Spacing.three,
       minHeight: 62,
+    },
+    addRoutineRowPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     container: {
       maxWidth: MaxContentWidth,
@@ -72,6 +81,11 @@ export const createProgramDetailScreenStyles = (colors: typeof Colors.light) =>
       paddingHorizontal: Spacing.three,
       paddingTop: Spacing.one,
     },
+    iconButtonPressed: {
+      backgroundColor: glass.controlPressedFill,
+      borderCurve: 'continuous',
+      borderRadius: 22,
+    },
     loadingLabel: {
       color: colors.textSecondary,
       fontSize: 14,
@@ -111,15 +125,17 @@ export const createProgramDetailScreenStyles = (colors: typeof Colors.light) =>
       fontSize: 25,
       lineHeight: 28,
     },
-    pressed: {
-      opacity: 0.72,
-    },
     routineBody: {
       alignItems: 'center',
+      borderCurve: 'continuous',
+      borderRadius: 14,
       flex: 1,
       flexDirection: 'row',
       gap: Spacing.three,
       minWidth: 0,
+    },
+    routineBodyPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     routineCopy: {
       flex: 1,
@@ -164,12 +180,24 @@ export const createProgramDetailScreenStyles = (colors: typeof Colors.light) =>
       flex: 1,
     },
     simpleButton: {
-      padding: Spacing.three,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
+      borderCurve: 'continuous',
+      borderRadius: 16,
+      borderWidth: StyleSheet.hairlineWidth,
+      minHeight: 44,
+      justifyContent: 'center',
+      marginTop: Spacing.two,
+      paddingHorizontal: Spacing.three,
+      paddingVertical: Spacing.two,
     },
     simpleButtonLabel: {
       color: colors.accent,
       fontSize: 16,
       fontWeight: '800',
+    },
+    simpleButtonPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     title: {
       color: colors.textPrimary,

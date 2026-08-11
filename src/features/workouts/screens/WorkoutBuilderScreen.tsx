@@ -33,6 +33,7 @@ import {
 } from '@/lib/workouts';
 import { useLocalization } from '@/localization';
 import { getWorkoutBuilderCopy } from '@/localization/workoutBuilderCopy';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import type { Workout } from '@/types';
 import type { TrainingProgram } from '@/types/programs';
 
@@ -45,12 +46,16 @@ export function WorkoutBuilderScreen() {
   const programId = Array.isArray(params.programId) ? params.programId[0] : params.programId;
   const { addWorkoutTemplate, updateWorkoutTemplate } = useAppActions();
   const { workouts } = useWorkoutState();
-  const { colors } = useWorkoutTheme();
+  const { colors, isWorkoutDarkMode } = useWorkoutTheme();
   const { formatNumber, locale, t } = useLocalization();
   const copy = useMemo(() => getWorkoutBuilderCopy(locale), [locale]);
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(isWorkoutDarkMode ? 'dark' : 'light'),
+    [isWorkoutDarkMode],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   const existingProgram = useMemo(
     () => (programId ? getWorkoutProgramById(programId, workouts) : null),
@@ -241,7 +246,10 @@ export function WorkoutBuilderScreen() {
             accessibilityLabel={copy.back}
             accessibilityRole="button"
             onPress={() => router.back()}
-            style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}>
+            style={({ pressed }) => [
+              styles.primaryButton,
+              pressed && styles.primaryButtonPressed,
+            ]}>
             <Text style={styles.primaryLabel}>{copy.back}</Text>
           </Pressable>
         </View>
@@ -265,7 +273,10 @@ export function WorkoutBuilderScreen() {
           accessibilityLabel={programId ? copy.back : copy.cancel}
           accessibilityRole="button"
           onPress={handleDiscardAndLeave}
-          style={({ pressed }) => [styles.headerAction, pressed && styles.pressed]}>
+          style={({ pressed }) => [
+            styles.headerAction,
+            pressed && styles.headerActionPressed,
+          ]}>
           <Text numberOfLines={2} style={styles.headerActionLabel}>
             {programId ? copy.back : copy.cancel}
           </Text>
@@ -282,7 +293,7 @@ export function WorkoutBuilderScreen() {
           style={({ pressed }) => [
             styles.saveAction,
             saveDisabled && styles.saveActionDisabled,
-            pressed && !saveDisabled && styles.pressed,
+            pressed && !saveDisabled && styles.saveActionPressed,
           ]}>
           <Text numberOfLines={2} style={styles.saveActionLabel}>
             {copy.save}
