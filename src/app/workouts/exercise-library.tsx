@@ -3,13 +3,15 @@ import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { VirtualizedWorkoutExerciseLibrary } from '@/components/workouts/VirtualizedWorkoutExerciseLibrary';
-import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
+import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useAppActions, useWorkoutState } from '@/context/AppContext';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 
 const createExerciseId = (name: string) =>
   `exercise-${name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`;
 
 export default function ExerciseLibraryRoute() {
+  const { colors } = useAppTheme();
   const { addExercise, deleteExercise } = useAppActions();
   const { exercises, workoutSessions } = useWorkoutState();
   const [isExpanded, setIsExpanded] = useState(true);
@@ -24,7 +26,7 @@ export default function ExerciseLibraryRoute() {
   );
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { backgroundColor: colors.background }]}>
       <View style={styles.container}>
         <VirtualizedWorkoutExerciseLibrary
           bottomInset={insets.bottom}
@@ -70,7 +72,6 @@ const styles = StyleSheet.create({
   },
   screen: {
     alignItems: 'center',
-    backgroundColor: Colors.dark.background,
     flex: 1,
   },
 });

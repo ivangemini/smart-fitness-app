@@ -92,7 +92,7 @@ export const ExerciseDetailSheet = memo(function ExerciseDetailSheet({
               style={({ pressed }) => [
                 styles.sheetFavorite,
                 isFavorite && styles.sheetFavoriteActive,
-                pressed && styles.pressed,
+                pressed && styles.sheetFavoritePressed,
               ]}>
               <Text
                 style={[
@@ -198,7 +198,7 @@ export const ExerciseDetailSheet = memo(function ExerciseDetailSheet({
                           onPress={() => onAdd(match.exercise.name)}
                           style={({ pressed }) => [
                             styles.similarMain,
-                            pressed && styles.pressed,
+                            pressed && styles.similarMainPressed,
                           ]}>
                           <Text style={styles.similarName}>{match.exercise.name}</Text>
                           <Text style={styles.similarMeta}>{shared || fallback}</Text>
