@@ -1,21 +1,29 @@
 import { StyleSheet } from 'react-native';
 
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
-export const createStyles = (colors: typeof Colors.light) =>
-  StyleSheet.create({
+export const createStyles = (colors: typeof Colors.light) => {
+  const glass = resolveLiquidGlassPalette(colors === Colors.dark ? 'dark' : 'light');
+
+  return StyleSheet.create({
     addExercisesButton: {
       alignItems: 'center',
-      backgroundColor: colors.textPrimary,
+      backgroundColor: glass.accentFill,
+      borderColor: glass.accentBorder,
       borderCurve: 'continuous',
       borderRadius: 999,
+      borderWidth: StyleSheet.hairlineWidth,
       minHeight: 58,
       justifyContent: 'center',
       marginTop: Spacing.two,
       paddingHorizontal: Spacing.three,
     },
+    addExercisesButtonPressed: {
+      backgroundColor: glass.accentPressedFill,
+    },
     addExercisesLabel: {
-      color: colors.background,
+      color: glass.accentText,
       fontSize: 16,
       fontWeight: '700',
     },
@@ -71,9 +79,11 @@ export const createStyles = (colors: typeof Colors.light) =>
       padding: Spacing.three,
     },
     overflowAction: {
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 16,
+      borderWidth: StyleSheet.hairlineWidth,
       minHeight: 48,
       justifyContent: 'center',
       paddingHorizontal: Spacing.three,
@@ -82,6 +92,9 @@ export const createStyles = (colors: typeof Colors.light) =>
       color: colors.textPrimary,
       fontSize: 15,
       fontWeight: '800',
+    },
+    overflowActionPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     overflowActions: {
       gap: Spacing.one,
@@ -95,6 +108,8 @@ export const createStyles = (colors: typeof Colors.light) =>
     },
     overflowCancel: {
       alignItems: 'center',
+      borderCurve: 'continuous',
+      borderRadius: 16,
       minHeight: 48,
       justifyContent: 'center',
       marginTop: Spacing.one,
@@ -104,10 +119,16 @@ export const createStyles = (colors: typeof Colors.light) =>
       fontSize: 15,
       fontWeight: '800',
     },
+    overflowCancelPressed: {
+      backgroundColor: glass.controlPressedFill,
+    },
     overflowDangerAction: {
-      backgroundColor: colors.surfacePrimary,
+      backgroundColor: glass.controlFill,
       borderColor: colors.error,
       borderWidth: StyleSheet.hairlineWidth,
+    },
+    overflowDangerActionPressed: {
+      backgroundColor: colors.errorSoft,
     },
     overflowDangerLabel: {
       color: colors.error,
@@ -131,9 +152,6 @@ export const createStyles = (colors: typeof Colors.light) =>
       color: colors.textPrimary,
       fontSize: 18,
       fontWeight: '900',
-    },
-    pressed: {
-      opacity: 0.72,
     },
     replacementBackdrop: {
       ...StyleSheet.absoluteFill,
@@ -172,6 +190,8 @@ export const createStyles = (colors: typeof Colors.light) =>
     },
     replacementRow: {
       alignItems: 'center',
+      borderCurve: 'continuous',
+      borderRadius: 16,
       flexDirection: 'row',
       gap: Spacing.three,
       minHeight: 64,
@@ -181,6 +201,9 @@ export const createStyles = (colors: typeof Colors.light) =>
       fontSize: 13,
       fontWeight: '700',
       marginTop: 3,
+    },
+    replacementRowPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     replacementRowTitle: {
       color: colors.textPrimary,
@@ -215,14 +238,17 @@ export const createStyles = (colors: typeof Colors.light) =>
     },
     testGifButton: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 999,
       borderWidth: StyleSheet.hairlineWidth,
       justifyContent: 'center',
       minHeight: 44,
       paddingHorizontal: Spacing.three,
+    },
+    testGifButtonPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     testGifLabel: {
       color: colors.textSecondary,
@@ -231,9 +257,11 @@ export const createStyles = (colors: typeof Colors.light) =>
     },
     workoutSheetRow: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 16,
+      borderWidth: StyleSheet.hairlineWidth,
       flexDirection: 'row',
       gap: Spacing.two,
       minHeight: 58,
@@ -245,9 +273,12 @@ export const createStyles = (colors: typeof Colors.light) =>
       justifyContent: 'center',
     },
     workoutSheetRowDestructive: {
-      backgroundColor: colors.surfacePrimary,
+      backgroundColor: glass.controlFill,
       borderColor: colors.error,
       borderWidth: StyleSheet.hairlineWidth,
+    },
+    workoutSheetRowDestructivePressed: {
+      backgroundColor: colors.errorSoft,
     },
     workoutSheetRowLabel: {
       color: colors.textPrimary,
@@ -262,4 +293,8 @@ export const createStyles = (colors: typeof Colors.light) =>
     workoutSheetRowLabelDestructive: {
       color: colors.error,
     },
+    workoutSheetRowPressed: {
+      backgroundColor: glass.controlPressedFill,
+    },
   });
+};

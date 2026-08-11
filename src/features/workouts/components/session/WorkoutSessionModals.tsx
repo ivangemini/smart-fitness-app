@@ -64,7 +64,10 @@ function WorkoutSheetRow({
         style={({ pressed }) => [
           styles.workoutSheetRow,
           destructive && styles.workoutSheetRowDestructive,
-          pressed && styles.pressed,
+          pressed &&
+            (destructive
+              ? styles.workoutSheetRowDestructivePressed
+              : styles.workoutSheetRowPressed),
         ]}>
         {content}
       </Pressable>
@@ -115,7 +118,10 @@ export function ExerciseOverflowModal({
               {message ? <Text style={styles.overflowMessage}>{message}</Text> : null}
               <Pressable
                 onPress={() => exercise && onReplace(exercise)}
-                style={({ pressed }) => [styles.overflowAction, pressed && styles.pressed]}>
+                style={({ pressed }) => [
+                  styles.overflowAction,
+                  pressed && styles.overflowActionPressed,
+                ]}>
                 <Text style={styles.overflowActionLabel}>
                   {t('workouts.session.replaceExercise')}
                 </Text>
@@ -125,7 +131,7 @@ export function ExerciseOverflowModal({
                 style={({ pressed }) => [
                   styles.overflowAction,
                   styles.overflowDangerAction,
-                  pressed && styles.pressed,
+                  pressed && styles.overflowDangerActionPressed,
                 ]}>
                 <Text style={[styles.overflowActionLabel, styles.overflowDangerLabel]}>
                   {t('workouts.session.deleteExercise')}
@@ -133,7 +139,10 @@ export function ExerciseOverflowModal({
               </Pressable>
               <Pressable
                 onPress={onCancel}
-                style={({ pressed }) => [styles.overflowCancel, pressed && styles.pressed]}>
+                style={({ pressed }) => [
+                  styles.overflowCancel,
+                  pressed && styles.overflowCancelPressed,
+                ]}>
                 <Text style={styles.overflowCancelLabel}>{t('common.cancel')}</Text>
               </Pressable>
             </View>
@@ -203,7 +212,10 @@ export function WorkoutOverflowModal({
               />
               <Pressable
                 onPress={onClose}
-                style={({ pressed }) => [styles.overflowCancel, pressed && styles.pressed]}>
+                style={({ pressed }) => [
+                  styles.overflowCancel,
+                  pressed && styles.overflowCancelPressed,
+                ]}>
                 <Text style={styles.overflowCancelLabel}>{t('common.cancel')}</Text>
               </Pressable>
             </View>
@@ -262,7 +274,10 @@ export function ReplacementExerciseModal({
                 accessibilityLabel={exercise.name}
                 accessibilityRole="button"
                 onPress={() => onSelect(exercise)}
-                style={({ pressed }) => [styles.replacementRow, pressed && styles.pressed]}>
+                style={({ pressed }) => [
+                  styles.replacementRow,
+                  pressed && styles.replacementRowPressed,
+                ]}>
                 <View style={styles.replacementIcon}>
                   <Text style={styles.replacementIconLabel}>
                     {exercise.name.slice(0, 1).toUpperCase()}

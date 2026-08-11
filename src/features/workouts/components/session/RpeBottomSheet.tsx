@@ -15,6 +15,7 @@ import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { Colors, Spacing } from '@/constants/theme';
 import { type MessageKey, useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette, type LiquidGlassPalette } from '@/theme/liquidGlass';
 import type { WorkoutRpe } from '@/types';
 
 export const RPE_VALUES = [6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10] as const;
@@ -57,11 +58,15 @@ export function RpeBottomSheet({
   onSelect,
   onSkip,
 }: RpeBottomSheetProps) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { t } = useLocalization();
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const hiddenTranslateY = Math.min(420, Math.max(260, Math.round(height * 0.45)));
   const translateY = useRef(new Animated.Value(hiddenTranslateY)).current;
   const [localSelection, setLocalSelection] = useState(selectedRpe);
@@ -129,7 +134,7 @@ export function RpeBottomSheet({
                     style={({ pressed }) => [
                       styles.valueButton,
                       selected && styles.valueButtonSelected,
-                      pressed && styles.pressed,
+                      pressed && (selected ? styles.valueButtonSelectedPressed : styles.valueButtonPressed),
                     ]}>
                     <Text style={[styles.valueLabel, selected && styles.valueLabelSelected]}>
                       {value}
@@ -153,7 +158,7 @@ export function RpeBottomSheet({
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     backdrop: {
       ...StyleSheet.absoluteFill,
@@ -176,9 +181,6 @@ const createStyles = (colors: typeof Colors.light) =>
       fontSize: 13,
       fontWeight: '800',
       lineHeight: 18,
-    },
-    pressed: {
-      opacity: 0.72,
     },
     scrim: {
       ...StyleSheet.absoluteFill,
@@ -204,8 +206,8 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     valueButton: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 12,
       borderWidth: StyleSheet.hairlineWidth,
@@ -217,9 +219,15 @@ const createStyles = (colors: typeof Colors.light) =>
       minWidth: 44,
       paddingHorizontal: Spacing.one,
     },
+    valueButtonPressed: {
+      backgroundColor: glass.controlPressedFill,
+    },
     valueButtonSelected: {
-      backgroundColor: colors.accent,
-      borderColor: colors.accent,
+      backgroundColor: glass.accentFill,
+      borderColor: glass.accentBorder,
+    },
+    valueButtonSelectedPressed: {
+      backgroundColor: glass.accentPressedFill,
     },
     valueLabel: {
       color: colors.textPrimary,
@@ -228,7 +236,7 @@ const createStyles = (colors: typeof Colors.light) =>
       fontWeight: '800',
     },
     valueLabelSelected: {
-      color: colors.textOnAccent,
+      color: glass.accentText,
     },
     values: {
       flexDirection: 'row',

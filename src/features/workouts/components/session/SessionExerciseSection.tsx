@@ -5,6 +5,7 @@ import type { WorkoutSet } from '@/context/AppContext';
 import { Colors } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette, type LiquidGlassPalette } from '@/theme/liquidGlass';
 import { formatWeightValue, useUnitPreferences } from '@/units';
 
 import { SessionSetTable } from './SessionSetTable';
@@ -52,10 +53,14 @@ export const SessionExerciseSection = memo(function SessionExerciseSection({
   onWeightChange,
   previousSets,
 }: SessionExerciseSectionProps) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { formatNumber, formatPlural, t } = useLocalization();
   const { weight: weightUnit } = useUnitPreferences();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const plannedSetCount = Math.max(exercise.targetSets ?? 0, exerciseSets.length);
   const collapsedRows = exerciseSets.length > 0
     ? exerciseSets.map((set, index) => ({
@@ -85,7 +90,7 @@ export const SessionExerciseSection = memo(function SessionExerciseSection({
         style={({ pressed }) => [
           styles.header,
           expanded && styles.headerExpanded,
-          pressed && styles.pressed,
+          pressed && styles.headerPressed,
         ]}>
         <View style={styles.exerciseThumb}>
           <Text style={styles.exerciseThumbLabel}>{exercise.name.slice(0, 1).toUpperCase()}</Text>
@@ -124,7 +129,10 @@ export const SessionExerciseSection = memo(function SessionExerciseSection({
           accessibilityRole="button"
           hitSlop={12}
           onPress={() => onLongPressExercise(exercise.id, exercise.name)}
-          style={({ pressed }) => [styles.menuButton, pressed && styles.pressed]}>
+          style={({ pressed }) => [
+            styles.menuButton,
+            pressed && styles.menuButtonPressed,
+          ]}>
           <Text style={styles.menuLabel}>•••</Text>
         </Pressable>
       </Pressable>
@@ -145,7 +153,10 @@ export const SessionExerciseSection = memo(function SessionExerciseSection({
             accessibilityState={{ disabled: !onNotesPress }}
             disabled={!onNotesPress}
             onPress={onNotesPress}
-            style={({ pressed }) => [styles.restTimer, pressed && styles.pressed]}>
+            style={({ pressed }) => [
+              styles.restTimer,
+              pressed && styles.restTimerPressed,
+            ]}>
             <Text style={styles.restTimerLabel}>{t('workouts.session.restTimerOff')}</Text>
           </Pressable>
           <SessionSetTable
@@ -175,7 +186,10 @@ export const SessionExerciseSection = memo(function SessionExerciseSection({
             })}
             accessibilityRole="button"
             onPress={() => onAddSet(exercise.id)}
-            style={({ pressed }) => [styles.addSetButton, pressed && styles.pressed]}>
+            style={({ pressed }) => [
+              styles.addSetButton,
+              pressed && styles.addSetButtonPressed,
+            ]}>
             <Text style={styles.addSetLabel}>+ {t('workouts.session.addSet')}</Text>
           </Pressable>
         </View>
@@ -184,17 +198,22 @@ export const SessionExerciseSection = memo(function SessionExerciseSection({
   );
 });
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     addSetButton: {
       alignItems: 'center',
       alignSelf: 'center',
-      backgroundColor: colors.surfaceElevated,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 999,
+      borderWidth: StyleSheet.hairlineWidth,
       justifyContent: 'center',
       minHeight: 46,
       width: '92%',
+    },
+    addSetButtonPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     addSetLabel: {
       color: colors.textPrimary,
@@ -275,6 +294,8 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     header: {
       alignItems: 'flex-start',
+      borderCurve: 'continuous',
+      borderRadius: 12,
       flexDirection: 'row',
       gap: 13,
       paddingBottom: 24,
@@ -287,12 +308,20 @@ const createStyles = (colors: typeof Colors.light) =>
       flex: 1,
       minWidth: 0,
     },
+    headerPressed: {
+      backgroundColor: glass.controlPressedFill,
+    },
     menuButton: {
       alignItems: 'center',
+      borderCurve: 'continuous',
+      borderRadius: 17,
       flexShrink: 0,
       height: 34,
       justifyContent: 'center',
       width: 34,
+    },
+    menuButtonPressed: {
+      backgroundColor: glass.semanticAccentFill,
     },
     menuLabel: {
       color: colors.accent,
@@ -308,12 +337,11 @@ const createStyles = (colors: typeof Colors.light) =>
       minHeight: 22,
       paddingVertical: 0,
     },
-    pressed: {
-      opacity: 0.72,
-    },
     restTimer: {
       alignItems: 'center',
       alignSelf: 'flex-start',
+      borderCurve: 'continuous',
+      borderRadius: 8,
       flexDirection: 'row',
     },
     restTimerLabel: {
@@ -321,6 +349,9 @@ const createStyles = (colors: typeof Colors.light) =>
       fontSize: 14,
       fontWeight: '400',
       lineHeight: 18,
+    },
+    restTimerPressed: {
+      backgroundColor: glass.semanticAccentFill,
     },
     section: {
       borderTopColor: 'transparent',
