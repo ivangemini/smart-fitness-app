@@ -33,7 +33,7 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow Smart Fitness to select a profile photo.",
+          "photosPermission": "Allow Smart Fitness to select photos for your profile, social posts, and Stories.",
           "cameraPermission": false,
           "microphonePermission": false
         }
@@ -43,7 +43,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "We use the camera to scan food barcodes.",
+          "cameraPermission": "We use the camera to scan food barcodes and capture photos for Stories.",
           "recordAudioAndroid": false
         }
       ],
