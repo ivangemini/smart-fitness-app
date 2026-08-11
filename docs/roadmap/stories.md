@@ -20,15 +20,19 @@ Exact code, migrations, tests and current Git history override this document if 
 
 Audited against:
 
-- mobile `main` `3b3f1bdeb23e5bad6983f582bd44cea85de8aeb9` after PR #619 `docs: add audited Stories roadmap`;
-- backend `main` `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`;
+- mobile `main` `54c6b983b0d285c8ddf5c4316b9cd8bab27c569b` after PR #621 `feat(stories): add optional photo captions`;
+- backend `main` `64981c086f8456817ba6ab3a2d5e1911add6e228` after PR #218 `feat(stories): add backward-compatible caption contract`;
 - backend PR #214 `Add server-authoritative Stories foundation`;
 - mobile PR #533 `Add server-backed Stories to Home`;
 - mobile PR #535 `Add managed Story authoring lifecycle`;
+- mobile PR #618 Story viewer completion;
+- mobile PR #620 direct camera capture;
+- backend PR #218 Story caption persistence/visibility/export authority;
+- mobile PR #621 Story caption authoring/viewer integration;
 - current mobile Story routes, API/parsers, cache, viewer, authoring hook and managed-media composition;
 - current backend Story routes/schemas/service and managed-media contracts.
 
-Direct camera capture is the first explicitly prioritized post-v1 Stories expansion. Its source contract is defined in S9-A. It reuses the existing image-only `story_image` lifecycle and does not reopen backend/media authority.
+Direct camera capture (S9-A) and optional photo captions (S9-B) are now source/CI-complete post-v1 Stories expansions. They reuse the existing image-only `story_image` lifecycle; neither changes the server-authoritative expiry, visibility, viewed-state or managed-media ownership model.
 
 ## Scope vocabulary
 
@@ -124,7 +128,7 @@ That statement is intentionally narrower than “Stories are fully done.” It m
 
 ## S9-A — direct camera capture
 
-Status: **source-complete as the first explicitly prioritized Stories expansion; exact-head Mobile CI and physical runtime evidence remain separate layers.**
+Status: **source-complete and exact-head Mobile CI-complete; physical runtime evidence remains a separate gated layer.**
 
 Product/privacy contract:
 
@@ -149,6 +153,39 @@ Native/runtime boundary:
 - native configuration text only takes effect in a matching rebuilt binary, so **no physical/native completion is claimed until a separately authorized native build/device validation is performed**;
 - this package does not perform a build, install, OTA/EAS publication, backend deployment or provider activation.
 
+## S9-B — optional Story captions
+
+Status: **source-complete and exact-head backend/mobile CI-complete; deployed migration/runtime evidence remains a separate gated layer.**
+
+Product/privacy/compatibility contract:
+
+- [x] an image Story may include one optional textual caption;
+- [x] captions are trimmed and bounded to 1–1,000 characters when present; blank mobile input is omitted rather than creating empty server content;
+- [x] captions are persisted server-side with the Story rather than treated as authoritative local UI state;
+- [x] the existing schemaVersion-1 Story list/get/create response shape remains unchanged so already released strict mobile parsers are not broken by a backend rollout;
+- [x] caption reads use a separate versioned authenticated Story caption contract;
+- [x] caption reads reuse the same active-Story authority as image reads, including self/Following visibility, block filtering, moderation restrictions, deletion and 24-hour expiry;
+- [x] Story idempotency binds the caption value as well as the managed image, so a reused key cannot silently change published content;
+- [x] authored Story captions participate in the ownership-safe data-access export projection;
+- [x] mobile authoring exposes a bounded multiline caption field and character count;
+- [x] the viewer renders the server-returned caption without weakening the strict base Story parser;
+- [x] caption loading is fail-soft for staged rollout, so an otherwise readable image Story remains readable if the caption subresource is temporarily unavailable;
+- [x] new caption copy is localized in English and Russian;
+- [x] no alternate media transport, client-owned expiry, visibility bypass or unmanaged Story record is introduced.
+
+Source/CI evidence:
+
+- backend PR #218 exact head `f648c5d5268426568f0d1f6cd1f3189d07301bc7` passed Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI before merge;
+- backend PR #218 merged to `main` as `64981c086f8456817ba6ab3a2d5e1911add6e228`;
+- mobile PR #621 exact head `f6011e92993a52bab24b4d14fbd8c08a02fea752` passed repository/changed-file audits, TypeScript, full regression tests, expanded-model smoke, Expo export and Expo Doctor before merge;
+- mobile PR #621 merged to `main` as `54c6b983b0d285c8ddf5c4316b9cd8bab27c569b`.
+
+Environment/release boundary:
+
+- source includes forward migration `0042_social_story_captions`, but this roadmap does **not** claim that the migration has been executed in production or staging;
+- a mobile build containing caption creation must not be broadly released against an environment that has not first received the compatible backend migration/runtime;
+- this package performed no backend deployment, migration execution, native build/install, OTA/EAS publication, provider activation or credential change.
+
 ## G1 — physical-device and standalone runtime evidence
 
 Status: **gated; not yet established by source CI**.
@@ -164,8 +201,9 @@ Run only with explicit authorization for native/physical runtime work. Evidence 
 - process/restart recovery of an in-flight managed-media draft;
 - moderation allow/review/reject/failure presentation against the authorized environment;
 - publish, view, mark-viewed and owner delete;
+- caption create/read behavior against a backend with `0042_social_story_captions` applied;
 - 24-hour expiry behavior against server authority;
-- self/Following/private/block/restriction visibility boundaries;
+- self/Following/private/block/restriction visibility boundaries, including caption reads;
 - account switch/cache isolation;
 - offline cached-preview behavior followed by server revalidation;
 - second-device viewed/delete convergence where the environment supports it;
@@ -181,7 +219,7 @@ Source-complete managed-media contracts do not prove that a production or stagin
 
 Before broad release, separately authorize and verify the applicable environment for:
 
-- Stories database migration state;
+- Stories database migration state, including `0042_social_story_captions` before caption-enabled mobile release;
 - private quarantine/upload storage;
 - signed upload/finalize path;
 - moderation/processing state transitions;
@@ -203,9 +241,9 @@ Stories broad-release evidence must remain consistent with Social privacy/modera
 
 The capabilities below are **not part of the approved image-only v1 scope**. Their absence must not be reported as a v1 regression, but neither should the project claim that the full Stories product contains them.
 
-Direct camera capture is no longer merely inventory: it is the explicitly prioritized S9-A source capability above. The remaining items still require an explicit product contract before source work begins:
+Direct camera capture and optional photo captions are no longer merely inventory: they are the source/CI-complete S9-A and S9-B capabilities above. The remaining items still require an explicit product contract before source work begins:
 
-1. **Richer authoring after camera:** captions/text overlays and richer composition controls.
+1. **Richer composition after captions:** text overlays and richer composition controls.
 2. **Story interactions:** Story-specific replies/reactions and their notification/privacy/moderation semantics.
 3. **Audience controls:** per-Story audience selection, Close Friends or equivalent visibility models.
 4. **Video Stories:** video acquisition, transcoding, moderation, delivery, duration/bandwidth limits and resumable/multipart upload where needed.
