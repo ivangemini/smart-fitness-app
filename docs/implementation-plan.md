@@ -7,7 +7,7 @@ This file is the **canonical forward roadmap**. Verified evidence belongs in `do
 ## Current verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current repository/runtime `main`: `d44bb5e709f089b120e2d1d07f778d32aac8df7d` after docs PR #627 synchronized the completed S9-D checkpoint.
+- Current repository/runtime `main`: `4d3a6eda4e21786250d2fa62eaaf0e27fcc5a91d` after docs PR #628 synchronized the post-S9-D canonical checkpoint.
 - Latest runtime merge: PR #626 `feat(stories): add private Story Likes`, merged as `708d5b48eff2807f33ef89fa57ad9fde6200d3de`.
 - PR #626 exact validated head: `f1c91e70f1adf99a32d331356a1d61f27cd926d0`; Mobile CI #2193 run `31529202769` passed repository/changed-file line limits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor before merge.
 - PR #617 remains a post-closure bounded Workouts regression fix and does not increase the LG-5 demonstrated-defect runtime batch count.
@@ -17,6 +17,7 @@ This file is the **canonical forward roadmap**. Verified evidence belongs in `do
 - Backend PR #215 was refreshed directly onto current backend `main`; exact head is `5597152e821577d0cf2c9729ead2544532899db0`, ahead by four commits and behind by zero, with exactly four CI-policy files changed. Its required Hermes jobs are queued with the requested `[self-hosted, linux, x64, hermes-mobile-ci]` labels but no assigned runner (`runner_id`/`runner_name` unset), so runner registration/access remains an infrastructure dependency and the PR remains draft/not merge-ready.
 - **LG-H2 Stories is source/CI-complete through the reviewed S9-D private Story Like contract.** This is not a claim that physical-device evidence, deployed migrations/media/provider evidence, release evidence or any deferred future Stories expansion is complete. See `docs/roadmap/stories.md`.
 - **Stories S9-A direct camera, S9-B captions, S9-C one bounded overlay and S9-D private Story Like are source/CI-complete.** No further Stories product expansion is currently contract-approved for autonomous source implementation.
+- **Home active-program selection now has an explicit product/state contract** in `docs/architecture/home-active-program-contract.md`: one user-level selector, `null` meaning the built-in default, explicit activation only, no favorite/recency/order heuristics. Issue #618 remains open for implementation/evidence rather than contract definition.
 - **Phase 10 Responsive Mobile UI Hardening is complete for current source/CI scope.**
 - **LG-4 Workouts source convergence is complete.**
 - **LG-5 QA and bounded polish is complete for the currently authorized source/CI scope.**
@@ -33,7 +34,7 @@ Release readiness remains lower than source completeness because physical-device
 - Follow `docs/architecture/responsive-mobile-ui.md` and `docs/architecture/liquid-glass-ui.md`.
 - Potentially long collections require a suitable virtualized owner with stable identity; bounded collections do not need speculative virtualization.
 - Keyboard-open forms must keep the active input and required primary action reachable while preserving safe-area and floating-navigation clearance.
-- Local AsyncStorage remains the active storage strategy; architecture-only design options are not implementation authorization. Reviewed decision evidence: `docs/architecture/local-state-performance-decision.md`. **There is no remaining approved autonomous source-refactor phase.** In equivalent explicit terms, **no separate autonomous source-refactor phase is currently authorized**.
+- Local AsyncStorage remains the active storage strategy; architecture-only design options are not implementation authorization. Reviewed decision evidence: `docs/architecture/local-state-performance-decision.md`. **There is no remaining approved autonomous source-refactor phase.** In equivalent explicit terms, **no separate autonomous source-refactor phase is currently authorized**. The contract-approved Home active-program feature is product work, not a generic refactor phase.
 - Stories remain in the server-authoritative Social boundary and must not be added to private revisioned `AppState` sync.
 - Analytics/telemetry collection remains disabled until its separate consent/evidence gate is explicitly satisfied.
 - Source-complete provider, export, worker, delivery or release contracts are not activation authorization.
@@ -54,7 +55,7 @@ Release readiness remains lower than source completeness because physical-device
 - **Phase 8 privacy/security hardening:** substantially complete for current source scope; environment/provider evidence remains external.
 - **Phase 9 release/privacy/data-access evidence:** separate cross-repository/release program; source contracts are substantially advanced but product/provider/release activation remains external.
 - **Phase 10 Responsive Mobile UI Hardening:** complete for current source/CI scope; future concrete regressions remain valid bounded fixes.
-- **Phase 11 Liquid Glass + Home convergence:** LG-H1/LG-H2 and LG-1 through LG-4 source work complete; LG-5 validation-first source/CI QA complete for the currently authorized scope.
+- **Phase 11 Liquid Glass + Home convergence:** LG-H1/LG-H2 and LG-1 through LG-4 source work complete; LG-5 validation-first source/CI QA complete for the currently authorized scope. Home active-program selection is the next contract-approved product slice under issue #618.
 
 ---
 
@@ -133,12 +134,12 @@ Coach recovery/input/lookback/history/domain product/material expansion remains 
 There is no additional numbered `LG-6` or `LG-7` source-refactor phase in the canonical roadmap. Remaining work is:
 
 1. **Backend CI infrastructure #215:** resolve backend Hermes runner registration/access; the draft PR has already been refreshed onto current backend `main` without losing the S9-D PostgreSQL gate. After runner assignment is fixed, all three exact-head workflows must execute and pass before ready/merge.
-2. **Stories evidence/expansion boundary:** image-only v1 and reviewed S9-A through S9-D source/CI work are complete. Physical/native/provider/deployment/release evidence remains authorization-gated. Further product expansion starts only after another candidate in `docs/roadmap/stories.md` receives an explicit reviewed contract.
-3. **Authorization-gated validation/release evidence:** physical standalone/device, native-release, Android/system-navigation, second-device/offline-restart, backend deployment/provider and production evidence as applicable. Execute only when directly authorized.
-4. **LG-H3 Steps:** blocked on reviewed native capability/permission contract and later authorized runtime evidence.
-5. **LG-H4 ranking/retention:** later, after a separate product contract; chronological Following remains authoritative now.
-6. **Coach expansion:** deferred until explicit reprioritization.
-7. **Home active-program contract:** issue #618 remains a distinct product/state decision; do not invent recency/favorite heuristics for Home schedule selection.
+2. **Home active-program selection #618:** contract-approved in `docs/architecture/home-active-program-contract.md`. Implement backend single-row fitness-profile selector authority first, then mobile persistence/sync, explicit Set as active / Use default actions, stale-reference repair and deterministic Home resolution. Do not use favorite, recency, order or current backend `training_programs.is_active` as implicit selection.
+3. **Stories evidence/expansion boundary:** image-only v1 and reviewed S9-A through S9-D source/CI work are complete. Physical/native/provider/deployment/release evidence remains authorization-gated. Further product expansion starts only after another candidate in `docs/roadmap/stories.md` receives an explicit reviewed contract.
+4. **Authorization-gated validation/release evidence:** physical standalone/device, native-release, Android/system-navigation, second-device/offline-restart, backend deployment/provider and production evidence as applicable. Execute only when directly authorized.
+5. **LG-H3 Steps:** blocked on reviewed native capability/permission contract and later authorized runtime evidence.
+6. **LG-H4 ranking/retention:** later, after a separate product contract; chronological Following remains authoritative now.
+7. **Coach expansion:** deferred until explicit reprioritization.
 8. **Future regressions:** fix only demonstrated defects in bounded packages; they do not constitute a new autonomous migration/refactor phase.
 
 # Validation policy
