@@ -2,20 +2,20 @@
 
 Updated: 2026-08-11
 
-This file is the **canonical forward roadmap**. Verified evidence belongs in `docs/current-status.md` and `docs/handoffs/latest.md`; focused Liquid Glass history belongs in `docs/roadmap/liquid-glass.md`. Exact code, tests and current Git history override stale prose.
+This file is the **canonical forward roadmap**. Verified evidence belongs in `docs/current-status.md` and `docs/handoffs/latest.md`; focused Liquid Glass history belongs in `docs/roadmap/liquid-glass.md`; the audited Stories source/release/expansion boundary belongs in `docs/roadmap/stories.md`. Exact code, tests and current Git history override stale prose.
 
 ## Current verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current repository `main`: `5fdd144a67ee4706015fed5f939cfa299b49b46a` (docs-only PR #615).
-- Current runtime checkpoint: `a8b2c4530cbdc944e7a3821cdc7926296fb78f18`.
-- Latest runtime merge: PR #613, exact validated head `fae10aa93a1d26279eabe9d56eaf1efeb7103974`; Mobile CI #2170 run `31476083264` passed the complete Hermes mobile gate before merge.
-- PR #614 immediately preceded it: exact head `ca2a9277cac376b52d6332798ce3cf6ebadadd11`; Mobile CI #2167 run `31474957650`; merge `d0f44018ea457a4acc2d33bc69fb608621b3fbe5`.
-- Merged demonstrated-defect LG-5 runtime batches total **38**.
+- Current repository/runtime `main`: `b354fb58f8b1759cca0e2dfd4cb68d48ad5b26b4`.
+- Latest runtime merge: PR #617 `fix(workouts): persist program builder state`.
+- PR #617 exact validated head: `4773f60339d70f4ee40163ecc92a492547c9ccc7`; Mobile CI #2179 run `31491962947` passed the complete Hermes mobile gate before merge.
+- PR #617 is a post-closure bounded regression fix and does not increase the LG-5 demonstrated-defect runtime batch count.
+- Merged demonstrated-defect LG-5 runtime batches remain **38**.
 - Backend repo: `ivangemini/smart-fitness-backend`.
 - Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
-- Backend PR #215 exact head is `f5c7f2d4cd1d150f5894fcc60725e85f05631d22`, based directly on that main. Its current Backend CI job `93730465556` requests `[self-hosted, linux, x64, hermes-mobile-ci]`, but GitHub reports `runner_id: 0` and an empty runner name. #215 is therefore blocked on runner registration/access rather than a test failure; all three exact-head Hermes workflows must actually execute and pass before ready/merge.
-- **LG-H2 Stories is complete for the current image-only v1 source scope.**
+- Backend PR #215 exact head remains `f5c7f2d4cd1d150f5894fcc60725e85f05631d22`; all three required exact-head Hermes workflows must actually execute and pass before ready/merge. Runner registration/access remains an infrastructure dependency, not permission to weaken validation.
+- **LG-H2 Stories is source-complete for the approved image-only v1 contract.** This is not a claim that the full long-term Stories product, physical-device evidence, deployed media/provider evidence or release evidence is complete. See `docs/roadmap/stories.md`.
 - **Phase 10 Responsive Mobile UI Hardening is complete for current source/CI scope.**
 - **LG-4 Workouts source convergence is complete.**
 - **LG-5 QA and bounded polish is complete for the currently authorized source/CI scope.**
@@ -27,7 +27,7 @@ Release readiness remains lower than source completeness because physical-device
 
 - Re-check exact mobile/backend `main`, open PRs, `AGENTS.md`, this plan, current status, handoff and focused roadmaps before new work.
 - Prefer bounded evidence-backed packages over cosmetic churn.
-- Runtime/source changes require a demonstrated defect; compliant surfaces produce no-change evidence instead of source churn.
+- Runtime/source changes require a demonstrated defect or an explicitly reviewed new product contract; compliant surfaces produce no-change evidence instead of source churn.
 - Preserve routes, stable IDs, private persistence/sync contracts, calculations, auth/session semantics, workout/program lifecycle, completed-history immutability, Social authority/privacy and backend API contracts unless a task explicitly changes them.
 - Follow `docs/architecture/responsive-mobile-ui.md` and `docs/architecture/liquid-glass-ui.md`.
 - Potentially long collections require a suitable virtualized owner with stable identity; bounded collections do not need speculative virtualization.
@@ -49,7 +49,7 @@ Release readiness remains lower than source completeness because physical-device
 - **Phase 4 product domain convergence:** complete for current source scope.
 - **Phase 5 deterministic Coach:** complete for current planned source scope.
 - **Phase 6 provider-neutral agent foundation:** source-complete with safe disabled defaults.
-- **Phase 7 Social foundation:** base Social plus Stories list/view/authoring/delete complete for current image-only v1 source scope.
+- **Phase 7 Social foundation:** base Social plus the approved image-only Stories v1 source contract is complete. Full Stories product expansion and runtime/release evidence are tracked separately in `docs/roadmap/stories.md`.
 - **Phase 8 privacy/security hardening:** substantially complete for current source scope; environment/provider evidence remains external.
 - **Phase 9 release/privacy/data-access evidence:** separate cross-repository/release program; source contracts are substantially advanced but product/provider/release activation remains external.
 - **Phase 10 Responsive Mobile UI Hardening:** complete for current source/CI scope; future concrete regressions remain valid bounded fixes.
@@ -63,6 +63,19 @@ Home remains:
 
 **compact personal daily metrics → server-authoritative Stories → server-authoritative chronological Following Feed**.
 
+## LG-H2 — Stories
+
+The approved image-only v1 source contract is complete across backend authority, Home read/view, viewed-state acknowledgement, managed image acquisition/upload/moderation polling, authoring and owner deletion.
+
+The focused audit is `docs/roadmap/stories.md` and is authoritative for Stories terminology:
+
+- approved image-only v1 source packages remaining: **0**;
+- physical-device/standalone evidence: gated;
+- deployed storage/provider/moderation/release evidence: gated;
+- richer authoring, interactions, audience controls, video, archive/highlights, viewer surfaces and advanced media/analytics: product-expansion inventory only until explicitly prioritized and reviewed.
+
+Do not translate “image-only v1 source-complete” into “the full Stories product is complete.” Do not start an expansion candidate merely because it appears in the inventory.
+
 ## LG-5 closure
 
 LG-5 finished with **38 demonstrated-defect runtime batches**. Earlier history remains in Git and `docs/roadmap/liquid-glass.md`. The final four packages were:
@@ -74,7 +87,9 @@ LG-5 finished with **38 demonstrated-defect runtime batches**. Earlier history r
 
 PR #612 was intentionally not merged: Program Detail/Builder program-day rows are bounded by the seven-day `WeekdayKey` model, so replacing them merely to satisfy a generic virtualization pattern would have been speculative churn.
 
-The final audit also retained no-change evidence for Workout History list/detail, Workout Template Detail, bounded Program Detail/Builder collections and already guarded active-session/Exercise Library/creation surfaces. A future reproduced regression may receive a bounded fix, but there is no pre-authorized continuation package simply to keep refactoring source.
+PR #617 later fixed a demonstrated Program Builder persistence boundary regression using persisted `trainingPrograms`/`saveTrainingProgram`. It is a bounded post-closure regression fix, not LG-5 package #39.
+
+The final audit retained no-change evidence for Workout History list/detail, Workout Template Detail, bounded Program Detail/Builder collections and already guarded active-session/Exercise Library/creation surfaces. A future reproduced regression may receive a bounded fix, but there is no pre-authorized continuation package simply to keep refactoring source.
 
 ## LG-H3 — Steps
 
@@ -100,7 +115,7 @@ Coach recovery/input/lookback/history/domain product/material expansion remains 
 # Backend / cross-repository execution
 
 - Backend runtime/source work follows backend `AGENTS.md`, ownership/privacy/idempotency/revision contracts and exact-head validation.
-- Backend PR #215 is CI infrastructure only. Exact head `f5c7f2d4cd1d150f5894fcc60725e85f05631d22` is based directly on current backend main. The current jobs are not assigned to a runner (`runner_id: 0` on Backend CI), so resolve Hermes runner registration/access for the backend repository first; then require Backend CI, PostgreSQL CI and Account Deletion Receipt CI to execute and pass before ready/merge.
+- Backend PR #215 is CI infrastructure only. Exact head `f5c7f2d4cd1d150f5894fcc60725e85f05631d22` is based directly on current backend main. Resolve Hermes runner registration/access for the backend repository first; then require Backend CI, PostgreSQL CI and Account Deletion Receipt CI to execute and pass before ready/merge.
 - Do not route routine validation back to hosted runners merely to bypass the runner-assignment blocker unless a demonstrated outage/incompatibility is separately reviewed under the CI policy.
 - Mobile `docs/backend/*` remains historical Architecture 1.0 design material; current backend behavior is authoritative in `ivangemini/smart-fitness-backend`.
 
@@ -110,12 +125,14 @@ Coach recovery/input/lookback/history/domain product/material expansion remains 
 
 There is no additional numbered `LG-6` or `LG-7` source-refactor phase in the canonical roadmap. Remaining work is:
 
-1. **Authorization-gated validation/release evidence:** physical standalone/device, native-release, Android/system-navigation, second-device/offline-restart, backend deployment/provider and production evidence as applicable. Execute only when directly authorized.
-2. **LG-H3 Steps:** blocked on reviewed native capability/permission contract and later authorized runtime evidence.
-3. **LG-H4 ranking/retention:** later, after a separate product contract; chronological Following remains authoritative now.
-4. **Coach expansion:** deferred until explicit reprioritization.
-5. **Backend CI infrastructure #215:** blocked on backend access to the Hermes self-hosted runner; after access is resolved, exact-head validation and merge remain required.
-6. **Future regressions:** fix only demonstrated defects in bounded packages; they do not constitute a new autonomous migration/refactor phase.
+1. **Backend CI infrastructure #215:** resolve backend Hermes runner registration/access; after that, exact-head validation and merge remain required.
+2. **Stories evidence/expansion boundary:** approved image-only v1 has no remaining autonomous source package. Physical-device/provider/release evidence is authorization-gated; product expansion starts only after one candidate in `docs/roadmap/stories.md` receives an explicit reviewed contract.
+3. **Authorization-gated validation/release evidence:** physical standalone/device, native-release, Android/system-navigation, second-device/offline-restart, backend deployment/provider and production evidence as applicable. Execute only when directly authorized.
+4. **LG-H3 Steps:** blocked on reviewed native capability/permission contract and later authorized runtime evidence.
+5. **LG-H4 ranking/retention:** later, after a separate product contract; chronological Following remains authoritative now.
+6. **Coach expansion:** deferred until explicit reprioritization.
+7. **Home active-program contract:** issue #618 remains a distinct product/state decision; do not invent recency/favorite heuristics for Home schedule selection.
+8. **Future regressions:** fix only demonstrated defects in bounded packages; they do not constitute a new autonomous migration/refactor phase.
 
 # Validation policy
 
