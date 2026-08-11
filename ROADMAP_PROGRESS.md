@@ -1,6 +1,6 @@
 # Smart Fitness Roadmap Progress
 
-Updated: 2026-08-10
+Updated: 2026-08-11
 
 This is the canonical cross-program roadmap index for:
 
@@ -14,12 +14,9 @@ Use it together with:
 - `docs/implementation-plan.md` for the canonical forward plan;
 - `docs/current-status.md` for current evidence;
 - `docs/handoffs/latest.md` for the active handoff;
-- `docs/roadmap/liquid-glass.md` for Phase 11 execution;
-- `docs/roadmap/release-and-account.md` for release/account lifecycle contracts;
-- `docs/roadmap/localization-settings.md` for localization and regional-formatting contracts;
-- `docs/roadmap/data-quality-and-scale.md` for data-quality and local-storage scalability contracts;
-- focused provider, Social, privacy, release and architecture documents for historical contracts and activation boundaries;
-- backend `AGENTS.md` and backend focused documentation when backend work is required.
+- `docs/roadmap/liquid-glass.md` for Phase 11 evidence and history;
+- focused release, localization, data-quality, provider, Social, privacy and architecture documents for retained contracts;
+- backend `AGENTS.md` and focused backend documentation when backend work is required.
 
 Exact code, tests and current Git history override stale historical prose.
 
@@ -27,32 +24,20 @@ Exact code, tests and current Git history override stale historical prose.
 
 ### Mobile
 
-- Current runtime checkpoint: `dcc62356d946f4e2c309aa24666322e9a671f067` (latest runtime/source merge PR #574; this documentation-only checkpoint does not change runtime behavior).
-- Latest runtime merge: PR #574 — workout-post comment pagination now uses the post-detail screen as the sole virtualized list boundary.
-- PR #574 exact validated head: `3d959128c63b46948cef946895352d96658732fa`; Mobile CI #2077 passed before merge.
-- PR #573 exact validated head: `e5769c5e579dc1da9963f7a6e2433214c996dc4a`; Mobile CI #2073 passed before merge after virtualizing the other four cursor-paginated Social collection surfaces.
-- LG-5 runtime evidence merged after the prior #566 documentation checkpoint:
-  - PR #567 — shared empty/loading/error theme consistency;
-  - PR #568 — auth/account appearance consistency;
-  - PR #569 — onboarding appearance consistency;
-  - PR #570 — Exercise Detail loading-state safe-area/theme ownership;
-  - PR #571 — Share Workout state/theme resilience;
-  - PR #572 — bounded Coach history theme consistency;
-  - PR #573 — paginated Social collection virtualization;
-  - PR #574 — workout-post comment virtualization.
-- Earlier LG-5 evidence remains PR #559, #560, #561 and #565.
-- CI execution policy remains:
-  - PR #562 routes routine authoritative Mobile CI to Hermes;
-  - PR #563 skips only duplicate merge-generated post-merge Mobile CI after an exact-head validated PR;
-  - PR #564 persists the Hermes policy for future agents.
-- No open mobile pull requests were present immediately before this documentation checkpoint branch.
+- Current runtime `main`: `a8b2c4530cbdc944e7a3821cdc7926296fb78f18`.
+- Latest runtime merge: PR #613 — Program Editor/Picker interaction-material convergence.
+- PR #613 exact validated head: `fae10aa93a1d26279eabe9d56eaf1efeb7103974`; Mobile CI #2170 run `31476083264` passed the full Hermes gate before merge.
+- PR #614 immediately preceded it: exact head `ca2a9277cac376b52d6332798ce3cf6ebadadd11`; Mobile CI #2167 run `31474957650`; merge `d0f44018ea457a4acc2d33bc69fb608621b3fbe5`.
+- LG-5 demonstrated-defect runtime packages total **38**.
+- Final package sequence: #610 New Routine virtualization, #611 Program Workout Editor virtualization, #614 Safety Gate responsive/accessibility hardening, #613 Program Editor interaction-material convergence.
+- PR #612 was rejected/reset as speculative after confirming Program Detail/Builder day collections are bounded by the seven-day `WeekdayKey` model.
+- Routine authoritative Mobile CI remains on `[self-hosted, linux, x64, hermes-mobile-ci]`; merge-generated duplicate validation remains deduplicated under the existing policy.
 
 ### Backend
 
-- Current `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
-- Backend PR #216 persisted the current CI-runner policy in `AGENTS.md`.
-- Open backend PR #215, `Route routine backend CI to Hermes`, remains **draft and unvalidated** at exact head `0826ff18dac7d4afe78943d9881c5a530507f1af`.
-- Its Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI exact-head runs remain queued. Do not merge #215 until the required Hermes jobs actually execute and pass on that exact head or a deliberately updated replacement head.
+- Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
+- Backend PR #216 persists the CI-runner policy in `AGENTS.md`.
+- Backend PR #215 remains CI infrastructure only. It has been refreshed directly onto current backend main at exact head `f5c7f2d4cd1d150f5894fcc60725e85f05631d22` and is mergeable, but its Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI must all execute and pass before ready/merge.
 
 Always re-check exact `main`, open PRs and exact-head workflow state before changing source.
 
@@ -68,71 +53,50 @@ Always re-check exact `main`, open PRs and exact-head workflow state before chan
 - Phase 8 privacy/security hardening: substantially complete for current source scope; environment/provider evidence remains external.
 - Phase 9 release/privacy/data-access evidence: separate cross-repository program with source contracts substantially advanced; product/provider/release activation remains separately gated.
 - Phase 10 Responsive Mobile UI Hardening: complete for current source/CI scope.
-- **Phase 11 Liquid Glass + Home convergence: LG-4 source convergence complete; LG-5 QA and bounded polish active.**
+- **Phase 11 Liquid Glass + Home convergence: LG-4 source convergence and LG-5 validation-first source/CI QA complete for the currently authorized scope.**
 
 ## Active autonomous source program
 
-The current autonomous product/source program is **Phase 11 / LG-5 QA and bounded polish**.
+**None.** There is no remaining approved autonomous source-refactor phase and no implicit `LG-6`/`LG-7` continuation.
 
-LG-5 is validation-first. Runtime work is allowed only when inspection, CI evidence or an authorized runtime observation identifies a concrete defect. Do not manufacture broad migration packages merely to keep changing source.
+Future source work requires one of:
 
-Current required source/CI matrix:
+- a concrete reproduced/source-demonstrated regression, fixed as the smallest coherent package; or
+- an explicitly prioritized and reviewed new product/architecture scope.
 
-- light / dark / system appearance;
-- narrow phone width and short phone height;
-- increased text size and long EN/RU copy;
-- keyboard-open forms and editors;
-- safe-area ownership on iPhone and Android system navigation;
-- populated / empty / loading / error / disabled states;
-- long collections, cursor pagination and stable-identity virtualization boundaries;
-- Active Session set entry, RPE, replacement, finish and discard flows;
-- workout creation/edit/save/program attachment;
-- completed-history read/edit/delete;
-- elevated material and blur/fallback behavior.
+Compliant surfaces remain no-change evidence instead of targets for cosmetic churn.
 
-Confirmed/fixed LG-5 defect classes now include:
+## LG-5 closure evidence
 
-- keyboard reachability and short-height scrolling;
-- minimum touch geometry;
-- long/localized shared-control text resilience;
-- active-theme consistency for shared state/header, auth/account, onboarding, Share Workout and bounded Coach history presentation;
-- safe-area ownership for transient loading states;
-- eager rendering of cursor-paginated Social collections and workout comments.
+The final Workouts audit rechecked bounded/unbounded collections, stable identity, responsive/safe-area behavior, long/localized copy, accessibility semantics and material pressed/disabled states.
 
-## Historical programs remain authoritative as contracts
+- New Routine and Program Workout Editor arbitrary exercise collections are virtualized with stable IDs (#610/#611).
+- Safety Gate narrow-width localized metric/action behavior and secondary-action semantics are hardened (#614).
+- Program Editor picker/builder direct interactions own explicit adaptive control/accent/destructive/disabled materials (#613).
+- Workout History list/detail and Workout Template Detail already satisfied their virtualized/stable-ID/read-only contracts and were retained unchanged.
+- Program Detail/Builder day collections are seven-day bounded and were deliberately not refactored for virtualization.
+- Existing Workouts source guards cover the remaining established live boundaries; future changes need new evidence.
 
-Older provider/release, Social, privacy/data-access, synchronization and architecture documents are retained as evidence and contract history. They are not permission to restart an earlier broad phase when the newer Phase 11 plan says validation-first.
-
-Important examples:
-
-- provider/source readiness does not authorize credentials, real provider calls or activation;
-- backend privacy/export source work has progressed beyond several early planning notes, so later focused evidence files and current code override old `next slice` wording;
-- Social remains server-authoritative and separate from private revisioned `AppState` synchronization;
-- analytics/telemetry remains fail-closed until its separate consent/evidence gate is satisfied;
-- the approved local-state strategy remains the existing AsyncStorage `AppState` snapshot unless measured evidence reopens that decision.
-
-The mobile `docs/backend/*` Architecture 1.0 documents are historical design material. The actual backend implementation and backend repository documentation are authoritative for current backend behavior.
+Source/CI evidence does **not** establish physical-device or release evidence.
 
 ## Current execution order
 
-1. Continue LG-5 source/CI QA across remaining secondary/shared surfaces.
-2. Create runtime PRs only for demonstrated defects; validate the exact head before merge.
-3. Keep backend PR #215 blocked until its exact-head Hermes jobs execute and pass; do not weaken validation merely to clear the queue.
-4. Collect physical-device/native evidence only when separately authorized.
-5. Resume deferred Coach product/material expansion only after explicit reprioritization.
-6. Keep LG-H3 Steps blocked until a reviewed native health/activity source and permission contract exist.
-7. Preserve chronological Following semantics until a separate LG-H4 ranking contract is reviewed.
+1. Finish backend PR #215 only after all three exact-head Hermes workflows pass; do not weaken validation to clear a queue.
+2. Perform physical-device/native/release/deployment/provider evidence only with explicit authorization.
+3. Keep LG-H3 Steps blocked until a reviewed native health/activity provider/dependency/permission contract exists and the required physical runtime work is separately authorized.
+4. Preserve chronological Following semantics; LG-H4 ranking/retention remains later until a separate reviewed contract exists.
+5. Keep Coach product/material expansion deferred until explicit reprioritization.
+6. Treat future concrete source regressions as bounded fixes, not as a new autonomous migration phase.
 
 ## Working rules
 
-- Continue through a meaningful bounded package rather than stopping after every micro-change.
+- Continue through meaningful bounded packages rather than stopping after every micro-change.
 - Use branches and pull requests; merge runtime code only after an exact fully green head.
-- Preserve routes, stable IDs, persistence/sync schemas, authentication/session semantics, revisions, idempotency, conflict behavior, completed history, explicit Coach confirmations, media state versions, leases, retention, legal holds and immutable audit unless a task explicitly changes them.
+- Preserve routes, stable IDs, persistence/sync schemas, authentication/session semantics, revisions, idempotency, conflict behavior, completed-history immutability, explicit Coach confirmations, media state versions, leases, retention, legal holds and immutable audit unless a task explicitly changes them.
 - Keep private fitness data in the existing offline-first/revision-aware boundary.
 - Keep Social server-authoritative.
 - Keep provider calls and credentials backend-only.
-- Potentially long collections should use suitable virtualized list boundaries with stable IDs; do not use eager unbounded `.map()` chains or same-axis nested virtualized lists.
-- Keep hand-written source and architecture files within repository line-limit policy.
+- Potentially long collections use suitable virtualized list boundaries with stable IDs; bounded collections are not virtualization targets by default.
 - New user-facing copy must use the localization layer and bounded display mappings.
 - Never put health, workout, nutrition, limitation, authentication, Coach, Social content, email, tokens, object keys, signed URLs, OCR plaintext, provider payloads or raw private values into telemetry/diagnostics.
 
@@ -145,7 +109,7 @@ Without explicit authorization, do not:
 - configure credentials, provider accounts, buckets, CDN, DNS or sender domains;
 - make real provider calls or run staging calibration/smoke against real environments;
 - deploy backend changes or execute migrations outside CI;
-- schedule/start workers;
+- schedule/start production workers;
 - activate staging or production product capabilities;
 - publish OTA/EAS updates;
 - create/install native builds;
@@ -154,7 +118,7 @@ Without explicit authorization, do not:
 - access production user data;
 - activate HealthKit/Health Connect or submit to stores.
 
-Physical-device, second-device, offline-restart, accessibility, EN/RU/unit, Android, release and rollback evidence remain separate from source/CI completion.
+Physical-device, second-device, offline-restart, accessibility-runtime, EN/RU/unit, Android, release and rollback evidence remain separate from source/CI completion.
 
 ## Deferred product scope
 
