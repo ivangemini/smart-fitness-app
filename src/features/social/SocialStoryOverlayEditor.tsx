@@ -6,7 +6,13 @@ import {
   SOCIAL_STORY_OVERLAY_PLACEMENTS,
   type SocialStoryOverlayPlacement,
 } from '@/api/social';
-import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
+import {
+  Colors,
+  Layout,
+  Radii,
+  Spacing,
+  Typography,
+} from '@/constants/theme';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import {
   resolveLiquidGlassPalette,
@@ -122,7 +128,7 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
       fontSize: Typography.body.fontSize,
       fontWeight: Typography.body.fontWeight,
       lineHeight: Typography.body.lineHeight,
-      minHeight: 88,
+      minHeight: Typography.body.lineHeight * 3 + Spacing.four,
       paddingHorizontal: Spacing.three,
       paddingVertical: Spacing.two,
       textAlignVertical: 'top',
@@ -141,7 +147,7 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
       borderWidth: StyleSheet.hairlineWidth,
       flex: 1,
       justifyContent: 'center',
-      minHeight: 44,
+      minHeight: Layout.controlHeight,
       paddingHorizontal: Spacing.two,
       paddingVertical: Spacing.two,
     },
