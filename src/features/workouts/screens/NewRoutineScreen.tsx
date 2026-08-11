@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { FlatList, Pressable, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Spacing } from '@/constants/theme';
@@ -205,200 +205,207 @@ export function NewRoutineScreen() {
         </Pressable>
       </View>
 
-      <ScrollView
+      <FlatList
         automaticallyAdjustKeyboardInsets
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={[
           styles.content,
           { paddingBottom: insets.bottom + Spacing.six },
         ]}
+        data={planExercises}
+        ItemSeparatorComponent={() => <View style={{ height: Spacing.four }} />}
         keyboardDismissMode="interactive"
         keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}>
-        <View style={styles.container}>
-          <TextInput
-            accessibilityLabel={copy.routineName}
-            autoCapitalize="words"
-            onChangeText={setTitle}
-            placeholder={copy.routineName}
-            placeholderTextColor={colors.textMuted}
-            selectionColor={colors.accent}
-            style={styles.titleInput}
-            value={title}
-          />
-          <TextInput
-            accessibilityLabel={copy.routineNotes}
-            multiline
-            onChangeText={setNotes}
-            placeholder={copy.routineNotes}
-            placeholderTextColor={colors.textMuted}
-            selectionColor={colors.accent}
-            style={styles.notesInput}
-            value={notes}
-          />
-
-          {planExercises.length === 0 ? (
-            <View style={styles.emptyBlock}>
-              <Text style={styles.emptyTitle}>{copy.noExercises}</Text>
-              <Text style={styles.emptyText}>{copy.noExercisesBody}</Text>
-            </View>
-          ) : (
-            <View style={styles.exerciseList}>
-              {planExercises.map((item) => {
-                const expanded = expandedExerciseId === item.exercise.id;
-                return (
-                  <View key={item.exercise.id} style={styles.exerciseBlock}>
-                    <Pressable
-                      accessibilityLabel={
-                        expanded
-                          ? copy.collapseExercise(item.exercise.name)
-                          : copy.expandExercise(item.exercise.name)
-                      }
-                      accessibilityRole="button"
-                      accessibilityState={{ expanded }}
-                      onPress={() =>
-                        setExpandedExerciseId(expanded ? null : item.exercise.id)
-                      }
-                      style={({ pressed }) => [
-                        styles.exerciseHeaderRow,
-                        pressed && styles.exerciseHeaderPressed,
-                      ]}>
-                      <View style={styles.exerciseThumb}>
-                        <Text style={styles.exerciseThumbLabel}>
-                          {item.exercise.name.slice(0, 1).toUpperCase()}
-                        </Text>
-                        <Text style={styles.exerciseHelp}>?</Text>
-                      </View>
-                      <View style={styles.exerciseCopy}>
-                        <Text numberOfLines={2} style={styles.exerciseTitle}>
-                          {item.exercise.name}
-                        </Text>
-                        {!expanded
-                          ? Array.from({ length: item.targetSets }, (_, index) => (
-                              <Text
-                                key={`${item.exercise.id}-${index}`}
-                                numberOfLines={1}
-                                style={styles.collapsedSetLine}>
-                                {copy.emptySetLine(
-                                  formatNumber(index + 1, { maximumFractionDigits: 0 }),
-                                  weight,
-                                )}
-                              </Text>
-                            ))
-                          : null}
-                      </View>
-                      <Pressable
-                        accessibilityLabel={copy.exerciseOptions(item.exercise.name)}
-                        accessibilityRole="button"
-                        hitSlop={12}
-                        onPress={() => setExerciseMenu(item.exercise)}
-                        style={({ pressed }) => [
-                          styles.exerciseMenuButton,
-                          pressed && styles.exerciseMenuButtonPressed,
-                        ]}>
-                        <Text style={styles.exerciseMenuLabel}>•••</Text>
-                      </Pressable>
-                    </Pressable>
-
-                    {expanded ? (
-                      <View style={styles.expandedPanel}>
-                        <TextInput
-                          accessibilityLabel={copy.exerciseNotes}
-                          multiline
-                          onChangeText={(value) =>
-                            updatePlanExercise(item.exercise.id, { notes: value })
-                          }
-                          placeholder={copy.exerciseNotes}
-                          placeholderTextColor={colors.textMuted}
-                          selectionColor={colors.accent}
-                          style={styles.exerciseNotesInput}
-                          value={item.notes}
-                        />
-                        <Text style={styles.restTimer}>{copy.restTimerOff}</Text>
-                        <View style={styles.planTableHeader}>
-                          <Text style={[styles.tableHeaderText, styles.colSet]}>
-                            {copy.set}
-                          </Text>
-                          <Text style={[styles.tableHeaderText, styles.colPrevious]}>
-                            {copy.previous}
-                          </Text>
-                          <Text style={[styles.tableHeaderText, styles.colWeight]}>
-                            {weight}
-                          </Text>
-                          <Text style={[styles.tableHeaderText, styles.colReps]}>
-                            {copy.repsHeader}
-                          </Text>
-                        </View>
-                        {Array.from({ length: item.targetSets }, (_, index) => (
-                          <View
-                            key={`${item.exercise.id}-row-${index}`}
-                            style={styles.planSetRow}>
-                            <Text style={[styles.planSetText, styles.colSet]}>
-                              {formatNumber(index + 1, { maximumFractionDigits: 0 })}
-                            </Text>
-                            <Text style={[styles.planPrevious, styles.colPrevious]}>
-                              {index === 0
-                                ? '—'
-                                : copy.reps(
-                                    item.targetReps,
-                                    formatNumber(item.targetReps, {
-                                      maximumFractionDigits: 0,
-                                    }),
-                                  )}
-                            </Text>
-                            <TextInput
-                              accessibilityLabel={`${item.exercise.name} ${weight}`}
-                              keyboardType="decimal-pad"
-                              selectionColor={colors.accent}
-                              style={[styles.planInput, styles.colWeight]}
-                            />
-                            <TextInput
-                              accessibilityLabel={`${item.exercise.name} ${copy.repsHeader}`}
-                              keyboardType="number-pad"
-                              onChangeText={(value) =>
-                                updatePlanExercise(item.exercise.id, {
-                                  targetReps: Number.parseInt(value, 10) || 8,
-                                })
-                              }
-                              selectionColor={colors.accent}
-                              style={[styles.planInput, styles.colReps]}
-                            />
-                          </View>
-                        ))}
-                        <Pressable
-                          accessibilityLabel={copy.addSetForExercise(item.exercise.name)}
-                          accessibilityRole="button"
-                          onPress={() =>
-                            updatePlanExercise(item.exercise.id, {
-                              targetSets: item.targetSets + 1,
-                            })
-                          }
-                          style={({ pressed }) => [
-                            styles.addSetButton,
-                            pressed && styles.addSetButtonPressed,
-                          ]}>
-                          <Text style={styles.addSetLabel}>{copy.addSet}</Text>
-                        </Pressable>
-                      </View>
-                    ) : null}
-                  </View>
-                );
-              })}
-            </View>
-          )}
-
-          <Pressable
-            accessibilityLabel={copy.addExercises}
-            accessibilityRole="button"
-            onPress={() => setPickerMode({ type: 'add' })}
-            style={({ pressed }) => [
-              styles.addButton,
-              pressed && styles.addButtonPressed,
+        keyExtractor={(item) => item.exercise.id}
+        ListEmptyComponent={
+          <View style={[styles.container, styles.emptyBlock]}>
+            <Text style={styles.emptyTitle}>{copy.noExercises}</Text>
+            <Text style={styles.emptyText}>{copy.noExercisesBody}</Text>
+          </View>
+        }
+        ListFooterComponent={
+          <View
+            style={[
+              styles.container,
+              planExercises.length > 0 ? { paddingTop: Spacing.five } : null,
             ]}>
-            <Text style={styles.addButtonLabel}>{copy.addExercises}</Text>
-          </Pressable>
-        </View>
-      </ScrollView>
+            <Pressable
+              accessibilityLabel={copy.addExercises}
+              accessibilityRole="button"
+              onPress={() => setPickerMode({ type: 'add' })}
+              style={({ pressed }) => [
+                styles.addButton,
+                pressed && styles.addButtonPressed,
+              ]}>
+              <Text style={styles.addButtonLabel}>{copy.addExercises}</Text>
+            </Pressable>
+          </View>
+        }
+        ListHeaderComponent={
+          <View style={styles.container}>
+            <TextInput
+              accessibilityLabel={copy.routineName}
+              autoCapitalize="words"
+              onChangeText={setTitle}
+              placeholder={copy.routineName}
+              placeholderTextColor={colors.textMuted}
+              selectionColor={colors.accent}
+              style={styles.titleInput}
+              value={title}
+            />
+            <TextInput
+              accessibilityLabel={copy.routineNotes}
+              multiline
+              onChangeText={setNotes}
+              placeholder={copy.routineNotes}
+              placeholderTextColor={colors.textMuted}
+              selectionColor={colors.accent}
+              style={styles.notesInput}
+              value={notes}
+            />
+            {planExercises.length > 0 ? <View style={{ height: Spacing.five }} /> : null}
+          </View>
+        }
+        renderItem={({ item }) => {
+          const expanded = expandedExerciseId === item.exercise.id;
+          return (
+            <View style={[styles.container, styles.exerciseBlock]}>
+              <Pressable
+                accessibilityLabel={
+                  expanded
+                    ? copy.collapseExercise(item.exercise.name)
+                    : copy.expandExercise(item.exercise.name)
+                }
+                accessibilityRole="button"
+                accessibilityState={{ expanded }}
+                onPress={() =>
+                  setExpandedExerciseId(expanded ? null : item.exercise.id)
+                }
+                style={({ pressed }) => [
+                  styles.exerciseHeaderRow,
+                  pressed && styles.exerciseHeaderPressed,
+                ]}>
+                <View style={styles.exerciseThumb}>
+                  <Text style={styles.exerciseThumbLabel}>
+                    {item.exercise.name.slice(0, 1).toUpperCase()}
+                  </Text>
+                  <Text style={styles.exerciseHelp}>?</Text>
+                </View>
+                <View style={styles.exerciseCopy}>
+                  <Text numberOfLines={2} style={styles.exerciseTitle}>
+                    {item.exercise.name}
+                  </Text>
+                  {!expanded
+                    ? Array.from({ length: item.targetSets }, (_, index) => (
+                        <Text
+                          key={`${item.exercise.id}-${index}`}
+                          numberOfLines={1}
+                          style={styles.collapsedSetLine}>
+                          {copy.emptySetLine(
+                            formatNumber(index + 1, { maximumFractionDigits: 0 }),
+                            weight,
+                          )}
+                        </Text>
+                      ))
+                    : null}
+                </View>
+                <Pressable
+                  accessibilityLabel={copy.exerciseOptions(item.exercise.name)}
+                  accessibilityRole="button"
+                  hitSlop={12}
+                  onPress={() => setExerciseMenu(item.exercise)}
+                  style={({ pressed }) => [
+                    styles.exerciseMenuButton,
+                    pressed && styles.exerciseMenuButtonPressed,
+                  ]}>
+                  <Text style={styles.exerciseMenuLabel}>•••</Text>
+                </Pressable>
+              </Pressable>
+
+              {expanded ? (
+                <View style={styles.expandedPanel}>
+                  <TextInput
+                    accessibilityLabel={copy.exerciseNotes}
+                    multiline
+                    onChangeText={(value) =>
+                      updatePlanExercise(item.exercise.id, { notes: value })
+                    }
+                    placeholder={copy.exerciseNotes}
+                    placeholderTextColor={colors.textMuted}
+                    selectionColor={colors.accent}
+                    style={styles.exerciseNotesInput}
+                    value={item.notes}
+                  />
+                  <Text style={styles.restTimer}>{copy.restTimerOff}</Text>
+                  <View style={styles.planTableHeader}>
+                    <Text style={[styles.tableHeaderText, styles.colSet]}>
+                      {copy.set}
+                    </Text>
+                    <Text style={[styles.tableHeaderText, styles.colPrevious]}>
+                      {copy.previous}
+                    </Text>
+                    <Text style={[styles.tableHeaderText, styles.colWeight]}>
+                      {weight}
+                    </Text>
+                    <Text style={[styles.tableHeaderText, styles.colReps]}>
+                      {copy.repsHeader}
+                    </Text>
+                  </View>
+                  {Array.from({ length: item.targetSets }, (_, index) => (
+                    <View key={`${item.exercise.id}-row-${index}`} style={styles.planSetRow}>
+                      <Text style={[styles.planSetText, styles.colSet]}>
+                        {formatNumber(index + 1, { maximumFractionDigits: 0 })}
+                      </Text>
+                      <Text style={[styles.planPrevious, styles.colPrevious]}>
+                        {index === 0
+                          ? '—'
+                          : copy.reps(
+                              item.targetReps,
+                              formatNumber(item.targetReps, {
+                                maximumFractionDigits: 0,
+                              }),
+                            )}
+                      </Text>
+                      <TextInput
+                        accessibilityLabel={`${item.exercise.name} ${weight}`}
+                        keyboardType="decimal-pad"
+                        selectionColor={colors.accent}
+                        style={[styles.planInput, styles.colWeight]}
+                      />
+                      <TextInput
+                        accessibilityLabel={`${item.exercise.name} ${copy.repsHeader}`}
+                        keyboardType="number-pad"
+                        onChangeText={(value) =>
+                          updatePlanExercise(item.exercise.id, {
+                            targetReps: Number.parseInt(value, 10) || 8,
+                          })
+                        }
+                        selectionColor={colors.accent}
+                        style={[styles.planInput, styles.colReps]}
+                      />
+                    </View>
+                  ))}
+                  <Pressable
+                    accessibilityLabel={copy.addSetForExercise(item.exercise.name)}
+                    accessibilityRole="button"
+                    onPress={() =>
+                      updatePlanExercise(item.exercise.id, {
+                        targetSets: item.targetSets + 1,
+                      })
+                    }
+                    style={({ pressed }) => [
+                      styles.addSetButton,
+                      pressed && styles.addSetButtonPressed,
+                    ]}>
+                    <Text style={styles.addSetLabel}>{copy.addSet}</Text>
+                  </Pressable>
+                </View>
+              ) : null}
+            </View>
+          );
+        }}
+        showsVerticalScrollIndicator={false}
+      />
 
       <RoutineExercisePickerModal
         copy={copy}

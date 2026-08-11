@@ -31,4 +31,11 @@ describe('New Routine editor touch targets', () => {
     expect(screenSource).toContain('keyboardShouldPersistTaps="handled"');
     expect(screenSource).toContain('paddingBottom: insets.bottom + Spacing.six');
   });
+
+  it('virtualizes the user-growing exercise collection with stable exercise ids', () => {
+    expect(screenSource).toContain('<FlatList');
+    expect(screenSource).toContain('data={planExercises}');
+    expect(screenSource).toContain('keyExtractor={(item) => item.exercise.id}');
+    expect(screenSource).not.toMatch(/\{planExercises\.map\(\(item\) => \{/);
+  });
 });
