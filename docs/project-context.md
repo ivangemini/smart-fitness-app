@@ -1,6 +1,6 @@
 # Smart Fitness Project Context
 
-Updated: 2026-08-09
+Updated: 2026-08-11
 
 ## Purpose
 
@@ -26,7 +26,9 @@ The mobile application currently contains:
 - Nutrition, Strength, Safety & Recovery, and Combined Coach surfaces;
 - Social profiles, relationships, Stories, workout posts, following feed, reactions, comments, notifications, reporting/moderation surfaces, and managed-media contracts.
 
-Home Stories are a real server-authoritative domain. The current merged read/view package uses strict Story contracts, 24-hour server expiry, viewed state, Following/privacy enforcement and managed-media delivery. Owner authoring remains the active extension and must reuse the existing `story_image` managed-media pipeline rather than inventing arbitrary URLs or a parallel upload path. Real steps likewise require a reviewed device-health/activity source rather than inferred or demo values.
+Home Stories are a real server-authoritative domain. The current approved image-only v1 source contract includes strict Story contracts, 24-hour server expiry, viewed state, Following/privacy enforcement, managed-media delivery, media-library image selection, bounded local preprocessing, signed `story_image` upload/finalize/polling, restart-safe authoring draft recovery, explicit publication, authoritative refresh and owner deletion. The full long-term Stories product is broader than that approved v1 and is tracked without implicit authorization in `docs/roadmap/stories.md`.
+
+Real steps likewise require a reviewed device-health/activity source rather than inferred or demo values.
 
 Excluded unless explicitly approved:
 
@@ -35,7 +37,7 @@ Excluded unless explicitly approved:
 - pharmacology, hormone, SARM, or medication dosing;
 - marketplace;
 - payments and subscriptions;
-- unreviewed Social domains outside the approved Social/Home roadmaps.
+- unreviewed Social/Stories domains outside the approved focused roadmaps.
 
 ## Mobile architecture
 
@@ -130,7 +132,9 @@ Private fitness state uses revisioned synchronization.
 
 Social, Stories, and managed media are separate server-authoritative domains and must not be inserted into private `AppState` synchronization. The Home feed and Story strip reuse this Social authority, account-scoped caches, pagination, block/private-profile enforcement, and moderation boundaries.
 
-Stories are image-only in the current v1 contract. The backend owns authenticated creation, 24-hour expiry, active-only reads, Following/private/block/restriction visibility, viewed state, owner deletion, account-deletion cascade, retention cleanup, and the `story_image` managed-media lifecycle. Mobile must consume those contracts strictly and revalidate cached first-page data against the backend.
+Stories are image-only in the current approved v1 contract. The backend owns authenticated creation, 24-hour expiry, active-only reads, Following/private/block/restriction visibility, viewed state, owner deletion, account-deletion cascade, retention cleanup, and the `story_image` managed-media lifecycle. Mobile strictly consumes that authority and provides the managed image selection/preprocessing/upload/recovery/publication/view/delete surface without creating a parallel upload system.
+
+“Image-only v1 source-complete” is a scoped engineering statement, not a claim that all future Stories capabilities or release evidence are complete. `docs/roadmap/stories.md` separates source-complete v1, authorization-gated runtime/environment evidence, and non-authorized product-expansion candidates.
 
 A shared workout remains an immutable bounded public snapshot created only through the explicit Social sharing flow. Home does not make private workout/nutrition/progress data public merely by displaying personal metrics next to Social content.
 
@@ -148,7 +152,7 @@ Use this order when statements conflict:
 6. `PROJECT_LEARNINGS.md`;
 7. old PR descriptions, chat summaries, and historical notes.
 
-For the active Liquid Glass/Home UI program, `docs/roadmap/liquid-glass.md` is the focused execution roadmap and must agree with current status/handoff.
+For Stories, `docs/roadmap/stories.md` is the focused source/release/expansion roadmap and must agree with the canonical implementation plan. For the Liquid Glass/Home UI program, `docs/roadmap/liquid-glass.md` is the focused execution/evidence roadmap.
 
 Permanent agent rules belong in `AGENTS.md`. The latest restart checkpoint belongs in `docs/handoffs/latest.md`.
 
@@ -156,4 +160,4 @@ Permanent agent rules belong in `AGENTS.md`. The latest restart checkpoint belon
 
 A pull request that changes architecture, synchronization coverage, roadmap state, active blockers, Social privacy boundaries, or deployment boundaries must update the corresponding documentation in the same change.
 
-Do not create a second broad overview when a current canonical file already covers the subject. Add a focused document or update the architecture index instead.
+Do not create a second broad overview when a current canonical file already covers the subject. Add a focused document or update the architecture/index hierarchy instead.
