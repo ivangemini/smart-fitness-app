@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   createSocialApi,
+  getSocialApiErrorCode,
   uploadSignedSocialMedia,
   type SocialMediaOwnerAssetDto,
   type SocialStoryOverlayPlacement,
@@ -28,6 +29,11 @@ import {
   getSocialStoryMediaErrorMessage,
   type SocialStoryMediaOperation,
 } from './socialStoryMediaModel';
+import {
+  resolveSocialStoryPublishIdentity,
+  shouldResetSocialStoryPublishIdentity,
+  type SocialStoryPublishIdentity,
+} from './socialStoryPublishIdentity';
 import { requestSocialStoryRefresh } from './socialStoryRefreshSignal';
 
 const POLL_ATTEMPTS = 12;
@@ -40,9 +46,6 @@ const createUploadIdempotencyKey = (): string => {
     .toString(36)
     .slice(2)}`;
 };
-
-const createStoryIdempotencyKey = (assetId: string): string =>
-  `story-create-${assetId}`;
 
 const isTerminal = (asset: SocialMediaOwnerAssetDto): boolean =>
   asset.state === 'approved' ||
@@ -57,6 +60,7 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
   const sequence = useRef(0);
   const abortController = useRef<AbortController | null>(null);
   const recoveredPendingAccount = useRef<string | null>(null);
+  const publishIdentity = useRef<SocialStoryPublishIdentity | null>(null);
   const [asset, setAsset] = useState<SocialMediaOwnerAssetDto | null>(null);
   const [caption, setCaption] = useState('');
   const [overlayText, setOverlayText] = useState('');
@@ -78,6 +82,7 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
   const attachment = useMemo(() => getApprovedSocialStoryMediaInput(asset), [asset]);
 
   useEffect(() => {
+    publishIdentity.current = null;
     setCaption('');
     setOverlayText('');
     setOverlayPlacement('center');
@@ -341,12 +346,25 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
     const requestSequence = sequence.current;
     const normalizedCaption = caption.trim();
     const normalizedOverlayText = overlayText.trim();
+    const composition = {
+      assetId: attachment.assetId,
+      expectedStateVersion: attachment.expectedStateVersion,
+      caption: normalizedCaption || null,
+      overlay: normalizedOverlayText
+        ? { text: normalizedOverlayText, placement: overlayPlacement }
+        : null,
+    };
+    const identity = resolveSocialStoryPublishIdentity(
+      publishIdentity.current,
+      composition,
+    );
+    publishIdentity.current = identity;
     setErrorMessage(null);
     setOperation('publishing');
     try {
       const story = await api.createStory({
         schemaVersion: 1,
-        idempotencyKey: createStoryIdempotencyKey(attachment.assetId),
+        idempotencyKey: identity.idempotencyKey,
         ...(normalizedCaption ? { caption: normalizedCaption } : {}),
         ...(normalizedOverlayText
           ? {
@@ -359,6 +377,7 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
           : {}),
         image: attachment,
       });
+      publishIdentity.current = null;
       await clearSocialStoryMediaDraft(accountId);
       if (!isCurrent(requestSequence)) return story.id;
       setAsset(null);
@@ -369,6 +388,9 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
       requestSocialStoryRefresh();
       return story.id;
     } catch (error) {
+      if (shouldResetSocialStoryPublishIdentity(getSocialApiErrorCode(error))) {
+        publishIdentity.current = null;
+      }
       if (isCurrent(requestSequence)) {
         setErrorMessage(getSocialStoryMediaErrorMessage(error, copy));
       }
