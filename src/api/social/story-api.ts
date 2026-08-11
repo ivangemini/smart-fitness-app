@@ -21,6 +21,14 @@ import {
   type SocialStoryOverlayPlacement,
   type SocialStoryPageDto,
 } from './story-contracts';
+import type {
+  SocialStoryLikeStateDto,
+  SocialStoryLikeSummaryDto,
+} from './story-like-contracts';
+import {
+  parseSocialStoryLikeStateResponse,
+  parseSocialStoryLikeSummaryResponse,
+} from './story-like-parsers';
 import {
   parseSocialStoryCaptionResponse,
   parseSocialStoryOverlayResponse,
@@ -34,6 +42,10 @@ export type SocialStoryApi = {
   getStory(storyId: string): Promise<SocialStoryDto>;
   getStoryCaption(storyId: string): Promise<SocialStoryCaptionDto>;
   getStoryOverlay(storyId: string): Promise<SocialStoryOverlayDto>;
+  getStoryLike(storyId: string): Promise<SocialStoryLikeStateDto>;
+  likeStory(storyId: string): Promise<SocialStoryLikeStateDto>;
+  unlikeStory(storyId: string): Promise<SocialStoryLikeStateDto>;
+  getStoryLikeSummary(storyId: string): Promise<SocialStoryLikeSummaryDto>;
   listStories(input?: ListSocialStoriesInput): Promise<SocialStoryPageDto>;
   markStoryViewed(storyId: string): Promise<void>;
   deleteStory(storyId: string): Promise<void>;
@@ -93,6 +105,9 @@ const buildCreatePayload = (
   };
 };
 
+const storyPath = (storyId: string): string =>
+  `/v1/social/stories/${requireSocialPathSegment(storyId, 'Social Story ID')}`;
+
 export const createSocialStoryApi = (
   auth: SocialApiAuth,
   apiClient: ApiClient,
@@ -115,7 +130,7 @@ export const createSocialStoryApi = (
         auth,
         apiClient,
         'GET',
-        `/v1/social/stories/${requireSocialPathSegment(storyId, 'Social Story ID')}`,
+        storyPath(storyId),
       ),
     );
   },
@@ -126,10 +141,7 @@ export const createSocialStoryApi = (
         auth,
         apiClient,
         'GET',
-        `/v1/social/stories/${requireSocialPathSegment(
-          storyId,
-          'Social Story ID',
-        )}/caption`,
+        `${storyPath(storyId)}/caption`,
       ),
     );
   },
@@ -140,10 +152,51 @@ export const createSocialStoryApi = (
         auth,
         apiClient,
         'GET',
-        `/v1/social/stories/${requireSocialPathSegment(
-          storyId,
-          'Social Story ID',
-        )}/overlay`,
+        `${storyPath(storyId)}/overlay`,
+      ),
+    );
+  },
+
+  async getStoryLike(storyId) {
+    return parseSocialStoryLikeStateResponse(
+      await requestSocialApiWithAuth(
+        auth,
+        apiClient,
+        'GET',
+        `${storyPath(storyId)}/like`,
+      ),
+    );
+  },
+
+  async likeStory(storyId) {
+    return parseSocialStoryLikeStateResponse(
+      await requestSocialApiWithAuth(
+        auth,
+        apiClient,
+        'PUT',
+        `${storyPath(storyId)}/like`,
+      ),
+    );
+  },
+
+  async unlikeStory(storyId) {
+    return parseSocialStoryLikeStateResponse(
+      await requestSocialApiWithAuth(
+        auth,
+        apiClient,
+        'DELETE',
+        `${storyPath(storyId)}/like`,
+      ),
+    );
+  },
+
+  async getStoryLikeSummary(storyId) {
+    return parseSocialStoryLikeSummaryResponse(
+      await requestSocialApiWithAuth(
+        auth,
+        apiClient,
+        'GET',
+        `${storyPath(storyId)}/like-summary`,
       ),
     );
   },
@@ -165,10 +218,7 @@ export const createSocialStoryApi = (
         auth,
         apiClient,
         'POST',
-        `/v1/social/stories/${requireSocialPathSegment(
-          storyId,
-          'Social Story ID',
-        )}/view`,
+        `${storyPath(storyId)}/view`,
       ),
     );
   },
@@ -179,7 +229,7 @@ export const createSocialStoryApi = (
         auth,
         apiClient,
         'DELETE',
-        `/v1/social/stories/${requireSocialPathSegment(storyId, 'Social Story ID')}`,
+        storyPath(storyId),
       ),
     );
   },
