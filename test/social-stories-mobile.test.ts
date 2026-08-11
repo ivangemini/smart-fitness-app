@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  parseSocialStoryCaptionResponse,
   parseSocialStoryDto,
   parseSocialStoryPageResponse,
   parseSocialStorySuccessResponse,
@@ -93,6 +94,56 @@ describe('mobile Social Stories contract', () => {
     expect(() => parseSocialStorySuccessResponse({ success: true })).not.toThrow();
   });
 
+  it('parses the separate bounded Story caption contract', () => {
+    expect(
+      parseSocialStoryCaptionResponse({
+        schemaVersion: 1,
+        storyId: STORY_ID,
+        caption: 'Leg day complete',
+      }),
+    ).toEqual({
+      schemaVersion: 1,
+      storyId: STORY_ID,
+      caption: 'Leg day complete',
+    });
+    expect(
+      parseSocialStoryCaptionResponse({
+        schemaVersion: 1,
+        storyId: STORY_ID,
+        caption: null,
+      }).caption,
+    ).toBeNull();
+    expect(() =>
+      parseSocialStoryCaptionResponse({
+        schemaVersion: 1,
+        storyId: STORY_ID,
+        caption: '',
+      }),
+    ).toThrow();
+    expect(() =>
+      parseSocialStoryCaptionResponse({
+        schemaVersion: 1,
+        storyId: STORY_ID,
+        caption: ' untrimmed ',
+      }),
+    ).toThrow();
+    expect(() =>
+      parseSocialStoryCaptionResponse({
+        schemaVersion: 1,
+        storyId: STORY_ID,
+        caption: 'x'.repeat(1001),
+      }),
+    ).toThrow();
+    expect(() =>
+      parseSocialStoryCaptionResponse({
+        schemaVersion: 1,
+        storyId: STORY_ID,
+        caption: 'caption',
+        extra: true,
+      }),
+    ).toThrow();
+  });
+
   it('rejects wrong media type, lifecycle drift, extra keys and duplicate pages', () => {
     const wrongType = storyValue({
       image: { ...storyValue().image, assetType: 'workout_post_image' },
@@ -103,6 +154,7 @@ describe('mobile Social Stories contract', () => {
         storyValue({ expiresAt: '2026-08-10T09:59:59.000Z' }),
       ),
     ).toThrow();
+    expect(() => parseSocialStoryDto({ ...storyValue(), caption: 'extra' })).toThrow();
     expect(() => parseSocialStoryDto({ ...storyValue(), extra: true })).toThrow();
     expect(() =>
       parseSocialStoryPageResponse({
