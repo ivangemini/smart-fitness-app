@@ -30,6 +30,7 @@ import { createStyles } from '@/features/workouts/styles/workoutExerciseLibraryS
 import { useWorkoutTheme } from '@/features/workouts/workoutTheme';
 import { useLocalization } from '@/localization';
 import { getWorkoutSessionExercisePickerCopy } from '@/localization/workoutSessionExercisePickerCopy';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
 import {
   ExerciseRow,
@@ -46,14 +47,18 @@ const getOptionsFromExercises = (
 
 export default function WorkoutExerciseLibraryScreen() {
   const { workoutSessions } = useWorkoutState();
-  const { colors } = useWorkoutTheme();
+  const { colors, isWorkoutDarkMode } = useWorkoutTheme();
   const { formatNumber, locale } = useLocalization();
   const copy = useMemo(
     () => getWorkoutSessionExercisePickerCopy(locale),
     [locale],
   );
   const insets = useSafeAreaInsets();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(isWorkoutDarkMode ? 'dark' : 'light'),
+    [isWorkoutDarkMode],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const [query, setQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [allExercises, setAllExercises] = useState<Exercise[]>([]);
@@ -251,7 +256,7 @@ export default function WorkoutExerciseLibraryScreen() {
             onPress={loadInitialData}
             style={({ pressed }) => [
               styles.retryButton,
-              pressed && styles.pressed,
+              pressed && styles.retryButtonPressed,
             ]}>
             <Text style={styles.retryLabel}>{copy.retry}</Text>
           </Pressable>

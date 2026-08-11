@@ -8,6 +8,7 @@ import {
 } from '@/features/workouts/styles/workoutExerciseLibraryScreenStyles';
 import { useWorkoutTheme } from '@/features/workouts/workoutTheme';
 import type { WorkoutSessionExercisePickerCopy } from '@/localization/workoutSessionExercisePickerCopy';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
 export function ExerciseRow({
   copy,
@@ -22,8 +23,12 @@ export function ExerciseRow({
   onPress: () => void;
   selected: boolean;
 }) {
-  const { colors } = useWorkoutTheme();
-  const styles = useMemo(() => createRowStyles(colors), [colors]);
+  const { colors, isWorkoutDarkMode } = useWorkoutTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(isWorkoutDarkMode ? 'dark' : 'light'),
+    [isWorkoutDarkMode],
+  );
+  const styles = useMemo(() => createRowStyles(colors, glass), [colors, glass]);
   const equipment = exercise.equipment.join(', ') || copy.noEquipment;
 
   return (
@@ -32,7 +37,7 @@ export function ExerciseRow({
       style={({ pressed }) => [
         styles.row,
         selected && styles.rowSelected,
-        pressed && styles.pressed,
+        pressed && styles.rowPressed,
       ]}>
       <View style={styles.thumbnail}>
         <Text style={styles.thumbnailLabel}>
@@ -59,7 +64,10 @@ export function ExerciseRow({
         accessibilityLabel={copy.openDetails(exercise.name)}
         accessibilityRole="button"
         onPress={onInfoPress}
-        style={({ pressed }) => [styles.infoButton, pressed && styles.pressed]}>
+        style={({ pressed }) => [
+          styles.infoButton,
+          pressed && styles.infoButtonPressed,
+        ]}>
         <Text numberOfLines={2} style={styles.infoLabel}>
           {copy.details}
         </Text>
@@ -90,8 +98,12 @@ export function FilterChips({
   onChange: (value?: string) => void;
   options: string[];
 }) {
-  const { colors } = useWorkoutTheme();
-  const styles = useMemo(() => createFilterStyles(colors), [colors]);
+  const { colors, isWorkoutDarkMode } = useWorkoutTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(isWorkoutDarkMode ? 'dark' : 'light'),
+    [isWorkoutDarkMode],
+  );
+  const styles = useMemo(() => createFilterStyles(colors, glass), [colors, glass]);
 
   if (options.length === 0) return null;
 
@@ -110,7 +122,7 @@ export function FilterChips({
           style={({ pressed }) => [
             styles.chip,
             !activeValue && styles.chipActive,
-            pressed && styles.pressed,
+            pressed && (!activeValue ? styles.chipActivePressed : styles.chipPressed),
           ]}>
           <Text
             style={[
@@ -131,7 +143,7 @@ export function FilterChips({
               style={({ pressed }) => [
                 styles.chip,
                 active && styles.chipActive,
-                pressed && styles.pressed,
+                pressed && (active ? styles.chipActivePressed : styles.chipPressed),
               ]}>
               <Text
                 style={[

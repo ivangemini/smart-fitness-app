@@ -1,8 +1,9 @@
 import { StyleSheet } from 'react-native';
 
 import { Colors, MaxContentWidth, Radii, Spacing } from '@/constants/theme';
+import type { LiquidGlassPalette } from '@/theme/liquidGlass';
 
-export const createStyles = (colors: typeof Colors.light) =>
+export const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     attribution: {
       color: colors.textSecondary,
@@ -59,21 +60,23 @@ export const createStyles = (colors: typeof Colors.light) =>
     list: {
       gap: Spacing.two,
     },
-    pressed: {
-      opacity: 0.72,
-    },
     retryButton: {
       alignItems: 'center',
-      backgroundColor: colors.accent,
+      backgroundColor: glass.accentFill,
+      borderColor: glass.accentBorder,
       borderCurve: 'continuous',
       borderRadius: 14,
+      borderWidth: StyleSheet.hairlineWidth,
       justifyContent: 'center',
       minHeight: 44,
       paddingHorizontal: Spacing.three,
       paddingVertical: Spacing.two,
     },
+    retryButtonPressed: {
+      backgroundColor: glass.accentPressedFill,
+    },
     retryLabel: {
-      color: colors.background,
+      color: glass.accentText,
       fontSize: 13,
       fontWeight: '900',
     },
@@ -156,7 +159,7 @@ export const createStyles = (colors: typeof Colors.light) =>
     },
   });
 
-export const createRowStyles = (colors: typeof Colors.light) =>
+export const createRowStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     copy: {
       flex: 1,
@@ -165,7 +168,8 @@ export const createRowStyles = (colors: typeof Colors.light) =>
     },
     infoButton: {
       alignItems: 'center',
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 14,
       borderWidth: StyleSheet.hairlineWidth,
@@ -174,6 +178,9 @@ export const createRowStyles = (colors: typeof Colors.light) =>
       minHeight: 44,
       maxWidth: 82,
       paddingHorizontal: Spacing.two,
+    },
+    infoButtonPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     infoLabel: {
       color: colors.textSecondary,
@@ -197,13 +204,10 @@ export const createRowStyles = (colors: typeof Colors.light) =>
       fontWeight: '900',
       lineHeight: 21,
     },
-    pressed: {
-      opacity: 0.72,
-    },
     row: {
       alignItems: 'center',
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
@@ -212,13 +216,18 @@ export const createRowStyles = (colors: typeof Colors.light) =>
       minHeight: 98,
       padding: Spacing.two,
     },
+    rowPressed: {
+      backgroundColor: glass.controlPressedFill,
+    },
     rowSelected: {
       borderColor: colors.accent,
     },
     selection: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderRadius: 999,
+      borderWidth: StyleSheet.hairlineWidth,
       flexShrink: 0,
       height: 32,
       justifyContent: 'center',
@@ -230,10 +239,11 @@ export const createRowStyles = (colors: typeof Colors.light) =>
       fontWeight: '900',
     },
     selectionLabelSelected: {
-      color: colors.background,
+      color: glass.accentText,
     },
     selectionSelected: {
-      backgroundColor: colors.accent,
+      backgroundColor: glass.accentFill,
+      borderColor: glass.accentBorder,
     },
     thumbnail: {
       alignItems: 'center',
@@ -252,12 +262,12 @@ export const createRowStyles = (colors: typeof Colors.light) =>
     },
   });
 
-export const createFilterStyles = (colors: typeof Colors.light) =>
+export const createFilterStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     chip: {
       alignItems: 'center',
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 999,
       borderWidth: StyleSheet.hairlineWidth,
@@ -267,8 +277,11 @@ export const createFilterStyles = (colors: typeof Colors.light) =>
       paddingVertical: 8,
     },
     chipActive: {
-      backgroundColor: colors.accent,
-      borderColor: colors.accent,
+      backgroundColor: glass.accentFill,
+      borderColor: glass.accentBorder,
+    },
+    chipActivePressed: {
+      backgroundColor: glass.accentPressedFill,
     },
     chipLabel: {
       color: colors.textSecondary,
@@ -277,7 +290,10 @@ export const createFilterStyles = (colors: typeof Colors.light) =>
       textTransform: 'capitalize',
     },
     chipLabelActive: {
-      color: colors.background,
+      color: glass.accentText,
+    },
+    chipPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     chips: {
       alignItems: 'center',
@@ -291,9 +307,6 @@ export const createFilterStyles = (colors: typeof Colors.light) =>
       color: colors.textPrimary,
       fontSize: 13,
       fontWeight: '900',
-    },
-    pressed: {
-      opacity: 0.72,
     },
     section: {
       gap: Spacing.two,
