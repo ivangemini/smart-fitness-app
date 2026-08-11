@@ -22,6 +22,10 @@ export const getWorkoutSafetyGateCopy = (locale: SupportedLocale) => ({
   notSpecified: locale === 'ru' ? 'Не указано' : 'Not specified',
   openSafetyRecovery:
     locale === 'ru' ? 'Открыть безопасность и восстановление' : 'Open Safety & Recovery',
+  preparingWorkout:
+    locale === 'ru'
+      ? 'Подготовка проверки безопасности перед тренировкой…'
+      : 'Preparing workout safety check…',
   recoveryCheckIn:
     locale === 'ru' ? 'Проверка восстановления' : 'Recovery check-in',
   restrictions: locale === 'ru' ? 'Ограничения' : 'Restrictions',
