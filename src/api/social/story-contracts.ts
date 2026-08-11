@@ -3,6 +3,8 @@ import type { SocialMediaPublicDescriptorDto } from './media-contracts';
 
 export const SOCIAL_STORY_DTO_SCHEMA_VERSION = 1 as const;
 export const SOCIAL_STORY_MEDIA_SCHEMA_VERSION = 1 as const;
+export const SOCIAL_STORY_CAPTION_SCHEMA_VERSION = 1 as const;
+export const SOCIAL_STORY_CAPTION_MAX_LENGTH = 1000 as const;
 
 export type SocialStoryImageDescriptorDto = Omit<
   SocialMediaPublicDescriptorDto,
@@ -19,6 +21,12 @@ export type SocialStoryDto = {
   viewed: boolean;
   createdAt: string;
   expiresAt: string;
+};
+
+export type SocialStoryCaptionDto = {
+  schemaVersion: typeof SOCIAL_STORY_CAPTION_SCHEMA_VERSION;
+  storyId: string;
+  caption: string | null;
 };
 
 export type SocialStoryPageDto = {
@@ -40,5 +48,6 @@ export type SocialStoryMediaInput = {
 export type CreateSocialStoryInput = {
   schemaVersion: typeof SOCIAL_STORY_DTO_SCHEMA_VERSION;
   idempotencyKey: string;
+  caption?: string | null;
   image: SocialStoryMediaInput;
 };
