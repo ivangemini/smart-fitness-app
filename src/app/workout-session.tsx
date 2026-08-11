@@ -11,6 +11,8 @@ import {
   hydrateActiveWorkoutSessionDraft,
   setActiveWorkoutSessionDraft,
 } from '@/lib/workouts';
+import { useLocalization } from '@/localization';
+import { getWorkoutSafetyGateCopy } from '@/localization/workoutSafetyGateCopy';
 import {
   createAsyncStorageAdapter,
   createWorkoutSafetyAcknowledgementStore,
@@ -21,6 +23,8 @@ import { useAppTheme } from '@/theme/AppThemeProvider';
 
 export default function WorkoutSessionRoute() {
   const { colors } = useAppTheme();
+  const { locale } = useLocalization();
+  const copy = useMemo(() => getWorkoutSafetyGateCopy(locale), [locale]);
   const styles = useMemo(() => createStyles(colors), [colors]);
   const storage = useMemo(() => createAsyncStorageAdapter(), []);
   const acknowledgementStore = useMemo(
@@ -106,7 +110,7 @@ export default function WorkoutSessionRoute() {
   if (loading) {
     return (
       <View style={styles.loadingScreen}>
-        <Text style={styles.loadingText}>Preparing workout safety check…</Text>
+        <Text style={styles.loadingText}>{copy.preparingWorkout}</Text>
       </View>
     );
   }
