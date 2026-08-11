@@ -64,16 +64,20 @@ export {
   parseSocialReportResponse,
 } from "./report-parsers";
 export {
+  SOCIAL_STORY_CAPTION_MAX_LENGTH,
+  SOCIAL_STORY_CAPTION_SCHEMA_VERSION,
   SOCIAL_STORY_DTO_SCHEMA_VERSION,
   SOCIAL_STORY_MEDIA_SCHEMA_VERSION,
   type CreateSocialStoryInput,
   type ListSocialStoriesInput,
+  type SocialStoryCaptionDto,
   type SocialStoryDto,
   type SocialStoryImageDescriptorDto,
   type SocialStoryMediaInput,
   type SocialStoryPageDto,
 } from "./story-contracts";
 export {
+  parseSocialStoryCaptionResponse,
   parseSocialStoryDto,
   parseSocialStoryPageResponse,
   parseSocialStoryResponse,
