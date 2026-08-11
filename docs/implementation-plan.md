@@ -7,13 +7,14 @@ This file is the **canonical forward roadmap**. Verified evidence belongs in `do
 ## Current verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current runtime mobile `main`: `a8b2c4530cbdc944e7a3821cdc7926296fb78f18`.
+- Current repository `main`: `5fdd144a67ee4706015fed5f939cfa299b49b46a` (docs-only PR #615).
+- Current runtime checkpoint: `a8b2c4530cbdc944e7a3821cdc7926296fb78f18`.
 - Latest runtime merge: PR #613, exact validated head `fae10aa93a1d26279eabe9d56eaf1efeb7103974`; Mobile CI #2170 run `31476083264` passed the complete Hermes mobile gate before merge.
 - PR #614 immediately preceded it: exact head `ca2a9277cac376b52d6332798ce3cf6ebadadd11`; Mobile CI #2167 run `31474957650`; merge `d0f44018ea457a4acc2d33bc69fb608621b3fbe5`.
 - Merged demonstrated-defect LG-5 runtime batches total **38**.
 - Backend repo: `ivangemini/smart-fitness-backend`.
 - Current backend `main`: `72a5c63c3004f09f2b4bb8652bb3cff663c10ffd`.
-- Backend PR #215 exact head was refreshed onto that main as `f5c7f2d4cd1d150f5894fcc60725e85f05631d22`; its three required Hermes workflows must execute and pass before ready/merge.
+- Backend PR #215 exact head is `f5c7f2d4cd1d150f5894fcc60725e85f05631d22`, based directly on that main. Its current Backend CI job `93730465556` requests `[self-hosted, linux, x64, hermes-mobile-ci]`, but GitHub reports `runner_id: 0` and an empty runner name. #215 is therefore blocked on runner registration/access rather than a test failure; all three exact-head Hermes workflows must actually execute and pass before ready/merge.
 - **LG-H2 Stories is complete for the current image-only v1 source scope.**
 - **Phase 10 Responsive Mobile UI Hardening is complete for current source/CI scope.**
 - **LG-4 Workouts source convergence is complete.**
@@ -99,8 +100,8 @@ Coach recovery/input/lookback/history/domain product/material expansion remains 
 # Backend / cross-repository execution
 
 - Backend runtime/source work follows backend `AGENTS.md`, ownership/privacy/idempotency/revision contracts and exact-head validation.
-- Backend PR #215 is CI infrastructure only. Exact head `f5c7f2d4cd1d150f5894fcc60725e85f05631d22` is based directly on current backend main; mark ready/merge only after Backend CI, PostgreSQL CI and Account Deletion Receipt CI are all green.
-- Do not route routine validation back to hosted runners merely to bypass Hermes queueing unless a demonstrated outage/incompatibility is separately reviewed under the CI policy.
+- Backend PR #215 is CI infrastructure only. Exact head `f5c7f2d4cd1d150f5894fcc60725e85f05631d22` is based directly on current backend main. The current jobs are not assigned to a runner (`runner_id: 0` on Backend CI), so resolve Hermes runner registration/access for the backend repository first; then require Backend CI, PostgreSQL CI and Account Deletion Receipt CI to execute and pass before ready/merge.
+- Do not route routine validation back to hosted runners merely to bypass the runner-assignment blocker unless a demonstrated outage/incompatibility is separately reviewed under the CI policy.
 - Mobile `docs/backend/*` remains historical Architecture 1.0 design material; current backend behavior is authoritative in `ivangemini/smart-fitness-backend`.
 
 ---
@@ -113,7 +114,7 @@ There is no additional numbered `LG-6` or `LG-7` source-refactor phase in the ca
 2. **LG-H3 Steps:** blocked on reviewed native capability/permission contract and later authorized runtime evidence.
 3. **LG-H4 ranking/retention:** later, after a separate product contract; chronological Following remains authoritative now.
 4. **Coach expansion:** deferred until explicit reprioritization.
-5. **Backend CI infrastructure #215:** complete only after its exact-head Hermes validation and merge.
+5. **Backend CI infrastructure #215:** blocked on backend access to the Hermes self-hosted runner; after access is resolved, exact-head validation and merge remain required.
 6. **Future regressions:** fix only demonstrated defects in bounded packages; they do not constitute a new autonomous migration/refactor phase.
 
 # Validation policy
