@@ -8,16 +8,19 @@ import {
   type SocialNotificationType,
 } from './notification-contracts';
 
-const NOTIFICATION_KEYS = [
+const LEGACY_NOTIFICATION_KEYS = [
   'schemaVersion',
   'id',
   'type',
   'actor',
   'postId',
   'commentId',
-  'storyId',
   'readAt',
   'createdAt',
+] as const;
+const NOTIFICATION_KEYS = [
+  ...LEGACY_NOTIFICATION_KEYS,
+  'storyId',
 ] as const;
 const PAGE_KEYS = ['schemaVersion', 'items', 'nextCursor'] as const;
 const UUID_PATTERN =
@@ -73,9 +76,17 @@ const hasValidTargetShape = (
 export const parseSocialNotificationDto = (
   value: unknown,
 ): SocialNotificationDto => {
-  if (!isRecord(value) || !hasExactKeys(value, NOTIFICATION_KEYS)) {
+  if (!isRecord(value)) throw new Error(INVALID_NOTIFICATION);
+  const hasStoryTarget = Object.prototype.hasOwnProperty.call(value, 'storyId');
+  if (
+    !hasExactKeys(
+      value,
+      hasStoryTarget ? NOTIFICATION_KEYS : LEGACY_NOTIFICATION_KEYS,
+    )
+  ) {
     throw new Error(INVALID_NOTIFICATION);
   }
+  const storyId = hasStoryTarget ? value.storyId : null;
   if (
     value.schemaVersion !== SOCIAL_NOTIFICATION_DTO_SCHEMA_VERSION ||
     typeof value.id !== 'string' ||
@@ -83,17 +94,12 @@ export const parseSocialNotificationDto = (
     !isNotificationType(value.type) ||
     !isUuidOrNull(value.postId) ||
     !isUuidOrNull(value.commentId) ||
-    !isUuidOrNull(value.storyId) ||
+    !isUuidOrNull(storyId) ||
     !isIsoDateOrNull(value.readAt) ||
     typeof value.createdAt !== 'string' ||
     value.createdAt.length === 0 ||
     Number.isNaN(Date.parse(value.createdAt)) ||
-    !hasValidTargetShape(
-      value.type,
-      value.postId,
-      value.commentId,
-      value.storyId,
-    )
+    !hasValidTargetShape(value.type, value.postId, value.commentId, storyId)
   ) {
     throw new Error(INVALID_NOTIFICATION);
   }
@@ -106,7 +112,7 @@ export const parseSocialNotificationDto = (
       actor: parseSocialProfileDto(value.actor),
       postId: value.postId,
       commentId: value.commentId,
-      storyId: value.storyId,
+      storyId,
       readAt: value.readAt,
       createdAt: value.createdAt,
     };
