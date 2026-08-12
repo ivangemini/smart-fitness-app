@@ -122,6 +122,9 @@ export const normalizeFitnessProfileForSync = (
         ? round(targetWeight, 3)
         : null,
     targetWeeklyWeightChangeKg: normalizeWeeklyChange(profile),
+    activeTrainingProgramId: isUuid(profile.activeTrainingProgramId)
+      ? profile.activeTrainingProgramId.trim().toLowerCase()
+      : null,
   };
 };
 
@@ -199,6 +202,15 @@ const readNullableNumber = (
   return parsed === null ? undefined : parsed;
 };
 
+const readOptionalNullableUuid = (
+  record: Record<string, unknown>,
+  key: string,
+): string | null | undefined => {
+  const value = record[key];
+  if (value === undefined || value === null) return null;
+  return isUuid(value) ? value.trim().toLowerCase() : undefined;
+};
+
 const readRemoteSnapshot = (payload: Record<string, unknown>): FitnessProfileSyncSnapshot | null => {
   const dateOfBirth = payload.dateOfBirth;
   const calculationSex = payload.calculationSex;
@@ -211,6 +223,10 @@ const readRemoteSnapshot = (payload: Record<string, unknown>): FitnessProfileSyn
   const targetWeeklyWeightChangeKg = readNullableNumber(
     payload,
     'targetWeeklyWeightChangeKg',
+  );
+  const activeTrainingProgramId = readOptionalNullableUuid(
+    payload,
+    'activeTrainingProgramId',
   );
 
   if (
@@ -234,7 +250,8 @@ const readRemoteSnapshot = (payload: Record<string, unknown>): FitnessProfileSyn
       trainingExperience !== 'advanced') ||
     trainingDaysPerWeek === undefined ||
     targetWeightKg === undefined ||
-    targetWeeklyWeightChangeKg === undefined
+    targetWeeklyWeightChangeKg === undefined ||
+    activeTrainingProgramId === undefined
   ) {
     return null;
   }
@@ -249,6 +266,7 @@ const readRemoteSnapshot = (payload: Record<string, unknown>): FitnessProfileSyn
     trainingDaysPerWeek,
     targetWeightKg,
     targetWeeklyWeightChangeKg,
+    activeTrainingProgramId,
   };
 };
 
@@ -310,6 +328,7 @@ export const applyRemoteFitnessProfileChanges = (
         snapshot.targetWeeklyWeightChangeKg === null
           ? profile.weeklyWeightChangeGoal
           : Math.abs(snapshot.targetWeeklyWeightChangeKg),
+      activeTrainingProgramId: snapshot.activeTrainingProgramId,
     };
     appliedRecordIds.push(expectedId);
     metadata.set(expectedId, {
