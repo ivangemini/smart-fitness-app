@@ -29,6 +29,16 @@ import {
   parseSocialStoryLikeStateResponse,
   parseSocialStoryLikeSummaryResponse,
 } from './story-like-parsers';
+import type {
+  SocialStoryReactionStateDto,
+  SocialStoryReactionSummaryDto,
+  SocialStoryReactionType,
+} from './story-reaction-contracts';
+import {
+  isSocialStoryReactionType,
+  parseSocialStoryReactionStateResponse,
+  parseSocialStoryReactionSummaryResponse,
+} from './story-reaction-parsers';
 import {
   parseSocialStoryCaptionResponse,
   parseSocialStoryOverlayResponse,
@@ -46,6 +56,15 @@ export type SocialStoryApi = {
   likeStory(storyId: string): Promise<SocialStoryLikeStateDto>;
   unlikeStory(storyId: string): Promise<SocialStoryLikeStateDto>;
   getStoryLikeSummary(storyId: string): Promise<SocialStoryLikeSummaryDto>;
+  getStoryReaction(storyId: string): Promise<SocialStoryReactionStateDto>;
+  setStoryReaction(
+    storyId: string,
+    reaction: SocialStoryReactionType,
+  ): Promise<SocialStoryReactionStateDto>;
+  clearStoryReaction(storyId: string): Promise<SocialStoryReactionStateDto>;
+  getStoryReactionSummary(
+    storyId: string,
+  ): Promise<SocialStoryReactionSummaryDto>;
   listStories(input?: ListSocialStoriesInput): Promise<SocialStoryPageDto>;
   markStoryViewed(storyId: string): Promise<void>;
   deleteStory(storyId: string): Promise<void>;
@@ -197,6 +216,54 @@ export const createSocialStoryApi = (
         apiClient,
         'GET',
         `${storyPath(storyId)}/like-summary`,
+      ),
+    );
+  },
+
+  async getStoryReaction(storyId) {
+    return parseSocialStoryReactionStateResponse(
+      await requestSocialApiWithAuth(
+        auth,
+        apiClient,
+        'GET',
+        `${storyPath(storyId)}/reaction`,
+      ),
+    );
+  },
+
+  async setStoryReaction(storyId, reaction) {
+    if (!isSocialStoryReactionType(reaction)) {
+      throw new Error('Social Story reaction is invalid');
+    }
+    return parseSocialStoryReactionStateResponse(
+      await requestSocialApiWithAuth(
+        auth,
+        apiClient,
+        'PUT',
+        `${storyPath(storyId)}/reaction`,
+        { reaction },
+      ),
+    );
+  },
+
+  async clearStoryReaction(storyId) {
+    return parseSocialStoryReactionStateResponse(
+      await requestSocialApiWithAuth(
+        auth,
+        apiClient,
+        'DELETE',
+        `${storyPath(storyId)}/reaction`,
+      ),
+    );
+  },
+
+  async getStoryReactionSummary(storyId) {
+    return parseSocialStoryReactionSummaryResponse(
+      await requestSocialApiWithAuth(
+        auth,
+        apiClient,
+        'GET',
+        `${storyPath(storyId)}/reaction-summary`,
       ),
     );
   },
