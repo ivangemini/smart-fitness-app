@@ -189,7 +189,9 @@ export default function SocialStoryActivityScreen() {
       ]}
       data={loading ? [] : rows}
       keyExtractor={(row) =>
-        row.kind === 'viewer' ? `viewer:${row.value.profile.username}` : `reply:${row.value.id}`
+        row.kind === 'viewer'
+          ? `viewer:${row.value.profile.username}`
+          : `reply:${row.value.id}`
       }
       ListEmptyComponent={
         loading ? (
@@ -207,7 +209,7 @@ export default function SocialStoryActivityScreen() {
           <View style={styles.footer}>
             <SecondaryButton
               disabled={loadMoreBusy}
-              label={mode === 'viewers' ? copy.viewers : copy.replies}
+              label={copy.loadMore}
               loading={loadMoreBusy}
               onPress={() => void loadMore()}
             />
@@ -222,9 +224,7 @@ export default function SocialStoryActivityScreen() {
               Icon={ChevronLeft}
               onPress={() => router.back()}
             />
-            <Text style={styles.title}>
-              {copy.viewers} · {copy.replies}
-            </Text>
+            <Text style={styles.title}>{copy.activityTitle}</Text>
           </View>
           <View style={styles.controls}>
             {mode === 'viewers' ? (
