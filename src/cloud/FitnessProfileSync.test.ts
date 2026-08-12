@@ -10,6 +10,7 @@ import {
 
 const userId = '11111111-1111-4111-8111-111111111111';
 const deviceId = '22222222-2222-4222-8222-222222222222';
+const activeTrainingProgramId = '33333333-3333-4333-8333-333333333333';
 
 const profile = {
   ...defaultState.profile,
@@ -22,6 +23,7 @@ const profile = {
   dateOfBirth: '2000-05-12',
   calculationSex: 'male' as const,
   trainingExperience: 'intermediate' as const,
+  activeTrainingProgramId,
 };
 
 describe('fitness profile sync', () => {
@@ -36,6 +38,7 @@ describe('fitness profile sync', () => {
       trainingDaysPerWeek: 4,
       targetWeightKg: 68,
       targetWeeklyWeightChangeKg: -0.4,
+      activeTrainingProgramId,
     });
   });
 
@@ -69,6 +72,7 @@ describe('fitness profile sync', () => {
         trainingDaysPerWeek: 4,
         targetWeightKg: 68,
         targetWeeklyWeightChangeKg: -0.4,
+        activeTrainingProgramId,
         createdAt: '2026-07-23T12:00:00.000Z',
         updatedAt: '2026-07-23T12:00:00.000Z',
       },
@@ -97,6 +101,7 @@ describe('fitness profile sync', () => {
             trainingDaysPerWeek: 5,
             targetWeightKg: 70,
             targetWeeklyWeightChangeKg: 0.25,
+            activeTrainingProgramId,
           },
         },
       ],
@@ -116,13 +121,49 @@ describe('fitness profile sync', () => {
       trainingDaysPerWeek: 5,
       targetWeight: 70,
       weeklyWeightChangeGoal: 0.25,
+      activeTrainingProgramId,
     });
     expect(result.appliedRecordIds).toEqual([entityId]);
     expect(result.metadata[0]).toMatchObject({
       id: entityId,
       revision: 7,
-      snapshot: { goal: 'muscle_gain', targetWeightKg: 70 },
+      snapshot: {
+        goal: 'muscle_gain',
+        targetWeightKg: 70,
+        activeTrainingProgramId,
+      },
     });
+  });
+
+  it('treats an older remote snapshot without the selector as default-program mode', () => {
+    const entityId = getFitnessProfileEntityId(userId);
+    const result = applyRemoteFitnessProfileChanges(
+      { ...defaultState, profile },
+      [
+        {
+          entityType: 'fitnessProfiles',
+          entityId,
+          revision: 8,
+          payload: {
+            schemaVersion: 1,
+            id: entityId,
+            dateOfBirth: '2000-05-12',
+            calculationSex: 'male',
+            heightCm: 175,
+            goal: 'fat_loss',
+            activityLevel: 'moderate',
+            trainingExperience: 'intermediate',
+            trainingDaysPerWeek: 4,
+            targetWeightKg: 68,
+            targetWeeklyWeightChangeKg: -0.4,
+          },
+        },
+      ],
+      [],
+      userId,
+    );
+
+    expect(result.nextState.profile.activeTrainingProgramId).toBeNull();
   });
 
   it('ignores malformed or wrong-id remote payloads', () => {
