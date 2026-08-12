@@ -46,7 +46,11 @@ export default function ProgramDetailScreen() {
     [colors, glass],
   );
   const [showSavedToast, setShowSavedToast] = useState(savedWorkout === '1');
-  const { deleteTrainingProgram, saveTrainingProgram } = useAppActions();
+  const {
+    deleteTrainingProgram,
+    saveTrainingProgram,
+    setActiveTrainingProgram,
+  } = useAppActions();
   const { isRestoringState } = useAppInfrastructure();
   const { trainingPrograms, workouts } = useWorkoutState();
 
@@ -132,6 +136,10 @@ export default function ProgramDetailScreen() {
   const openMenu = () => {
     Alert.alert(displayProgramTitle, undefined, [
       { text: copy.cancel, style: 'cancel' },
+      {
+        text: program.isCustom ? copy.setAsActive : copy.useDefaultProgram,
+        onPress: () => setActiveTrainingProgram(program.isCustom ? program.id : null),
+      },
       {
         text: program.metadata?.favorite ? copy.removeFavorite : copy.addFavorite,
         onPress: () =>
