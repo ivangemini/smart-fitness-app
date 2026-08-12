@@ -1,6 +1,6 @@
 # Stories roadmap
 
-Updated: 2026-08-11
+Updated: 2026-08-12
 
 ## Purpose
 
@@ -9,30 +9,24 @@ This is the focused roadmap for Social Stories across:
 - mobile: `ivangemini/smart-fitness-app`;
 - backend: `ivangemini/smart-fitness-backend`.
 
-It separates source completion from deployment, runtime and release evidence. Exact code, migrations, tests and current Git history override this document if it becomes stale. Stories remain server-authoritative Social data and must not be moved into private revisioned `AppState` sync.
+It separates source/CI completion from deployment, runtime and release evidence. Exact code, migrations, tests and current Git history override this document if it becomes stale. Stories remain server-authoritative Social data and must not be moved into private revisioned `AppState` sync.
 
 ## Current checkpoint
 
-Audited against:
+Audited against the merged S9-F checkpoint:
 
-- mobile `main` `708d5b48eff2807f33ef89fa57ad9fde6200d3de` after PR #626 `feat(stories): add private Story Likes`;
-- backend `main` `2c2d46c255f8a0a47256d0f24bdb20608e859696` after PR #221 `feat(stories): add private Story Likes`;
-- backend PR #214 Stories foundation;
-- mobile PRs #533/#535 image-only Home/authoring foundation;
-- mobile PR #618 Story viewer completion;
-- mobile PR #620 direct camera capture;
-- backend PRs #218/#219 Story caption persistence and moderation;
-- mobile PR #621 Story caption authoring/viewer integration;
-- backend PR #220 Story overlay persistence/moderation/export authority;
-- mobile PR #624 strict overlay API/authoring/viewer integration and publish-idempotency retry hardening;
-- backend PR #221 private Story Like persistence/API/lifecycle/privacy authority;
-- mobile PR #626 strict private Story Like contracts and viewer/owner interaction surfaces.
+- mobile `main` after PR #641: `a5da4b85ac42f9560faa5fd0516fef2244e9c7a7`;
+- backend `main` after PR #228: `e23fd62c31c3067c96898138efa2bbf60f2b1d0a`;
+- mobile PR #641 exact validated head `28f9c1c0f3019efc73f3a78d7aa801469a3fe96e`, Mobile CI #2207 / run `31598972282` success;
+- backend PR #228 exact validated head `cec2e772672ac073fc606a3358e79c85d0117109`, Backend CI #1635 / run `31607002861`, Backend PostgreSQL CI #242 / run `31607002889`, Account Deletion Receipt CI #324 / run `31607002829` all success;
+- earlier image-only Stories foundation and S9-A through S9-E merges remain part of the source baseline.
 
-S9-A direct camera, S9-B captions, S9-C one bounded text overlay and S9-D private Story Like are source/CI-complete. No further Stories product expansion is contract-approved for autonomous source implementation. Environment, migration execution, physical-device and release evidence remain separately gated.
+**S9-A through S9-F are source/CI-complete. There is no remaining approved autonomous source package inside S9.** Environment, production migration execution, physical-device, provider and release evidence remain separately gated.
 
 ## Scope vocabulary
 
 - **Source-complete:** required code/contracts/tests for the stated scope are present. This does not prove a deployed environment or physical device.
+- **CI-complete:** the required exact-head source gates passed before merge.
 - **Contract-approved:** exact source/product/privacy boundaries are defined and may be implemented autonomously, but completion has not yet been established.
 - **Gated:** implementation/evidence requires explicit authorization, environment/provider access, native/runtime work or release activity.
 - **Deferred:** not part of the active source contract. It must not be started automatically.
@@ -42,7 +36,7 @@ S9-A direct camera, S9-B captions, S9-C one bounded text overlay and S9-D privat
 
 Status: **source-complete**.
 
-The completed v1 authority includes:
+Completed authority includes:
 
 - authenticated server-owned Story creation with idempotency;
 - one owned approved managed `story_image` per Story;
@@ -102,8 +96,6 @@ Status: **source-complete and exact-head backend/mobile CI-complete; deployed mi
 
 S9-C deliberately remains narrower than a general Story editor.
 
-### Product/result contract
-
 A Story may carry at most one overlay:
 
 ```text
@@ -116,164 +108,126 @@ or
 }
 ```
 
-Completed scope:
+Completed boundaries:
 
-- [x] one optional overlay only;
-- [x] fixed `top`, `center` or `bottom` placement;
-- [x] one reviewed high-contrast treatment;
-- [x] authoring preview renders overlay over the existing image;
-- [x] viewer renders the server-returned overlay over the image;
-- [x] caption remains separate below-image content and may coexist;
-- [x] blank overlay input is omitted;
-- [x] no free x/y dragging, transforms, custom font/color/size controls, multiple blocks, stickers, drawings, effects, video composition or raster re-upload.
+- one optional overlay only, with fixed `top`, `center` or `bottom` placement and one reviewed high-contrast treatment;
+- authoring preview and viewer render relative to the image container;
+- caption remains separate and may coexist;
+- blank overlay input is omitted;
+- migration `0044_story_text_overlay` provides pair/length/placement constraints;
+- base Story list/get/create DTO remains unchanged; overlay uses a separate authenticated subresource;
+- `story_overlay_text` is a distinct bounded moderation surface and moderation fails closed before Story persistence when enforcement is active;
+- Story create idempotency binds image, caption, overlay text and placement;
+- authored overlay text/placement participates in ownership-safe export;
+- no free x/y dragging, transforms, custom font/color/size controls, multiple blocks, stickers, drawings, effects, video composition or raster re-upload.
 
-### Backend authority and compatibility
+Source/CI evidence:
 
-- [x] migration `0044_story_text_overlay` adds nullable overlay text/placement with pair, length and closed placement constraints;
-- [x] Story create identity binds image, caption, overlay text and placement;
-- [x] released strict schemaVersion-1 Story list/get/create DTO shape remains unchanged;
-- [x] overlay is exposed through separate authenticated `GET /v1/social/stories/:storyId/overlay`;
-- [x] overlay reads reuse active Story self/Following, block, restriction, deletion and expiry authority;
-- [x] authored overlay text/placement participates in ownership-safe data-access export;
-- [x] old clients can continue to render the base image/caption without receiving an unexpected Story DTO key.
-
-### Moderation and retry authority
-
-- [x] `story_overlay_text` is a distinct `social-text-v1` moderation surface bounded to 280 characters;
-- [x] the closed PostgreSQL moderation-surface constraint includes the overlay surface;
-- [x] overlay moderation completes before Story persistence/media attachment when enforcement is enabled;
-- [x] review/reject/unavailable/timeout/invalid outcomes fail closed and create no Story;
-- [x] failed text moderation leaves the approved managed image unattached and reusable;
-- [x] moderation audit stores bounded hashes/metadata rather than raw overlay text;
-- [x] mobile publication keeps one idempotency key for an ambiguous retry of the exact normalized Story composition;
-- [x] changing image state/caption/overlay creates a new publish identity;
-- [x] confirmed moderation terminal failures or Story idempotency-key reuse clear the cached publish identity so a safe retry can use a new key.
-
-### Mobile result
-
-- [x] strict versioned overlay DTO/parser is separate from the base Story DTO;
-- [x] create payload omits blank normalized overlay input;
-- [x] authoring includes bounded text input and accessible top/center/bottom radio controls;
-- [x] positioning is relative to the image container rather than screen-height coordinates;
-- [x] authoring/viewer remain Safe-Area/ScrollView compatible;
-- [x] viewer fetches overlay fail-soft in parallel with caption;
-- [x] server response remains authority for published text/placement;
-- [x] EN/RU copy and parser/idempotency regression tests are included;
-- [x] no Skia dependency, new native module, second media asset or Story-specific upload pipeline was introduced.
-
-### Source/CI evidence
-
-- backend PR #220 exact head `fa708c39ef1c7731992b266e1445b7a6d8170e00` passed Backend CI #1570, Backend PostgreSQL CI #177 and Account Deletion Receipt CI #259 before merge;
-- backend PR #220 merged to `main` as `7c2e3e9842b7bfa3d63508e4cc6d9c0a2ae13280`;
-- mobile PR #624 exact head `e96882801393b4f0975f22c6107bb57c6a10b6d2` passed Mobile CI #2191: repository/changed-file line audits, TypeScript, full regression suite, expanded-model smoke, Expo export and Expo Doctor;
-- mobile PR #624 merged to `main` as `fc090914dc048ed50ee288287a358f66f8308728`.
-
-Environment/release boundary:
-
-- migration `0044_story_text_overlay` is merged source; no staging/production execution is claimed here;
-- an overlay-enabled mobile release must target a compatible backend schema/runtime;
-- text-moderation provider/enforcement activation remains an explicit environment decision;
-- no backend deployment, migration execution, provider activation, credentials, native build/install or OTA/EAS publish occurred in S9-C source completion.
+- backend PR #220 exact head `fa708c39ef1c7731992b266e1445b7a6d8170e00` passed Backend CI #1570, Backend PostgreSQL CI #177 and Account Deletion Receipt CI #259 before merge `7c2e3e9842b7bfa3d63508e4cc6d9c0a2ae13280`;
+- mobile PR #624 exact head `e96882801393b4f0975f22c6107bb57c6a10b6d2` passed Mobile CI #2191 before merge `fc090914dc048ed50ee288287a358f66f8308728`.
 
 ## S9-D — private Story Like
 
 Status: **source-complete and exact-head backend/mobile CI-complete; deployed migration/runtime evidence remains gated.**
 
-S9-D adds one binary, privacy-narrow Story interaction. It is not a general reactions/replies system.
+Product/privacy contract:
 
-### Product contract
+- one authenticated non-owner viewer may Like or Unlike a currently readable active Story;
+- self-like is rejected; Like/Unlike are idempotent;
+- viewer reads only their own boolean `liked` state;
+- owner reads only aggregate `likeCount` for their own active Story;
+- no endpoint exposes liker usernames, user IDs, profiles, per-liker timestamps or liker lists;
+- separate strict versioned Like-state and owner-summary subresources keep the base Story DTO unchanged;
+- unreadable, expired, deleted, blocked or restricted Stories fail closed through existing visibility authority;
+- `social_story_likes` persistence uses a unique `(story_id, user_id)` edge, lifecycle cleanup, block cleanup and account cascade behavior;
+- owner export never receives liker identity; requesting-user export remains bounded and excludes target Story/owner identity;
+- Like state does not alter Home ordering/ranking and is not an analytics/recommendation signal.
 
-- [x] one authenticated non-owner viewer may Like or Unlike a Story that is currently readable through existing active-Story authority;
-- [x] self-like is rejected; the author cannot Like their own Story;
-- [x] Like and Unlike are idempotent state mutations;
-- [x] the viewer may read only their own boolean `liked` state;
-- [x] the Story owner may read only an aggregate `likeCount` for their own active Story;
-- [x] no endpoint exposes liker usernames, user IDs, profile objects, per-liker timestamps or a liker list;
-- [x] no Story-like notification is generated in S9-D;
-- [x] no emoji/reaction set, replies, DMs, text input or moderation surface is introduced;
-- [x] Story Like state does not alter Home ranking/feed ordering and is not an analytics/recommendation signal.
+Source/CI evidence:
 
-### Compatibility/API contract
+- backend PR #221 exact head `c508be7b39063dbefe88868701fe3516c94e4d17` passed Backend CI #1596, Backend PostgreSQL CI #203 and Account Deletion Receipt CI #285 before merge `2c2d46c255f8a0a47256d0f24bdb20608e859696`;
+- mobile PR #626 exact head `f1c91e70f1adf99a32d331356a1d61f27cd926d0` passed Mobile CI #2193 before merge `708d5b48eff2807f33ef89fa57ad9fde6200d3de`;
+- migration `0045_social_story_likes` is merged source only; no production execution is claimed.
 
-The released strict Story DTO remains unchanged. S9-D uses separate strict versioned subresources:
+## S9-E — bounded Story Reactions
 
-```text
-viewer state:
-{
-  schemaVersion: 1,
-  storyId: UUID,
-  liked: boolean
-}
+Status: **source-complete and exact-head backend/mobile CI-complete; deployed migration/runtime evidence remains gated.**
 
-owner summary:
-{
-  schemaVersion: 1,
-  storyId: UUID,
-  likeCount: non-negative integer
-}
-```
+Product/privacy contract:
 
-Completed route contour:
+- fixed semantic reaction set: `love | fire | strong | clap`;
+- at most one reaction per non-owner viewer per currently readable active Story;
+- setting the same choice again may clear it; replacing a reaction keeps one edge;
+- S9-D Like remains a separate independent interaction;
+- viewer receives only their own current reaction state;
+- owner receives aggregate counts by reaction type and total only;
+- no reactor identity list, user IDs, profiles or per-reactor timestamps are exposed;
+- base Story DTO remains unchanged; separate strict versioned reaction subresources are used;
+- lifecycle, block, account-deletion and visibility authority remain server-owned;
+- reaction state does not affect chronological Following ordering, ranking, recommendations, analytics or private `AppState` sync.
 
-- [x] `GET /v1/social/stories/:storyId/like` — readable Story, current viewer state only;
-- [x] `PUT /v1/social/stories/:storyId/like` — non-owner readable Story, idempotent Like;
-- [x] `DELETE /v1/social/stories/:storyId/like` — non-owner readable Story, idempotent Unlike;
-- [x] `GET /v1/social/stories/:storyId/like-summary` — owner-only active Story aggregate;
-- [x] Like/Unlike reuse the existing bounded `reaction_toggle` Social write-rate policy rather than creating an unbounded interaction path;
-- [x] unreadable, expired, deleted, blocked or restricted Stories fail closed through existing Story visibility authority.
+Source/CI evidence:
 
-### Persistence, lifecycle and privacy
+- backend PR #226 exact head `89113fae25ee9c6653ad247f412450c69e05f10c` passed Backend CI #1623 / run `31584950358`, Backend PostgreSQL CI #230 / run `31584950352`, and Account Deletion Receipt CI #312 / run `31584950445` before merge `677231145d4fc87b8f2e9f2cc6e3d2ab96b76dab`;
+- mobile PR #636 exact head `af61806ee4cb7a64fbfc70c0c935dd39971d4993` passed Mobile CI #2203 / run `31591283734` before merge `98dcd668c91533b5dafb0f443f70b24c02824a8a`;
+- the S9-E migration is merged source only; no production migration execution is claimed.
 
-- [x] dedicated `social_story_likes` table has Story/user foreign keys, one unique `(story_id, user_id)` edge and creation timestamp;
-- [x] account deletion cascades owned Story Like rows through database ownership constraints;
-- [x] Story owner deletion and Story expiry explicitly remove Like rows before the current soft-delete lifecycle completes;
-- [x] blocking either direction removes Story Likes between those two users in the same Social graph transaction;
-- [x] owner aggregate never reveals individual liker identity;
-- [x] technical backend data inventory includes the new Story Like table and its 24-hour Story lifecycle relationship;
-- [x] data-access export includes only the requesting user's own retained/readable Story Like activity in a bounded privacy-safe projection, without target Story ID, target owner identity or other liker identity;
-- [x] no raw liker list is added to privacy export merely because an owner can see an aggregate count;
-- [x] no notification, ranking, recommendation or generic analytics persistence is introduced.
+## S9-F — bounded Story interaction notifications
+
+Status: **source-complete and exact-head backend/mobile CI-complete; deployment/runtime/push expansion remains gated or out of scope.**
+
+S9-F uses the existing in-app Social Notification Center. It is not a new push-notification subsystem.
 
 ### Backend result
 
-- [x] forward migration `0045_social_story_likes` plus Drizzle schema;
-- [x] repository layer with own-state, aggregate-count, idempotent add/remove, Story cleanup and between-users block cleanup;
-- [x] Story Like service/routes reuse active Story authority and explicit self-like mutation guard;
-- [x] Story expiry/delete and graph-block cleanup integration;
-- [x] technical inventory, export preparation/audit, schema snapshot and account-deletion evidence updated;
-- [x] permanent PostgreSQL integration coverage proves Like/Unlike idempotency, owner-only aggregate, self-like rejection, visibility, block, expiry/delete/account cleanup and export privacy;
-- [x] backend authority merged before mobile consumption.
+- existing `social_notifications` supports `story_like` and `story_reaction` types;
+- nullable `story_id` FK targets `social_stories` with strict notification target-shape constraints;
+- migration `0048_story_interaction_notifications` adds the Story target/index and updates closed notification type/shape checks;
+- Story Like creates one deduped in-app notification transactionally with the Like mutation; Unlike removes the matching notification;
+- Story Reaction creates one deduped in-app notification transactionally with set/replace; clear removes it;
+- reaction replacement retains one stable per-story/per-actor notification identity rather than generating duplicates;
+- self notifications are suppressed;
+- Story owner delete/24-hour expiry clears Story-targeted notifications along with Story interaction lifecycle cleanup;
+- notification read-state, pagination, actor moderation/block filtering and existing auth authority are reused;
+- `social_notifications` remains permanently excluded from ownership data export; Story target internal identity is explicitly part of the excluded notification data classes;
+- no APNs, FCM, email, SMS or external delivery provider was introduced.
 
 ### Mobile result
 
-- [x] strict Like-state and owner-summary contracts/parsers/API are separate from and do not extend `SocialStoryDto`;
-- [x] non-owner viewer loads only own Like state fail-soft and exposes one accessible Like/Unlike Heart control;
-- [x] owner viewer loads only aggregate `likeCount` fail-soft and has no self-like control;
-- [x] unknown Story ownership fails closed without requesting either interaction surface;
-- [x] mutation UI disables duplicate in-flight toggles and renders the server-returned state as authority;
-- [x] Like subresource failure does not make the underlying readable Story unavailable;
-- [x] no fabricated liker list, notification or optimistic persistent Story DTO mutation;
-- [x] EN/RU copy plus parser/API/privacy-selection/base-DTO regression tests are included;
-- [x] exact-head Mobile CI passed before merge.
+- existing Social notification contracts accept `story_like` and `story_reaction`;
+- notification DTO has strict `storyId: string | null` target semantics;
+- strict parser target-shape validation prevents Story notifications from carrying workout post/comment targets and vice versa;
+- the parser accepts the legacy pre-S9-F notification payload where `storyId` is absent and normalizes it to `null`;
+- notification model maps Story events to `{ kind: 'story', storyId }`;
+- Notification Center taps route to existing `/social/story/[storyId]`;
+- existing optimistic read-state, pagination, auth refresh, stale notification removal and fail-soft behavior are retained;
+- EN/RU copy covers Story Like and Story Reaction activity;
+- no new notification screen, Story viewer, local durable notification authority or private `AppState` sync was added.
 
 ### Source/CI evidence
 
-- backend PR #221 exact head `c508be7b39063dbefe88868701fe3516c94e4d17` passed Backend CI #1596, Backend PostgreSQL CI #203 and Account Deletion Receipt CI #285;
-- backend PR #221 merged to `main` as `2c2d46c255f8a0a47256d0f24bdb20608e859696`;
-- mobile PR #626 exact head `f1c91e70f1adf99a32d331356a1d61f27cd926d0` passed Mobile CI #2193: repository/changed-file line audits, TypeScript, full regression suite, expanded-model smoke, Expo export and Expo Doctor;
-- mobile PR #626 merged to `main` as `708d5b48eff2807f33ef89fa57ad9fde6200d3de`.
+- backend PR #228 exact head `cec2e772672ac073fc606a3358e79c85d0117109` passed Backend CI #1635 / run `31607002861`, Backend PostgreSQL CI #242 / run `31607002889`, and Account Deletion Receipt CI #324 / run `31607002829` before merge `e23fd62c31c3067c96898138efa2bbf60f2b1d0a`;
+- mobile PR #641 exact head `28f9c1c0f3019efc73f3a78d7aa801469a3fe96e` passed Mobile CI #2207 / run `31598972282` before merge `a5da4b85ac42f9560faa5fd0516fef2244e9c7a7`;
+- final backend PostgreSQL validation proved migration application/idempotency, migrated-schema checks, the complete Social API integration suite and sync correctness on the exact validated head;
+- migration `0048_story_interaction_notifications` is merged source only; this roadmap does not claim staging/production execution.
 
-Environment/release boundary:
+### Rollout compatibility rule
 
-- migration `0045_social_story_likes` is merged source; no staging/production execution is claimed here;
-- a Like-enabled mobile runtime must target a compatible backend schema/runtime;
-- no backend deployment, migration execution, provider/environment change, credentials, native build/install or OTA/EAS publish occurred in S9-D source completion.
+The S9-F backend response extension adds `storyId` to strict notification DTOs. The merged S9-F mobile parser is intentionally compatible with both the legacy payload without `storyId` and the new payload with the field. Therefore a later authorized rollout must put a compatible mobile client in place before activating the backend response extension.
+
+No backend deployment, production migration execution, OTA/EAS publication, native build/install, credential/provider change or production activation occurred as part of S9-F source completion.
+
+## S9 closure
+
+**S9-A through S9-F are source/CI-complete. Remaining autonomous S9 source packages: 0.**
+
+This closure means the reviewed source contracts are merged and validated. It does **not** mean Stories is fully deployed, physically validated or broadly released.
 
 ## G1 — physical-device and standalone runtime evidence
 
 Status: **gated; not established by source CI**.
 
-Run only with explicit authorization. Evidence should cover applicable Story acquisition, upload, moderation, publication, caption/overlay rendering, Like UI after S9-D source completion, expiry, visibility, block behavior, account isolation, offline recovery, second-device convergence and supported iOS/Android release targets.
+Run only with explicit authorization. Evidence should cover applicable Story acquisition, camera/picker permissions, upload interruption/restart, moderation/publication, caption/overlay rendering, Like/Reaction UI, notification navigation, expiry, visibility, block behavior, account isolation, offline recovery, second-device convergence and supported iOS/Android release targets.
 
 Do not convert missing physical/runtime evidence into speculative source churn.
 
@@ -283,10 +237,11 @@ Status: **gated**.
 
 Before a broad Stories release, separately authorize and verify the selected environment for:
 
-- migrations `0041` through the latest merged Stories migration `0045_social_story_likes`;
+- Stories migrations `0041` through `0048_story_interaction_notifications` as applicable to that environment;
 - private upload/quarantine storage and signed finalize path;
 - text/image moderation state transitions under selected provider configuration;
 - approved derivative delivery and retention cleanup;
+- Story interaction/notification lifecycle against the deployed database;
 - failure/retry behavior and privacy-safe operational evidence.
 
 No migration execution, provider activation, credentials or deployment is authorized by this roadmap.
@@ -297,18 +252,19 @@ Status: **gated**.
 
 Broad-release evidence must remain consistent with Social privacy/moderation/release policy, including account deletion, accessibility, localization, rollback/recovery and any required legal/policy review.
 
-## Product expansion inventory
+## Product expansion inventory after S9
 
-Outside the completed S9-D source contract:
+Outside the completed S9-F source contract:
 
 1. richer composition: free positioning, multiple text blocks, style controls, drawings, stickers/effects or multi-asset composition;
-2. richer Story interactions: replies, DMs, emoji/reaction sets, liker lists or interaction notifications;
-3. per-Story audience controls / Close Friends;
-4. video Stories and video-specific acquisition/transcoding/moderation/delivery;
-5. archive/highlights or other owner-visible post-expiry persistence;
-6. owner viewer-list surface;
-7. music and advanced media formats;
-8. Story analytics, recommendation or ranking signals.
+2. richer Story interactions: replies, DMs, liker/reactor identity lists or threaded interaction surfaces;
+3. push notifications / APNs / FCM or other external delivery channels;
+4. per-Story audience controls / Close Friends;
+5. video Stories and video-specific acquisition/transcoding/moderation/delivery;
+6. archive/highlights or other owner-visible post-expiry persistence;
+7. owner viewer-list surface;
+8. music and advanced media formats;
+9. Story analytics, recommendation or ranking signals.
 
 These remain candidates/deferred until separately contracted.
 
@@ -318,7 +274,7 @@ For an approved Stories expansion:
 
 1. define the exact product/privacy contract;
 2. extend backend authority/contracts first when persistence, visibility, moderation, notifications or media lifecycle changes;
-3. add strict mobile contracts/parsers only after compatible backend merge;
+3. add strict mobile contracts/parsers only after compatible backend merge, unless an explicitly reviewed compatibility-first rollout requires otherwise;
 4. add the smallest coherent mobile product surface;
 5. require exact-head source CI;
 6. collect separately authorized runtime/environment evidence when native/provider/release behavior is involved.
