@@ -11,7 +11,7 @@ import { AppCard } from '@/components/ui/AppCard';
 import { InlineError } from '@/components/ui/InlineError';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { Spacing, Typography } from '@/constants/theme';
-import { formatLocalizedDateTime, type SupportedLocale } from '@/localization';
+import { formatLocalizedDateTime } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
@@ -28,18 +28,11 @@ const createReplyIdempotencyKey = (): string => {
 type Props = {
   api: SocialApi;
   copy: SocialStoryExpansionCopy;
-  locale: SupportedLocale;
   owner: boolean;
   storyId: string;
 };
 
-export function SocialStoryReplySurface({
-  api,
-  copy,
-  locale,
-  owner,
-  storyId,
-}: Props) {
+export function SocialStoryReplySurface({ api, copy, owner, storyId }: Props) {
   const { colors, resolvedAppearance } = useAppTheme();
   const glass = useMemo(
     () => resolveLiquidGlassPalette(resolvedAppearance),
@@ -173,7 +166,7 @@ export function SocialStoryReplySurface({
             <View key={`${viewer.profile.username}-${viewer.viewedAt}`} style={styles.item}>
               <Text style={styles.text}>@{viewer.profile.username}</Text>
               <Text style={styles.meta}>
-                {formatLocalizedDateTime(viewer.viewedAt, locale)}
+                {formatLocalizedDateTime(viewer.viewedAt, copy.locale)}
               </Text>
             </View>
           ))
