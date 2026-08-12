@@ -12,17 +12,23 @@ import {
 } from '@shopify/react-native-skia';
 import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
-import { Brain, Dumbbell, Home, TrendingUp, Utensils, type LucideIcon } from 'lucide-react-native';
+import {
+  Brain,
+  Dumbbell,
+  FlaskConical,
+  Home,
+  TrendingUp,
+  Utensils,
+  type LucideIcon,
+} from 'lucide-react-native';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, Pressable, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { useAppTheme } from '@/theme/AppThemeProvider';
-import {
-  resolveLiquidGlassPalette,
-  type LiquidGlassPalette,
-} from '@/theme/liquidGlass';
+import { resolveLiquidGlassPalette, type LiquidGlassPalette } from '@/theme/liquidGlass';
 
 import {
   FLOATING_TAB_BAR_HEIGHT,
@@ -34,7 +40,7 @@ const TAB_ICONS: Record<string, LucideIcon> = {
   workouts: Dumbbell,
   nutrition: Utensils,
   progress: TrendingUp,
-  coach: Brain,
+  labs: FlaskConical,
 };
 
 const VISIBLE_TABS = new Set(Object.keys(TAB_ICONS));
@@ -86,10 +92,7 @@ function makePanelPath(width: number): SkPath {
       `V ${radius} C 0 12 12 0 ${radius} 0 Z`,
   );
 
-  if (!path) {
-    throw new Error('Unable to create Skia panel path');
-  }
-
+  if (!path) throw new Error('Unable to create Skia panel path');
   return path;
 }
 
@@ -100,7 +103,6 @@ function makeBlobPath(width: number, index: number): SkPath {
   const horizontalRadius = Math.min(30, tabWidth * 0.42);
   const verticalRadius = 20;
   const organicBias = index % 2 === 0 ? 1.8 : -1.8;
-
   const left = centerX - horizontalRadius;
   const right = centerX + horizontalRadius;
   const top = centerY - verticalRadius;
@@ -114,10 +116,7 @@ function makeBlobPath(width: number, index: number): SkPath {
       `C ${left - 1} ${centerY - 10} ${centerX - 13 + organicBias} ${top - 1} ${centerX} ${top} Z`,
   );
 
-  if (!path) {
-    throw new Error('Unable to create Skia blob path');
-  }
-
+  if (!path) throw new Error('Unable to create Skia blob path');
   return path;
 }
 
@@ -132,7 +131,6 @@ const TabButton = memo(function TabButton({
   testID,
 }: TabButtonProps) {
   const pressScale = useSharedValue(1);
-
   const animatedButtonStyle = useAnimatedStyle(() => ({
     transform: [{ scale: pressScale.value }],
   }));
@@ -187,18 +185,8 @@ function LiquidGeometry({ activeIndex, glass, width }: LiquidGeometryProps) {
           <BlurMask blur={18} style="outer" />
         </Path>
         <Path path={panelPath} color={glass.navPanelFill} />
-        <Path
-          path={panelPath}
-          color={glass.navEdgeStrong}
-          style="stroke"
-          strokeWidth={0.75}
-        />
-        <Path
-          path={panelPath}
-          color={glass.navEdgeSoft}
-          style="stroke"
-          strokeWidth={0.35}
-        />
+        <Path path={panelPath} color={glass.navEdgeStrong} style="stroke" strokeWidth={0.75} />
+        <Path path={panelPath} color={glass.navEdgeSoft} style="stroke" strokeWidth={0.35} />
       </Group>
 
       <Path path={blobPath} color={glass.navBlobFill}>
@@ -211,12 +199,7 @@ function LiquidGeometry({ activeIndex, glass, width }: LiquidGeometryProps) {
           colors={[glass.navBlobGradientStart, glass.navBlobGradientEnd]}
         />
       </Path>
-      <Path
-        path={blobPath}
-        color={glass.navBlobStroke}
-        style="stroke"
-        strokeWidth={0.7}
-      />
+      <Path path={blobPath} color={glass.navBlobStroke} style="stroke" strokeWidth={0.7} />
     </Canvas>
   );
 }
@@ -224,17 +207,23 @@ function LiquidGeometry({ activeIndex, glass, width }: LiquidGeometryProps) {
 export function LiquidGlassTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const { resolvedAppearance } = useAppTheme();
-  const glass = useMemo(
-    () => resolveLiquidGlassPalette(resolvedAppearance),
-    [resolvedAppearance],
-  );
+  const glass = useMemo(() => resolveLiquidGlassPalette(resolvedAppearance), [resolvedAppearance]);
   const [panelWidth, setPanelWidth] = useState(DEFAULT_PANEL_WIDTH);
   const visibleRoutes = state.routes.filter((route) => VISIBLE_TABS.has(route.name));
-  const activeRouteKey = state.routes[state.index]?.key;
+  const activeRoute = state.routes[state.index];
+  const activeRouteKey = activeRoute?.key;
   const activeVisibleIndex = Math.max(
     0,
     visibleRoutes.findIndex((route) => route.key === activeRouteKey),
   );
+  const coachRoute = state.routes.find((route) => route.name === 'coach');
+  const coachOptions = coachRoute ? descriptors[coachRoute.key]?.options : undefined;
+  const coachLabel =
+    typeof coachOptions?.tabBarAccessibilityLabel === 'string'
+      ? coachOptions.tabBarAccessibilityLabel
+      : typeof coachOptions?.title === 'string'
+        ? coachOptions.title
+        : 'Coach';
 
   const handlePanelLayout = useCallback((event: LayoutChangeEvent) => {
     const nextWidth = event.nativeEvent.layout.width;
@@ -243,16 +232,27 @@ export function LiquidGlassTabBar({ state, descriptors, navigation }: BottomTabB
     );
   }, []);
 
+  if (activeRoute?.name === 'coach') return null;
+
   return (
     <View pointerEvents="box-none" style={styles.root}>
       <View
         pointerEvents="box-none"
         style={[
           styles.outerContainer,
-          {
-            bottom: Math.max(insets.bottom, FLOATING_TAB_BAR_MIN_BOTTOM_OFFSET),
-          },
+          { bottom: Math.max(insets.bottom, FLOATING_TAB_BAR_MIN_BOTTOM_OFFSET) },
         ]}>
+        {coachRoute ? (
+          <View style={styles.companionEntry}>
+            <LiquidGlassIconButton
+              accessibilityLabel={coachLabel}
+              Icon={Brain}
+              onPress={() => navigation.navigate(coachRoute.name, coachRoute.params)}
+              testID="global-companion-entry"
+            />
+          </View>
+        ) : null}
+
         <View
           pointerEvents="none"
           style={[
@@ -313,10 +313,7 @@ export function LiquidGlassTabBar({ state, descriptors, navigation }: BottomTabB
 
               const handleLongPress = () => {
                 void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => undefined);
-                navigation.emit({
-                  type: 'tabLongPress',
-                  target: route.key,
-                });
+                navigation.emit({ type: 'tabLongPress', target: route.key });
               };
 
               return (
@@ -350,6 +347,12 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
     alignItems: 'center',
+  },
+  companionEntry: {
+    position: 'absolute',
+    right: 0,
+    top: -56,
+    zIndex: 3,
   },
   shadowWide: {
     position: 'absolute',

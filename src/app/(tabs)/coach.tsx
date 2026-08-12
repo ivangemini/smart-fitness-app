@@ -1,37 +1,23 @@
 import { router } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { getFloatingTabBarBottomClearance } from '@/components/navigation/floatingTabBarLayout';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 
 const COACH_ACTIONS = [
-  {
-    labelKey: 'coach.addRecoveryCheckIn' as const,
-    route: '/profile/recovery-check-in' as const,
-  },
-  {
-    labelKey: 'coach.manageLimitations' as const,
-    route: '/profile/limitations' as const,
-  },
-  {
-    labelKey: 'coach.openSafetyRecovery' as const,
-    route: '/profile/safety-recovery' as const,
-  },
-  {
-    labelKey: 'coach.openCombinedReview' as const,
-    route: '/profile/combined-review' as const,
-  },
-  {
-    labelKey: 'coach.openCombinedProposal' as const,
-    route: '/profile/combined-proposal' as const,
-  },
+  { labelKey: 'coach.addRecoveryCheckIn' as const, route: '/profile/recovery-check-in' as const },
+  { labelKey: 'coach.manageLimitations' as const, route: '/profile/limitations' as const },
+  { labelKey: 'coach.openSafetyRecovery' as const, route: '/profile/safety-recovery' as const },
+  { labelKey: 'coach.openCombinedReview' as const, route: '/profile/combined-review' as const },
+  { labelKey: 'coach.openCombinedProposal' as const, route: '/profile/combined-proposal' as const },
 ] as const;
 
 export default function CoachScreen() {
@@ -42,15 +28,27 @@ export default function CoachScreen() {
 
   return (
     <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={[
         styles.content,
-        { paddingBottom: getFloatingTabBarBottomClearance(safeAreaInsets.bottom) },
+        {
+          paddingBottom: safeAreaInsets.bottom + Spacing.eight,
+          paddingTop: safeAreaInsets.top + Spacing.four,
+        },
       ]}
       showsVerticalScrollIndicator={false}
       style={styles.screen}>
       <View style={styles.container}>
-        <SectionHeader title={t('tabs.coach')} subtitle={t('coach.screenSubtitle')} />
+        <View style={styles.headerRow}>
+          <LiquidGlassIconButton
+            accessibilityLabel={t('common.back')}
+            Icon={ChevronLeft}
+            onPress={() => router.back()}
+          />
+          <View style={styles.headerCopy}>
+            <SectionHeader title={t('tabs.coach')} subtitle={t('coach.screenSubtitle')} />
+          </View>
+        </View>
+
         <AppCard>
           <Text style={styles.title}>{t('coach.toolsTitle')}</Text>
           <Text style={styles.body}>{t('coach.toolsBody')}</Text>
@@ -89,7 +87,9 @@ const createStyles = (colors: typeof Colors.light) =>
       lineHeight: Typography.body.lineHeight,
     },
     container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
-    content: { alignItems: 'center', flexGrow: 1, padding: Spacing.three },
+    content: { alignItems: 'center', flexGrow: 1, paddingHorizontal: Spacing.three },
+    headerCopy: { flex: 1, minWidth: 0 },
+    headerRow: { alignItems: 'flex-start', flexDirection: 'row', gap: Spacing.three },
     screen: { backgroundColor: colors.background, flex: 1 },
     title: {
       color: colors.textPrimary,

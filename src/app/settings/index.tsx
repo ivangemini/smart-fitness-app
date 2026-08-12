@@ -1,360 +1,127 @@
-import { useMemo, useState } from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useMemo } from 'react';
 import { useRouter } from 'expo-router';
-import { ChevronLeft } from 'lucide-react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-// @ts-ignore - expo-updates types are not available in this workspace, but the runtime module exists on device.
-import * as Updates from 'expo-updates';
-
-import { AuthGateCard } from '@/components/auth';
-import { ProfileActionsCard } from '@/components/profile/ProfileActionsCard';
-import { ProfileRuntimeInfoCard } from '@/components/profile/ProfileRuntimeInfoCard';
-import { AppCard } from '@/components/ui/AppCard';
-import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
-import { SecondaryButton } from '@/components/ui/SecondaryButton';
-import { SegmentedControl } from '@/components/ui/SegmentedControl';
-import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme';
-import type { AppearanceMode } from '@/constants/theme';
-import { useAppActions } from '@/context/AppContext';
-import { LocalPerformanceDiagnosticsCard } from '@/features/settings/LocalPerformanceDiagnosticsCard';
-import { AboutSettingsCard, PrivacySettingsCard } from '@/features/settings/PrivacyAboutCards';
-import { PersonalDetailsSettingsCard } from '@/features/settings/PersonalDetailsSettingsCard';
-import { SyncSettingsCard } from '@/features/settings/SyncSettingsCard';
-import { getSyncStatusCopy } from '@/features/settings/syncStatusCopy';
-import { useLocalization, type LanguagePreference } from '@/localization';
-import { useAppTheme } from '@/theme/AppThemeProvider';
 import {
-  getUnitCopy,
-  useUnitPreferences,
-  type EnergyUnit,
-  type LengthUnit,
-  type WeightUnit,
-} from '@/units';
+  CircleUserRound,
+  Database,
+  Info,
+  Languages,
+  Palette,
+  Ruler,
+  ShieldCheck,
+  Wrench,
+} from 'lucide-react-native';
 
-type OtaValueSource = Record<string, unknown>;
+import { SettingsNavigationGroup } from '@/features/settings/SettingsNavigationGroup';
+import { SettingsScreenLayout } from '@/features/settings/SettingsScreenLayout';
+import { getSettingsNavigationCopy } from '@/features/settings/settingsNavigationCopy';
+import { useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
+import { useUnitPreferences } from '@/units';
 
 const supportDiagnosticsEnabled =
   __DEV__ || process.env.EXPO_PUBLIC_SUPPORT_MODE?.trim().toLowerCase() === 'true';
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const { resetOnboarding } = useAppActions();
-  const { colors, mode, setMode } = useAppTheme();
-  const { formatDate, languagePreference, locale, setLanguagePreference, t } = useLocalization();
-  const { weight, length, energy, setWeightUnit, setLengthUnit, setEnergyUnit } =
-    useUnitPreferences();
-  const safeAreaInsets = useSafeAreaInsets();
-  const [developerExpanded, setDeveloperExpanded] = useState(false);
-  const styles = useMemo(() => createStyles(colors), [colors]);
-  const unitCopy = getUnitCopy(locale);
-  const syncCopy = getSyncStatusCopy(t);
+  const { languagePreference, locale, t } = useLocalization();
+  const { mode } = useAppTheme();
+  const { energy, length, weight } = useUnitPreferences();
+  const copy = useMemo(() => getSettingsNavigationCopy(locale), [locale]);
 
-  const languageOptions: ReadonlyArray<{ label: string; value: LanguagePreference }> = [
-    { label: t('common.system'), value: 'system' },
-    { label: t('common.english'), value: 'en' },
-    { label: t('common.russian'), value: 'ru' },
-  ];
-  const appearanceOptions: ReadonlyArray<{ label: string; value: AppearanceMode }> = [
-    { label: t('common.system'), value: 'system' },
-    { label: t('common.light'), value: 'light' },
-    { label: t('common.dark'), value: 'dark' },
-  ];
-  const weightOptions: ReadonlyArray<{ label: string; value: WeightUnit }> = [
-    { label: 'kg', value: 'kg' },
-    { label: 'lb', value: 'lb' },
-  ];
-  const lengthOptions: ReadonlyArray<{ label: string; value: LengthUnit }> = [
-    { label: 'cm', value: 'cm' },
-    { label: 'in', value: 'in' },
-  ];
-  const energyOptions: ReadonlyArray<{ label: string; value: EnergyUnit }> = [
-    { label: 'kcal', value: 'kcal' },
-    { label: 'kJ', value: 'kJ' },
-  ];
-
-  const formatOtaValue = (value: unknown) => {
-    if (value === null || value === undefined || value === '') return t('common.notAvailable');
-    if (value instanceof Date) {
-      return formatDate(value, { dateStyle: 'medium', timeStyle: 'short' });
-    }
-    return String(value);
-  };
-  const otaRuntimeVersion = formatOtaValue((Updates as OtaValueSource).runtimeVersion);
-  const otaUpdateId = formatOtaValue((Updates as OtaValueSource).updateId);
-  const otaCreatedAt = formatOtaValue((Updates as OtaValueSource).createdAt);
-  const otaChannel = formatOtaValue((Updates as OtaValueSource).channel);
-
-  const handleResetOnboarding = () => {
-    Alert.alert(
-      t('settings.resetOnboardingTitle'),
-      t('settings.resetOnboardingBody'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('common.reset'),
-          style: 'destructive',
-          onPress: resetOnboarding,
-        },
-      ],
-    );
-  };
-
-  const handleCheckForOtaUpdate = async () => {
-    try {
-      const update = await Updates.checkForUpdateAsync();
-      if (!update.isAvailable) {
-        Alert.alert(t('settings.noUpdateAvailable'));
-        return;
-      }
-      await Updates.fetchUpdateAsync();
-      Alert.alert(t('settings.updateDownloaded'));
-      await Updates.reloadAsync();
-    } catch {
-      Alert.alert(t('settings.otaUpdateErrorTitle'), t('settings.otaUpdateErrorBody'));
-    }
-  };
+  const languageValue =
+    languagePreference === 'system'
+      ? t('common.system')
+      : languagePreference === 'ru'
+        ? t('common.russian')
+        : t('common.english');
+  const appearanceValue =
+    mode === 'system' ? t('common.system') : mode === 'dark' ? t('common.dark') : t('common.light');
+  const unitsValue = `${weight} · ${length} · ${energy}`;
 
   return (
-    <ScrollView
-      automaticallyAdjustKeyboardInsets
-      contentContainerStyle={[
-        styles.content,
-        {
-          paddingBottom: safeAreaInsets.bottom + Spacing.eight,
-          paddingTop: safeAreaInsets.top + Spacing.four,
-        },
-      ]}
-      keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
-      keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
-      style={styles.screen}>
-      <View style={styles.container}>
-        <View style={styles.headerRow}>
-          <LiquidGlassIconButton
-            accessibilityLabel={t('common.back')}
-            Icon={ChevronLeft}
-            onPress={() => router.back()}
-          />
-          <View style={styles.headerCopy}>
-            <Text style={styles.title}>{t('settings.title')}</Text>
-            <Text style={styles.subtitle}>{t('settings.subtitle')}</Text>
-          </View>
-        </View>
+    <SettingsScreenLayout subtitle={copy.rootSubtitle} title={t('settings.title')}>
+      <SettingsNavigationGroup
+        rows={[
+          {
+            Icon: CircleUserRound,
+            key: 'profile',
+            label: copy.profile,
+            onPress: () => router.push('/settings/profile'),
+          },
+        ]}
+        title={copy.account}
+      />
 
-        <SettingsSection title={t('account.title')}>
-          <AuthGateCard />
-        </SettingsSection>
+      <SettingsNavigationGroup
+        rows={[
+          {
+            Icon: Palette,
+            key: 'appearance',
+            label: copy.appearance,
+            onPress: () => router.push('/settings/appearance'),
+            value: appearanceValue,
+          },
+          {
+            Icon: Languages,
+            key: 'language',
+            label: copy.language,
+            onPress: () => router.push('/settings/language'),
+            value: languageValue,
+          },
+          {
+            Icon: Ruler,
+            key: 'units',
+            label: copy.units,
+            onPress: () => router.push('/settings/units'),
+            value: unitsValue,
+          },
+        ]}
+        title={copy.preferences}
+      />
 
-        <SettingsSection title={t('settings.personalDetails')}>
-          <PersonalDetailsSettingsCard />
-        </SettingsSection>
+      <SettingsNavigationGroup
+        rows={[
+          {
+            Icon: Database,
+            key: 'data-sync',
+            label: copy.dataSync,
+            onPress: () => router.push('/settings/data-sync'),
+          },
+          {
+            Icon: ShieldCheck,
+            key: 'privacy',
+            label: copy.privacy,
+            onPress: () => router.push('/settings/privacy'),
+          },
+        ]}
+        title={copy.dataPrivacy}
+      />
 
-        <SettingsSection title={t('settings.general')}>
-          <AppCard>
-            <SettingBlock
-              description={t('settings.languageDescription')}
-              title={t('settings.language')}>
-              <SegmentedControl
-                accessibilityLabel={t('settings.language')}
-                onChange={setLanguagePreference}
-                options={languageOptions}
-                value={languagePreference}
-              />
-            </SettingBlock>
-          </AppCard>
-        </SettingsSection>
+      <SettingsNavigationGroup
+        rows={[
+          {
+            Icon: Info,
+            key: 'about',
+            label: copy.about,
+            onPress: () => router.push('/settings/about'),
+          },
+        ]}
+        title={copy.support}
+      />
 
-        <SettingsSection title={t('settings.appearance')}>
-          <AppCard>
-            <SettingBlock
-              description={t('settings.appearanceDescription')}
-              title={t('settings.appearance')}>
-              <SegmentedControl
-                accessibilityLabel={t('settings.appearance')}
-                onChange={setMode}
-                options={appearanceOptions}
-                value={mode}
-              />
-            </SettingBlock>
-          </AppCard>
-        </SettingsSection>
-
-        <SettingsSection title={unitCopy.section}>
-          <AppCard>
-            <SettingBlock description={unitCopy.weightDescription} title={unitCopy.weight}>
-              <SegmentedControl
-                accessibilityLabel={unitCopy.weight}
-                onChange={setWeightUnit}
-                options={weightOptions}
-                value={weight}
-              />
-            </SettingBlock>
-            <View style={styles.divider} />
-            <SettingBlock description={unitCopy.lengthDescription} title={unitCopy.length}>
-              <SegmentedControl
-                accessibilityLabel={unitCopy.length}
-                onChange={setLengthUnit}
-                options={lengthOptions}
-                value={length}
-              />
-            </SettingBlock>
-            <View style={styles.divider} />
-            <SettingBlock description={unitCopy.energyDescription} title={unitCopy.energy}>
-              <SegmentedControl
-                accessibilityLabel={unitCopy.energy}
-                onChange={setEnergyUnit}
-                options={energyOptions}
-                value={energy}
-              />
-            </SettingBlock>
-          </AppCard>
-          <Text style={styles.footer}>{unitCopy.footer}</Text>
-        </SettingsSection>
-
-        <SettingsSection title={syncCopy.section}>
-          <SyncSettingsCard />
-        </SettingsSection>
-
-        <SettingsSection title={t('privacy.section')}>
-          <PrivacySettingsCard />
-        </SettingsSection>
-
-        <SettingsSection title={t('about.section')}>
-          <AboutSettingsCard />
-        </SettingsSection>
-
-        {supportDiagnosticsEnabled ? (
-          <View style={styles.section}>
-            <View style={styles.developerHeader}>
-              <View style={styles.developerCopy}>
-                <Text style={styles.sectionTitle}>{t('settings.developerTools')}</Text>
-                <Text style={styles.footer}>{t('settings.developerToolsDescription')}</Text>
-              </View>
-              <SecondaryButton
-                label={developerExpanded ? t('common.hide') : t('common.show')}
-                onPress={() => setDeveloperExpanded((current) => !current)}
-              />
-            </View>
-            {developerExpanded ? (
-              <View style={styles.developerStack}>
-                <ProfileActionsCard onResetOnboarding={handleResetOnboarding} />
-                <ProfileRuntimeInfoCard
-                  channel={otaChannel}
-                  createdAt={otaCreatedAt}
-                  onCheckForOtaUpdate={handleCheckForOtaUpdate}
-                  runtimeVersion={otaRuntimeVersion}
-                  updateId={otaUpdateId}
-                />
-                <LocalPerformanceDiagnosticsCard />
-              </View>
-            ) : null}
-          </View>
-        ) : null}
-
-        <Text style={styles.footer}>{t('settings.aboutPreferences')}</Text>
-      </View>
-    </ScrollView>
+      {supportDiagnosticsEnabled ? (
+        <SettingsNavigationGroup
+          rows={[
+            {
+              Icon: Wrench,
+              key: 'developer',
+              label: copy.developerTools,
+              onPress: () => router.push('/settings/developer'),
+            },
+          ]}
+          title={copy.developer}
+        />
+      ) : null}
+    </SettingsScreenLayout>
   );
 }
-
-function SettingsSection({ children, title }: { children: React.ReactNode; title: string }) {
-  const { colors } = useAppTheme();
-
-  return (
-    <View style={stylesStatic.section}>
-      <Text style={[stylesStatic.sectionTitle, { color: colors.textSecondary }]}>{title}</Text>
-      {children}
-    </View>
-  );
-}
-
-function SettingBlock({
-  children,
-  description,
-  title,
-}: {
-  children: React.ReactNode;
-  description: string;
-  title: string;
-}) {
-  const { colors } = useAppTheme();
-
-  return (
-    <View style={stylesStatic.settingBlock}>
-      <Text style={[stylesStatic.settingTitle, { color: colors.textPrimary }]}>{title}</Text>
-      <Text style={[stylesStatic.settingDescription, { color: colors.textSecondary }]}>
-        {description}
-      </Text>
-      {children}
-    </View>
-  );
-}
-
-const stylesStatic = StyleSheet.create({
-  section: { gap: Spacing.two },
-  sectionTitle: {
-    fontSize: Typography.sectionTitle.fontSize,
-    fontWeight: Typography.sectionTitle.fontWeight,
-    letterSpacing: Typography.sectionTitle.letterSpacing,
-    textTransform: Typography.sectionTitle.textTransform,
-  },
-  settingBlock: { gap: Spacing.two },
-  settingDescription: {
-    fontSize: Typography.body.fontSize,
-    lineHeight: Typography.body.lineHeight,
-  },
-  settingTitle: {
-    fontSize: Typography.cardTitle.fontSize,
-    fontWeight: Typography.cardTitle.fontWeight,
-    lineHeight: Typography.cardTitle.lineHeight,
-  },
-});
-
-const createStyles = (colors: typeof Colors.light) =>
-  StyleSheet.create({
-    container: { gap: Spacing.four, maxWidth: MaxContentWidth, width: '100%' },
-    content: {
-      alignItems: 'center',
-      paddingHorizontal: Spacing.four,
-    },
-    developerCopy: { flex: 1, gap: Spacing.one },
-    developerHeader: {
-      alignItems: 'center',
-      flexDirection: 'row',
-      gap: Spacing.two,
-      justifyContent: 'space-between',
-    },
-    developerStack: { gap: Spacing.two },
-    divider: { backgroundColor: colors.borderSubtle, height: StyleSheet.hairlineWidth },
-    footer: {
-      color: colors.textMuted,
-      fontSize: Typography.caption.fontSize,
-      lineHeight: Typography.caption.lineHeight,
-      paddingHorizontal: Spacing.two,
-    },
-    headerCopy: { flex: 1, gap: Spacing.one, minWidth: 0 },
-    headerRow: { alignItems: 'flex-start', flexDirection: 'row', gap: Spacing.three },
-    screen: { backgroundColor: colors.background, flex: 1 },
-    section: { gap: Spacing.two },
-    sectionTitle: {
-      color: colors.textSecondary,
-      fontSize: Typography.sectionTitle.fontSize,
-      fontWeight: Typography.sectionTitle.fontWeight,
-      letterSpacing: Typography.sectionTitle.letterSpacing,
-      textTransform: Typography.sectionTitle.textTransform,
-    },
-    subtitle: {
-      color: colors.textSecondary,
-      flexShrink: 1,
-      fontSize: Typography.body.fontSize,
-      lineHeight: Typography.body.lineHeight,
-    },
-    title: {
-      color: colors.textPrimary,
-      flexShrink: 1,
-      fontSize: Typography.screenTitle.fontSize,
-      fontWeight: Typography.screenTitle.fontWeight,
-      letterSpacing: Typography.screenTitle.letterSpacing,
-      lineHeight: Typography.screenTitle.lineHeight,
-    },
-  });
