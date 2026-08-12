@@ -20,7 +20,7 @@ This file is the **canonical forward roadmap**. Verified evidence belongs in `do
 - **Phase 10 Responsive Mobile UI Hardening is complete for current source/CI scope.**
 - **LG-4 Workouts source convergence is complete.**
 - **LG-5 QA and bounded polish is complete for the currently authorized source/CI scope.**
-- **There is no separate autonomous source-refactor phase. S10 is reviewed product work, not broad refactor authorization.**
+- **There is no remaining approved autonomous source-refactor phase; S10 is reviewed product work, not broad refactor authorization.**
 - **Coach product/material expansion remains deferred.**
 
 Release readiness remains lower than source completeness because physical-device, native-release, deployed-backend, provider and production evidence are separately authorization-gated.
