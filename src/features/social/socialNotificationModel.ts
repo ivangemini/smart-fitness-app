@@ -13,7 +13,8 @@ export type SocialNotificationLoadError =
 
 export type SocialNotificationTarget =
   | { kind: 'profile'; username: string }
-  | { kind: 'workout_post'; postId: string };
+  | { kind: 'workout_post'; postId: string }
+  | { kind: 'story'; storyId: string };
 
 export const mergeSocialNotifications = (
   existing: SocialNotificationDto[],
@@ -57,6 +58,12 @@ export const getSocialNotificationTarget = (
     notification.type === 'workout_comment'
   ) {
     return { kind: 'workout_post', postId: notification.postId! };
+  }
+  if (
+    notification.type === 'story_like' ||
+    notification.type === 'story_reaction'
+  ) {
+    return { kind: 'story', storyId: notification.storyId! };
   }
   return { kind: 'profile', username: notification.actor.username };
 };
