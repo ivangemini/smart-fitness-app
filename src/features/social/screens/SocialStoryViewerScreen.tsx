@@ -36,6 +36,11 @@ import {
   type SocialStoryLikeSurfaceMode,
 } from '../storyLikeSurfaceModel';
 import { SocialStoryOverlayView } from '../SocialStoryOverlayView';
+import { SocialStoryReactionSurface } from '../SocialStoryReactionSurface';
+import {
+  getSocialStoryReactionSurfaceMode,
+  type SocialStoryReactionSurfaceMode,
+} from '../storyReactionSurfaceModel';
 import { requestSocialStoryRefresh } from '../socialStoryRefreshSignal';
 import { getSocialStoryLoadError } from '../socialStorySurfaceModel';
 
@@ -143,6 +148,8 @@ export default function SocialStoryViewerScreen() {
   const [deleting, setDeleting] = useState(false);
   const [canDelete, setCanDelete] = useState(false);
   const [likeMode, setLikeMode] = useState<SocialStoryLikeSurfaceMode | null>(null);
+  const [reactionMode, setReactionMode] =
+    useState<SocialStoryReactionSurfaceMode | null>(null);
   const [likeSurface, setLikeSurface] = useState<SocialStoryLikeSurface | null>(
     null,
   );
@@ -151,8 +158,9 @@ export default function SocialStoryViewerScreen() {
   const [likeErrorMessage, setLikeErrorMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const resetLikeSurface = useCallback(() => {
+  const resetInteractionSurfaces = useCallback(() => {
     setLikeMode(null);
+    setReactionMode(null);
     setLikeSurface(null);
     setLikeLoading(false);
     setLikeUpdating(false);
@@ -166,7 +174,7 @@ export default function SocialStoryViewerScreen() {
       setCaption(null);
       setOverlay(null);
       setCanDelete(false);
-      resetLikeSurface();
+      resetInteractionSurfaces();
       setLoading(false);
       setErrorMessage(copy.storyUnavailable);
       return;
@@ -195,7 +203,12 @@ export default function SocialStoryViewerScreen() {
         ownProfile?.username,
         nextStory.author.username,
       );
+      const nextReactionMode = getSocialStoryReactionSurfaceMode(
+        ownProfile?.username,
+        nextStory.author.username,
+      );
       setLikeMode(nextLikeMode);
+      setReactionMode(nextReactionMode);
       setLikeSurface(null);
       setLikeLoading(Boolean(nextLikeMode));
       setLoading(false);
@@ -232,7 +245,7 @@ export default function SocialStoryViewerScreen() {
       setCaption(null);
       setOverlay(null);
       setCanDelete(false);
-      resetLikeSurface();
+      resetInteractionSurfaces();
       setLoading(false);
       const mapped = getSocialStoryLoadError(error);
       setErrorMessage(
@@ -245,7 +258,7 @@ export default function SocialStoryViewerScreen() {
     copy.storyUnavailable,
     isAuthenticated,
     ready,
-    resetLikeSurface,
+    resetInteractionSurfaces,
     socialApi,
     storyId,
   ]);
@@ -433,6 +446,14 @@ export default function SocialStoryViewerScreen() {
               </Pressable>
             ) : null}
 
+            {reactionMode ? (
+              <SocialStoryReactionSurface
+                api={socialApi}
+                locale={locale}
+                mode={reactionMode}
+                storyId={story.id}
+              />
+            ) : null}
             {likeErrorMessage ? (
               <InlineError message={likeErrorMessage} />
             ) : null}
