@@ -7,6 +7,7 @@ import {
 } from './authenticated-request';
 import type { SocialApiAuth } from './contracts';
 import {
+  SOCIAL_STORY_AUDIENCES,
   SOCIAL_STORY_CAPTION_MAX_LENGTH,
   SOCIAL_STORY_DTO_SCHEMA_VERSION,
   SOCIAL_STORY_MEDIA_SCHEMA_VERSION,
@@ -15,6 +16,7 @@ import {
   SOCIAL_STORY_OVERLAY_SCHEMA_VERSION,
   type CreateSocialStoryInput,
   type ListSocialStoriesInput,
+  type SocialStoryAudience,
   type SocialStoryCaptionDto,
   type SocialStoryDto,
   type SocialStoryOverlayDto,
@@ -76,6 +78,10 @@ const isOverlayPlacement = (
   typeof value === 'string' &&
   (SOCIAL_STORY_OVERLAY_PLACEMENTS as readonly string[]).includes(value);
 
+const isAudience = (value: unknown): value is SocialStoryAudience =>
+  typeof value === 'string' &&
+  (SOCIAL_STORY_AUDIENCES as readonly string[]).includes(value);
+
 const buildCreatePayload = (
   input: CreateSocialStoryInput,
 ): CreateSocialStoryInput => {
@@ -99,7 +105,8 @@ const buildCreatePayload = (
       input.overlay !== undefined &&
       input.overlay.schemaVersion !== SOCIAL_STORY_OVERLAY_SCHEMA_VERSION) ||
     overlayText.length > SOCIAL_STORY_OVERLAY_MAX_LENGTH ||
-    (hasOverlay && !isOverlayPlacement(input.overlay?.placement))
+    (hasOverlay && !isOverlayPlacement(input.overlay?.placement)) ||
+    (input.audience !== undefined && !isAudience(input.audience))
   ) {
     throw new Error('Social Story input is invalid');
   }
@@ -116,6 +123,7 @@ const buildCreatePayload = (
           },
         }
       : {}),
+    ...(input.audience !== undefined ? { audience: input.audience } : {}),
     image: {
       schemaVersion: SOCIAL_STORY_MEDIA_SCHEMA_VERSION,
       assetId,

@@ -14,6 +14,8 @@ export const SOCIAL_STORY_OVERLAY_PLACEMENTS = [
 ] as const;
 export type SocialStoryOverlayPlacement =
   (typeof SOCIAL_STORY_OVERLAY_PLACEMENTS)[number];
+export const SOCIAL_STORY_AUDIENCES = ['following', 'close_friends'] as const;
+export type SocialStoryAudience = (typeof SOCIAL_STORY_AUDIENCES)[number];
 
 export type SocialStoryImageDescriptorDto = Omit<
   SocialMediaPublicDescriptorDto,
@@ -71,5 +73,6 @@ export type CreateSocialStoryInput = {
   idempotencyKey: string;
   caption?: string | null;
   overlay?: SocialStoryOverlayValueDto | null;
+  audience?: SocialStoryAudience;
   image: SocialStoryMediaInput;
 };
