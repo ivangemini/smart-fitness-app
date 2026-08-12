@@ -86,6 +86,7 @@ export type AppActions = {
   ) => void;
   saveTrainingProgram: (program: TrainingProgram) => void;
   deleteTrainingProgram: (programId: string) => void;
+  setActiveTrainingProgram: (programId: string | null) => void;
   toggleTrainingProgramFavorite: (programId: string) => void;
   updateNutritionTargets: (targets: NutritionTargets) => void;
   updateProfileGoals: (goals: {
