@@ -34,6 +34,7 @@ export type SocialStoryExpansionCopy = {
   selectHighlight: string;
   selectedHighlight: string;
   addToHighlight: string;
+  removeFromHighlight: string;
   pushTitle: string;
   pushUnavailable: string;
   pushRequested: string;
@@ -74,6 +75,7 @@ const copy: Record<SupportedLocale, SocialStoryExpansionCopy> = {
     selectHighlight: 'Select highlight',
     selectedHighlight: 'Selected',
     addToHighlight: 'Add to highlight',
+    removeFromHighlight: 'Remove from highlight',
     pushTitle: 'Story push notifications',
     pushUnavailable: 'Delivery is not active yet. This setting only saves your preference until a push provider is connected.',
     pushRequested: 'Remember that I want Story push notifications',
@@ -112,6 +114,7 @@ const copy: Record<SupportedLocale, SocialStoryExpansionCopy> = {
     selectHighlight: 'Выбрать актуальное',
     selectedHighlight: 'Выбрано',
     addToHighlight: 'Добавить в актуальное',
+    removeFromHighlight: 'Убрать из актуального',
     pushTitle: 'Push-уведомления историй',
     pushUnavailable: 'Доставка push пока не активна. Сейчас настройка только запоминает ваше предпочтение до подключения push-провайдера.',
     pushRequested: 'Запомнить, что я хочу push-уведомления об историях',
