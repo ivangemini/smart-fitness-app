@@ -14,6 +14,8 @@ Repositories:
 
 Backend server/database recovery is defined in `ivangemini/smart-fitness-backend/docs/operations/disaster-recovery.md`.
 
+Operational proof status is tracked separately in `docs/operations/disaster-recovery-readiness.md`. Do not infer that a recovery step is proven merely because this runbook documents it.
+
 ## Recovery order
 
 Use this order because later layers depend on earlier authority:
@@ -145,6 +147,17 @@ Physical-device, second-device, native signing, provider, deployment and product
 ## External recovery registry
 
 Git cannot safely contain the real credentials required to recover every external service. Maintain `docs/operations/external-recovery-registry.md` as a non-secret index of account ownership and recovery locations. The registry must identify where access can be recovered without storing passwords, API keys, private keys, passphrases, recovery codes or seed phrases.
+
+## Recovery readiness
+
+Use `docs/operations/disaster-recovery-readiness.md` to distinguish:
+
+- source-known identities/configuration;
+- operational paths that are documented but unverified;
+- external dependencies that are blocked on account/credential/provider access;
+- dated recovery exercises that are actually proven.
+
+The project must not be described as production disaster-recovery-ready until the highest-priority unverified/blocked items in that matrix are evidenced.
 
 ## Recovery completeness levels
 
