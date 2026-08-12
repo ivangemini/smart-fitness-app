@@ -32,12 +32,15 @@ describe('social-first Home', () => {
     expect(home).not.toContain('<HomeSnapshotCard');
   });
 
-  it('uses real program schedule state and does not fabricate steps or Story data', () => {
+  it('uses the explicit active-program authority and does not fabricate steps or Story data', () => {
     const home = readSource('src/app/(tabs)/index.tsx');
     const storyHook = readSource('src/features/social/useSocialStories.ts');
 
+    expect(home).toContain('resolveActiveTrainingProgram({');
+    expect(home).toContain('activeTrainingProgramId: profile.activeTrainingProgramId');
     expect(home).toContain('getWorkoutProgramSchedule(currentProgram)');
-    expect(home).toContain('programSchedule?.isRestDayToday');
+    expect(home).toContain('programSchedule.isRestDayToday');
+    expect(home).not.toContain('getWorkoutPrograms(workouts)[0]');
     expect(home).toContain('stepsValue="—"');
     expect(home).not.toMatch(/stepsValue="\d/);
     expect(home).toContain('stories.stories');
