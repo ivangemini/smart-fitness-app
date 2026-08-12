@@ -15,6 +15,9 @@ export type SocialStoryExpansionCopy = {
   replies: string;
   noViewers: string;
   noReplies: string;
+  activityTitle: string;
+  activityBody: string;
+  loadMore: string;
   settingsTitle: string;
   closeFriendsTitle: string;
   closeFriendsBody: string;
@@ -28,6 +31,8 @@ export type SocialStoryExpansionCopy = {
   highlightPlaceholder: string;
   createHighlight: string;
   deleteHighlight: string;
+  selectHighlight: string;
+  selectedHighlight: string;
   addToHighlight: string;
   pushTitle: string;
   pushUnavailable: string;
@@ -50,6 +55,9 @@ const copy: Record<SupportedLocale, SocialStoryExpansionCopy> = {
     replies: 'Replies',
     noViewers: 'No viewers yet.',
     noReplies: 'No replies yet.',
+    activityTitle: 'Story activity',
+    activityBody: 'View the complete viewer and reply history for this Story.',
+    loadMore: 'Load more',
     settingsTitle: 'Story settings',
     closeFriendsTitle: 'Close Friends',
     closeFriendsBody: 'Only current followers can be added. Removing a follower also removes them from this list.',
@@ -63,6 +71,8 @@ const copy: Record<SupportedLocale, SocialStoryExpansionCopy> = {
     highlightPlaceholder: 'Highlight title',
     createHighlight: 'Create highlight',
     deleteHighlight: 'Delete highlight',
+    selectHighlight: 'Select highlight',
+    selectedHighlight: 'Selected',
     addToHighlight: 'Add to highlight',
     pushTitle: 'Story push notifications',
     pushUnavailable: 'Delivery is not active yet. This setting only saves your preference until a push provider is connected.',
@@ -83,6 +93,9 @@ const copy: Record<SupportedLocale, SocialStoryExpansionCopy> = {
     replies: 'Ответы',
     noViewers: 'Просмотров пока нет.',
     noReplies: 'Ответов пока нет.',
+    activityTitle: 'Активность Story',
+    activityBody: 'Полный список просмотров и ответов для этой Story.',
+    loadMore: 'Загрузить ещё',
     settingsTitle: 'Настройки историй',
     closeFriendsTitle: 'Близкие друзья',
     closeFriendsBody: 'Добавить можно только текущих подписчиков. Если человек отпишется, он также исчезнет из этого списка.',
@@ -96,6 +109,8 @@ const copy: Record<SupportedLocale, SocialStoryExpansionCopy> = {
     highlightPlaceholder: 'Название актуального',
     createHighlight: 'Создать актуальное',
     deleteHighlight: 'Удалить актуальное',
+    selectHighlight: 'Выбрать актуальное',
+    selectedHighlight: 'Выбрано',
     addToHighlight: 'Добавить в актуальное',
     pushTitle: 'Push-уведомления историй',
     pushUnavailable: 'Доставка push пока не активна. Сейчас настройка только запоминает ваше предпочтение до подключения push-провайдера.',
