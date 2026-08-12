@@ -1,6 +1,7 @@
 import {
   SOCIAL_CONTENT_MODERATION_ERROR_CODES,
   type SocialApiErrorCode,
+  type SocialStoryAudience,
   type SocialStoryOverlayPlacement,
 } from '@/api/social';
 
@@ -12,6 +13,7 @@ export type SocialStoryPublishComposition = {
     text: string;
     placement: SocialStoryOverlayPlacement;
   } | null;
+  audience: SocialStoryAudience;
 };
 
 export type SocialStoryPublishIdentity = {

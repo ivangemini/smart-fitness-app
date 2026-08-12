@@ -27,7 +27,9 @@ import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
+import { SocialStoryAudienceSelector } from '../SocialStoryAudienceSelector';
 import { getSocialStoryCopy } from '../socialStoryCopy';
+import { getSocialStoryExpansionCopy } from '../socialStoryExpansionCopy';
 import {
   canRefreshSocialStoryMedia,
   getSocialStoryMediaOperationLabel,
@@ -44,6 +46,7 @@ const normalizeOverlayPreviewText = (value: string): string =>
 export default function SocialStoryAuthorScreen() {
   const { locale } = useLocalization();
   const copy = getSocialStoryCopy(locale);
+  const expansionCopy = getSocialStoryExpansionCopy(locale);
   const authoring = useSocialStoryAuthoring(copy);
   const safeAreaInsets = useSafeAreaInsets();
   const { colors, resolvedAppearance } = useAppTheme();
@@ -191,6 +194,18 @@ export default function SocialStoryAuthorScreen() {
           <InlineError message={copy.imageSessionExpired} />
         ) : (
           <>
+            <SocialStoryAudienceSelector
+              copy={expansionCopy}
+              disabled={busy}
+              onChange={authoring.setAudience}
+              value={authoring.audience}
+            />
+            <SecondaryButton
+              disabled={busy}
+              label={expansionCopy.manageStories}
+              onPress={() => router.push('/social/story/settings')}
+            />
+
             {displayUri ? (
               <View
                 style={[
