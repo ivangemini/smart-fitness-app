@@ -5,8 +5,9 @@ Updated: 2026-08-12
 ## Verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current mobile `main` before S9-E implementation: `9f3051f15480f30ebba914c8594fc2297fa45d92`, from PR #634 approving the bounded Story Reactions contract.
-- Mobile PR #636 implements S9-E against merged backend authority. Source head `fff30c0c6475edd1f9cfb57f05d20770c9193de5` passed Mobile CI #2200 / run `31589897124`: repository/changed-file line limits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor. The final documentation head must still pass exact-head Mobile CI before merge.
+- Latest mobile runtime/source merge: PR #636 `feat(stories): add bounded Story reactions`, squash merge `98dcd668c91533b5dafb0f443f70b24c02824a8a`.
+- PR #636 exact validated head `af61806ee4cb7a64fbfc70c0c935dd39971d4993` passed Mobile CI #2203 / run `31591283734`: repository/changed-file line limits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor before merge.
+- Earlier source head `fff30c0c6475edd1f9cfb57f05d20770c9193de5` also passed Mobile CI #2200 / run `31589897124`; final merge authority is the later exact-head #2203 result.
 - PR #617 remains a bounded post-LG-5 Program Builder persistence regression fix and is not LG-5 runtime batch #39. Merged demonstrated-defect LG-5 runtime batches remain **38**.
 - Backend repo: `ivangemini/smart-fitness-backend`.
 - Backend S9-E authority is merged from PR #226 as `677231145d4fc87b8f2e9f2cc6e3d2ab96b76dab`.
@@ -15,7 +16,7 @@ Updated: 2026-08-12
 - Backend issue #217 is closed: the former blocker was an incorrect mobile-only label on backend workflows, not missing runner registration.
 - Backend PR #222 active-training-program fitness-profile authority remains merged as `e199c6e537264b16976e489a03d754ee72c6f4a0`.
 - **Home active-program selection is source/CI-complete across backend and mobile.** Issue #618 is closed as completed.
-- **LG-H2 Stories now includes the reviewed S9-E bounded Story Reactions source package.** Backend authority is merged; mobile implementation has passed a complete source-head Mobile CI and requires final exact-head revalidation after this documentation synchronization before merge.
+- **LG-H2 Stories is source/CI-complete through the reviewed S9-E bounded Story Reactions package.** Backend authority and mobile implementation are both merged and exact-head validated. This does not imply gated physical/deployed/provider/release evidence.
 - **LG-4 Workouts source convergence is complete.**
 - **LG-5 validation-first source/CI QA is complete for the currently authorized source scope.**
 - **There is no remaining approved autonomous source-refactor or product-source package after S9-E.**
@@ -53,14 +54,14 @@ Source/CI completion does not claim backend deployment/migration execution, seco
 
 `docs/roadmap/stories.md` and the reviewed focused contracts remain authoritative for Stories terminology and expansion scope.
 
-### Completed / validated source scope
+### Completed source scope
 
 - Image-only v1: authenticated/idempotent server Story authority, 24-hour expiry, active-only reads, cursor/viewed-state handling, Following/privacy/block/restriction enforcement, managed `story_image` authority, mobile Home strip/viewer, media-library selection, bounded preprocessing, signed upload/finalize/polling, restart-safe draft recovery and owner delete.
 - **S9-A direct camera:** source/CI-complete still-photo acquisition through the existing `story_image` pipeline; native/device evidence remains gated.
 - **S9-B captions:** source/CI-complete strict caption persistence/moderation/export/mobile authoring/viewer integration; deployed migration/provider/runtime evidence remains gated.
 - **S9-C bounded overlay:** source/CI-complete separate bounded overlay authority and rendering; deployed migration/provider/runtime evidence remains gated.
 - **S9-D private Story Like:** source/CI-complete dedicated persistence/API/lifecycle/privacy authority and mobile privacy-separated interaction surfaces.
-- **S9-E bounded Story Reactions:** backend source/CI-complete and merged; mobile source implementation provides strict `love | fire | strong | clap` contracts/parsers/API, privacy-separated viewer state versus owner aggregate, accessible four-choice UI, request/response authority, EN/RU copy and regression coverage. The base Story DTO, S9-D Like, notifications, ranking, analytics and private `AppState` sync remain unchanged. Final mobile exact-head CI is required before PR #636 merges.
+- **S9-E bounded Story Reactions:** source/CI-complete across backend and mobile. Backend owns dedicated bounded reaction authority and owner-only aggregates. Mobile provides strict `love | fire | strong | clap` contracts/parsers/API, privacy-separated viewer state versus owner aggregate, accessible four-choice UI with non-color-only selected state, repeated-tap clear, EN/RU copy and regression coverage. The base Story DTO, S9-D Like, notifications, ranking, analytics and private `AppState` sync remain unchanged.
 
 **Remaining autonomous source packages inside the already approved Stories boundary after S9-E: 0.**
 
@@ -92,7 +93,7 @@ A future concrete regression can still receive a bounded fix. Completion does no
 - Backend authoritative routine CI uses the separate repo-scoped `[self-hosted, linux, x64, hermes-backend-ci]` class.
 - Do not substitute the mobile/backend custom labels for each other merely because both runner registrations share the Hermes host.
 - Do not move routine validation back to hosted runners merely for convenience.
-- PR #636 must merge only the exact final head after the complete Mobile CI succeeds; the earlier green source head is evidence, not permission to bypass final-head validation.
+- PR #636 was merged only after complete exact-head Mobile CI #2203 succeeded on `af61806ee4cb7a64fbfc70c0c935dd39971d4993`.
 
 ## Remaining roadmap / authorization gates
 
