@@ -135,6 +135,10 @@ export default function SocialStoryArchiveScreen() {
   const [archiveCursor, setArchiveCursor] = useState<string | null>(null);
   const [highlights, setHighlights] = useState<SocialStoryHighlightDto[]>([]);
   const [selectedHighlightId, setSelectedHighlightId] = useState<string | null>(null);
+  const [selectedHighlightStoryIds, setSelectedHighlightStoryIds] = useState<
+    Set<string>
+  >(new Set());
+  const [membershipLoading, setMembershipLoading] = useState(false);
   const [highlightTitle, setHighlightTitle] = useState('');
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -172,6 +176,37 @@ export default function SocialStoryArchiveScreen() {
   useEffect(() => {
     void loadInitial();
   }, [loadInitial]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!selectedHighlightId) {
+      setSelectedHighlightStoryIds(new Set());
+      setMembershipLoading(false);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    setMembershipLoading(true);
+    void api
+      .getStoryHighlight(selectedHighlightId)
+      .then((detail) => {
+        if (cancelled) return;
+        setSelectedHighlightStoryIds(
+          new Set(detail.items.map((item) => item.story.id)),
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setError(copy.loadFailed);
+      })
+      .finally(() => {
+        if (!cancelled) setMembershipLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [api, copy.loadFailed, selectedHighlightId]);
 
   const runMutation = useCallback(
     async (mutation: () => Promise<void>) => {
@@ -213,18 +248,33 @@ export default function SocialStoryArchiveScreen() {
     });
   };
 
-  const addToSelectedHighlight = (storyId: string) => {
+  const toggleSelectedHighlightItem = (storyId: string) => {
     const highlightId = selectedHighlightId;
-    if (!highlightId) return;
+    if (!highlightId || membershipLoading) return;
+    const isMember = selectedHighlightStoryIds.has(storyId);
     void runMutation(async () => {
+      if (isMember) {
+        await api.removeStoryHighlightItem(highlightId, storyId);
+        setSelectedHighlightStoryIds((current) => {
+          const next = new Set(current);
+          next.delete(storyId);
+          return next;
+        });
+        return;
+      }
+
       const detail = await api.getStoryHighlight(highlightId);
-      if (detail.items.some((item) => item.story.id === storyId)) return;
+      if (detail.items.some((item) => item.story.id === storyId)) {
+        setSelectedHighlightStoryIds((current) => new Set(current).add(storyId));
+        return;
+      }
       const position = detail.items.reduce(
         (max, item) => Math.max(max, item.position + 1),
         0,
       );
       if (position > 99) throw new Error('Story highlight is full');
       await api.addStoryHighlightItem(highlightId, storyId, position);
+      setSelectedHighlightStoryIds((current) => new Set(current).add(storyId));
     });
   };
 
@@ -238,6 +288,11 @@ export default function SocialStoryArchiveScreen() {
           void runMutation(async () => {
             await api.deleteStory(storyId);
             setArchive((current) => current.filter((item) => item.id !== storyId));
+            setSelectedHighlightStoryIds((current) => {
+              const next = new Set(current);
+              next.delete(storyId);
+              return next;
+            });
           }),
       },
     ]);
@@ -383,6 +438,9 @@ export default function SocialStoryArchiveScreen() {
           item.value.image.variants.post_320 ??
           item.value.image.variants.post_640 ??
           null;
+        const belongsToSelectedHighlight = selectedHighlightStoryIds.has(
+          item.value.id,
+        );
         return (
           <AppCard style={styles.mediaRow}>
             {variant ? (
@@ -405,9 +463,13 @@ export default function SocialStoryArchiveScreen() {
               <View style={styles.actions}>
                 {selectedHighlight ? (
                   <SecondaryButton
-                    disabled={busy}
-                    label={`${copy.addToHighlight}: ${selectedHighlight.title}`}
-                    onPress={() => addToSelectedHighlight(item.value.id)}
+                    disabled={busy || membershipLoading}
+                    label={`${
+                      belongsToSelectedHighlight
+                        ? copy.removeFromHighlight
+                        : copy.addToHighlight
+                    }: ${selectedHighlight.title}`}
+                    onPress={() => toggleSelectedHighlightItem(item.value.id)}
                   />
                 ) : null}
                 <SecondaryButton
