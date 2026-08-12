@@ -1,6 +1,7 @@
 import type { SupportedLocale } from '@/localization';
 
 export type SocialStoryExpansionCopy = {
+  locale: SupportedLocale;
   back: string;
   audience: string;
   following: string;
@@ -35,6 +36,7 @@ export type SocialStoryExpansionCopy = {
 
 const copy: Record<SupportedLocale, SocialStoryExpansionCopy> = {
   en: {
+    locale: 'en',
     back: 'Back',
     audience: 'Audience',
     following: 'Following',
@@ -67,6 +69,7 @@ const copy: Record<SupportedLocale, SocialStoryExpansionCopy> = {
     pushRequested: 'Remember that I want Story push notifications',
   },
   ru: {
+    locale: 'ru',
     back: 'Назад',
     audience: 'Аудитория',
     following: 'Подписчики',
