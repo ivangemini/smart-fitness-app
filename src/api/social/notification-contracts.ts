@@ -10,6 +10,7 @@ export const SOCIAL_NOTIFICATION_TYPES = [
   'workout_comment',
   'story_like',
   'story_reaction',
+  'story_reply',
 ] as const;
 
 export type SocialNotificationType =
