@@ -14,6 +14,7 @@ const composition = (
   expectedStateVersion: 6,
   caption: 'Leg day',
   overlay: { text: 'New PR', placement: 'center' },
+  audience: 'following',
   ...overrides,
 });
 
@@ -28,7 +29,12 @@ describe('Story publish identity', () => {
   });
 
   it('rotates identity when published Story content changes', () => {
-    const keys = ['story-create-a', 'story-create-b', 'story-create-c'];
+    const keys = [
+      'story-create-a',
+      'story-create-b',
+      'story-create-c',
+      'story-create-d',
+    ];
     const createKey = vi.fn(() => keys.shift() ?? 'story-create-fallback');
     const first = resolveSocialStoryPublishIdentity(null, composition(), createKey);
     const captionChanged = resolveSocialStoryPublishIdentity(
@@ -44,11 +50,21 @@ describe('Story publish identity', () => {
       }),
       createKey,
     );
+    const audienceChanged = resolveSocialStoryPublishIdentity(
+      placementChanged,
+      composition({
+        caption: 'Push day',
+        overlay: { text: 'New PR', placement: 'top' },
+        audience: 'close_friends',
+      }),
+      createKey,
+    );
 
     expect(first.idempotencyKey).toBe('story-create-a');
     expect(captionChanged.idempotencyKey).toBe('story-create-b');
     expect(placementChanged.idempotencyKey).toBe('story-create-c');
-    expect(createKey).toHaveBeenCalledTimes(3);
+    expect(audienceChanged.idempotencyKey).toBe('story-create-d');
+    expect(createKey).toHaveBeenCalledTimes(4);
   });
 
   it('uses a deterministic signature for an identical normalized composition', () => {
