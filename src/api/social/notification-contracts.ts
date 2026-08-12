@@ -8,6 +8,8 @@ export const SOCIAL_NOTIFICATION_TYPES = [
   'follow_accepted',
   'workout_reaction',
   'workout_comment',
+  'story_like',
+  'story_reaction',
 ] as const;
 
 export type SocialNotificationType =
@@ -20,6 +22,7 @@ export type SocialNotificationDto = {
   actor: SocialProfileDto;
   postId: string | null;
   commentId: string | null;
+  storyId: string | null;
   readAt: string | null;
   createdAt: string;
 };
