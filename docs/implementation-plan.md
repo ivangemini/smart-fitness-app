@@ -7,8 +7,8 @@ This file is the **canonical forward roadmap**. Verified evidence belongs in `do
 ## Current verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current mobile `main` before S9-E implementation: `9f3051f15480f30ebba914c8594fc2297fa45d92`, from PR #634 approving the bounded Story Reactions contract.
-- Mobile PR #636 implements S9-E. Source head `fff30c0c6475edd1f9cfb57f05d20770c9193de5` passed Mobile CI #2200 / run `31589897124`: repository/changed-file line limits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor. The final documentation head must pass exact-head Mobile CI before merge.
+- Latest mobile runtime/source merge: PR #636 `feat(stories): add bounded Story reactions`, squash merge `98dcd668c91533b5dafb0f443f70b24c02824a8a`.
+- PR #636 exact validated head `af61806ee4cb7a64fbfc70c0c935dd39971d4993` passed Mobile CI #2203 / run `31591283734`: repository/changed-file line limits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor before merge.
 - PR #617 remains a post-closure bounded Workouts regression fix and does not increase the LG-5 demonstrated-defect runtime batch count. LG-5 remains closed at **38** batches.
 - Backend repo: `ivangemini/smart-fitness-backend`.
 - Backend S9-E authority is merged from PR #226 as `677231145d4fc87b8f2e9f2cc6e3d2ab96b76dab`.
@@ -16,7 +16,7 @@ This file is the **canonical forward roadmap**. Verified evidence belongs in `do
 - Backend routine CI correctly targets `hermes-backend-ci-01` through `[self-hosted, linux, x64, hermes-backend-ci]`; mobile routine CI remains on its separate `[self-hosted, linux, x64, hermes-mobile-ci]` registration. Backend issue #217 is closed.
 - Backend PR #222 active-training-program fitness-profile authority remains merged.
 - **Home active-program selection is source/CI-complete across backend and mobile.** `docs/architecture/home-active-program-contract.md` remains authoritative. Issue #618 is closed.
-- **LG-H2 Stories includes the reviewed S9-A through S9-E source slices.** S9-E backend authority is merged; mobile implementation is in PR #636 and requires final exact-head revalidation after canonical docs synchronization.
+- **LG-H2 Stories is source/CI-complete through the reviewed S9-E bounded Story Reactions package.**
 - **Phase 10 Responsive Mobile UI Hardening is complete for current source/CI scope.**
 - **LG-4 Workouts source convergence is complete.**
 - **LG-5 QA and bounded polish is complete for the currently authorized source/CI scope.**
@@ -51,11 +51,11 @@ Release readiness remains lower than source completeness because physical-device
 - **Phase 4 product domain convergence:** complete for current source scope.
 - **Phase 5 deterministic Coach:** complete for current planned source scope.
 - **Phase 6 provider-neutral agent foundation:** source-complete with safe disabled defaults.
-- **Phase 7 Social foundation:** base Social plus image-only Stories v1 and reviewed Stories S9-A through S9-E source contracts are complete or in final exact-head validation; future Stories expansion and runtime/release evidence are tracked separately in `docs/roadmap/stories.md` and are not autonomously authorized.
+- **Phase 7 Social foundation:** base Social plus image-only Stories v1 and reviewed Stories S9-A through S9-E source contracts are complete. Future Stories expansion and runtime/release evidence are tracked separately in `docs/roadmap/stories.md` and are not autonomously authorized.
 - **Phase 8 privacy/security hardening:** substantially complete for current source scope; environment/provider evidence remains external.
 - **Phase 9 release/privacy/data-access evidence:** separate cross-repository/release program; source contracts are substantially advanced but product/provider/release activation remains external.
 - **Phase 10 Responsive Mobile UI Hardening:** complete for current source/CI scope; future concrete regressions remain valid bounded fixes.
-- **Phase 11 Liquid Glass + Home convergence:** LG-H1/LG-H2 and LG-1 through LG-4 source work complete; LG-5 validation-first source/CI QA complete; Home active-program selection #618 is source/CI-complete across backend/mobile. S9-E is the last currently approved Stories product-source slice and is awaiting only final exact-head mobile validation/merge. No further Phase 11 source package is currently authorized.
+- **Phase 11 Liquid Glass + Home convergence:** LG-H1/LG-H2 and LG-1 through LG-4 source work complete; LG-5 validation-first source/CI QA complete; Home active-program selection #618 is source/CI-complete across backend/mobile; Stories are source/CI-complete through S9-E. No further Phase 11 source package is currently authorized.
 
 ---
 
@@ -91,7 +91,7 @@ This does not authorize or imply backend deployment/migration execution, product
 
 ## LG-H2 — Stories
 
-The approved image-only v1 source contract and separately reviewed S9-A through S9-E slices define the current Stories source boundary.
+The approved image-only v1 source contract and separately reviewed S9-A through S9-E slices define the current completed Stories source boundary.
 
 `docs/roadmap/stories.md` and focused architecture contracts are authoritative for terminology and expansion scope:
 
@@ -100,7 +100,7 @@ The approved image-only v1 source contract and separately reviewed S9-A through 
 - S9-B captions: **source/CI-complete**, deployed migration/provider/runtime evidence gated;
 - S9-C bounded overlay: **source/CI-complete**, deployed migration/provider/runtime evidence gated;
 - S9-D private binary Story Like: **source/CI-complete**, migration/runtime evidence gated;
-- S9-E bounded Story Reactions: backend source/CI-complete and merged; mobile PR #636 implements strict separate reaction contracts/parsers/API, four bounded viewer choices `love | fire | strong | clap`, repeated-tap clear, owner-only aggregate counts, privacy-separated viewer/owner surfaces, accessible selected state, EN/RU copy and regression coverage. Base Story DTO, S9-D Like, notifications, ranking, analytics and private `AppState` sync remain unchanged. Final exact-head Mobile CI is required before merge;
+- S9-E bounded Story Reactions: **source/CI-complete across backend and mobile**. Backend PR #226 is merged as `677231145d4fc87b8f2e9f2cc6e3d2ab96b76dab`; mobile PR #636 is merged as `98dcd668c91533b5dafb0f443f70b24c02824a8a` after exact-head Mobile CI #2203. The package uses strict separate reaction contracts/parsers/API, four bounded viewer choices `love | fire | strong | clap`, repeated-tap clear, owner-only aggregate counts, privacy-separated viewer/owner surfaces, accessible non-color-only selected state, EN/RU copy and regression coverage. Base Story DTO, S9-D Like, notifications, ranking, analytics and private `AppState` sync remain unchanged;
 - physical-device/standalone evidence: gated;
 - deployed storage/provider/moderation/release evidence: gated;
 - richer composition, replies/DMs, reactor/liker identity lists, notifications, audience controls, video, archive/highlights, advanced media and Story analytics/ranking: deferred candidate inventory until explicitly prioritized and reviewed.
@@ -146,6 +146,7 @@ Coach recovery/input/lookback/history/domain product/material expansion remains 
 - Backend runtime/source work follows backend `AGENTS.md`, ownership/privacy/idempotency/revision contracts and exact-head validation.
 - Backend routine CI is operational on `[self-hosted, linux, x64, hermes-backend-ci]`.
 - Backend S9-E PR #226 exact validated head `89113fae25ee9c6653ad247f412450c69e05f10c` passed Backend CI #1623, PostgreSQL CI #230 and Account Deletion Receipt CI #312 before merge `677231145d4fc87b8f2e9f2cc6e3d2ab96b76dab`.
+- Mobile S9-E PR #636 exact validated head `af61806ee4cb7a64fbfc70c0c935dd39971d4993` passed complete Mobile CI #2203 / run `31591283734` before squash merge `98dcd668c91533b5dafb0f443f70b24c02824a8a`.
 - Backend issue #217 remains closed; no new runner registration is required.
 - Mobile routine CI remains on the separate repo-scoped `[self-hosted, linux, x64, hermes-mobile-ci]` registration. Sharing the Hermes host does not make the two runner registrations interchangeable.
 - Do not route routine validation back to hosted runners merely for convenience; a fallback requires a demonstrated outage/incompatibility under the relevant CI policy.
@@ -157,13 +158,12 @@ Coach recovery/input/lookback/history/domain product/material expansion remains 
 
 There is no additional numbered `LG-6` or `LG-7` source-refactor phase and no remaining approved product-source package after S9-E. Remaining work is:
 
-1. **Finish S9-E merge gate:** PR #636 must pass the complete Mobile CI on its exact final documentation head before merge. After that, the currently approved Stories source boundary is closed.
-2. **Stories evidence/expansion boundary:** physical/native/provider/deployment/release evidence remains authorization-gated. Further product expansion starts only after another candidate receives explicit prioritization and a reviewed contract.
-3. **Authorization-gated validation/release evidence:** physical standalone/device, native-release, Android/system-navigation, second-device/offline-restart, backend deployment/provider and production evidence as applicable. Execute only when directly authorized.
-4. **LG-H3 Steps:** blocked on a reviewed real native capability/provider/dependency/permission contract and later authorized runtime evidence.
-5. **LG-H4 ranking/retention:** later, after a separate product contract; chronological Following remains authoritative now.
-6. **Coach expansion:** deferred until explicit reprioritization.
-7. **Future regressions:** fix only demonstrated defects in bounded packages; they do not constitute a new autonomous migration/refactor phase.
+1. **Stories evidence/expansion boundary:** physical/native/provider/deployment/release evidence remains authorization-gated. Further product expansion starts only after another candidate receives explicit prioritization and a reviewed contract.
+2. **Authorization-gated validation/release evidence:** physical standalone/device, native-release, Android/system-navigation, second-device/offline-restart, backend deployment/provider and production evidence as applicable. Execute only when directly authorized.
+3. **LG-H3 Steps:** blocked on a reviewed real native capability/provider/dependency/permission contract and later authorized runtime evidence.
+4. **LG-H4 ranking/retention:** later, after a separate product contract; chronological Following remains authoritative now.
+5. **Coach expansion:** deferred until explicit reprioritization.
+6. **Future regressions:** fix only demonstrated defects in bounded packages; they do not constitute a new autonomous migration/refactor phase.
 
 # Validation policy
 
@@ -171,4 +171,4 @@ Mobile runtime/code PRs require exact-head Mobile CI: repository and changed-fil
 
 Backend runtime/source work must preserve backend lint/format/build/tests and relevant PostgreSQL validation. Routine backend validation uses `[self-hosted, linux, x64, hermes-backend-ci]`. Source work must not deploy or execute production migrations.
 
-Documentation synchronization on a runtime/code PR moves the PR head and therefore requires the complete exact-head Mobile CI again before merge. Documentation-only standalone synchronization uses diff/ancestry verification when workflows intentionally ignore Markdown-only changes. Because source tests may assert canonical documentation markers, docs rewrites must preserve or deliberately update those asserted contracts.
+Documentation-only synchronization uses diff/ancestry verification when workflows intentionally ignore Markdown-only changes. Because source tests may assert canonical documentation markers, docs rewrites must preserve or deliberately update those asserted contracts.
