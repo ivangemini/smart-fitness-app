@@ -176,5 +176,6 @@ export const defaultState: AppDefaultState = {
     dateOfBirth: null,
     calculationSex: null,
     trainingExperience: null,
+    activeTrainingProgramId: null,
   },
 };
