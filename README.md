@@ -43,6 +43,7 @@ Start with:
 - [Cross-repository implementation plan](docs/implementation-plan.md)
 - [Architecture index](docs/architecture/README.md)
 - [Disaster recovery](docs/operations/disaster-recovery.md)
+- [Disaster recovery readiness](docs/operations/disaster-recovery-readiness.md)
 - [External recovery registry](docs/operations/external-recovery-registry.md)
 - [Project learnings](PROJECT_LEARNINGS.md)
 
