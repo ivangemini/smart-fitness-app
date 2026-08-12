@@ -107,14 +107,10 @@ export function SocialStoryReplySurface({ api, copy, owner, storyId }: Props) {
   if (owner) {
     return (
       <AppCard style={styles.card}>
-        <Text style={styles.title}>
-          {copy.viewers} · {copy.replies}
-        </Text>
-        <Text style={styles.meta}>
-          {copy.noViewers.replace('No viewers yet.', copy.viewers)}
-        </Text>
+        <Text style={styles.title}>{copy.activityTitle}</Text>
+        <Text style={styles.meta}>{copy.activityBody}</Text>
         <SecondaryButton
-          label={`${copy.viewers} · ${copy.replies}`}
+          label={copy.activityTitle}
           onPress={() =>
             router.push({
               pathname: '/social/story/activity',
