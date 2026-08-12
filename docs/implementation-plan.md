@@ -7,15 +7,15 @@ This file is the **canonical forward roadmap**. Verified evidence belongs in `do
 ## Current verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current mobile runtime/source merge: `a7d82e6e928d608eff46efa81846db0461480aeb` after PR #630 `feat(home): honor explicit active training program`.
-- Current mobile docs baseline before this synchronization: `9c5f867a252b60fdc6cb2d798b6ec7d459f2fcd3` after docs PR #631.
+- Latest mobile runtime/source merge: `a7d82e6e928d608eff46efa81846db0461480aeb` from PR #630 `feat(home): honor explicit active training program`.
+- Subsequent mobile docs-only synchronization does not alter runtime behavior. Read exact current `main` from Git rather than treating a docs checkpoint SHA as permanent.
 - PR #630 exact validated head: `07c33bb82033b73c3a71d0eba64aca4afaeb44d9`; Mobile CI #2198 run `31567594528` passed repository/changed-file line limits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor before merge.
 - PR #617 remains a post-closure bounded Workouts regression fix and does not increase the LG-5 demonstrated-defect runtime batch count. LG-5 remains closed at **38** batches.
 - Backend repo: `ivangemini/smart-fitness-backend`.
-- Current backend `main`: `8c404de0e0007ab23f44d62616b114aff7db5d12` after docs PR #223 synchronized the Hermes CI completion checkpoint.
 - Latest backend runtime/CI merge: PR #215 `Route routine backend CI to Hermes`, merge `dd3764a751f76a2ed2fa8566c5b839c442329b3a`.
+- Subsequent backend docs-only source-of-truth synchronization does not alter runtime/CI behavior. Read exact backend `main` from Git.
 - PR #215 exact validated head: `2718ca74ad2b2131573e4c7c655be31149af5695`; Backend CI #1614 / run `31571974048`, Backend PostgreSQL CI #221 / run `31571974074`, and Account Deletion Receipt CI #303 / run `31571974080` all passed before merge.
-- Backend routine CI now correctly targets the existing repo-scoped `hermes-backend-ci-01` through `[self-hosted, linux, x64, hermes-backend-ci]`; mobile routine CI remains on its separate `[self-hosted, linux, x64, hermes-mobile-ci]` registration. Backend issue #217 is closed.
+- Backend routine CI correctly targets the existing repo-scoped `hermes-backend-ci-01` through `[self-hosted, linux, x64, hermes-backend-ci]`; mobile routine CI remains on its separate `[self-hosted, linux, x64, hermes-mobile-ci]` registration. Backend issue #217 is closed.
 - Backend PR #222 active-training-program fitness-profile authority remains merged; the permanent `fitness-profile-active-training-program-postgres` gate was preserved and revalidated by #215.
 - **Home active-program selection is source/CI-complete across backend and mobile.** `docs/architecture/home-active-program-contract.md` remains authoritative: one owner-private selector, `null` meaning the built-in default, explicit activation only, canonical sync UUID identity, stale/deleted-reference repair and deterministic Home schedule resolution. Issue #618 is closed.
 - **LG-H2 Stories is source/CI-complete through the reviewed S9-D private Story Like contract.** Physical/deployed/provider/release evidence and deferred future Stories expansion are not implied by that statement.
@@ -146,7 +146,7 @@ Coach recovery/input/lookback/history/domain product/material expansion remains 
 # Backend / cross-repository execution
 
 - Backend runtime/source work follows backend `AGENTS.md`, ownership/privacy/idempotency/revision contracts and exact-head validation.
-- Backend routine CI is now merged and operational on the backend-specific Hermes runner class `[self-hosted, linux, x64, hermes-backend-ci]` via PR #215.
+- Backend routine CI is merged and operational on the backend-specific Hermes runner class `[self-hosted, linux, x64, hermes-backend-ci]` via PR #215.
 - PR #215 exact validated head `2718ca74ad2b2131573e4c7c655be31149af5695` passed Backend CI #1614, PostgreSQL CI #221 and Account Deletion Receipt CI #303 before merge `dd3764a751f76a2ed2fa8566c5b839c442329b3a`.
 - Backend issue #217 is closed; no new runner registration was required. The prior blocker was the incorrect use of the mobile-only `hermes-mobile-ci` label.
 - Mobile routine CI remains on its separate repo-scoped `[self-hosted, linux, x64, hermes-mobile-ci]` registration. Sharing the Hermes host does not make the two runner registrations interchangeable.
