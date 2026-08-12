@@ -58,6 +58,12 @@ const storyReaction = {
   type: 'story_reaction',
 };
 
+const storyReply = {
+  ...storyLike,
+  id: '00000000-0000-4000-8000-000000000206',
+  type: 'story_reply',
+};
+
 describe('social notification parsers', () => {
   it('parses strict notification, envelope, and page responses', () => {
     expect(parseSocialNotificationDto(followRequest)).toEqual(followRequest);
@@ -65,18 +71,19 @@ describe('social notification parsers', () => {
     expect(parseSocialNotificationDto(comment)).toEqual(comment);
     expect(parseSocialNotificationDto(storyLike)).toEqual(storyLike);
     expect(parseSocialNotificationDto(storyReaction)).toEqual(storyReaction);
+    expect(parseSocialNotificationDto(storyReply)).toEqual(storyReply);
     expect(parseSocialNotificationResponse({ notification: reaction })).toEqual(
       reaction,
     );
     expect(
       parseSocialNotificationPageResponse({
         schemaVersion: 1,
-        items: [reaction, comment, storyLike, storyReaction],
+        items: [reaction, comment, storyLike, storyReaction, storyReply],
         nextCursor: 'next-notification-page',
       }),
     ).toEqual({
       schemaVersion: 1,
-      items: [reaction, comment, storyLike, storyReaction],
+      items: [reaction, comment, storyLike, storyReaction, storyReply],
       nextCursor: 'next-notification-page',
     });
   });
@@ -99,6 +106,7 @@ describe('social notification parsers', () => {
     { ...storyLike, storyId: null },
     { ...storyLike, postId: reaction.postId },
     { ...storyReaction, commentId: comment.commentId },
+    { ...storyReply, postId: reaction.postId },
     (() => {
       const { storyId: _storyId, ...storyWithoutTarget } = storyLike;
       return storyWithoutTarget;
