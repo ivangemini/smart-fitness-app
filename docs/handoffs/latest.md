@@ -1,22 +1,47 @@
 # Latest Handoff
 
-Updated: 2026-08-11
+Updated: 2026-08-12
 
 ## Checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current repository/runtime `main`: `d44bb5e709f089b120e2d1d07f778d32aac8df7d` after docs PR #627 synchronized the S9-D Stories checkpoint.
-- Latest runtime merge: PR #626 `feat(stories): add private Story Likes`, merge `708d5b48eff2807f33ef89fa57ad9fde6200d3de`.
-- PR #626 exact validated head: `f1c91e70f1adf99a32d331356a1d61f27cd926d0`; Mobile CI #2193 run `31529202769` passed the full Hermes mobile gate.
+- Current repository/runtime `main`: `a7d82e6e928d608eff46efa81846db0461480aeb` after PR #630 `feat(home): honor explicit active training program`.
+- PR #630 exact validated head: `07c33bb82033b73c3a71d0eba64aca4afaeb44d9`; Mobile CI #2198 run `31567594528` passed the complete mobile gate before merge.
 - PR #617 remains a bounded post-LG-5 Workouts persistence regression fix; LG-5 merged demonstrated-defect runtime batches remain **38**.
-- Backend `main`: `2c2d46c255f8a0a47256d0f24bdb20608e859696` after PR #221 private Story Likes.
-- Backend PR #215 remains CI infrastructure. It was refreshed directly onto current backend `main`; exact head `5597152e821577d0cf2c9729ead2544532899db0` is ahead by four commits and behind by zero with exactly four CI-policy files changed. Backend CI #1598, PostgreSQL CI #205 and Account Deletion Receipt CI #287 are queued for `[self-hosted, linux, x64, hermes-mobile-ci]`, but GitHub reports no assigned runner. Runner registration/access therefore remains the known blocker and PR #215 remains draft/not merge-ready.
+- Backend `main`: `e199c6e537264b16976e489a03d754ee72c6f4a0` after PR #222 active training-program fitness-profile authority.
+- PR #222 exact validated head: `fd50fd853660abe428074895be7fb5a72cadbc97`; Backend CI #1607, PostgreSQL CI #214 and Account Deletion Receipt CI #296 all passed before merge.
+- Backend PR #215 remains CI infrastructure. It has been rebuilt directly on current backend `main`; exact head `f4bde3851435fe0eb270b614db95c75b7653cd95` is ahead by four commits and behind by zero with exactly four CI-policy files changed. The refreshed PostgreSQL workflow preserves the #222 active-program contract test. Backend CI #1609, PostgreSQL CI #216 and Account Deletion Receipt CI #298 are queued for `[self-hosted, linux, x64, hermes-mobile-ci]`, but GitHub reports no assigned runner (`runner_id` / `runner_name` null). Runner registration/access therefore remains the known blocker and PR #215 remains draft/not merge-ready.
+- **Home active-program selection is source/CI-complete across backend and mobile; issue #618 is closed as completed.**
 - LG-H2 Stories is **source/CI-complete through the reviewed S9-D private Story Like contract**, not for deferred future product expansion or gated physical/deployed/release evidence. `docs/roadmap/stories.md` is authoritative for this boundary.
 - LG-4 Workouts source convergence remains complete.
 - **LG-5 validation-first source/CI QA is complete for the currently authorized source scope.**
-- **There is no remaining approved autonomous source-refactor phase.**
+- **There is no remaining approved autonomous source-refactor or product-source phase.**
 - Coach product/material expansion remains deferred.
-- Mobile issue #618 tracks the unresolved Home active-training-program contract; do not substitute recency/favorite/order heuristics.
+
+## Home active-program handoff
+
+The reviewed contract in `docs/architecture/home-active-program-contract.md` is now implemented end-to-end at source/CI level.
+
+Backend:
+
+- `fitness_profiles.active_training_program_id` is a nullable UUID and owner-private fitness-profile authority;
+- no FK is used, so out-of-order/offline sync does not require a training-program row to exist first;
+- repository and fitness-profile sync paths persist/materialize the selector;
+- omitted legacy payload fields normalize to `null`;
+- PostgreSQL tests verify nullable/no-FK behavior;
+- owner data export continues to exclude the raw selector UUID.
+
+Mobile:
+
+- `ProfileState.activeTrainingProgramId` is `string | null`; `null` means the built-in default program;
+- custom selections use the existing canonical training-program sync UUID mapping, including local legacy `program-*` IDs;
+- profile metadata persistence and push/pull sync carry the selector;
+- Program Detail exposes explicit `Set as active` for custom programs and `Use default program` for the product default without displaying the UUID;
+- deleting the selected custom program clears the selector in the same state mutation;
+- sync pull repairs stale selectors after training-program/profile application, immediately restoring default mode while leaving metadata divergence for a later normal profile-sync repair;
+- Home now resolves schedule authority deterministically from the selector and no longer uses `getWorkoutPrograms(workouts)[0]`, favorite, recency or array order.
+
+Not established by this completion: backend deployment/migration execution, second-device runtime evidence, native/device release evidence or production activation. Those remain authorization-gated.
 
 ## Stories handoff
 
@@ -57,7 +82,7 @@ Mobile provides:
 Not complete by those source/CI statements:
 
 1. physical-device/standalone runtime evidence;
-2. deployed storage/CDN/moderation/provider/migration evidence, including migrations through `0045_social_story_likes`;
+2. deployed storage/CDN/moderation/provider/migration evidence;
 3. broad release/privacy/legal/accessibility evidence;
 4. future product expansion such as richer composition, Story replies/DMs/emoji sets/liker lists/notifications, audience controls, video, archive/highlights, viewer surfaces or advanced media/analytics.
 
@@ -75,23 +100,22 @@ PR #612 was intentionally rejected/reset after confirming Program Detail/Builder
 
 ## Next work
 
-There is no broad or numbered follow-on source-refactor phase to start autonomously.
+There is no broad or numbered follow-on source-refactor/product-source phase to start autonomously.
 
-1. Resolve backend #215 Hermes runner registration/access outside the source PR. The source branch is already refreshed to current backend `main` and preserves the S9-D permanent PostgreSQL Story Like gate. Once a runner is assigned, require all three exact-head workflows to execute and pass before ready/merge. Do not route routine validation back to hosted runners just to bypass the blocker.
+1. Resolve backend #215 Hermes runner registration/access outside the source PR. The source branch is refreshed on backend `main` `e199c6e537264b16976e489a03d754ee72c6f4a0` and preserves the active-program PostgreSQL gate. Once a runner is assigned, require all three exact-head workflows to execute and pass before ready/merge. Do not route routine validation back to hosted runners just to bypass the blocker.
 2. Keep Stories source scope closed at the completed reviewed S9-A through S9-D boundary. Collect physical-device/provider/release evidence only when separately authorized; start another Stories expansion candidate only after explicit product/privacy/media prioritization.
 3. Collect other physical-device/native/release/deployment/provider evidence only when separately authorized.
 4. Keep LG-H3 Steps blocked until a reviewed native health/activity source, dependency and permissions contract exists and physical runtime work is authorized.
 5. Preserve chronological Following semantics; LG-H4 ranking/retention remains later.
 6. Keep Coach product/material expansion deferred until explicit reprioritization.
-7. Keep Home active-program behavior unchanged until issue #618 receives a reviewed state/product contract.
-8. Future source work is limited to newly demonstrated bounded regressions or explicitly prioritized product work.
+7. Future source work is limited to newly demonstrated bounded regressions or explicitly prioritized/reviewed product work.
 
 ## Contracts to preserve
 
-Do not change workout/program lifecycle, active-session draft persistence, completed-history read-only semantics, private persistence/sync schemas, exercise repository/provider behavior, Social/Stories server authority/privacy, Coach API/auth contracts, or backend ownership/revision/idempotency contracts as incidental follow-up.
+Do not change workout/program lifecycle, active-session draft persistence, completed-history read-only semantics, private persistence/sync schemas, exercise repository/provider behavior, Social/Stories server authority/privacy, Coach API/auth contracts, active-program owner authority, or backend ownership/revision/idempotency contracts as incidental follow-up.
 
 Potentially long collections retain one suitable virtualized boundary with stable identity. Keyboard forms retain active-input/primary-action reachability. Direct interaction feedback changes material state rather than relying on generic opacity. Safe-area ownership remains singular per edge.
 
 Keep `docs/architecture/local-state-performance-decision.md` referenced from `docs/implementation-plan.md`. Preserve the explicit authorization marker: **no separate autonomous source-refactor phase is currently authorized**.
 
-Do not perform authorization-gated OTA/EAS publication, native build/install, backend deployment, production/provider activation, credential/DNS, native-health or store actions unless explicitly requested.
+Do not perform authorization-gated OTA/EAS publication, native build/install, backend deployment, migration execution, production/provider activation, credential/DNS, native-health or store actions unless explicitly requested.
