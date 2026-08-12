@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import type { SocialApi } from '@/api/social';
@@ -16,14 +16,10 @@ import { useAppTheme } from '@/theme/AppThemeProvider';
 import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
 import type { SocialStoryExpansionCopy } from './socialStoryExpansionCopy';
-
-const createReplyIdempotencyKey = (): string => {
-  const uuid = globalThis.crypto?.randomUUID?.();
-  if (uuid) return `story-reply-${uuid}`;
-  return `story-reply-${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random()
-    .toString(36)
-    .slice(2)}`;
-};
+import {
+  resolveSocialStoryReplyIdentity,
+  type SocialStoryReplyIdentity,
+} from './socialStoryReplyIdentity';
 
 type Props = {
   api: SocialApi;
@@ -74,11 +70,18 @@ export function SocialStoryReplySurface({ api, copy, owner, storyId }: Props) {
       }),
     [colors, glass],
   );
+  const replyIdentity = useRef<SocialStoryReplyIdentity | null>(null);
   const [body, setBody] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [viewers, setViewers] = useState<SocialStoryViewerDto[]>([]);
   const [replies, setReplies] = useState<SocialStoryReplyDto[]>([]);
+
+  useEffect(() => {
+    replyIdentity.current = null;
+    setBody('');
+    setError(null);
+  }, [storyId]);
 
   const loadOwnerActivity = useCallback(async () => {
     if (!owner) {
@@ -113,14 +116,20 @@ export function SocialStoryReplySurface({ api, copy, owner, storyId }: Props) {
     ) {
       return;
     }
+    const identity = resolveSocialStoryReplyIdentity(replyIdentity.current, {
+      storyId,
+      body: normalized,
+    });
+    replyIdentity.current = identity;
     setSending(true);
     setError(null);
     try {
       await api.createStoryReply(storyId, {
         schemaVersion: 1,
-        idempotencyKey: createReplyIdempotencyKey(),
+        idempotencyKey: identity.idempotencyKey,
         body: normalized,
       });
+      replyIdentity.current = null;
       setBody('');
     } catch {
       setError(copy.replyFailed);
