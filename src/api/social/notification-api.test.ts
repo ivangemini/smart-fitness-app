@@ -22,13 +22,22 @@ const notification = {
   actor,
   postId: '00000000-0000-4000-8000-000000000101',
   commentId: null,
+  storyId: null,
   readAt: null,
   createdAt: '2026-07-31T10:00:00.000Z',
 };
 
+const storyNotification = {
+  ...notification,
+  id: '00000000-0000-4000-8000-000000000202',
+  type: 'story_reaction',
+  postId: null,
+  storyId: '00000000-0000-4000-8000-000000000301',
+};
+
 const page = {
   schemaVersion: 1,
-  items: [notification],
+  items: [notification, storyNotification],
   nextCursor: 'next-notification-page',
 };
 
@@ -59,7 +68,7 @@ describe('social notification API', () => {
 
   it('marks an encoded notification read and refreshes once after 401', async () => {
     const readNotification = {
-      ...notification,
+      ...storyNotification,
       readAt: '2026-07-31T10:05:00.000Z',
     };
     const request = vi

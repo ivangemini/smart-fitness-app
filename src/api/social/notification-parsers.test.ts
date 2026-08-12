@@ -24,6 +24,7 @@ const followRequest = {
   actor,
   postId: null,
   commentId: null,
+  storyId: null,
   readAt: null,
   createdAt: '2026-07-31T10:00:00.000Z',
 };
@@ -44,25 +45,45 @@ const comment = {
   commentId: '00000000-0000-4000-8000-000000000102',
 };
 
+const storyLike = {
+  ...followRequest,
+  id: '00000000-0000-4000-8000-000000000204',
+  type: 'story_like',
+  storyId: '00000000-0000-4000-8000-000000000301',
+};
+
+const storyReaction = {
+  ...storyLike,
+  id: '00000000-0000-4000-8000-000000000205',
+  type: 'story_reaction',
+};
+
 describe('social notification parsers', () => {
   it('parses strict notification, envelope, and page responses', () => {
     expect(parseSocialNotificationDto(followRequest)).toEqual(followRequest);
     expect(parseSocialNotificationDto(reaction)).toEqual(reaction);
     expect(parseSocialNotificationDto(comment)).toEqual(comment);
+    expect(parseSocialNotificationDto(storyLike)).toEqual(storyLike);
+    expect(parseSocialNotificationDto(storyReaction)).toEqual(storyReaction);
     expect(parseSocialNotificationResponse({ notification: reaction })).toEqual(
       reaction,
     );
     expect(
       parseSocialNotificationPageResponse({
         schemaVersion: 1,
-        items: [reaction, comment],
+        items: [reaction, comment, storyLike, storyReaction],
         nextCursor: 'next-notification-page',
       }),
     ).toEqual({
       schemaVersion: 1,
-      items: [reaction, comment],
+      items: [reaction, comment, storyLike, storyReaction],
       nextCursor: 'next-notification-page',
     });
+  });
+
+  it('normalizes the legacy pre-S9-F notification shape for mobile-first rollout', () => {
+    const { storyId: _storyId, ...legacyReaction } = reaction;
+    expect(parseSocialNotificationDto(legacyReaction)).toEqual(reaction);
   });
 
   it.each([
@@ -70,9 +91,18 @@ describe('social notification parsers', () => {
     { ...followRequest, id: 'not-a-uuid' },
     { ...followRequest, type: 'unknown' },
     { ...followRequest, postId: reaction.postId },
+    { ...followRequest, storyId: storyLike.storyId },
     { ...reaction, postId: null },
     { ...reaction, commentId: comment.commentId },
+    { ...reaction, storyId: storyLike.storyId },
     { ...comment, commentId: null },
+    { ...storyLike, storyId: null },
+    { ...storyLike, postId: reaction.postId },
+    { ...storyReaction, commentId: comment.commentId },
+    (() => {
+      const { storyId: _storyId, ...storyWithoutTarget } = storyLike;
+      return storyWithoutTarget;
+    })(),
     { ...followRequest, readAt: 'invalid-date' },
     { ...followRequest, createdAt: 'invalid-date' },
     { ...followRequest, email: 'private@example.com' },

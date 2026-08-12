@@ -171,6 +171,13 @@ export default function SocialNotificationScreen() {
       });
       return;
     }
+    if (target.kind === 'story') {
+      router.push({
+        pathname: '/social/story/[storyId]',
+        params: { storyId: target.storyId },
+      });
+      return;
+    }
     router.push({
       pathname: '/social/workout-post/[postId]',
       params: { postId: target.postId },

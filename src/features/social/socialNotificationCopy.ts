@@ -5,10 +5,10 @@ const en = {
   action: 'Notifications',
   eyebrow: 'SOCIAL',
   title: 'Notifications',
-  subtitle: 'Follow requests and activity on your published workouts.',
+  subtitle: 'Follow requests and activity on your workouts and Stories.',
   loading: 'Loading notifications…',
   emptyTitle: 'No notifications yet',
-  emptyBody: 'Follow requests, accepted follows, reactions, and comments will appear here.',
+  emptyBody: 'Follow requests, accepted follows, reactions, comments, and Story activity will appear here.',
   signInTitle: 'Sign in required',
   signInBody: 'Sign in to view your Social notifications.',
   signInAction: 'Sign in',
@@ -26,6 +26,8 @@ const en = {
   followAccepted: 'accepted your follow request.',
   workoutReaction: 'liked your published workout.',
   workoutComment: 'commented on your published workout.',
+  storyLike: 'liked your Story.',
+  storyReaction: 'reacted to your Story.',
   loadCursor: 'This notification page expired. Reload notifications from the beginning.',
   loadOffline: 'Connect to the internet to load notifications.',
   loadSession: 'Your session expired. Sign in again.',
@@ -39,10 +41,10 @@ const ru: SocialNotificationCopy = {
   action: 'Уведомления',
   eyebrow: 'SOCIAL',
   title: 'Уведомления',
-  subtitle: 'Заявки на подписку и активность под опубликованными тренировками.',
+  subtitle: 'Заявки на подписку и активность в тренировках и Stories.',
   loading: 'Загрузка уведомлений…',
   emptyTitle: 'Уведомлений пока нет',
-  emptyBody: 'Заявки, принятые подписки, реакции и комментарии появятся здесь.',
+  emptyBody: 'Заявки, принятые подписки, реакции, комментарии и активность в Stories появятся здесь.',
   signInTitle: 'Требуется вход',
   signInBody: 'Войдите, чтобы просматривать Social-уведомления.',
   signInAction: 'Войти',
@@ -60,6 +62,8 @@ const ru: SocialNotificationCopy = {
   followAccepted: 'принял(а) вашу заявку на подписку.',
   workoutReaction: 'оценил(а) вашу опубликованную тренировку.',
   workoutComment: 'оставил(а) комментарий к вашей тренировке.',
+  storyLike: 'поставил(а) отметку «Нравится» вашей Story.',
+  storyReaction: 'отреагировал(а) на вашу Story.',
   loadCursor: 'Страница уведомлений устарела. Загрузите список сначала.',
   loadOffline: 'Подключитесь к интернету, чтобы загрузить уведомления.',
   loadSession: 'Сессия истекла. Войдите снова.',
@@ -78,5 +82,7 @@ export const getSocialNotificationMessage = (
   if (type === 'follow_request') return copy.followRequest;
   if (type === 'follow_accepted') return copy.followAccepted;
   if (type === 'workout_reaction') return copy.workoutReaction;
-  return copy.workoutComment;
+  if (type === 'workout_comment') return copy.workoutComment;
+  if (type === 'story_like') return copy.storyLike;
+  return copy.storyReaction;
 };
