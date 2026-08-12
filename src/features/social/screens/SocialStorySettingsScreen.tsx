@@ -26,7 +26,7 @@ import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { MaxContentWidth, Spacing, Typography } from '@/constants/theme';
 import { useAuthSession } from '@/hooks/useAuthSession';
-import { useLocalization } from '@/localization';
+import { formatLocalizedDateTime, useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
@@ -236,7 +236,7 @@ export default function SocialStorySettingsScreen() {
       >
         <View style={styles.header}>
           <LiquidGlassIconButton
-            accessibilityLabel="Back"
+            accessibilityLabel={copy.back}
             Icon={ChevronLeft}
             onPress={() => router.back()}
           />
@@ -319,7 +319,7 @@ export default function SocialStorySettingsScreen() {
                 archive.map((story) => (
                   <View key={story.id} style={styles.item}>
                     <Text style={styles.username}>
-                      {new Date(story.archivedAt).toLocaleString()}
+                      {formatLocalizedDateTime(story.archivedAt, locale)}
                     </Text>
                     {highlights.map((highlight) => (
                       <SecondaryButton
