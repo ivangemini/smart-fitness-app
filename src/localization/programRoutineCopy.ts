@@ -14,6 +14,9 @@ export const getProgramRoutineCopy = (locale: SupportedLocale) => ({
   backToWorkouts: locale === 'ru' ? 'Назад к тренировкам' : 'Back to Workouts',
   back: locale === 'ru' ? 'Назад' : 'Back',
   moreOptions: locale === 'ru' ? 'Другие действия' : 'More actions',
+  setAsActive: locale === 'ru' ? 'Сделать активной' : 'Set as active',
+  useDefaultProgram:
+    locale === 'ru' ? 'Использовать программу по умолчанию' : 'Use default program',
   viewMore: locale === 'ru' ? 'Подробнее' : 'View more',
   cancel: locale === 'ru' ? 'Отмена' : 'Cancel',
   addFavorite: locale === 'ru' ? 'Добавить в избранное' : 'Add to favorites',
