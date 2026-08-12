@@ -42,9 +42,11 @@ Start with:
 - [Latest handoff](docs/handoffs/latest.md)
 - [Cross-repository implementation plan](docs/implementation-plan.md)
 - [Architecture index](docs/architecture/README.md)
+- [Disaster recovery](docs/operations/disaster-recovery.md)
+- [External recovery registry](docs/operations/external-recovery-registry.md)
 - [Project learnings](PROJECT_LEARNINGS.md)
 
-Focused architecture, privacy, QA, roadmap, and release evidence remains under `docs/`.
+Focused architecture, privacy, QA, roadmap, release, and operations evidence remains under `docs/`.
 
 ## Run
 
