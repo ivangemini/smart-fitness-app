@@ -81,6 +81,11 @@ describe('social notification parsers', () => {
     });
   });
 
+  it('normalizes the legacy pre-S9-F notification shape for mobile-first rollout', () => {
+    const { storyId: _storyId, ...legacyReaction } = reaction;
+    expect(parseSocialNotificationDto(legacyReaction)).toEqual(reaction);
+  });
+
   it.each([
     { ...followRequest, schemaVersion: 2 },
     { ...followRequest, id: 'not-a-uuid' },
@@ -94,6 +99,10 @@ describe('social notification parsers', () => {
     { ...storyLike, storyId: null },
     { ...storyLike, postId: reaction.postId },
     { ...storyReaction, commentId: comment.commentId },
+    (() => {
+      const { storyId: _storyId, ...storyWithoutTarget } = storyLike;
+      return storyWithoutTarget;
+    })(),
     { ...followRequest, readAt: 'invalid-date' },
     { ...followRequest, createdAt: 'invalid-date' },
     { ...followRequest, email: 'private@example.com' },
