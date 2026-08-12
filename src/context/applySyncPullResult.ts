@@ -19,6 +19,7 @@ import { applyRemoteTrainingProgramChanges } from '@/cloud/TrainingProgramRemote
 import { applyRemoteWeightHistoryChanges } from '@/cloud/WeightHistorySync';
 import { applyRemoteWorkoutSessionChanges } from '@/cloud/WorkoutSessionSync';
 import { applyRemoteWorkoutTemplateChanges } from '@/cloud/WorkoutTemplateSync';
+import { repairActiveTrainingProgramSelection } from '@/features/workouts/activeProgramSelection';
 import type {
   createBodyMeasurementSyncMetadataStore,
   createCustomExerciseSyncMetadataStore,
@@ -212,6 +213,9 @@ export async function applySyncPullResult({
     fitnessProfileMetadata,
     syncedAt,
   );
+  const repairedState = repairActiveTrainingProgramSelection(
+    fitnessProfileChanges.nextState,
+  );
   const nutritionLibraryChanges = await applyRemoteNutritionLibraryChanges({
     userId: session.user.id,
     changedEntities: nonDeletedChangedEntities,
@@ -220,7 +224,7 @@ export async function applySyncPullResult({
 
   runWithoutFoodEntryOutbox(() =>
     runWithoutNutritionTargetOutbox(() =>
-      runWithoutFitnessProfileOutbox(() => replaceState(fitnessProfileChanges.nextState)),
+      runWithoutFitnessProfileOutbox(() => replaceState(repairedState)),
     ),
   );
 

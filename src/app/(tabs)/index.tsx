@@ -32,6 +32,7 @@ import { getSocialWorkoutPostSurfaceCopy } from '@/features/social/socialWorkout
 import { useSocialFollowingFeed } from '@/features/social/useSocialFollowingFeed';
 import { useSocialStories } from '@/features/social/useSocialStories';
 import { createSocialWorkoutPostSurfaceStyles } from '@/features/social/screens/SocialWorkoutPostSurface.styles';
+import { resolveActiveTrainingProgram } from '@/features/workouts/activeProgramSelection';
 import { getCurrentWorkoutStreak } from '@/lib/home';
 import { getRecoveryAdvisor } from '@/lib/intelligence';
 import { formatLocalDate } from '@/lib';
@@ -40,7 +41,6 @@ import { getProgressAnalytics } from '@/lib/progress';
 import {
   getActiveWorkoutSessionDraft,
   getWorkoutProgramSchedule,
-  getWorkoutPrograms,
   hydrateActiveWorkoutSessionDraft,
 } from '@/lib/workouts';
 import { formatPlural, useLocalization } from '@/localization';
@@ -65,7 +65,7 @@ export default function HomeScreen() {
     [resolvedAppearance],
   );
   const { bodyMeasurements, weightHistory } = useProgressState();
-  const { exercises, workoutSessions, workouts } = useWorkoutState();
+  const { exercises, trainingPrograms, workoutSessions, workouts } = useWorkoutState();
   const { foodEntries, nutritionTargets } = useNutritionState();
   const { onboardingCompleted, profile } = useProfileState();
   const { isRestoringState } = useAppInfrastructure();
@@ -101,19 +101,27 @@ export default function HomeScreen() {
     };
   }, []);
 
-  const currentProgram = useMemo(() => getWorkoutPrograms(workouts)[0] ?? null, [workouts]);
+  const currentProgram = useMemo(
+    () =>
+      resolveActiveTrainingProgram({
+        activeTrainingProgramId: profile.activeTrainingProgramId,
+        trainingPrograms,
+        workouts,
+      }).program,
+    [profile.activeTrainingProgramId, trainingPrograms, workouts],
+  );
   const programSchedule = useMemo(
-    () => (currentProgram ? getWorkoutProgramSchedule(currentProgram) : null),
+    () => getWorkoutProgramSchedule(currentProgram),
     [currentProgram],
   );
   const scheduledWorkout = useMemo(() => {
-    const workoutId = programSchedule?.currentDay?.workoutTemplateId;
+    const workoutId = programSchedule.currentDay?.workoutTemplateId;
     return workoutId ? workouts.find((workout) => workout.id === workoutId) ?? null : null;
-  }, [programSchedule?.currentDay?.workoutTemplateId, workouts]);
+  }, [programSchedule.currentDay?.workoutTemplateId, workouts]);
   const nextWorkout = useMemo(() => {
-    const workoutId = programSchedule?.nextWorkout?.workoutTemplateId;
+    const workoutId = programSchedule.nextWorkout?.workoutTemplateId;
     return workoutId ? workouts.find((workout) => workout.id === workoutId) ?? null : null;
-  }, [programSchedule?.nextWorkout?.workoutTemplateId, workouts]);
+  }, [programSchedule.nextWorkout?.workoutTemplateId, workouts]);
   const currentWorkoutStreak = useMemo(
     () => getCurrentWorkoutStreak(workoutSessions),
     [workoutSessions],
@@ -155,7 +163,7 @@ export default function HomeScreen() {
     ? primaryWorkoutLabel
     : scheduledWorkout
       ? homeCopy.todaysWorkout
-      : programSchedule?.isRestDayToday
+      : programSchedule.isRestDayToday
         ? homeCopy.restDay
         : nextWorkout
           ? homeCopy.nextWorkout

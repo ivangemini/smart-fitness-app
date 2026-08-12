@@ -1,6 +1,7 @@
 import type { Dispatch, SetStateAction } from 'react';
 import { useCallback } from 'react';
 
+import { setActiveTrainingProgramInState } from '@/features/workouts/activeProgramSelection';
 import { upsertWorkoutSessionById } from '@/lib/workouts';
 import type { AppState, TrainingProgram, WorkoutSession } from '@/types';
 
@@ -115,6 +116,19 @@ export function useWorkoutStateActions({
     [scheduleStateMutation, setState],
   );
 
+  const setActiveTrainingProgram = useCallback(
+    (programId: string | null) => {
+      setState((currentState) => {
+        const nextState = setActiveTrainingProgramInState(currentState, programId);
+        if (nextState !== currentState) {
+          scheduleStateMutation({ label: 'Set active training program', nextState });
+        }
+        return nextState;
+      });
+    },
+    [scheduleStateMutation, setState],
+  );
+
   const toggleTrainingProgramFavorite = useCallback(
     (programId: string) => {
       setState((currentState) => {
@@ -201,6 +215,7 @@ export function useWorkoutStateActions({
     deleteWorkoutTemplate,
     saveTrainingProgram,
     saveWorkoutSession,
+    setActiveTrainingProgram,
     toggleTrainingProgramFavorite,
     updateWorkoutSession,
     updateWorkoutTemplate,

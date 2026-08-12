@@ -149,9 +149,9 @@ describe('AppState repository performance budgets', () => {
       'stress',
     ]);
     expect(results.map((result) => result.serializedBytes)).toEqual([
-      12685,
-      262315,
-      1114421,
+      12716,
+      262346,
+      1114452,
     ]);
     expect(results[0].serializedBytes).toBeLessThanOrEqual(25_000);
     expect(results[1].serializedBytes).toBeLessThanOrEqual(350_000);

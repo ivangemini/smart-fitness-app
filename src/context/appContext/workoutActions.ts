@@ -1,5 +1,6 @@
 import type { AppState, Exercise, TrainingProgram, Workout, WorkoutSession } from '@/types';
 import { createExerciseId } from '@/lib/appState';
+import { clearActiveTrainingProgramForDeletedProgram } from '@/features/workouts/activeProgramSelection';
 import { enqueueWorkoutSessionSyncOperation } from '@/features/workouts/queueWorkoutSessionSyncOperation';
 
 export type WorkoutTemplateInput = {
@@ -112,10 +113,12 @@ export function saveTrainingProgramToState(
 }
 
 export function deleteTrainingProgramFromState(currentState: AppState, programId: string): AppState {
-  return {
+  const nextState = {
     ...currentState,
     trainingPrograms: currentState.trainingPrograms.filter((program) => program.id !== programId),
   };
+
+  return clearActiveTrainingProgramForDeletedProgram(nextState, programId);
 }
 
 export function toggleTrainingProgramFavoriteInState(

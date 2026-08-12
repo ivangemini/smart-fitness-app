@@ -1,3 +1,5 @@
+import { isUuid } from '@/lib/ids';
+
 import type { StorageAdapter } from './StorageAdapter';
 
 export const FITNESS_PROFILE_SYNC_METADATA_STORAGE_KEY =
@@ -13,6 +15,7 @@ export type FitnessProfileSyncSnapshot = {
   trainingDaysPerWeek: number | null;
   targetWeightKg: number | null;
   targetWeeklyWeightChangeKg: number | null;
+  activeTrainingProgramId: string | null;
 };
 
 export type FitnessProfileSyncMetadata = {
@@ -48,6 +51,15 @@ const readNullableNumber = (record: Record<string, unknown>, key: string): numbe
       : undefined;
 };
 
+const readOptionalNullableUuid = (
+  record: Record<string, unknown>,
+  key: string,
+): string | null | undefined => {
+  const value = record[key];
+  if (value === undefined || value === null) return null;
+  return isUuid(value) ? value.trim().toLowerCase() : undefined;
+};
+
 const normalizeSnapshot = (value: unknown): FitnessProfileSyncSnapshot | null => {
   if (!isRecord(value)) return null;
 
@@ -62,6 +74,10 @@ const normalizeSnapshot = (value: unknown): FitnessProfileSyncSnapshot | null =>
   const targetWeeklyWeightChangeKg = readNullableNumber(
     value,
     'targetWeeklyWeightChangeKg',
+  );
+  const activeTrainingProgramId = readOptionalNullableUuid(
+    value,
+    'activeTrainingProgramId',
   );
 
   if (
@@ -85,7 +101,8 @@ const normalizeSnapshot = (value: unknown): FitnessProfileSyncSnapshot | null =>
       trainingExperience !== 'advanced') ||
     trainingDaysPerWeek === undefined ||
     targetWeightKg === undefined ||
-    targetWeeklyWeightChangeKg === undefined
+    targetWeeklyWeightChangeKg === undefined ||
+    activeTrainingProgramId === undefined
   ) {
     return null;
   }
@@ -100,6 +117,7 @@ const normalizeSnapshot = (value: unknown): FitnessProfileSyncSnapshot | null =>
     trainingDaysPerWeek,
     targetWeightKg,
     targetWeeklyWeightChangeKg,
+    activeTrainingProgramId,
   };
 };
 

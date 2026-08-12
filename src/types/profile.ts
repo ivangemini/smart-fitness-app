@@ -14,4 +14,5 @@ export type ProfileState = {
   dateOfBirth: string | null;
   calculationSex: ProfileCalculationSex | null;
   trainingExperience: ProfileTrainingExperience | null;
+  activeTrainingProgramId: string | null;
 };
