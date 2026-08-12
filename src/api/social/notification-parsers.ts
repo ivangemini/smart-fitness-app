@@ -15,6 +15,7 @@ const NOTIFICATION_KEYS = [
   'actor',
   'postId',
   'commentId',
+  'storyId',
   'readAt',
   'createdAt',
 ] as const;
@@ -55,14 +56,18 @@ const hasValidTargetShape = (
   type: SocialNotificationType,
   postId: string | null,
   commentId: string | null,
+  storyId: string | null,
 ): boolean => {
   if (type === 'follow_request' || type === 'follow_accepted') {
-    return postId === null && commentId === null;
+    return postId === null && commentId === null && storyId === null;
   }
   if (type === 'workout_reaction') {
-    return postId !== null && commentId === null;
+    return postId !== null && commentId === null && storyId === null;
   }
-  return postId !== null && commentId !== null;
+  if (type === 'workout_comment') {
+    return postId !== null && commentId !== null && storyId === null;
+  }
+  return postId === null && commentId === null && storyId !== null;
 };
 
 export const parseSocialNotificationDto = (
@@ -78,11 +83,17 @@ export const parseSocialNotificationDto = (
     !isNotificationType(value.type) ||
     !isUuidOrNull(value.postId) ||
     !isUuidOrNull(value.commentId) ||
+    !isUuidOrNull(value.storyId) ||
     !isIsoDateOrNull(value.readAt) ||
     typeof value.createdAt !== 'string' ||
     value.createdAt.length === 0 ||
     Number.isNaN(Date.parse(value.createdAt)) ||
-    !hasValidTargetShape(value.type, value.postId, value.commentId)
+    !hasValidTargetShape(
+      value.type,
+      value.postId,
+      value.commentId,
+      value.storyId,
+    )
   ) {
     throw new Error(INVALID_NOTIFICATION);
   }
@@ -95,6 +106,7 @@ export const parseSocialNotificationDto = (
       actor: parseSocialProfileDto(value.actor),
       postId: value.postId,
       commentId: value.commentId,
+      storyId: value.storyId,
       readAt: value.readAt,
       createdAt: value.createdAt,
     };
