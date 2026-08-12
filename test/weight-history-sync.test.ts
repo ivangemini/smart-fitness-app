@@ -42,6 +42,7 @@ const baseState = (): AppState => ({
     dateOfBirth: null,
     calculationSex: null,
     trainingExperience: null,
+    activeTrainingProgramId: null,
   },
   onboardingCompleted: true,
 });
