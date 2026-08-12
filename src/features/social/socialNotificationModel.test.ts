@@ -38,6 +38,10 @@ const notification = (
     type === 'workout_comment'
       ? '00000000-0000-4000-8000-000000000102'
       : null,
+  storyId:
+    type === 'story_like' || type === 'story_reaction'
+      ? '00000000-0000-4000-8000-000000000301'
+      : null,
   readAt: null,
   createdAt: '2026-07-31T10:00:00.000Z',
 });
@@ -85,7 +89,7 @@ describe('social notification model', () => {
     ).toBe(read);
   });
 
-  it('routes relationship events to profiles and workout events to posts', () => {
+  it('routes relationship, workout, and Story events to bounded targets', () => {
     expect(
       getSocialNotificationTarget(
         notification('00000000-0000-4000-8000-000000000201'),
@@ -101,6 +105,17 @@ describe('social notification model', () => {
     ).toEqual({
       kind: 'workout_post',
       postId: '00000000-0000-4000-8000-000000000101',
+    });
+    expect(
+      getSocialNotificationTarget(
+        notification(
+          '00000000-0000-4000-8000-000000000203',
+          'story_reaction',
+        ),
+      ),
+    ).toEqual({
+      kind: 'story',
+      storyId: '00000000-0000-4000-8000-000000000301',
     });
   });
 
