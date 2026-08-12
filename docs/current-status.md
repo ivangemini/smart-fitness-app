@@ -5,13 +5,13 @@ Updated: 2026-08-12
 ## Verified checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current mobile runtime/source merge: `a7d82e6e928d608eff46efa81846db0461480aeb` after PR #630 `feat(home): honor explicit active training program`.
-- Current mobile repository docs baseline before this synchronization: `9c5f867a252b60fdc6cb2d798b6ec7d459f2fcd3` after docs PR #631.
+- Latest mobile runtime/source merge: `a7d82e6e928d608eff46efa81846db0461480aeb` from PR #630 `feat(home): honor explicit active training program`.
+- Subsequent mobile docs-only synchronization does not alter runtime behavior. Read exact current `main` from Git rather than treating a self-referential docs SHA as permanent.
 - PR #630 exact validated head: `07c33bb82033b73c3a71d0eba64aca4afaeb44d9`; Mobile CI #2198 run `31567594528` passed repository/changed-file line limits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor before merge.
 - PR #617 remains a bounded post-LG-5 Program Builder persistence regression fix and is not LG-5 runtime batch #39. Merged demonstrated-defect LG-5 runtime batches remain **38**.
 - Backend repo: `ivangemini/smart-fitness-backend`.
-- Current backend `main`: `8c404de0e0007ab23f44d62616b114aff7db5d12` after docs PR #223 synchronized the Hermes CI completion checkpoint.
 - Latest backend runtime/CI merge: PR #215 `Route routine backend CI to Hermes`, merge `dd3764a751f76a2ed2fa8566c5b839c442329b3a`.
+- Subsequent backend docs-only source-of-truth synchronization does not alter runtime/CI behavior. Read exact backend `main` from Git.
 - PR #215 exact validated head: `2718ca74ad2b2131573e4c7c655be31149af5695`; Backend CI #1614 run `31571974048`, Backend PostgreSQL CI #221 run `31571974074`, and Account Deletion Receipt CI #303 run `31571974080` all passed before merge.
 - Backend routine CI now correctly uses the existing repo-scoped `hermes-backend-ci-01` through `[self-hosted, linux, x64, hermes-backend-ci]`. Mobile routine CI keeps its separate `[self-hosted, linux, x64, hermes-mobile-ci]` registration.
 - Backend issue #217 is closed: the former blocker was an incorrect mobile-only label on backend workflows, not missing runner registration.

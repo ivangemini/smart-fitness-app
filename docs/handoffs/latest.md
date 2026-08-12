@@ -5,15 +5,15 @@ Updated: 2026-08-12
 ## Checkpoint
 
 - Mobile repo: `ivangemini/smart-fitness-app`.
-- Current mobile runtime/source merge: `a7d82e6e928d608eff46efa81846db0461480aeb` after PR #630 `feat(home): honor explicit active training program`.
-- Current mobile docs baseline before this synchronization: `9c5f867a252b60fdc6cb2d798b6ec7d459f2fcd3` after docs PR #631.
+- Latest mobile runtime/source merge: `a7d82e6e928d608eff46efa81846db0461480aeb` from PR #630 `feat(home): honor explicit active training program`.
+- Subsequent mobile docs-only synchronization does not alter runtime behavior. Read exact current `main` from Git rather than treating a docs checkpoint SHA as permanent.
 - PR #630 exact validated head: `07c33bb82033b73c3a71d0eba64aca4afaeb44d9`; Mobile CI #2198 run `31567594528` passed the complete mobile gate before merge.
 - PR #617 remains a bounded post-LG-5 Workouts persistence regression fix; LG-5 merged demonstrated-defect runtime batches remain **38**.
 - Backend repo: `ivangemini/smart-fitness-backend`.
-- Current backend `main`: `8c404de0e0007ab23f44d62616b114aff7db5d12` after docs PR #223.
 - Latest backend runtime/CI merge: PR #215 `Route routine backend CI to Hermes`, merge `dd3764a751f76a2ed2fa8566c5b839c442329b3a`.
+- Subsequent backend docs-only source-of-truth synchronization does not alter runtime/CI behavior. Read exact backend `main` from Git.
 - PR #215 exact validated head: `2718ca74ad2b2131573e4c7c655be31149af5695`; Backend CI #1614 / run `31571974048`, Backend PostgreSQL CI #221 / run `31571974074`, and Account Deletion Receipt CI #303 / run `31571974080` all passed before merge.
-- Backend routine CI now uses `[self-hosted, linux, x64, hermes-backend-ci]` on the existing `hermes-backend-ci-01`; mobile keeps its separate `[self-hosted, linux, x64, hermes-mobile-ci]` registration.
+- Backend routine CI uses `[self-hosted, linux, x64, hermes-backend-ci]` on the existing `hermes-backend-ci-01`; mobile keeps its separate `[self-hosted, linux, x64, hermes-mobile-ci]` registration.
 - Backend issue #217 is closed. The prior blocker was a workflow-label mismatch, not missing runner registration.
 - Backend PR #222 active-training-program authority remains merged and its permanent PostgreSQL test was preserved/revalidated by #215.
 - **Home active-program selection is source/CI-complete across backend and mobile; issue #618 is closed as completed.**
