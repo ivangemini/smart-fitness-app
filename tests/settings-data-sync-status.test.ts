@@ -13,13 +13,15 @@ const projectRoot = resolve(__dirname, '..');
 const readSource = (path: string) => readFileSync(resolve(projectRoot, path), 'utf8');
 
 describe('Settings Data and Sync status', () => {
-  it('surfaces bounded sync status without raw diagnostic fields', () => {
+  it('surfaces bounded sync status through the Data & Sync child route without raw diagnostic fields', () => {
     const settings = readSource('src/app/settings/index.tsx');
+    const dataSync = readSource('src/app/settings/data-sync.tsx');
     const details = readSource('src/app/sync-backup.tsx');
     const card = readSource('src/features/settings/SyncSettingsCard.tsx');
     const copy = readSource('src/features/settings/syncStatusCopy.ts');
 
-    expect(settings).toContain('<SyncSettingsCard />');
+    expect(settings).toContain("router.push('/settings/data-sync')");
+    expect(dataSync).toContain('<SyncSettingsCard />');
     expect(card).toContain("router.push('/sync-backup')");
     expect(details).toContain('pendingOperations');
     expect(details).toContain('conflictCount');
