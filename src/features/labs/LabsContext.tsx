@@ -26,6 +26,7 @@ import type {
 
 export type LabsContextValue = {
   documents: LabDocumentDto[];
+  markers: LabResultDto[];
   loading: boolean;
   error: 'load_failed' | null;
   refresh(): Promise<void>;
@@ -37,6 +38,7 @@ export type LabsContextValue = {
     action: LabDraftReviewAction,
   ): Promise<LabResultDraftDto>;
   confirmDocument(documentId: string, collectedAt: string): Promise<LabDocumentDto>;
+  getDocumentResults(documentId: string): Promise<LabResultDto[]>;
   getMarkerHistory(markerId: string, limit?: number): Promise<LabResultDto[]>;
 };
 
@@ -45,6 +47,7 @@ const LabsContext = createContext<LabsContextValue | null>(null);
 export function LabsProvider({ children }: PropsWithChildren) {
   const { isAuthenticated, ready, refresh: refreshAuth, session } = useAuthSession();
   const [documents, setDocuments] = useState<LabDocumentDto[]>([]);
+  const [markers, setMarkers] = useState<LabResultDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<LabsContextValue['error']>(null);
   const apiClient = useMemo(
@@ -64,6 +67,7 @@ export function LabsProvider({ children }: PropsWithChildren) {
   const refresh = useCallback(async () => {
     if (!ready || !isAuthenticated) {
       setDocuments([]);
+      setMarkers([]);
       setError(null);
       setLoading(false);
       return;
@@ -71,7 +75,12 @@ export function LabsProvider({ children }: PropsWithChildren) {
 
     setLoading(true);
     try {
-      setDocuments(await repository.listDocuments());
+      const [nextDocuments, nextMarkers] = await Promise.all([
+        repository.listDocuments(),
+        repository.listMarkers(),
+      ]);
+      setDocuments(nextDocuments);
+      setMarkers(nextMarkers);
       setError(null);
     } catch {
       setError('load_failed');
@@ -93,6 +102,7 @@ export function LabsProvider({ children }: PropsWithChildren) {
   const value = useMemo<LabsContextValue>(
     () => ({
       documents,
+      markers,
       loading,
       error,
       refresh,
@@ -107,9 +117,10 @@ export function LabsProvider({ children }: PropsWithChildren) {
         );
         return document;
       },
+      getDocumentResults: (documentId) => repository.getDocumentResults(documentId),
       getMarkerHistory: (markerId, limit) => repository.getMarkerHistory(markerId, limit),
     }),
-    [documents, error, getDocument, loading, refresh, repository],
+    [documents, error, getDocument, loading, markers, refresh, repository],
   );
 
   return <LabsContext.Provider value={value}>{children}</LabsContext.Provider>;
