@@ -80,6 +80,36 @@ export type LabResultDto = {
   collectedAt: string;
 };
 
+export type LabPanelComparisonState =
+  | 'new'
+  | 'stable'
+  | 'classification_improved'
+  | 'classification_worsened'
+  | 'not_comparable';
+
+export type LabPanelResultSnapshotDto = {
+  markerId: string;
+  value: number;
+  unit: string;
+  semanticState: LabSemanticState;
+  referenceInterval: LabReferenceIntervalDto | null;
+  collectedAt: string;
+};
+
+export type LabPanelComparisonDto = {
+  previousDocumentId: string;
+  currentDocumentId: string;
+  previousCollectedAt: string;
+  currentCollectedAt: string;
+  interpretation: 'classification_movement_only';
+  items: Array<{
+    markerId: string;
+    state: LabPanelComparisonState;
+    previous: LabPanelResultSnapshotDto | null;
+    current: LabPanelResultSnapshotDto;
+  }>;
+};
+
 export type LabReviewBundleDto = {
   document: LabDocumentDto;
   results: LabResultDraftDto[];
