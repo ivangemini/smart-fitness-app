@@ -45,7 +45,15 @@ export default function LabDocumentReviewScreen() {
   const { colors } = useAppTheme();
   const { locale, t } = useLocalization();
   const insets = useSafeAreaInsets();
-  const { confirmDocument, getDocument, getReview, refresh, reviewDraft } = useLabs();
+  const {
+    capabilities,
+    confirmDocument,
+    getDocument,
+    getReview,
+    refresh,
+    retryDocument,
+    reviewDraft,
+  } = useLabs();
   const copy = useMemo(() => getLabsCopy(locale), [locale]);
   const styles = useMemo(() => createStyles(colors), [colors]);
   const document = getDocument(documentId);
@@ -54,6 +62,7 @@ export default function LabDocumentReviewScreen() {
   const [error, setError] = useState(false);
   const [busyDraftId, setBusyDraftId] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
+  const [retrying, setRetrying] = useState(false);
   const [collectionDate, setCollectionDate] = useState(() =>
     document ? toDateInput(document.collectedAt ?? document.createdAt) : '',
   );
@@ -137,6 +146,27 @@ export default function LabDocumentReviewScreen() {
     }
   };
 
+  const handleRetry = async () => {
+    if (
+      !documentId ||
+      document?.status !== 'failed' ||
+      !capabilities.processingAvailable ||
+      retrying
+    ) {
+      return;
+    }
+    setRetrying(true);
+    setError(false);
+    try {
+      await retryDocument(documentId);
+      await refresh();
+    } catch {
+      setError(true);
+    } finally {
+      setRetrying(false);
+    }
+  };
+
   return (
     <ScrollView
       automaticallyAdjustKeyboardInsets
@@ -171,6 +201,15 @@ export default function LabDocumentReviewScreen() {
             <Text style={styles.cardTitle}>{document.fileName}</Text>
             <Text style={styles.body}>{copy.status[document.status]}</Text>
             <Text style={styles.body}>{copy.documentNotReady}</Text>
+            {document.status === 'failed' && capabilities.processingAvailable ? (
+              <AppButton
+                disabled={retrying}
+                label={retrying ? copy.loading : copy.retry}
+                onPress={() => void handleRetry()}
+                variant="secondary"
+              />
+            ) : null}
+            {error ? <Text style={styles.warning}>{copy.reviewFailed}</Text> : null}
           </AppCard>
         ) : loading ? (
           <AppCard style={styles.centerCard}>
