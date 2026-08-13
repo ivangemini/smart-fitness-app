@@ -29,9 +29,7 @@ export function LabDocumentCard({
       style={({ pressed }) => pressed && styles.pressed}>
       <LiquidGlassSurface style={styles.card}>
         <View style={styles.copy}>
-          <Text numberOfLines={1} style={[styles.title, { color: colors.textPrimary }]}>
-            {document.fileName}
-          </Text>
+          <Text style={[styles.title, { color: colors.textPrimary }]}>{document.fileName}</Text>
           <Text style={[styles.meta, { color: colors.textSecondary }]}>{dateLabel}</Text>
           <Text style={[styles.status, { color: colors.textSecondary }]}>{statusLabel}</Text>
         </View>
@@ -49,16 +47,19 @@ const styles = StyleSheet.create({
   },
   copy: { flex: 1, gap: Spacing.one, minWidth: 0 },
   meta: {
+    flexShrink: 1,
     fontSize: Typography.caption.fontSize,
     lineHeight: Typography.caption.lineHeight,
   },
   pressed: { opacity: 0.74 },
   status: {
+    flexShrink: 1,
     fontSize: Typography.body.fontSize,
     fontWeight: '600',
     lineHeight: Typography.body.lineHeight,
   },
   title: {
+    flexShrink: 1,
     fontSize: Typography.cardTitle.fontSize,
     fontWeight: Typography.cardTitle.fontWeight,
     lineHeight: Typography.cardTitle.lineHeight,
