@@ -1,5 +1,6 @@
 import { isApiError, type ApiClient } from '@/api/client';
 import type {
+  LabCapabilitiesDto,
   LabDocumentDto,
   LabResultDto,
   LabResultDraftDto,
@@ -29,6 +30,7 @@ export type LabsAuthGateway = {
 };
 
 export type RemoteLabsRepository = {
+  getCapabilities(): Promise<LabCapabilitiesDto>;
   listDocuments(): Promise<LabDocumentDto[]>;
   listMarkers(limit?: number): Promise<LabResultDto[]>;
   createUpload(input: {
@@ -80,6 +82,14 @@ export const createRemoteLabsRepository = (
   };
 
   return {
+    getCapabilities() {
+      return withAuth((token) =>
+        apiClient.get<LabCapabilitiesDto>('/v1/labs/capabilities', {
+          headers: authHeader(token),
+          retry: false,
+        }),
+      );
+    },
     async listDocuments() {
       const response = await withAuth((token) =>
         apiClient.get<{ documents: LabDocumentDto[] }>('/v1/labs/documents', {
@@ -91,8 +101,9 @@ export const createRemoteLabsRepository = (
     },
     async listMarkers(limit = 100) {
       const response = await withAuth((token) =>
-        apiClient.get<{ markers: LabResultDto[] }>(`/v1/labs/markers?limit=${limit}`, {
+        apiClient.get<{ markers: LabResultDto[] }>('/v1/labs/markers', {
           headers: authHeader(token),
+          query: { limit },
           retry: false,
         }),
       );
@@ -156,8 +167,8 @@ export const createRemoteLabsRepository = (
     async getMarkerHistory(markerId, limit = 200) {
       const response = await withAuth((token) =>
         apiClient.get<{ results: LabResultDto[] }>(
-          `/v1/labs/markers/${encodeURIComponent(markerId)}/history?limit=${limit}`,
-          { headers: authHeader(token), retry: false },
+          `/v1/labs/markers/${encodeURIComponent(markerId)}/history`,
+          { headers: authHeader(token), query: { limit }, retry: false },
         ),
       );
       return response.results;
