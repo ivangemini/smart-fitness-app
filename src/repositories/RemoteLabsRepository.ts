@@ -30,6 +30,7 @@ export type LabsAuthGateway = {
 
 export type RemoteLabsRepository = {
   listDocuments(): Promise<LabDocumentDto[]>;
+  listMarkers(limit?: number): Promise<LabResultDto[]>;
   createUpload(input: {
     fileName: string;
     mediaType: 'application/pdf' | 'image/jpeg' | 'image/png' | 'image/heic';
@@ -43,6 +44,7 @@ export type RemoteLabsRepository = {
     action: LabDraftReviewAction,
   ): Promise<LabResultDraftDto>;
   confirmDocument(documentId: string, collectedAt: string): Promise<LabDocumentDto>;
+  getDocumentResults(documentId: string): Promise<LabResultDto[]>;
   getMarkerHistory(markerId: string, limit?: number): Promise<LabResultDto[]>;
 };
 
@@ -86,6 +88,15 @@ export const createRemoteLabsRepository = (
         }),
       );
       return response.documents;
+    },
+    async listMarkers(limit = 100) {
+      const response = await withAuth((token) =>
+        apiClient.get<{ markers: LabResultDto[] }>(`/v1/labs/markers?limit=${limit}`, {
+          headers: authHeader(token),
+          retry: false,
+        }),
+      );
+      return response.markers;
     },
     createUpload(input) {
       return withAuth((token) =>
@@ -132,6 +143,15 @@ export const createRemoteLabsRepository = (
         ),
       );
       return response.document;
+    },
+    async getDocumentResults(documentId) {
+      const response = await withAuth((token) =>
+        apiClient.get<{ results: LabResultDto[] }>(
+          `/v1/labs/documents/${encodeURIComponent(documentId)}/results`,
+          { headers: authHeader(token), retry: false },
+        ),
+      );
+      return response.results;
     },
     async getMarkerHistory(markerId, limit = 200) {
       const response = await withAuth((token) =>
