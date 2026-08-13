@@ -9,6 +9,8 @@ import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme';
+import { LabBiomarkerCard } from '@/features/labs/LabBiomarkerCard';
+import { getBiomarkerDisplayName } from '@/features/labs/biomarkerNames';
 import { LabDocumentCard } from '@/features/labs/LabDocumentCard';
 import { getLabsCopy } from '@/features/labs/labsCopy';
 import { useLabs } from '@/features/labs/LabsContext';
@@ -16,15 +18,35 @@ import { useAuthSession } from '@/hooks/useAuthSession';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 
+const DOCUMENT_PREVIEW_LIMIT = 12;
+const ATTENTION_PREVIEW_LIMIT = 6;
+const BIOMARKER_PREVIEW_LIMIT = 20;
+
 export default function LabsScreen() {
   const router = useRouter();
   const { colors } = useAppTheme();
   const { formatDate, locale } = useLocalization();
   const { isAuthenticated, ready } = useAuthSession();
-  const { documents, error, loading, refresh } = useLabs();
+  const { documents, error, loading, markers, refresh } = useLabs();
   const insets = useSafeAreaInsets();
   const copy = useMemo(() => getLabsCopy(locale), [locale]);
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const attentionMarkers = useMemo(
+    () =>
+      markers
+        .filter(
+          (result) =>
+            result.semanticState !== 'unknown' && result.semanticState !== 'in_range',
+        )
+        .slice(0, ATTENTION_PREVIEW_LIMIT),
+    [markers],
+  );
+
+  const openMarker = (markerId: string) =>
+    router.push({
+      pathname: '/labs-marker/[markerId]',
+      params: { markerId },
+    });
 
   return (
     <ScrollView
@@ -57,16 +79,53 @@ export default function LabsScreen() {
               <AppButton disabled label={copy.addResults} />
             </AppCard>
 
-            {documents.length === 0 ? (
+            {attentionMarkers.length > 0 ? (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>{copy.attentionTitle}</Text>
+                <View style={styles.stack}>
+                  {attentionMarkers.map((result) => (
+                    <LabBiomarkerCard
+                      key={result.markerId}
+                      name={getBiomarkerDisplayName(result.markerId, locale)}
+                      onPress={() => openMarker(result.markerId)}
+                      result={result}
+                      statusLabel={copy.semanticState[result.semanticState]}
+                    />
+                  ))}
+                </View>
+              </View>
+            ) : null}
+
+            {markers.length === 0 ? (
               <AppCard>
                 <Text style={styles.cardTitle}>{copy.emptyTitle}</Text>
                 <Text style={styles.body}>{copy.emptyBody}</Text>
               </AppCard>
             ) : (
               <View style={styles.section}>
-                <Text style={styles.sectionTitle}>{copy.documentsTitle}</Text>
+                <Text style={styles.sectionTitle}>{copy.biomarkersTitle}</Text>
+                <Text style={styles.body}>{copy.biomarkersBody}</Text>
                 <View style={styles.stack}>
-                  {documents.map((document) => (
+                  {markers.slice(0, BIOMARKER_PREVIEW_LIMIT).map((result) => (
+                    <LabBiomarkerCard
+                      key={result.markerId}
+                      name={getBiomarkerDisplayName(result.markerId, locale)}
+                      onPress={() => openMarker(result.markerId)}
+                      result={result}
+                      statusLabel={copy.semanticState[result.semanticState]}
+                    />
+                  ))}
+                </View>
+              </View>
+            )}
+
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>{copy.documentsTitle}</Text>
+              {documents.length === 0 ? (
+                <Text style={styles.body}>{copy.noDocuments}</Text>
+              ) : (
+                <View style={styles.stack}>
+                  {documents.slice(0, DOCUMENT_PREVIEW_LIMIT).map((document) => (
                     <LabDocumentCard
                       dateLabel={formatDate(new Date(document.createdAt), { dateStyle: 'medium' })}
                       document={document}
@@ -81,18 +140,7 @@ export default function LabsScreen() {
                     />
                   ))}
                 </View>
-              </View>
-            )}
-
-            <View style={styles.grid}>
-              <AppCard style={styles.gridCard}>
-                <Text style={styles.cardTitle}>{copy.biomarkersTitle}</Text>
-                <Text style={styles.body}>{copy.biomarkersBody}</Text>
-              </AppCard>
-              <AppCard style={styles.gridCard}>
-                <Text style={styles.cardTitle}>{copy.trendsTitle}</Text>
-                <Text style={styles.body}>{copy.trendsBody}</Text>
-              </AppCard>
+              )}
             </View>
           </>
         )}
@@ -115,10 +163,8 @@ const createStyles = (colors: typeof Colors.light) =>
       lineHeight: Typography.cardTitle.lineHeight,
     },
     centerCard: { alignItems: 'center' },
-    container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
+    container: { gap: Spacing.four, maxWidth: MaxContentWidth, width: '100%' },
     content: { alignItems: 'center', flexGrow: 1, padding: Spacing.three },
-    grid: { gap: Spacing.three },
-    gridCard: { flex: 1 },
     screen: { backgroundColor: colors.background, flex: 1 },
     section: { gap: Spacing.two },
     sectionTitle: {
