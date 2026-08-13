@@ -224,6 +224,7 @@ function LabeledInput({ keyboardType = 'default', label, onChangeText, value }: 
     <View style={stylesStatic.field}>
       <Text style={[stylesStatic.fieldLabel, { color: colors.textSecondary }]}>{label}</Text>
       <TextInput
+        accessibilityLabel={label}
         keyboardType={keyboardType}
         onChangeText={onChangeText}
         style={[
@@ -237,7 +238,7 @@ function LabeledInput({ keyboardType = 'default', label, onChangeText, value }: 
 }
 
 const stylesStatic = StyleSheet.create({
-  field: { flex: 1, gap: Spacing.one, minWidth: 0 },
+  field: { flexBasis: 140, flexGrow: 1, gap: Spacing.one, minWidth: 0 },
   fieldLabel: {
     fontSize: Typography.caption.fontSize,
     lineHeight: Typography.caption.lineHeight,
@@ -257,9 +258,9 @@ const createStyles = (colors: typeof Colors.light) =>
     actions: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
     card: { gap: Spacing.two },
     form: { gap: Spacing.two },
-    header: { alignItems: 'flex-start', flexDirection: 'row', gap: Spacing.two },
-    headerCopy: { flex: 1, gap: Spacing.one, minWidth: 0 },
-    inlineFields: { flexDirection: 'row', gap: Spacing.two },
+    header: { alignItems: 'flex-start', flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
+    headerCopy: { flexBasis: 180, flexGrow: 1, gap: Spacing.one, minWidth: 0 },
+    inlineFields: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
     meta: {
       color: colors.textSecondary,
       fontSize: Typography.caption.fontSize,
@@ -267,6 +268,7 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     reviewState: {
       color: colors.textSecondary,
+      flexShrink: 1,
       fontSize: Typography.caption.fontSize,
       fontWeight: '600',
       lineHeight: Typography.caption.lineHeight,
