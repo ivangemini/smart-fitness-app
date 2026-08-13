@@ -87,6 +87,9 @@ export default function LabMarkerScreen() {
     [filteredHistory],
   );
   const name = getBiomarkerDisplayName(markerId, locale);
+  const chartAccessibilityLabel = locale.toLowerCase().startsWith('ru')
+    ? `График ${name}. Подтверждённых точек: ${filteredHistory.length}. Период: ${historyWindowLabels[historyWindow]}.`
+    : `${name} trend chart. Confirmed points: ${filteredHistory.length}. Window: ${historyWindowLabels[historyWindow]}.`;
 
   return (
     <ScrollView
@@ -118,7 +121,9 @@ export default function LabMarkerScreen() {
           </AppCard>
         ) : failed ? (
           <AppCard>
-            <Text style={styles.body}>{copy.loadFailed}</Text>
+            <Text accessibilityRole="alert" style={styles.body}>
+              {copy.loadFailed}
+            </Text>
             <AppButton label={copy.retry} onPress={() => void load()} variant="secondary" />
           </AppCard>
         ) : latest ? (
@@ -146,7 +151,10 @@ export default function LabMarkerScreen() {
                 onChange={setHistoryWindow}
                 value={historyWindow}
               />
-              <LabTrendChart results={filteredHistory} />
+              <LabTrendChart
+                accessibilityLabel={chartAccessibilityLabel}
+                results={filteredHistory}
+              />
             </AppCard>
 
             <View style={styles.section}>
