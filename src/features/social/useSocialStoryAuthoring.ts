@@ -5,6 +5,7 @@ import {
   getSocialApiErrorCode,
   uploadSignedSocialMedia,
   type SocialMediaOwnerAssetDto,
+  type SocialStoryAudience,
   type SocialStoryOverlayPlacement,
 } from '@/api/social';
 import { useAuthSession } from '@/hooks/useAuthSession';
@@ -63,6 +64,7 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
   const publishIdentity = useRef<SocialStoryPublishIdentity | null>(null);
   const [asset, setAsset] = useState<SocialMediaOwnerAssetDto | null>(null);
   const [caption, setCaption] = useState('');
+  const [audience, setAudience] = useState<SocialStoryAudience>('following');
   const [overlayText, setOverlayText] = useState('');
   const [overlayPlacement, setOverlayPlacement] =
     useState<SocialStoryOverlayPlacement>('center');
@@ -84,6 +86,7 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
   useEffect(() => {
     publishIdentity.current = null;
     setCaption('');
+    setAudience('following');
     setOverlayText('');
     setOverlayPlacement('center');
   }, [accountId]);
@@ -353,6 +356,7 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
       overlay: normalizedOverlayText
         ? { text: normalizedOverlayText, placement: overlayPlacement }
         : null,
+      audience,
     };
     const identity = resolveSocialStoryPublishIdentity(
       publishIdentity.current,
@@ -375,6 +379,7 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
               },
             }
           : {}),
+        audience,
         image: attachment,
       });
       publishIdentity.current = null;
@@ -382,6 +387,7 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
       if (!isCurrent(requestSequence)) return story.id;
       setAsset(null);
       setCaption('');
+      setAudience('following');
       setOverlayText('');
       setOverlayPlacement('center');
       setPreviewUri(null);
@@ -402,6 +408,7 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
     accountId,
     api,
     attachment,
+    audience,
     caption,
     copy,
     isCurrent,
@@ -416,6 +423,7 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
 
   return {
     asset,
+    audience,
     canPublish: Boolean(attachment) && operation === 'idle',
     caption,
     errorMessage,
@@ -432,6 +440,7 @@ export function useSocialStoryAuthoring(copy: SocialStoryCopy) {
     publish,
     refreshStatus,
     removeImage,
+    setAudience,
     setCaption,
     setOverlayPlacement,
     setOverlayText,

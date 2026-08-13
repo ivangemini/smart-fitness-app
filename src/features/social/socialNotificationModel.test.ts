@@ -39,7 +39,9 @@ const notification = (
       ? '00000000-0000-4000-8000-000000000102'
       : null,
   storyId:
-    type === 'story_like' || type === 'story_reaction'
+    type === 'story_like' ||
+    type === 'story_reaction' ||
+    type === 'story_reply'
       ? '00000000-0000-4000-8000-000000000301'
       : null,
   readAt: null,
@@ -111,6 +113,17 @@ describe('social notification model', () => {
         notification(
           '00000000-0000-4000-8000-000000000203',
           'story_reaction',
+        ),
+      ),
+    ).toEqual({
+      kind: 'story',
+      storyId: '00000000-0000-4000-8000-000000000301',
+    });
+    expect(
+      getSocialNotificationTarget(
+        notification(
+          '00000000-0000-4000-8000-000000000204',
+          'story_reply',
         ),
       ),
     ).toEqual({

@@ -61,7 +61,8 @@ export const getSocialNotificationTarget = (
   }
   if (
     notification.type === 'story_like' ||
-    notification.type === 'story_reaction'
+    notification.type === 'story_reaction' ||
+    notification.type === 'story_reply'
   ) {
     return { kind: 'story', storyId: notification.storyId! };
   }

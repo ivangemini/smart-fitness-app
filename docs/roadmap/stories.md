@@ -11,17 +11,22 @@ This is the focused roadmap for Social Stories across:
 
 It separates source/CI completion from deployment, runtime and release evidence. Exact code, migrations, tests and current Git history override this document if it becomes stale. Stories remain server-authoritative Social data and must not be moved into private revisioned `AppState` sync.
 
+The reviewed S10 product/privacy contract is `docs/architecture/stories-s10-contract.md`.
+
 ## Current checkpoint
 
-Audited against the merged S9-F checkpoint:
+Merged baseline:
 
-- mobile `main` after PR #641: `a5da4b85ac42f9560faa5fd0516fef2244e9c7a7`;
-- backend `main` after PR #228: `e23fd62c31c3067c96898138efa2bbf60f2b1d0a`;
-- mobile PR #641 exact validated head `28f9c1c0f3019efc73f3a78d7aa801469a3fe96e`, Mobile CI #2207 / run `31598972282` success;
-- backend PR #228 exact validated head `cec2e772672ac073fc606a3358e79c85d0117109`, Backend CI #1635 / run `31607002861`, Backend PostgreSQL CI #242 / run `31607002889`, Account Deletion Receipt CI #324 / run `31607002829` all success;
-- earlier image-only Stories foundation and S9-A through S9-E merges remain part of the source baseline.
+- mobile `main` after S9-F PR #641: `a5da4b85ac42f9560faa5fd0516fef2244e9c7a7`;
+- backend `main` after S9-F PR #228: `e23fd62c31c3067c96898138efa2bbf60f2b1d0a`;
+- S9-A through S9-F remain merged and exact-head source/CI-complete.
 
-**S9-A through S9-F are source/CI-complete. There is no remaining approved autonomous source package inside S9.** Environment, production migration execution, physical-device, provider and release evidence remain separately gated.
+Explicitly prioritized active S10 package:
+
+- mobile PR #643 implements S10-A through S10-E; runtime/source head `692dea96e692fdecdb9db87341c5758cdf2fed01` passed Mobile CI #2217 / run `31631890545`;
+- backend PR #229 implements the server-authoritative S10-A through S10-E boundary; current source head at this documentation checkpoint is `fb68a88844fe895588a477cefa971e5fae8328ac` and must pass exact-head Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI before backend source/CI completion is claimed.
+
+Environment, production migration execution, physical-device, provider and release evidence remain separately gated.
 
 ## Scope vocabulary
 
@@ -143,12 +148,6 @@ Product/privacy contract:
 - owner export never receives liker identity; requesting-user export remains bounded and excludes target Story/owner identity;
 - Like state does not alter Home ordering/ranking and is not an analytics/recommendation signal.
 
-Source/CI evidence:
-
-- backend PR #221 exact head `c508be7b39063dbefe88868701fe3516c94e4d17` passed Backend CI #1596, Backend PostgreSQL CI #203 and Account Deletion Receipt CI #285 before merge `2c2d46c255f8a0a47256d0f24bdb20608e859696`;
-- mobile PR #626 exact head `f1c91e70f1adf99a32d331356a1d61f27cd926d0` passed Mobile CI #2193 before merge `708d5b48eff2807f33ef89fa57ad9fde6200d3de`;
-- migration `0045_social_story_likes` is merged source only; no production execution is claimed.
-
 ## S9-E — bounded Story Reactions
 
 Status: **source-complete and exact-head backend/mobile CI-complete; deployed migration/runtime evidence remains gated.**
@@ -166,12 +165,6 @@ Product/privacy contract:
 - lifecycle, block, account-deletion and visibility authority remain server-owned;
 - reaction state does not affect chronological Following ordering, ranking, recommendations, analytics or private `AppState` sync.
 
-Source/CI evidence:
-
-- backend PR #226 exact head `89113fae25ee9c6653ad247f412450c69e05f10c` passed Backend CI #1623 / run `31584950358`, Backend PostgreSQL CI #230 / run `31584950352`, and Account Deletion Receipt CI #312 / run `31584950445` before merge `677231145d4fc87b8f2e9f2cc6e3d2ab96b76dab`;
-- mobile PR #636 exact head `af61806ee4cb7a64fbfc70c0c935dd39971d4993` passed Mobile CI #2203 / run `31591283734` before merge `98dcd668c91533b5dafb0f443f70b24c02824a8a`;
-- the S9-E migration is merged source only; no production migration execution is claimed.
-
 ## S9-F — bounded Story interaction notifications
 
 Status: **source-complete and exact-head backend/mobile CI-complete; deployment/runtime/push expansion remains gated or out of scope.**
@@ -182,52 +175,114 @@ S9-F uses the existing in-app Social Notification Center. It is not a new push-n
 
 - existing `social_notifications` supports `story_like` and `story_reaction` types;
 - nullable `story_id` FK targets `social_stories` with strict notification target-shape constraints;
-- migration `0048_story_interaction_notifications` adds the Story target/index and updates closed notification type/shape checks;
-- Story Like creates one deduped in-app notification transactionally with the Like mutation; Unlike removes the matching notification;
-- Story Reaction creates one deduped in-app notification transactionally with set/replace; clear removes it;
-- reaction replacement retains one stable per-story/per-actor notification identity rather than generating duplicates;
+- Story Like/Reaction mutations create/remove deduped in-app notifications transactionally;
 - self notifications are suppressed;
 - Story owner delete/24-hour expiry clears Story-targeted notifications along with Story interaction lifecycle cleanup;
 - notification read-state, pagination, actor moderation/block filtering and existing auth authority are reused;
-- `social_notifications` remains permanently excluded from ownership data export; Story target internal identity is explicitly part of the excluded notification data classes;
 - no APNs, FCM, email, SMS or external delivery provider was introduced.
 
 ### Mobile result
 
 - existing Social notification contracts accept `story_like` and `story_reaction`;
-- notification DTO has strict `storyId: string | null` target semantics;
-- strict parser target-shape validation prevents Story notifications from carrying workout post/comment targets and vice versa;
-- the parser accepts the legacy pre-S9-F notification payload where `storyId` is absent and normalizes it to `null`;
-- notification model maps Story events to `{ kind: 'story', storyId }`;
-- Notification Center taps route to existing `/social/story/[storyId]`;
+- strict Story targeting routes taps to the existing Story viewer;
+- legacy pre-S9-F payloads without `storyId` remain accepted and normalize to `null`;
 - existing optimistic read-state, pagination, auth refresh, stale notification removal and fail-soft behavior are retained;
-- EN/RU copy covers Story Like and Story Reaction activity;
-- no new notification screen, Story viewer, local durable notification authority or private `AppState` sync was added.
+- no local durable notification authority or private `AppState` sync was added.
 
 ### Source/CI evidence
 
 - backend PR #228 exact head `cec2e772672ac073fc606a3358e79c85d0117109` passed Backend CI #1635 / run `31607002861`, Backend PostgreSQL CI #242 / run `31607002889`, and Account Deletion Receipt CI #324 / run `31607002829` before merge `e23fd62c31c3067c96898138efa2bbf60f2b1d0a`;
 - mobile PR #641 exact head `28f9c1c0f3019efc73f3a78d7aa801469a3fe96e` passed Mobile CI #2207 / run `31598972282` before merge `a5da4b85ac42f9560faa5fd0516fef2244e9c7a7`;
-- final backend PostgreSQL validation proved migration application/idempotency, migrated-schema checks, the complete Social API integration suite and sync correctness on the exact validated head;
 - migration `0048_story_interaction_notifications` is merged source only; this roadmap does not claim staging/production execution.
 
-### Rollout compatibility rule
+### Historical S9-F rollout compatibility
 
-The S9-F backend response extension adds `storyId` to strict notification DTOs. The merged S9-F mobile parser is intentionally compatible with both the legacy payload without `storyId` and the new payload with the field. Therefore a later authorized rollout must put a compatible mobile client in place before activating the backend response extension.
+The S9-F backend notification response adds `storyId`; the compatible S9-F mobile parser understands both the legacy payload without `storyId` and the strict Story-targeted payload. A later S9-F-specific response activation therefore requires that compatible mobile parser first.
 
 No backend deployment, production migration execution, OTA/EAS publication, native build/install, credential/provider change or production activation occurred as part of S9-F source completion.
 
 ## S9 closure
 
-**S9-A through S9-F are source/CI-complete. Remaining autonomous S9 source packages: 0.**
+**S9-A through S9-F are merged and source/CI-complete. Remaining autonomous S9 source packages: 0.**
 
-This closure means the reviewed source contracts are merged and validated. It does **not** mean Stories is fully deployed, physically validated or broadly released.
+S9 closure does not block later explicitly prioritized product work. The user subsequently authorized the bounded S10 contract below.
+
+## S10 — reviewed product expansion
+
+Status: **contract-approved and actively implemented; mobile runtime/source CI is complete, backend final exact-head CI is required before full S10 source/CI completion is claimed.**
+
+Authoritative contract: `docs/architecture/stories-s10-contract.md`.
+
+### S10-A — owner-only viewer list
+
+- Story owner may list identities recorded by authoritative Story views.
+- Non-owners cannot read another Story's viewer list.
+- block/moderation filtering remains server-owned.
+- this does not expose liker/reactor identity lists and does not alter S9-D/S9-E privacy.
+- viewer identity is not a ranking/analytics signal.
+
+### S10-B — Close Friends and per-Story audience
+
+Exact audience values:
+
+```text
+following | close_friends
+```
+
+- Close Friends membership requires the member to currently follow the owner.
+- membership is owner-managed server state, not mobile/AppState authority.
+- the database constrains membership to the corresponding authoritative follow edge.
+- unfollow removes only the now-invalid directional Close Friends edge; block removes both directions.
+- re-follow does not resurrect membership.
+- idempotent membership replay returns persisted membership metadata.
+- Story visibility still fails closed under block/private/moderation/lifecycle authority.
+
+### S10-C — bounded private replies
+
+- authenticated non-owner viewers may send a trimmed 1–1,000 character reply only to a currently readable active Story;
+- reply text uses the existing bounded Social text-moderation boundary;
+- backend reply creation is idempotent and rejects changed-content reuse of the same identity;
+- mobile preserves one idempotency key across retries of the same normalized Story/body, including response-loss retry;
+- owner may list replies to their Story;
+- this is not a DM inbox, public comment system or threaded chat product;
+- Story/block/delete/expiry/account lifecycle remains authoritative.
+
+### S10-D — provider-neutral push preference seam
+
+- a requested interaction-push preference may be stored;
+- `deliveryProviderAvailable=false` and `effectiveEnabled=false` remain authoritative;
+- there is no APNs/FCM token lifecycle, provider credential, native permission or external delivery worker in S10;
+- real push requires a separately reviewed provider/native/privacy/release package.
+
+### S10-E — owner Archive and Highlights
+
+- expired owned Stories may transition out of active delivery into owner Archive while retaining already approved managed media;
+- expiry clears ephemeral active interaction state according to lifecycle policy;
+- Archive is owner-only;
+- Highlights and item ordering are owner-managed server state;
+- explicit Story deletion follows managed-media cleanup and does not allow a Highlight to preserve a deleted Story;
+- Archive/Highlights do not reactivate an expired Story in the normal active Following/Close Friends API.
+
+### S10 source/CI evidence so far
+
+- mobile PR #643 runtime/source head `692dea96e692fdecdb9db87341c5758cdf2fed01` passed complete Mobile CI #2217 / run `31631890545`;
+- mobile reply retry hardening preserves one idempotency identity until confirmed success;
+- backend PR #229 includes migration `0049_social_stories_s10`, ownership/privacy/export integration and Close Friends follow-authority hardening; exact-head backend CI must be green before completion is claimed.
+
+### S10 rollout compatibility
+
+The S10 backend accepts the legacy create payload because omitted audience defaults to `following`. The S10 mobile client can send the new strict audience field, which the pre-S10 backend does not accept. Therefore any later authorized runtime rollout must use:
+
+1. compatible S10 backend deploy/migration/validation;
+2. S10 mobile release/activation after that.
+
+This is guidance only. It is not deployment, migration, native-build or production authorization.
 
 ## G1 — physical-device and standalone runtime evidence
 
 Status: **gated; not established by source CI**.
 
-Run only with explicit authorization. Evidence should cover applicable Story acquisition, camera/picker permissions, upload interruption/restart, moderation/publication, caption/overlay rendering, Like/Reaction UI, notification navigation, expiry, visibility, block behavior, account isolation, offline recovery, second-device convergence and supported iOS/Android release targets.
+Run only with explicit authorization. Evidence should cover applicable Story acquisition, camera/picker permissions, upload interruption/restart, moderation/publication, caption/overlay rendering, Like/Reaction UI, S10 audience/reply/viewer/archive/highlight surfaces, notification navigation, expiry, visibility, block behavior, account isolation, offline recovery, second-device convergence and supported iOS/Android release targets.
 
 Do not convert missing physical/runtime evidence into speculative source churn.
 
@@ -237,11 +292,11 @@ Status: **gated**.
 
 Before a broad Stories release, separately authorize and verify the selected environment for:
 
-- Stories migrations `0041` through `0048_story_interaction_notifications` as applicable to that environment;
+- Stories migrations `0041` through `0049_social_stories_s10` as applicable to that environment;
 - private upload/quarantine storage and signed finalize path;
 - text/image moderation state transitions under selected provider configuration;
-- approved derivative delivery and retention cleanup;
-- Story interaction/notification lifecycle against the deployed database;
+- approved derivative delivery and Archive/retention cleanup;
+- Story audience/reply/interaction/notification lifecycle against the deployed database;
 - failure/retry behavior and privacy-safe operational evidence.
 
 No migration execution, provider activation, credentials or deployment is authorized by this roadmap.
@@ -252,29 +307,28 @@ Status: **gated**.
 
 Broad-release evidence must remain consistent with Social privacy/moderation/release policy, including account deletion, accessibility, localization, rollback/recovery and any required legal/policy review.
 
-## Product expansion inventory after S9
+## Product expansion inventory after S10
 
-Outside the completed S9-F source contract:
+Outside the reviewed S10 source contract:
 
 1. richer composition: free positioning, multiple text blocks, style controls, drawings, stickers/effects or multi-asset composition;
-2. richer Story interactions: replies, DMs, liker/reactor identity lists or threaded interaction surfaces;
-3. push notifications / APNs / FCM or other external delivery channels;
-4. per-Story audience controls / Close Friends;
+2. DMs or threaded Story chat beyond the bounded private reply contract;
+3. real push notifications / APNs / FCM or another external delivery provider;
+4. liker/reactor identity lists beyond the separate owner viewer-list contract;
 5. video Stories and video-specific acquisition/transcoding/moderation/delivery;
-6. archive/highlights or other owner-visible post-expiry persistence;
-7. owner viewer-list surface;
-8. music and advanced media formats;
-9. Story analytics, recommendation or ranking signals.
+6. music and advanced media formats;
+7. Story analytics, recommendation or ranking signals;
+8. additional audience products beyond `following | close_friends`.
 
 These remain candidates/deferred until separately contracted.
 
 ## Expansion dependency order
 
-For an approved Stories expansion:
+For another approved Stories expansion:
 
 1. define the exact product/privacy contract;
 2. extend backend authority/contracts first when persistence, visibility, moderation, notifications or media lifecycle changes;
-3. add strict mobile contracts/parsers only after compatible backend merge, unless an explicitly reviewed compatibility-first rollout requires otherwise;
+3. add strict mobile contracts/parsers only after compatibility and rollout order are reviewed;
 4. add the smallest coherent mobile product surface;
 5. require exact-head source CI;
 6. collect separately authorized runtime/environment evidence when native/provider/release behavior is involved.

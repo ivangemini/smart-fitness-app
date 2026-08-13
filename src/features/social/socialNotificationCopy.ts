@@ -28,6 +28,7 @@ const en = {
   workoutComment: 'commented on your published workout.',
   storyLike: 'liked your Story.',
   storyReaction: 'reacted to your Story.',
+  storyReply: 'replied to your Story.',
   loadCursor: 'This notification page expired. Reload notifications from the beginning.',
   loadOffline: 'Connect to the internet to load notifications.',
   loadSession: 'Your session expired. Sign in again.',
@@ -64,6 +65,7 @@ const ru: SocialNotificationCopy = {
   workoutComment: 'оставил(а) комментарий к вашей тренировке.',
   storyLike: 'поставил(а) отметку «Нравится» вашей Story.',
   storyReaction: 'отреагировал(а) на вашу Story.',
+  storyReply: 'ответил(а) на вашу Story.',
   loadCursor: 'Страница уведомлений устарела. Загрузите список сначала.',
   loadOffline: 'Подключитесь к интернету, чтобы загрузить уведомления.',
   loadSession: 'Сессия истекла. Войдите снова.',
@@ -84,5 +86,6 @@ export const getSocialNotificationMessage = (
   if (type === 'workout_reaction') return copy.workoutReaction;
   if (type === 'workout_comment') return copy.workoutComment;
   if (type === 'story_like') return copy.storyLike;
-  return copy.storyReaction;
+  if (type === 'story_reaction') return copy.storyReaction;
+  return copy.storyReply;
 };

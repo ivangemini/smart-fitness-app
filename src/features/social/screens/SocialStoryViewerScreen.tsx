@@ -29,6 +29,8 @@ import { useAppTheme } from '@/theme/AppThemeProvider';
 import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
 import { getSocialStoryCopy } from '../socialStoryCopy';
+import { getSocialStoryExpansionCopy } from '../socialStoryExpansionCopy';
+import { SocialStoryReplySurface } from '../SocialStoryReplySurface';
 import {
   getSocialStoryLikeSurfaceMode,
   loadSocialStoryLikeSurface,
@@ -50,6 +52,7 @@ export default function SocialStoryViewerScreen() {
   const { isAuthenticated, ready, refresh, session } = useAuthSession();
   const { locale } = useLocalization();
   const copy = getSocialStoryCopy(locale);
+  const expansionCopy = getSocialStoryExpansionCopy(locale);
   const safeAreaInsets = useSafeAreaInsets();
   const { colors, resolvedAppearance } = useAppTheme();
   const glass = useMemo(
@@ -454,16 +457,28 @@ export default function SocialStoryViewerScreen() {
                 storyId={story.id}
               />
             ) : null}
+            <SocialStoryReplySurface
+              api={socialApi}
+              copy={expansionCopy}
+              owner={canDelete}
+              storyId={story.id}
+            />
             {likeErrorMessage ? (
               <InlineError message={likeErrorMessage} />
             ) : null}
             {errorMessage ? <InlineError message={errorMessage} /> : null}
             {canDelete ? (
-              <SecondaryButton
-                label={copy.deleteStory}
-                loading={deleting}
-                onPress={confirmDelete}
-              />
+              <>
+                <SecondaryButton
+                  label={expansionCopy.manageStories}
+                  onPress={() => router.push('/social/story/settings')}
+                />
+                <SecondaryButton
+                  label={copy.deleteStory}
+                  loading={deleting}
+                  onPress={confirmDelete}
+                />
+              </>
             ) : null}
           </>
         ) : (

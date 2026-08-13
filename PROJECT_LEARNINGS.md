@@ -118,8 +118,14 @@ Automatic application remains prohibited. Do not invent a client-only compensati
 ## Social and Stories
 
 - Social, Stories, and managed media are server-authoritative domains. Do not place them inside private revisioned `AppState` synchronization.
-- Reuse the existing Social auth, profile/follow/block/restriction, moderation, managed-media, retention, and account-deletion authority instead of creating parallel client or backend systems.
-- Story v1 is one owned approved `story_image`, image-only, with server-derived 24-hour expiry. Do not add arbitrary URLs, client-authored expiry, caption/text overlay, or video without a reviewed contract.
+- Reuse the existing Social auth, profile/follow/block/restriction, moderation, managed-media, retention, notification and account-deletion authority instead of creating parallel client or backend systems.
+- Story v1 remains one owned approved managed `story_image`; later reviewed S9/S10 slices add bounded metadata/interactions/audience/archive behavior around that authority rather than replacing it with arbitrary URLs or a client-owned lifecycle.
+- The current reviewed S10 contract is `docs/architecture/stories-s10-contract.md`; do not infer DMs, video, real push, ranking, advanced composition or new audience modes from S10.
+- Close Friends membership is subordinate to an authoritative follow edge. Unfollow must remove only the invalid directional membership; block clears both directions; re-follow must not resurrect prior membership.
+- When an idempotent mutation returns persisted creation metadata, replay must return that stored metadata rather than fabricating a new timestamp.
+- Story reply retry identity must survive transport/response loss: the same normalized `storyId + body` retains one idempotency key until confirmed success; editing the body or changing Story creates a new identity.
+- A stored push preference is not proof of push delivery. Until a separately reviewed provider/native package exists, `deliveryProviderAvailable=false` and `effectiveEnabled=false` remain the product truth.
+- S10 rollout compatibility is backend-first: the S10 backend accepts legacy create payloads with omitted audience, but the pre-S10 backend rejects the S10 mobile audience field.
 - Mobile Story parsing is strict: exact DTO keys, UUIDs, managed descriptor validation, exact lifecycle invariant, bounded unique pages, and stable error mapping.
 - A short-lived first-page cache is only a responsiveness layer. It must be account-scoped, bounded, re-parsed, drop expired Stories, and be immediately revalidated against the backend.
 - Keep Story state separate from Following feed state. Home can refresh both concurrently without making one surface authoritative for the other.
@@ -127,6 +133,8 @@ Automatic application remains prohibited. Do not invent a client-only compensati
 - Expired/deleted/private/blocked/restricted Stories must fail closed through the backend rather than being inferred from UI state.
 - Owner Story authoring must reuse the managed-media signed upload/finalize/polling authority. Create only from an owned `approved` `story_image` using its exact current `stateVersion`; revalidate authoritative Stories after create/delete instead of fabricating local server objects.
 - Keep unfinished unbound Story media restart-safe and account-scoped. Recover pending native image-picker results where supported, and delete replaced unbound assets through the managed-media owner API.
+- Archive/Highlights may retain an expired owner's approved Story image only under server authority; they must not make that Story active/readable through the normal Following/Close Friends surface.
+- Owner viewer lists are separate from S9 Like/Reaction identity privacy. Do not turn S10-A into liker/reactor identity lists.
 - When a previously blocked feature becomes real, update stale source guards to assert the new authoritative contract. Do not weaken them into no-op tests: preserve the original anti-fabrication intent. PR #533 exposed this with the old Home guard that banned the words `Story`/`Stories`; the replacement requires `useSocialStories` and still rejects mock/demo Story data.
 - Temporary CI diagnostics must be removed before merge and the permanent workflow restored exactly. Use diagnostics to identify a blocker, not as a permanent bypass.
 
