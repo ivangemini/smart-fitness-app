@@ -9,6 +9,7 @@ Replace the current single long Settings scroll with a compact grouped navigatio
 The root screen contains navigation rows rather than embedded forms.
 
 ### Account
+- Account & security
 - Profile & personal details
 
 ### Preferences
@@ -29,13 +30,14 @@ Visible only under the existing support/development gate.
 
 ## Child-screen ownership
 
-- `settings/profile` owns AuthGate and PersonalDetails content and links to Social profile where applicable.
+- `settings/account` owns AuthGate/account identity, sessions, password, logout and account deletion behavior.
+- `settings/profile` owns personal details and links to Social profile where applicable; it must not embed account-security actions.
 - `settings/appearance` owns appearance mode.
 - `settings/language` owns language preference.
 - `settings/units` owns weight/length/energy units.
 - `settings/data-sync` owns existing SyncSettings content.
 - `settings/privacy` owns existing Privacy content.
-- `settings/about` owns existing About content.
+- `settings/about` owns app/build/runtime/legal information only; Coach/Companion history is not an About setting.
 - `settings/developer` owns OTA/runtime/local performance diagnostics and onboarding reset under the existing developer/support gate.
 
 ## UI contract
@@ -47,6 +49,7 @@ Visible only under the existing support/development gate.
 - No auth/session/sync business logic moves into the root Settings screen.
 - All screens use safe-area-aware vertical scrolling and remain usable on short devices and with larger text.
 - Developer/runtime details stay hidden outside the existing support/development condition.
+- Companion/Coach surfaces stay outside system-information screens unless the setting directly controls that product surface.
 
 ## Non-goals
 
