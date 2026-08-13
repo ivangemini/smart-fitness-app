@@ -17,6 +17,7 @@ import {
   type RemoteLabsRepository,
 } from '@/repositories/RemoteLabsRepository';
 
+import { uploadLabPhoto, type LabPhotoAsset } from './labPhotoUpload';
 import type {
   LabDocumentDto,
   LabResultDto,
@@ -28,8 +29,10 @@ export type LabsContextValue = {
   documents: LabDocumentDto[];
   markers: LabResultDto[];
   loading: boolean;
+  uploading: boolean;
   error: 'load_failed' | null;
   refresh(): Promise<void>;
+  uploadPhoto(asset: LabPhotoAsset): Promise<string>;
   getDocument(documentId: string): LabDocumentDto | null;
   getReview(documentId: string): Promise<LabReviewBundleDto>;
   reviewDraft(
@@ -49,6 +52,7 @@ export function LabsProvider({ children }: PropsWithChildren) {
   const [documents, setDocuments] = useState<LabDocumentDto[]>([]);
   const [markers, setMarkers] = useState<LabResultDto[]>([]);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<LabsContextValue['error']>(null);
   const apiClient = useMemo(
     () => createApiClient({ baseUrl: getMobileApiBaseUrl() }),
@@ -93,6 +97,20 @@ export function LabsProvider({ children }: PropsWithChildren) {
     void refresh();
   }, [refresh]);
 
+  const uploadPhoto = useCallback(
+    async (asset: LabPhotoAsset): Promise<string> => {
+      setUploading(true);
+      try {
+        const result = await uploadLabPhoto(asset, repository);
+        await refresh();
+        return result.documentId;
+      } finally {
+        setUploading(false);
+      }
+    },
+    [refresh, repository],
+  );
+
   const getDocument = useCallback(
     (documentId: string) =>
       documents.find((document) => document.id === documentId) ?? null,
@@ -104,8 +122,10 @@ export function LabsProvider({ children }: PropsWithChildren) {
       documents,
       markers,
       loading,
+      uploading,
       error,
       refresh,
+      uploadPhoto,
       getDocument,
       getReview: (documentId) => repository.getReview(documentId),
       reviewDraft: (documentId, draftId, action) =>
@@ -120,7 +140,17 @@ export function LabsProvider({ children }: PropsWithChildren) {
       getDocumentResults: (documentId) => repository.getDocumentResults(documentId),
       getMarkerHistory: (markerId, limit) => repository.getMarkerHistory(markerId, limit),
     }),
-    [documents, error, getDocument, loading, markers, refresh, repository],
+    [
+      documents,
+      error,
+      getDocument,
+      loading,
+      markers,
+      refresh,
+      repository,
+      uploadPhoto,
+      uploading,
+    ],
   );
 
   return <LabsContext.Provider value={value}>{children}</LabsContext.Provider>;
