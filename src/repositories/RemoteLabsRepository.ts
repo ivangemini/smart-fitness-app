@@ -2,6 +2,7 @@ import { isApiError, type ApiClient } from '@/api/client';
 import type {
   LabCapabilitiesDto,
   LabDocumentDto,
+  LabPanelComparisonDto,
   LabResultDto,
   LabResultDraftDto,
   LabReviewBundleDto,
@@ -49,6 +50,10 @@ export type RemoteLabsRepository = {
   confirmDocument(documentId: string, collectedAt: string): Promise<LabDocumentDto>;
   getDocumentResults(documentId: string): Promise<LabResultDto[]>;
   getMarkerHistory(markerId: string, limit?: number): Promise<LabResultDto[]>;
+  comparePanels(
+    previousDocumentId: string,
+    currentDocumentId: string,
+  ): Promise<LabPanelComparisonDto>;
 };
 
 export class LabsAuthenticationRequiredError extends Error {
@@ -183,6 +188,16 @@ export const createRemoteLabsRepository = (
         ),
       );
       return response.results;
+    },
+    async comparePanels(previousDocumentId, currentDocumentId) {
+      const response = await withAuth((token) =>
+        apiClient.get<{ comparison: LabPanelComparisonDto }>('/v1/labs/compare', {
+          headers: authHeader(token),
+          query: { previousDocumentId, currentDocumentId },
+          retry: false,
+        }),
+      );
+      return response.comparison;
     },
   };
 };
