@@ -16,18 +16,24 @@ Completed in the current isolated Phase 12 branches:
 - Image upload client path is implemented for JPEG/PNG/HEIC, but is capability-gated and remains disabled until both private Labs storage and processing worker runtime are activated.
 - PDF remains contract-supported on the backend but has no mobile picker/native dependency yet.
 - Provider-neutral extraction contracts, confidence/provenance handling, deterministic normalization and laboratory-reference classification exist.
+- A deterministic extraction provider and fail-closed processing composition seam exist for test/development integration without production provider activation.
 - Review UI supports accept, exclude and manual correction; canonical history is written only after confirmation.
 - Empty extraction and all-excluded confirmation are rejected.
+- Failed extraction can be manually re-queued only by the document owner and only when processing is explicitly available; no automatic retry loop is enabled.
 - Confirmed marker read models, attention surfaces and marker history charts are implemented.
-- Labs import capabilities are fail-closed: source code does not activate production storage, worker, OCR provider, deployment, migration execution or native release work.
+- Latest-two confirmed panel comparison is implemented end-to-end. Comparison describes only movement in stored laboratory-reference classification; changed units, unknown classifications or changed reference intervals are reported as not comparable.
+- Labs structured document/draft/result data is included in the dedicated `laboratory_results_and_documents` data-access-export surface; private object keys, raw bytes and processing internals are excluded.
+- Account deletion now removes dedicated private Labs objects before database cascade and fails closed if required Labs storage cleanup is unavailable.
+- Backend privacy inventory includes the private laboratory data group and its raw-object lifecycle.
+- Labs import capabilities remain fail-closed: source code does not activate production storage, worker, OCR provider, deployment, migration execution or native release work.
 
 Next implementation focus:
 
-1. processing runtime composition and deterministic development/test provider;
-2. stronger route/repository tests for cross-user denial and capability gating;
-3. document lifecycle cleanup/retry semantics;
-4. panel-level comparison/read model;
-5. privacy export/deletion coverage;
+1. biomarker history windows (3M / 6M / 1Y / All);
+2. user-selected multi-marker charting with compatible units/axes;
+3. normalized relative-to-reference visualization mode;
+4. arbitrary two-panel selection UX beyond latest-two convenience comparison;
+5. stronger route-level integration tests where the existing harness supports them;
 6. PDF native picker only after an explicit native dependency gate.
 
 ## Product goal
