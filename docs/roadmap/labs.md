@@ -26,27 +26,37 @@ Completed in the current isolated Phase 12 branches:
 - Latest-two and arbitrary two-panel comparison are implemented end-to-end. Comparison describes only movement in stored laboratory-reference classification; changed units, unknown classifications or changed reference intervals are reported as not comparable.
 - Internal read-only Coach/Labs contracts and a bounded owner-scoped service exist for `get_lab_results`, `get_biomarker_history`, `get_abnormal_biomarkers` and `compare_lab_panels`. They are not automatically exposed to a model/provider runtime.
 - A minimum-context interpretation builder exists for confirmed structured facts only. It selects the nearest previous confirmed panel, includes comparison facts and explicitly forbids raw-document inclusion or treatment mutation.
+- Interpretation context is fail-closed at 200 confirmed results per current/previous panel; a 201st sentinel result rejects the request instead of expanding provider context.
 - A deterministic changed-since-last summary maps panel changes to neutral `toward_reference`, `away_from_reference`, `stable`, `new` and `not_comparable` codes without health-outcome or causal claims.
-- Labs structured document/draft/result data is included in the dedicated `laboratory_results_and_documents` data-access-export surface; private object keys, raw bytes and processing internals are excluded.
-- Account deletion removes dedicated private Labs objects before database cascade and fails closed if required Labs storage cleanup is unavailable.
+- A structured interpretation output contract validates runtime shape, confidence, bounded finding counts/lengths and exact document/marker provenance against the confirmed input context.
+- A `StructuredModelClient` adapter seam exists, but provider/model provenance is taken from the transport response rather than model-generated fields.
+- An interpretation orchestrator now performs context build → audit start → provider execution → output/provenance validation → terminal audit success/failure.
+- The authenticated interpretation route is fail-closed by default and exists only when an explicit `labInterpretationProvider` dependency is supplied; the normal Coach model client does not activate it implicitly.
+- Interpretation audit persistence stores only bounded run metadata (versions, provider/model IDs, counts, latency/token usage and terminal error code), not raw documents, raw provider payloads or generated finding text.
+- Labs structured document/draft/result data plus bounded interpretation-run metadata are included in the dedicated `laboratory_results_and_documents` data-access-export surface; private object keys, raw bytes, provider payloads and processing internals are excluded.
+- Account deletion removes dedicated private Labs objects before database cascade and fails closed if required Labs storage cleanup is unavailable; interpretation audit rows cascade with the account-owned Labs graph.
 - Backend privacy inventory and operational-retention registry include the private laboratory data/object lifecycle. Private Labs source objects are an explicit account-scoped cleanup surface.
-- New Labs selection/review surfaces use safe-area-aware scroll layouts; shared buttons expose selected accessibility state, comparison/trend selectors expose selection semantics, and review errors use alert semantics.
-- Canvas trend charts expose localized assistive-technology summaries instead of being visual-only. Review correction fields have explicit accessibility labels and can wrap on smaller/Dynamic Type layouts.
-- Labs import capabilities remain fail-closed: source code does not activate production storage, worker, OCR provider, deployment, migration execution or native release work.
+- New Labs selection/review surfaces use safe-area-aware scroll layouts; shared buttons expose selected accessibility state, comparison/trend selectors expose selection semantics, and load/review/trend errors use alert semantics.
+- The primary Labs tab now explicitly consumes the top safe-area inset and delegates bottom clearance to the floating-tab layout helper.
+- Canvas trend charts expose localized assistive-technology summaries instead of being visual-only. Comparison rows, biomarker/document cards and trend legends wrap for Dynamic Type rather than truncating important labels.
+- Liquid Glass surfaces respect the iOS Reduce Transparency setting by disabling blur while retaining their non-blur surface fallback.
+- Labs import and interpretation capabilities remain fail-closed: source code does not activate production storage, worker, OCR provider, interpretation provider, deployment, migration execution or native release work.
 
 Validation status:
 
-- Unit/contract tests have been authored for normalization, classification, review, processing, storage, comparison, interpretation context, changed-since-last summary, history windows, multi-marker normalization, privacy export and Coach/Labs read tools.
-- A PostgreSQL integration test now exercises real Labs repository owner isolation for documents, document results, marker history and latest-marker reads using an isolated migrated test database when `DATABASE_URL` is available.
-- Privacy/account-deletion registry coverage now requires the private Labs object surface through the existing cross-surface plan test.
-- The current implementation pass has not produced a fresh local/native test run or device runtime evidence; source completion must not be described as a green release baseline yet.
+- Unit/contract tests have been authored for normalization, classification, review, processing, storage, comparison, interpretation context/output/orchestration/provider adapter, changed-since-last summary, history windows, multi-marker normalization, privacy export and Coach/Labs read tools.
+- PostgreSQL integration coverage exercises repository owner isolation, Labs HTTP owner/capability boundaries, retry lifecycle semantics and interpretation audit persistence when `DATABASE_URL` is available.
+- HTTP interpretation coverage verifies disabled-provider `503`, successful confirmed-owner execution/audit and cross-owner rejection before provider execution.
+- Privacy/account-deletion registry coverage requires the private Labs object surface through the existing cross-surface plan test, while the technical inventory must cover the interpretation audit table exactly once.
+- Mobile source-contract tests enforce scrolling/flex-grow layouts, no fixed primary layout heights/absolute positioning, explicit safe-area handling, Dynamic Type wrapping on comparison rows and Reduce Transparency behavior at the Liquid Glass primitive boundary.
+- A fresh exact-head CI/native/device run is still required before this source state may be described as a green release baseline.
 
 Next implementation focus:
 
-1. HTTP-level Labs integration coverage for capability gating/comparison boundaries where the app/auth test harness supports clean dependency injection;
-2. remaining reduced-transparency and physical small-screen/Dynamic Type evidence across Labs cards and charts;
-3. structured interpretation provider output validation/provenance, without activating an external provider or autonomous treatment mutation;
-4. explicit model-tool exposure policy for the implemented Coach/Labs read service, including minimum-context selection and audit/provenance;
+1. exact-head typecheck/test/schema-migration CI and repair of any resulting regressions;
+2. physical small-screen/Dynamic Type/VoiceOver device evidence when native validation is authorized;
+3. explicit product decision for when/how user-facing interpretation is surfaced; external provider remains disabled until retention/training/region/credential review is authorized;
+4. model-tool exposure policy for the implemented Coach/Labs read service; no automatic tool exposure in this phase;
 5. PDF native picker only after an explicit native dependency gate;
 6. native/device/release evidence only under the existing authorization gates.
 
@@ -78,6 +88,9 @@ Coach remains available as a hidden route and is intended to move toward a small
 - Relative-to-reference charts are visualization transforms, not universal clinical normalization. They require a valid two-sided source-laboratory interval and preserve access to the underlying absolute result.
 - AI interpretation consumes structured confirmed data where possible and returns structured, confidence-bearing explanatory output. It must not silently mutate lab facts.
 - Deterministic changed-since-last output is descriptive metadata only; `toward_reference` and `away_from_reference` are not statements that health improved or worsened.
+- Provider interpretation output must cite only document/marker identities that exist in the exact confirmed context supplied to that run. Unknown or malformed provenance fails closed.
+- Provider/model audit identity comes from the transport adapter, not from generated model fields.
+- Generated interpretation text and raw provider payloads are not persisted in the minimum audit table.
 - Coach/model access is minimum-context and read-only by default; raw Labs object access is not part of the Coach contract.
 - Provider activation, credentials, production migration/deployment and native runtime evidence remain separately gated.
 
@@ -144,17 +157,22 @@ Implemented source scope:
 - changed reference ranges fail closed to not-comparable.
 
 ### L12-K — AI interpretation
-Implemented provider-neutral foundation:
+Implemented source foundation:
 - owner-scoped minimum-context builder over confirmed structured facts only;
 - nearest previous confirmed panel selection and deterministic comparison facts;
+- hard 200-result-per-panel context bound;
 - deterministic changed-since-last structured summary;
+- runtime-validated bounded provider output with confidence and document/marker provenance;
+- explicit StructuredModel adapter seam using transport-owned provider/model provenance;
+- orchestration with terminal success/failure audit metadata;
+- explicit fail-closed authenticated route that requires an injected Labs interpretation provider;
+- data-access export and account-deletion coverage for bounded audit metadata;
 - explicit guardrails: no diagnosis inference from classification, no health-outcome claim from comparison, no raw source document, no treatment mutation.
 
-Still pending/gated:
-- external/provider interpretation invocation;
-- validated structured provider response with confidence/provenance;
-- user-facing explanatory interpretation UX;
-- provider retention/training/region review and credentials/runtime authorization.
+Still gated:
+- external provider selection/credentials/retention/training/region authorization;
+- automatic production runtime composition;
+- user-facing explanatory interpretation UI/product activation.
 
 ### L12-L — Coach tools
 Implemented internal read-only contracts/service:
@@ -167,27 +185,29 @@ The service is owner-scoped and bounded, returns confirmed structured facts only
 
 ### L12-M — Privacy lifecycle
 Implemented source scope:
-- Labs structured data included in the user data export surface;
+- Labs structured data and bounded interpretation audit metadata included in the user data export surface;
 - raw private Labs objects cleaned before database account deletion;
 - Labs database rows cascade with account deletion;
-- privacy inventory documents the laboratory domain;
+- privacy inventory documents the laboratory domain and interpretation-run metadata;
 - operational-retention registry treats private Labs source documents as an explicit account-scoped cleanup surface;
-- export excludes object keys, raw bytes and processing internals.
+- export excludes object keys, raw bytes, generated interpretation text, raw provider payloads and processing internals.
 
-Further integration evidence remains required for release-level completion.
+Further exact-head integration evidence remains required for release-level completion.
 
 ### L12-N — QA / Liquid Glass / responsive
-In progress:
+Source-complete audit scope:
 - safe-area-aware scrolling and home-indicator clearance on Labs routes;
 - keyboard-aware review form behavior;
 - selected/checked accessibility state on time-window, panel and trend selectors;
-- alert semantics for review/trend failures;
+- alert semantics for load/review/trend/comparison failures;
 - chart accessibility summaries for visual-only Skia surfaces;
 - correction form labels and wrapping behavior for smaller/Dynamic Type layouts;
-- PostgreSQL repository-level owner-isolation test coverage;
+- comparison, biomarker/document card and chart-legend wrapping for large text;
+- iOS Reduce Transparency disables Liquid Glass blur through the shared primitive;
+- PostgreSQL repository/HTTP/audit owner-isolation coverage;
 - no fixed absolute positioning introduced by the Labs screens.
 
-Still requires broader reduced-transparency and physical device-size evidence.
+Still requires physical device-size/VoiceOver evidence and exact-head CI.
 
 ### L12-O — provider/native/release evidence
 Authorization-gated only. This package does not itself authorize OCR/AI provider activation, PDF native dependency rollout, native build/install, backend deployment, production migrations, OTA/EAS publication or production data access.
