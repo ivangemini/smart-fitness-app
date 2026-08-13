@@ -1,0 +1,26 @@
+export const companionCopy = {
+  en: {
+    activeDays: 'active days',
+    active: 'Strong rhythm this week. Keep the pace that works for you.',
+    level: 'Level',
+    next: 'to next level',
+    rhythm: '7-day rhythm',
+    starting: 'Ready when you are. One completed training day starts the journey.',
+    steady: 'Steady progress. Your companion follows your real training history.',
+    subtitle: 'Your training companion grows from real completed training days.',
+    title: 'Companion',
+    xp: 'XP',
+  },
+  ru: {
+    activeDays: 'активных дней',
+    active: 'Хороший ритм на этой неделе. Сохраняй темп, который подходит тебе.',
+    level: 'Уровень',
+    next: 'до следующего уровня',
+    rhythm: 'Ритм за 7 дней',
+    starting: 'Готов начать вместе с тобой. Первый завершённый тренировочный день запускает прогресс.',
+    steady: 'Стабильный прогресс. Компаньон следует твоей реальной истории тренировок.',
+    subtitle: 'Твой тренировочный компаньон развивается по реальным завершённым тренировочным дням.',
+    title: 'Компаньон',
+    xp: 'XP',
+  },
+} as const;

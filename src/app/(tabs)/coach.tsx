@@ -9,6 +9,10 @@ import { AppCard } from '@/components/ui/AppCard';
 import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme';
+import { useWorkoutState } from '@/context/AppContext';
+import { companionCopy } from '@/features/companion/companionCopy';
+import { CompanionProgressCard } from '@/features/companion/CompanionProgressCard';
+import { deriveCompanionProgress } from '@/features/companion/companionProgression';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 
@@ -22,9 +26,12 @@ const COACH_ACTIONS = [
 
 export default function CoachScreen() {
   const { colors } = useAppTheme();
-  const { t } = useLocalization();
+  const { locale, t } = useLocalization();
+  const { workoutSessions } = useWorkoutState();
   const safeAreaInsets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const progress = useMemo(() => deriveCompanionProgress(workoutSessions), [workoutSessions]);
+  const copy = companionCopy[locale];
 
   return (
     <ScrollView
@@ -45,9 +52,11 @@ export default function CoachScreen() {
             onPress={() => router.back()}
           />
           <View style={styles.headerCopy}>
-            <SectionHeader title={t('tabs.coach')} subtitle={t('coach.screenSubtitle')} />
+            <SectionHeader title={copy.title} subtitle={copy.subtitle} />
           </View>
         </View>
+
+        <CompanionProgressCard colors={colors} locale={locale} progress={progress} />
 
         <AppCard>
           <Text style={styles.title}>{t('coach.toolsTitle')}</Text>
