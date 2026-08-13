@@ -21,20 +21,29 @@ Completed in the current isolated Phase 12 branches:
 - Empty extraction and all-excluded confirmation are rejected.
 - Failed extraction can be manually re-queued only by the document owner and only when processing is explicitly available; no automatic retry loop is enabled.
 - Confirmed marker read models, attention surfaces and marker history charts are implemented.
-- Latest-two confirmed panel comparison is implemented end-to-end. Comparison describes only movement in stored laboratory-reference classification; changed units, unknown classifications or changed reference intervals are reported as not comparable.
+- Biomarker history supports 3M / 6M / 1Y / All windows anchored to the latest confirmed result so archival data does not disappear merely because it is old.
+- Multi-marker trends support up to three selected biomarkers. Absolute mode is restricted to compatible units; relative-to-reference mode is dimensionless and requires a valid two-sided laboratory reference interval per plotted result.
+- Latest-two and arbitrary two-panel comparison are implemented end-to-end. Comparison describes only movement in stored laboratory-reference classification; changed units, unknown classifications or changed reference intervals are reported as not comparable.
+- Internal read-only Coach/Labs contracts and a bounded owner-scoped service exist for `get_lab_results`, `get_biomarker_history`, `get_abnormal_biomarkers` and `compare_lab_panels`. They are not automatically exposed to a model/provider runtime.
 - Labs structured document/draft/result data is included in the dedicated `laboratory_results_and_documents` data-access-export surface; private object keys, raw bytes and processing internals are excluded.
-- Account deletion now removes dedicated private Labs objects before database cascade and fails closed if required Labs storage cleanup is unavailable.
+- Account deletion removes dedicated private Labs objects before database cascade and fails closed if required Labs storage cleanup is unavailable.
 - Backend privacy inventory includes the private laboratory data group and its raw-object lifecycle.
+- New Labs selection/review surfaces use safe-area-aware scroll layouts; shared buttons expose selected accessibility state, comparison/trend selectors expose selection semantics, and review errors use alert semantics.
 - Labs import capabilities remain fail-closed: source code does not activate production storage, worker, OCR provider, deployment, migration execution or native release work.
+
+Validation status:
+
+- Unit/contract tests have been authored for normalization, classification, review, processing, storage, comparison, history windows, multi-marker normalization, privacy export and Coach/Labs read tools.
+- The current implementation pass has not produced a fresh local/native test run or device runtime evidence; source completion must not be described as a green release baseline yet.
 
 Next implementation focus:
 
-1. biomarker history windows (3M / 6M / 1Y / All);
-2. user-selected multi-marker charting with compatible units/axes;
-3. normalized relative-to-reference visualization mode;
-4. arbitrary two-panel selection UX beyond latest-two convenience comparison;
-5. stronger route-level integration tests where the existing harness supports them;
-6. PDF native picker only after an explicit native dependency gate.
+1. stronger HTTP/repository integration coverage for Labs ownership, capability gating and comparison boundaries where the existing PostgreSQL test harness supports it;
+2. remaining Dynamic Type/reduced-transparency/small-screen audit across Labs cards and charts;
+3. structured AI interpretation contract over confirmed facts, without provider activation or autonomous treatment mutation;
+4. explicit model-tool exposure policy for the implemented Coach/Labs read service, including minimum-context selection and audit/provenance;
+5. PDF native picker only after an explicit native dependency gate;
+6. native/device/release evidence only under the existing authorization gates.
 
 ## Product goal
 
@@ -60,7 +69,10 @@ Coach remains available as a hidden route and is intended to move toward a small
 - A laboratory-specific reference interval is authoritative for display of that result. A knowledge-base interval may provide secondary context only.
 - `in_range`, `borderline`, `out_of_range` and `significantly_out_of_range` are presentation classifications, not diagnoses.
 - No generic range excursion is labelled clinically urgent. Any future urgent rule requires a separately reviewed medical rule with required context.
+- Panel comparison may describe category movement only when units and the applicable laboratory reference interval are comparable; it must not label the user's health as improved or worsened.
+- Relative-to-reference charts are visualization transforms, not universal clinical normalization. They require a valid two-sided source-laboratory interval and preserve access to the underlying absolute result.
 - AI interpretation consumes structured confirmed data where possible and returns structured, confidence-bearing explanatory output. It must not silently mutate lab facts.
+- Coach/model access is minimum-context and read-only by default; raw Labs object access is not part of the Coach contract.
 - Provider activation, credentials, production migration/deployment and native runtime evidence remain separately gated.
 
 ## Planned packages
@@ -83,7 +95,7 @@ Coach remains available as a hidden route and is intended to move toward a small
 - existing Coach route remains reachable but is no longer a primary tab.
 
 ### L12-D — Backend Labs domain
-- owner-scoped documents, panels, results and processing jobs;
+- owner-scoped documents, results and processing jobs;
 - immutable source metadata and explicit result confirmation state;
 - idempotent mutations and bounded reads.
 
@@ -111,41 +123,54 @@ Coach remains available as a hidden route and is intended to move toward a small
 - edits are attributable to the user confirmation step.
 
 ### L12-I — History and charts
+Implemented source scope:
 - biomarker detail timeline;
 - 3M / 6M / 1Y / All windows;
-- user-selected multi-marker graphs with compatible axes;
-- normalized `relative to reference interval` comparison mode.
+- user-selected multi-marker graphs with compatible absolute axes;
+- normalized `relative to reference interval` visualization mode for valid two-sided intervals.
 
 ### L12-J — Panel comparison and attention surfaces
-- compare two panels;
-- improved / worsened / stable / new summaries without causal claims;
-- attention markers based on stored result classification.
+Implemented source scope:
+- latest-two convenience comparison and arbitrary two-panel selection;
+- classification-improved / classification-worsened / stable / new / not-comparable summaries without causal or health-outcome claims;
+- attention markers based on stored result classification;
+- changed reference ranges fail closed to not-comparable.
 
 ### L12-K — AI interpretation
+Pending beyond provider-neutral base contracts:
 - structured explanation layer over confirmed data;
 - changed-since-last-test summary;
 - confidence and provenance;
 - no diagnosis or autonomous treatment mutation.
 
 ### L12-L — Coach tools
-Candidate tool contracts:
+Implemented internal read-only contracts/service:
 - `get_lab_results`
 - `get_biomarker_history`
 - `get_abnormal_biomarkers`
 - `compare_lab_panels`
 
-Coach receives only the minimum structured context required for the request.
+The service is owner-scoped and bounded, returns confirmed structured facts only, and is not automatically wired into the model/provider runtime. Coach must receive only the minimum structured context required for the request.
 
 ### L12-M — Privacy lifecycle
-- include Labs structured data in user data export;
-- include raw private objects and database rows in account deletion cleanup;
-- test cross-user denial and deletion completeness.
+Implemented source scope:
+- Labs structured data included in the user data export surface;
+- raw private Labs objects cleaned before database account deletion;
+- Labs database rows cascade with account deletion;
+- privacy inventory documents the laboratory domain;
+- export excludes object keys, raw bytes and processing internals.
+
+Further integration evidence remains required for release-level completion.
 
 ### L12-N — QA / Liquid Glass / responsive
-- small-screen, Dynamic Island/notch, home-indicator and keyboard reachability;
-- reduced-transparency fallback;
-- no nested decorative glass;
-- accessibility labels and Dynamic Type where applicable.
+In progress:
+- safe-area-aware scrolling and home-indicator clearance on Labs routes;
+- keyboard-aware review form behavior;
+- selected/checked accessibility state on time-window, panel and trend selectors;
+- alert semantics for review/trend failures;
+- no fixed absolute positioning introduced by the Labs screens.
+
+Still requires broader Dynamic Type, reduced-transparency and device-size evidence.
 
 ### L12-O — provider/native/release evidence
 Authorization-gated only. This package does not itself authorize OCR/AI provider activation, PDF native dependency rollout, native build/install, backend deployment, production migrations, OTA/EAS publication or production data access.
