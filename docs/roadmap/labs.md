@@ -25,22 +25,27 @@ Completed in the current isolated Phase 12 branches:
 - Multi-marker trends support up to three selected biomarkers. Absolute mode is restricted to compatible units; relative-to-reference mode is dimensionless and requires a valid two-sided laboratory reference interval per plotted result.
 - Latest-two and arbitrary two-panel comparison are implemented end-to-end. Comparison describes only movement in stored laboratory-reference classification; changed units, unknown classifications or changed reference intervals are reported as not comparable.
 - Internal read-only Coach/Labs contracts and a bounded owner-scoped service exist for `get_lab_results`, `get_biomarker_history`, `get_abnormal_biomarkers` and `compare_lab_panels`. They are not automatically exposed to a model/provider runtime.
+- A minimum-context interpretation builder exists for confirmed structured facts only. It selects the nearest previous confirmed panel, includes comparison facts and explicitly forbids raw-document inclusion or treatment mutation.
+- A deterministic changed-since-last summary maps panel changes to neutral `toward_reference`, `away_from_reference`, `stable`, `new` and `not_comparable` codes without health-outcome or causal claims.
 - Labs structured document/draft/result data is included in the dedicated `laboratory_results_and_documents` data-access-export surface; private object keys, raw bytes and processing internals are excluded.
 - Account deletion removes dedicated private Labs objects before database cascade and fails closed if required Labs storage cleanup is unavailable.
-- Backend privacy inventory includes the private laboratory data group and its raw-object lifecycle.
+- Backend privacy inventory and operational-retention registry include the private laboratory data/object lifecycle. Private Labs source objects are an explicit account-scoped cleanup surface.
 - New Labs selection/review surfaces use safe-area-aware scroll layouts; shared buttons expose selected accessibility state, comparison/trend selectors expose selection semantics, and review errors use alert semantics.
+- Canvas trend charts expose localized assistive-technology summaries instead of being visual-only. Review correction fields have explicit accessibility labels and can wrap on smaller/Dynamic Type layouts.
 - Labs import capabilities remain fail-closed: source code does not activate production storage, worker, OCR provider, deployment, migration execution or native release work.
 
 Validation status:
 
-- Unit/contract tests have been authored for normalization, classification, review, processing, storage, comparison, history windows, multi-marker normalization, privacy export and Coach/Labs read tools.
+- Unit/contract tests have been authored for normalization, classification, review, processing, storage, comparison, interpretation context, changed-since-last summary, history windows, multi-marker normalization, privacy export and Coach/Labs read tools.
+- A PostgreSQL integration test now exercises real Labs repository owner isolation for documents, document results, marker history and latest-marker reads using an isolated migrated test database when `DATABASE_URL` is available.
+- Privacy/account-deletion registry coverage now requires the private Labs object surface through the existing cross-surface plan test.
 - The current implementation pass has not produced a fresh local/native test run or device runtime evidence; source completion must not be described as a green release baseline yet.
 
 Next implementation focus:
 
-1. stronger HTTP/repository integration coverage for Labs ownership, capability gating and comparison boundaries where the existing PostgreSQL test harness supports it;
-2. remaining Dynamic Type/reduced-transparency/small-screen audit across Labs cards and charts;
-3. structured AI interpretation contract over confirmed facts, without provider activation or autonomous treatment mutation;
+1. HTTP-level Labs integration coverage for capability gating/comparison boundaries where the app/auth test harness supports clean dependency injection;
+2. remaining reduced-transparency and physical small-screen/Dynamic Type evidence across Labs cards and charts;
+3. structured interpretation provider output validation/provenance, without activating an external provider or autonomous treatment mutation;
 4. explicit model-tool exposure policy for the implemented Coach/Labs read service, including minimum-context selection and audit/provenance;
 5. PDF native picker only after an explicit native dependency gate;
 6. native/device/release evidence only under the existing authorization gates.
@@ -72,6 +77,7 @@ Coach remains available as a hidden route and is intended to move toward a small
 - Panel comparison may describe category movement only when units and the applicable laboratory reference interval are comparable; it must not label the user's health as improved or worsened.
 - Relative-to-reference charts are visualization transforms, not universal clinical normalization. They require a valid two-sided source-laboratory interval and preserve access to the underlying absolute result.
 - AI interpretation consumes structured confirmed data where possible and returns structured, confidence-bearing explanatory output. It must not silently mutate lab facts.
+- Deterministic changed-since-last output is descriptive metadata only; `toward_reference` and `away_from_reference` are not statements that health improved or worsened.
 - Coach/model access is minimum-context and read-only by default; raw Labs object access is not part of the Coach contract.
 - Provider activation, credentials, production migration/deployment and native runtime evidence remain separately gated.
 
@@ -127,7 +133,8 @@ Implemented source scope:
 - biomarker detail timeline;
 - 3M / 6M / 1Y / All windows;
 - user-selected multi-marker graphs with compatible absolute axes;
-- normalized `relative to reference interval` visualization mode for valid two-sided intervals.
+- normalized `relative to reference interval` visualization mode for valid two-sided intervals;
+- localized non-clinical accessibility summaries for Canvas charts.
 
 ### L12-J — Panel comparison and attention surfaces
 Implemented source scope:
@@ -137,11 +144,17 @@ Implemented source scope:
 - changed reference ranges fail closed to not-comparable.
 
 ### L12-K — AI interpretation
-Pending beyond provider-neutral base contracts:
-- structured explanation layer over confirmed data;
-- changed-since-last-test summary;
-- confidence and provenance;
-- no diagnosis or autonomous treatment mutation.
+Implemented provider-neutral foundation:
+- owner-scoped minimum-context builder over confirmed structured facts only;
+- nearest previous confirmed panel selection and deterministic comparison facts;
+- deterministic changed-since-last structured summary;
+- explicit guardrails: no diagnosis inference from classification, no health-outcome claim from comparison, no raw source document, no treatment mutation.
+
+Still pending/gated:
+- external/provider interpretation invocation;
+- validated structured provider response with confidence/provenance;
+- user-facing explanatory interpretation UX;
+- provider retention/training/region review and credentials/runtime authorization.
 
 ### L12-L — Coach tools
 Implemented internal read-only contracts/service:
@@ -158,6 +171,7 @@ Implemented source scope:
 - raw private Labs objects cleaned before database account deletion;
 - Labs database rows cascade with account deletion;
 - privacy inventory documents the laboratory domain;
+- operational-retention registry treats private Labs source documents as an explicit account-scoped cleanup surface;
 - export excludes object keys, raw bytes and processing internals.
 
 Further integration evidence remains required for release-level completion.
@@ -168,9 +182,12 @@ In progress:
 - keyboard-aware review form behavior;
 - selected/checked accessibility state on time-window, panel and trend selectors;
 - alert semantics for review/trend failures;
+- chart accessibility summaries for visual-only Skia surfaces;
+- correction form labels and wrapping behavior for smaller/Dynamic Type layouts;
+- PostgreSQL repository-level owner-isolation test coverage;
 - no fixed absolute positioning introduced by the Labs screens.
 
-Still requires broader Dynamic Type, reduced-transparency and device-size evidence.
+Still requires broader reduced-transparency and physical device-size evidence.
 
 ### L12-O — provider/native/release evidence
 Authorization-gated only. This package does not itself authorize OCR/AI provider activation, PDF native dependency rollout, native build/install, backend deployment, production migrations, OTA/EAS publication or production data access.
