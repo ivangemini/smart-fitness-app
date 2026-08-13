@@ -39,6 +39,7 @@ export type RemoteLabsRepository = {
     byteSize: number;
   }): Promise<LabUploadEnvelope>;
   completeUpload(documentId: string): Promise<LabDocumentDto>;
+  retryDocument(documentId: string): Promise<LabDocumentDto>;
   getReview(documentId: string): Promise<LabReviewBundleDto>;
   reviewDraft(
     documentId: string,
@@ -121,6 +122,16 @@ export const createRemoteLabsRepository = (
       const response = await withAuth((token) =>
         apiClient.post<{ document: LabDocumentDto }, undefined>(
           `/v1/labs/documents/${encodeURIComponent(documentId)}/upload-complete`,
+          undefined,
+          { headers: authHeader(token), retry: false },
+        ),
+      );
+      return response.document;
+    },
+    async retryDocument(documentId) {
+      const response = await withAuth((token) =>
+        apiClient.post<{ document: LabDocumentDto }, undefined>(
+          `/v1/labs/documents/${encodeURIComponent(documentId)}/retry`,
           undefined,
           { headers: authHeader(token), retry: false },
         ),
