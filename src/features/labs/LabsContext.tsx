@@ -19,13 +19,22 @@ import {
 
 import { uploadLabPhoto, type LabPhotoAsset } from './labPhotoUpload';
 import type {
+  LabCapabilitiesDto,
   LabDocumentDto,
   LabResultDto,
   LabResultDraftDto,
   LabReviewBundleDto,
 } from './types';
 
+const UNAVAILABLE_CAPABILITIES: LabCapabilitiesDto = {
+  uploadConfigured: false,
+  processingAvailable: false,
+  importAvailable: false,
+  reviewRequired: true,
+};
+
 export type LabsContextValue = {
+  capabilities: LabCapabilitiesDto;
   documents: LabDocumentDto[];
   markers: LabResultDto[];
   loading: boolean;
@@ -49,6 +58,7 @@ const LabsContext = createContext<LabsContextValue | null>(null);
 
 export function LabsProvider({ children }: PropsWithChildren) {
   const { isAuthenticated, ready, refresh: refreshAuth, session } = useAuthSession();
+  const [capabilities, setCapabilities] = useState<LabCapabilitiesDto>(UNAVAILABLE_CAPABILITIES);
   const [documents, setDocuments] = useState<LabDocumentDto[]>([]);
   const [markers, setMarkers] = useState<LabResultDto[]>([]);
   const [loading, setLoading] = useState(false);
@@ -70,6 +80,7 @@ export function LabsProvider({ children }: PropsWithChildren) {
 
   const refresh = useCallback(async () => {
     if (!ready || !isAuthenticated) {
+      setCapabilities(UNAVAILABLE_CAPABILITIES);
       setDocuments([]);
       setMarkers([]);
       setError(null);
@@ -79,14 +90,17 @@ export function LabsProvider({ children }: PropsWithChildren) {
 
     setLoading(true);
     try {
-      const [nextDocuments, nextMarkers] = await Promise.all([
+      const [nextCapabilities, nextDocuments, nextMarkers] = await Promise.all([
+        repository.getCapabilities(),
         repository.listDocuments(),
         repository.listMarkers(),
       ]);
+      setCapabilities(nextCapabilities);
       setDocuments(nextDocuments);
       setMarkers(nextMarkers);
       setError(null);
     } catch {
+      setCapabilities(UNAVAILABLE_CAPABILITIES);
       setError('load_failed');
     } finally {
       setLoading(false);
@@ -99,6 +113,9 @@ export function LabsProvider({ children }: PropsWithChildren) {
 
   const uploadPhoto = useCallback(
     async (asset: LabPhotoAsset): Promise<string> => {
+      if (!capabilities.importAvailable) {
+        throw new Error('LAB_IMPORT_UNAVAILABLE');
+      }
       setUploading(true);
       try {
         const result = await uploadLabPhoto(asset, repository);
@@ -108,7 +125,7 @@ export function LabsProvider({ children }: PropsWithChildren) {
         setUploading(false);
       }
     },
-    [refresh, repository],
+    [capabilities.importAvailable, refresh, repository],
   );
 
   const getDocument = useCallback(
@@ -119,6 +136,7 @@ export function LabsProvider({ children }: PropsWithChildren) {
 
   const value = useMemo<LabsContextValue>(
     () => ({
+      capabilities,
       documents,
       markers,
       loading,
@@ -141,6 +159,7 @@ export function LabsProvider({ children }: PropsWithChildren) {
       getMarkerHistory: (markerId, limit) => repository.getMarkerHistory(markerId, limit),
     }),
     [
+      capabilities,
       documents,
       error,
       getDocument,
