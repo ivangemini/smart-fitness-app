@@ -125,15 +125,17 @@ export default function LabsTrendsScreen() {
         </View>
 
         <AppCard>
-          <View style={styles.modeRow}>
+          <View accessibilityRole="radiogroup" style={styles.modeRow}>
             <AppButton
               label={copy.absolute}
               onPress={() => setTrendMode('absolute')}
+              selected={mode === 'absolute'}
               variant={mode === 'absolute' ? 'primary' : 'secondary'}
             />
             <AppButton
               label={copy.relative}
               onPress={() => setTrendMode('relative_reference')}
+              selected={mode === 'relative_reference'}
               variant={mode === 'relative_reference' ? 'primary' : 'secondary'}
             />
           </View>
@@ -160,6 +162,7 @@ export default function LabsTrendsScreen() {
                     selected ? copy.selected : compatible ? marker.unit : copy.incompatible
                   }`}
                   onPress={() => toggleMarker(marker)}
+                  selected={selected}
                   variant="secondary"
                 />
               );
@@ -170,6 +173,7 @@ export default function LabsTrendsScreen() {
         <AppButton
           disabled={selectedIds.length < 2 || loading}
           label={copy.show}
+          loading={loading}
           onPress={() => void buildChart()}
         />
 
@@ -180,7 +184,9 @@ export default function LabsTrendsScreen() {
           </AppCard>
         ) : failed ? (
           <AppCard>
-            <Text style={styles.body}>{copy.failed}</Text>
+            <Text accessibilityRole="alert" style={styles.body}>
+              {copy.failed}
+            </Text>
           </AppCard>
         ) : series.length > 0 ? (
           <AppCard>
