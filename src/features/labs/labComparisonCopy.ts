@@ -2,10 +2,21 @@ export function getLabComparisonCopy(locale: string) {
   const russian = locale.toLowerCase().startsWith('ru');
   return russian
     ? {
-        entryTitle: 'Сравнить последние анализы',
+        entryTitle: 'Сравнить анализы',
         entryBody:
-          'Сопоставьте два последних подтверждённых анализа по изменениям относительно референсов лаборатории.',
-        entryButton: 'Сравнить',
+          'Сопоставьте подтверждённые анализы по изменениям относительно одинаковых лабораторных референсов.',
+        entryButton: 'Сравнить последние',
+        chooseButton: 'Выбрать анализы',
+        selectTitle: 'Выберите анализы',
+        selectSubtitle:
+          'Сначала выберите более ранний анализ, затем более поздний. Сравниваются только подтверждённые результаты.',
+        selectPrevious: 'Как предыдущий',
+        selectCurrent: 'Как текущий',
+        selectedPrevious: 'Выбран как предыдущий',
+        selectedCurrent: 'Выбран как текущий',
+        compareSelected: 'Сравнить выбранные',
+        invalidSelection:
+          'Нужны два разных анализа, и дата предыдущего должна быть раньше даты текущего.',
         title: 'Сравнение анализов',
         subtitle:
           'Показано только изменение категории относительно лабораторных референсов. Это не оценка улучшения или ухудшения здоровья.',
@@ -25,10 +36,21 @@ export function getLabComparisonCopy(locale: string) {
         previousMissing: 'Ранее отсутствовал',
       }
     : {
-        entryTitle: 'Compare latest panels',
+        entryTitle: 'Compare panels',
         entryBody:
-          'Compare the two latest confirmed panels by movement relative to the laboratory reference classifications.',
-        entryButton: 'Compare',
+          'Compare confirmed panels by movement relative to matching laboratory reference classifications.',
+        entryButton: 'Compare latest',
+        chooseButton: 'Choose panels',
+        selectTitle: 'Choose panels',
+        selectSubtitle:
+          'Choose an earlier panel first and a later panel second. Only confirmed results are compared.',
+        selectPrevious: 'Use as previous',
+        selectCurrent: 'Use as current',
+        selectedPrevious: 'Selected as previous',
+        selectedCurrent: 'Selected as current',
+        compareSelected: 'Compare selected',
+        invalidSelection:
+          'Choose two different panels, with the previous collection date earlier than the current one.',
         title: 'Panel comparison',
         subtitle:
           'This shows classification movement relative to laboratory reference ranges only. It is not a judgment that health improved or worsened.',
