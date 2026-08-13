@@ -110,6 +110,31 @@ export type LabPanelComparisonDto = {
   }>;
 };
 
+export type LabInterpretationFindingKind =
+  | 'reference_context'
+  | 'trend_context'
+  | 'data_quality_context';
+
+export type LabInterpretationFindingDto = {
+  kind: LabInterpretationFindingKind;
+  markerIds: string[];
+  summary: string;
+  confidence: number;
+  sourceDocumentIds: string[];
+  sourceMarkerIds: string[];
+};
+
+export type LabInterpretationDto = {
+  runId: string;
+  contextVersion: number;
+  output: {
+    version: 1;
+    provider: string;
+    model: string;
+    findings: LabInterpretationFindingDto[];
+  };
+};
+
 export type LabReviewBundleDto = {
   document: LabDocumentDto;
   results: LabResultDraftDto[];
