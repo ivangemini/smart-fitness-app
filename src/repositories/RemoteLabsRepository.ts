@@ -33,6 +33,7 @@ export type LabsAuthGateway = {
 
 export type RemoteLabsRepository = {
   getCapabilities(): Promise<LabCapabilitiesDto>;
+  getInterpretationCapability(): Promise<{ available: boolean }>;
   listDocuments(): Promise<LabDocumentDto[]>;
   listMarkers(limit?: number): Promise<LabResultDto[]>;
   createUpload(input: {
@@ -93,6 +94,14 @@ export const createRemoteLabsRepository = (
     getCapabilities() {
       return withAuth((token) =>
         apiClient.get<LabCapabilitiesDto>('/v1/labs/capabilities', {
+          headers: authHeader(token),
+          retry: false,
+        }),
+      );
+    },
+    getInterpretationCapability() {
+      return withAuth((token) =>
+        apiClient.get<{ available: boolean }>('/v1/labs/interpretation-capability', {
           headers: authHeader(token),
           retry: false,
         }),
