@@ -21,6 +21,7 @@ import { uploadLabPhoto, type LabPhotoAsset } from './labPhotoUpload';
 import type {
   LabCapabilitiesDto,
   LabDocumentDto,
+  LabPanelComparisonDto,
   LabResultDto,
   LabResultDraftDto,
   LabReviewBundleDto,
@@ -53,6 +54,10 @@ export type LabsContextValue = {
   confirmDocument(documentId: string, collectedAt: string): Promise<LabDocumentDto>;
   getDocumentResults(documentId: string): Promise<LabResultDto[]>;
   getMarkerHistory(markerId: string, limit?: number): Promise<LabResultDto[]>;
+  comparePanels(
+    previousDocumentId: string,
+    currentDocumentId: string,
+  ): Promise<LabPanelComparisonDto>;
 };
 
 const LabsContext = createContext<LabsContextValue | null>(null);
@@ -173,6 +178,8 @@ export function LabsProvider({ children }: PropsWithChildren) {
       },
       getDocumentResults: (documentId) => repository.getDocumentResults(documentId),
       getMarkerHistory: (markerId, limit) => repository.getMarkerHistory(markerId, limit),
+      comparePanels: (previousDocumentId, currentDocumentId) =>
+        repository.comparePanels(previousDocumentId, currentDocumentId),
     }),
     [
       capabilities,
