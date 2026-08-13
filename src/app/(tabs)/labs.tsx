@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import * as ImagePicker from 'expo-image-picker';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -27,7 +28,8 @@ export default function LabsScreen() {
   const { colors } = useAppTheme();
   const { formatDate, locale } = useLocalization();
   const { isAuthenticated, ready } = useAuthSession();
-  const { documents, error, loading, markers, refresh } = useLabs();
+  const { documents, error, loading, markers, refresh, uploadPhoto, uploading } = useLabs();
+  const [uploadError, setUploadError] = useState(false);
   const insets = useSafeAreaInsets();
   const copy = useMemo(() => getLabsCopy(locale), [locale]);
   const styles = useMemo(() => createStyles(colors), [colors]);
@@ -47,6 +49,29 @@ export default function LabsScreen() {
       pathname: '/labs-marker/[markerId]',
       params: { markerId },
     });
+
+  const choosePhoto = async () => {
+    setUploadError(false);
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: false,
+      quality: 1,
+      exif: false,
+    });
+    if (result.canceled || !result.assets[0]) return;
+
+    const asset = result.assets[0];
+    try {
+      await uploadPhoto({
+        uri: asset.uri,
+        fileName: asset.fileName,
+        fileSize: asset.fileSize,
+        mimeType: asset.mimeType,
+      });
+    } catch {
+      setUploadError(true);
+    }
+  };
 
   return (
     <ScrollView
@@ -75,8 +100,14 @@ export default function LabsScreen() {
           <>
             <AppCard>
               <Text style={styles.cardTitle}>{copy.addResults}</Text>
-              <Text style={styles.body}>{copy.uploadUnavailable}</Text>
-              <AppButton disabled label={copy.addResults} />
+              <Text style={styles.body}>{copy.uploadHint}</Text>
+              <AppButton
+                disabled={uploading}
+                label={uploading ? copy.uploadInProgress : copy.addPhoto}
+                onPress={() => void choosePhoto()}
+              />
+              <Text style={styles.caption}>{copy.unsupportedPhoto}</Text>
+              {uploadError ? <Text style={styles.errorText}>{copy.uploadFailed}</Text> : null}
             </AppCard>
 
             {attentionMarkers.length > 0 ? (
@@ -155,6 +186,16 @@ const createStyles = (colors: typeof Colors.light) =>
       color: colors.textSecondary,
       fontSize: Typography.body.fontSize,
       lineHeight: Typography.body.lineHeight,
+    },
+    caption: {
+      color: colors.textMuted,
+      fontSize: Typography.caption.fontSize,
+      lineHeight: Typography.caption.lineHeight,
+    },
+    errorText: {
+      color: colors.error,
+      fontSize: Typography.caption.fontSize,
+      lineHeight: Typography.caption.lineHeight,
     },
     cardTitle: {
       color: colors.textPrimary,
