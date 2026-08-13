@@ -161,6 +161,11 @@ export default function LabsScreen() {
                   }
                   variant="secondary"
                 />
+                <AppButton
+                  label={comparisonCopy.chooseButton}
+                  onPress={() => router.push('/labs-compare-select')}
+                  variant="secondary"
+                />
               </AppCard>
             ) : null}
 
