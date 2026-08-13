@@ -30,23 +30,32 @@ export function SettingsNavigationGroup({ rows, title }: SettingsNavigationGroup
           <View key={key}>
             {index > 0 ? <View style={[styles.divider, { backgroundColor: colors.border }]} /> : null}
             <Pressable
-              accessibilityLabel={label}
+              accessibilityLabel={value ? `${label}, ${value}` : label}
               accessibilityRole="button"
               onPress={onPress}
               style={({ pressed }) => [
                 styles.row,
                 pressed && { backgroundColor: colors.backgroundSelected },
               ]}>
-              <View style={[styles.iconWrap, { backgroundColor: colors.surfaceSecondary }]}>
+              <View
+                accessibilityElementsHidden
+                importantForAccessibility="no-hide-descendants"
+                style={[styles.iconWrap, { backgroundColor: colors.surfaceSecondary }]}>
                 <Icon color={colors.textSecondary} size={18} strokeWidth={2} />
               </View>
               <Text style={[styles.label, { color: colors.textPrimary }]}>{label}</Text>
               {value ? (
-                <Text numberOfLines={1} style={[styles.value, { color: colors.textSecondary }]}>
+                <Text numberOfLines={2} style={[styles.value, { color: colors.textSecondary }]}>
                   {value}
                 </Text>
               ) : null}
-              <ChevronRight color={colors.textMuted} size={18} strokeWidth={2} />
+              <ChevronRight
+                accessibilityElementsHidden
+                color={colors.textMuted}
+                importantForAccessibility="no-hide-descendants"
+                size={18}
+                strokeWidth={2}
+              />
             </Pressable>
           </View>
         ))}
@@ -94,5 +103,6 @@ const styles = StyleSheet.create({
     fontSize: Typography.body.fontSize,
     lineHeight: Typography.body.lineHeight,
     maxWidth: '38%',
+    textAlign: 'right',
   },
 });
