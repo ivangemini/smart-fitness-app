@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View, type LayoutChangeEvent } from 'react-native';
 
 import { Spacing, Typography } from '@/constants/theme';
+import { formatLocalizedNumber, useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 
 import type { LabMultiTrendMode, LabTrendPoint } from './labMultiTrend';
@@ -30,6 +31,7 @@ export function LabMultiTrendChart({
   absoluteUnit,
 }: LabMultiTrendChartProps) {
   const { colors } = useAppTheme();
+  const { locale } = useLocalization();
   const [size, setSize] = useState({ width: 0, height: 0 });
   const palette = [colors.chartPrimary, colors.chartSecondary, colors.warning];
 
@@ -149,11 +151,11 @@ export function LabMultiTrendChart({
       {geometry ? (
         <View style={styles.scaleRow}>
           <Text style={[styles.scaleText, { color: colors.textMuted }]}>
-            {geometry.minValue.toLocaleString(undefined, { maximumFractionDigits: 1 })}
+            {formatLocalizedNumber(geometry.minValue, locale, 1)}
             {mode === 'relative_reference' ? '%' : absoluteUnit ? ` ${absoluteUnit}` : ''}
           </Text>
           <Text style={[styles.scaleText, { color: colors.textMuted }]}>
-            {geometry.maxValue.toLocaleString(undefined, { maximumFractionDigits: 1 })}
+            {formatLocalizedNumber(geometry.maxValue, locale, 1)}
             {mode === 'relative_reference' ? '%' : absoluteUnit ? ` ${absoluteUnit}` : ''}
           </Text>
         </View>
