@@ -13,6 +13,7 @@ import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme'
 import { LabBiomarkerCard } from '@/features/labs/LabBiomarkerCard';
 import { getBiomarkerDisplayName } from '@/features/labs/biomarkerNames';
 import { LabDocumentCard } from '@/features/labs/LabDocumentCard';
+import { getLabComparisonCopy } from '@/features/labs/labComparisonCopy';
 import { getLabsCopy } from '@/features/labs/labsCopy';
 import { useLabs } from '@/features/labs/LabsContext';
 import { useAuthSession } from '@/hooks/useAuthSession';
@@ -41,6 +42,7 @@ export default function LabsScreen() {
   const [uploadError, setUploadError] = useState(false);
   const insets = useSafeAreaInsets();
   const copy = useMemo(() => getLabsCopy(locale), [locale]);
+  const comparisonCopy = useMemo(() => getLabComparisonCopy(locale), [locale]);
   const styles = useMemo(() => createStyles(colors), [colors]);
   const importUnavailableText = locale.toLowerCase().startsWith('ru')
     ? 'Импорт пока выключен: приватное хранилище и processing worker должны быть доступны одновременно.'
@@ -55,6 +57,23 @@ export default function LabsScreen() {
         .slice(0, ATTENTION_PREVIEW_LIMIT),
     [markers],
   );
+  const confirmedPanels = useMemo(
+    () =>
+      documents
+        .filter(
+          (document) =>
+            document.status === 'confirmed' &&
+            document.collectedAt !== null &&
+            !Number.isNaN(new Date(document.collectedAt).getTime()),
+        )
+        .sort(
+          (left, right) =>
+            new Date(right.collectedAt!).getTime() - new Date(left.collectedAt!).getTime(),
+        ),
+    [documents],
+  );
+  const currentPanel = confirmedPanels[0] ?? null;
+  const previousPanel = confirmedPanels[1] ?? null;
 
   const openMarker = (markerId: string) =>
     router.push({
@@ -124,6 +143,26 @@ export default function LabsScreen() {
               </Text>
               {uploadError ? <Text style={styles.errorText}>{copy.uploadFailed}</Text> : null}
             </AppCard>
+
+            {previousPanel && currentPanel ? (
+              <AppCard>
+                <Text style={styles.cardTitle}>{comparisonCopy.entryTitle}</Text>
+                <Text style={styles.body}>{comparisonCopy.entryBody}</Text>
+                <AppButton
+                  label={comparisonCopy.entryButton}
+                  onPress={() =>
+                    router.push({
+                      pathname: '/labs-compare',
+                      params: {
+                        previousDocumentId: previousPanel.id,
+                        currentDocumentId: currentPanel.id,
+                      },
+                    })
+                  }
+                  variant="secondary"
+                />
+              </AppCard>
+            ) : null}
 
             {attentionMarkers.length > 0 ? (
               <View style={styles.section}>
