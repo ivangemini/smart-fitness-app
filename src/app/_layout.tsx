@@ -76,6 +76,7 @@ function RootNavigator() {
                   <Stack.Screen name="auth" options={{ headerShown: false }} />
                   <Stack.Screen name="account/sessions" options={{ headerShown: false }} />
                   <Stack.Screen name="settings/index" options={{ headerShown: false }} />
+                  <Stack.Screen name="settings/account" options={{ headerShown: false }} />
                   <Stack.Screen name="settings/profile" options={{ headerShown: false }} />
                   <Stack.Screen name="settings/appearance" options={{ headerShown: false }} />
                   <Stack.Screen name="settings/language" options={{ headerShown: false }} />
