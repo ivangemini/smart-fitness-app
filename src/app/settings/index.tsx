@@ -4,6 +4,7 @@ import {
   CircleUserRound,
   Database,
   Info,
+  KeyRound,
   Languages,
   Palette,
   Ruler,
@@ -42,6 +43,12 @@ export default function SettingsScreen() {
     <SettingsScreenLayout subtitle={copy.rootSubtitle} title={t('settings.title')}>
       <SettingsNavigationGroup
         rows={[
+          {
+            Icon: KeyRound,
+            key: 'account-security',
+            label: t('account.title'),
+            onPress: () => router.push('/settings/account'),
+          },
           {
             Icon: CircleUserRound,
             key: 'profile',
