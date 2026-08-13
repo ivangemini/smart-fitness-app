@@ -9,8 +9,13 @@ export function getLabsCopy(locale: string) {
         emptyBody:
           'Здесь появятся подтверждённые показатели, история документов, отклонения и графики. Распознанные данные сохраняются только после вашей проверки.',
         addResults: 'Добавить результаты',
-        uploadUnavailable:
-          'Загрузка будет включена после подключения приватного хранилища и worker-пайплайна. Сейчас экран уже работает с server-authoritative документами.',
+        addPhoto: 'Выбрать фото анализа',
+        uploadHint:
+          'Фото загружается напрямую в приватное хранилище по временной signed-ссылке. В историю попадут только результаты, которые вы проверите и подтвердите.',
+        uploadInProgress: 'Загружаем фото…',
+        uploadFailed: 'Не удалось загрузить фото анализа.',
+        unsupportedPhoto:
+          'Поддерживаются JPEG, PNG и HEIC до 25 МБ. PDF будет подключён отдельным picker-слоем.',
         documentsTitle: 'Документы',
         noDocuments: 'Загруженных документов пока нет.',
         loading: 'Загружаем анализы…',
@@ -77,8 +82,13 @@ export function getLabsCopy(locale: string) {
         emptyBody:
           'Confirmed biomarkers, documents, attention states, and trends will live here. Extracted values are saved only after you review them.',
         addResults: 'Add results',
-        uploadUnavailable:
-          'Upload will be enabled after private storage and the worker pipeline are connected. This screen already uses server-authoritative documents.',
+        addPhoto: 'Choose lab photo',
+        uploadHint:
+          'The photo uploads directly to private storage through a short-lived signed URL. Only results you review and confirm become health history.',
+        uploadInProgress: 'Uploading photo…',
+        uploadFailed: 'Unable to upload the lab photo.',
+        unsupportedPhoto:
+          'JPEG, PNG, and HEIC up to 25 MB are supported. PDF will use a separate picker layer.',
         documentsTitle: 'Documents',
         noDocuments: 'No uploaded documents yet.',
         loading: 'Loading lab documents…',
