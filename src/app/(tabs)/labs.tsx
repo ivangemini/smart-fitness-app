@@ -28,11 +28,23 @@ export default function LabsScreen() {
   const { colors } = useAppTheme();
   const { formatDate, locale } = useLocalization();
   const { isAuthenticated, ready } = useAuthSession();
-  const { documents, error, loading, markers, refresh, uploadPhoto, uploading } = useLabs();
+  const {
+    capabilities,
+    documents,
+    error,
+    loading,
+    markers,
+    refresh,
+    uploadPhoto,
+    uploading,
+  } = useLabs();
   const [uploadError, setUploadError] = useState(false);
   const insets = useSafeAreaInsets();
   const copy = useMemo(() => getLabsCopy(locale), [locale]);
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const importUnavailableText = locale.toLowerCase().startsWith('ru')
+    ? 'Импорт пока выключен: приватное хранилище и processing worker должны быть доступны одновременно.'
+    : 'Import is currently disabled: private storage and the processing worker must both be available.';
   const attentionMarkers = useMemo(
     () =>
       markers
@@ -51,6 +63,7 @@ export default function LabsScreen() {
     });
 
   const choosePhoto = async () => {
+    if (!capabilities.importAvailable) return;
     setUploadError(false);
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
@@ -102,11 +115,13 @@ export default function LabsScreen() {
               <Text style={styles.cardTitle}>{copy.addResults}</Text>
               <Text style={styles.body}>{copy.uploadHint}</Text>
               <AppButton
-                disabled={uploading}
+                disabled={uploading || !capabilities.importAvailable}
                 label={uploading ? copy.uploadInProgress : copy.addPhoto}
                 onPress={() => void choosePhoto()}
               />
-              <Text style={styles.caption}>{copy.unsupportedPhoto}</Text>
+              <Text style={styles.caption}>
+                {capabilities.importAvailable ? copy.unsupportedPhoto : importUnavailableText}
+              </Text>
               {uploadError ? <Text style={styles.errorText}>{copy.uploadFailed}</Text> : null}
             </AppCard>
 
