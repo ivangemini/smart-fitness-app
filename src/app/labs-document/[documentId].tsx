@@ -193,7 +193,9 @@ export default function LabDocumentReviewScreen() {
 
         {!document ? (
           <AppCard>
-            <Text style={styles.body}>{copy.reviewFailed}</Text>
+            <Text accessibilityRole="alert" style={styles.body}>
+              {copy.reviewFailed}
+            </Text>
             <AppButton label={copy.retry} onPress={() => void refresh()} variant="secondary" />
           </AppCard>
         ) : document.status !== 'review_required' ? (
@@ -209,7 +211,11 @@ export default function LabDocumentReviewScreen() {
                 variant="secondary"
               />
             ) : null}
-            {error ? <Text style={styles.warning}>{copy.reviewFailed}</Text> : null}
+            {error ? (
+              <Text accessibilityRole="alert" style={styles.warning}>
+                {copy.reviewFailed}
+              </Text>
+            ) : null}
           </AppCard>
         ) : loading ? (
           <AppCard style={styles.centerCard}>
@@ -220,7 +226,9 @@ export default function LabDocumentReviewScreen() {
           <>
             {error ? (
               <AppCard>
-                <Text style={styles.warning}>{copy.reviewFailed}</Text>
+                <Text accessibilityRole="alert" style={styles.warning}>
+                  {copy.reviewFailed}
+                </Text>
               </AppCard>
             ) : null}
             <View style={styles.stack}>
@@ -239,6 +247,7 @@ export default function LabDocumentReviewScreen() {
             <AppCard>
               <Text style={styles.cardTitle}>{copy.collectionDate}</Text>
               <TextInput
+                accessibilityLabel={copy.collectionDate}
                 autoCapitalize="none"
                 autoCorrect={false}
                 onChangeText={setCollectionDate}
