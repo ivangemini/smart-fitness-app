@@ -9,6 +9,11 @@ import { AppCard } from '@/components/ui/AppCard';
 import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme';
 import { getBiomarkerDisplayName } from '@/features/labs/biomarkerNames';
+import { LabHistoryWindowSelector } from '@/features/labs/LabHistoryWindowSelector';
+import {
+  filterLabHistoryWindow,
+  type LabHistoryWindow,
+} from '@/features/labs/labHistoryWindow';
 import { getLabsCopy } from '@/features/labs/labsCopy';
 import { useLabs } from '@/features/labs/LabsContext';
 import { LabTrendChart } from '@/features/labs/LabTrendChart';
@@ -40,8 +45,16 @@ export default function LabMarkerScreen() {
   const copy = useMemo(() => getLabsCopy(locale), [locale]);
   const styles = useMemo(() => createStyles(colors), [colors]);
   const [history, setHistory] = useState<LabResultDto[]>([]);
+  const [historyWindow, setHistoryWindow] = useState<LabHistoryWindow>('all');
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
+  const historyWindowLabels = useMemo(
+    () =>
+      locale.toLowerCase().startsWith('ru')
+        ? ({ '3m': '3 мес', '6m': '6 мес', '1y': '1 год', all: 'Все' } as const)
+        : ({ '3m': '3M', '6m': '6M', '1y': '1Y', all: 'All' } as const),
+    [locale],
+  );
 
   const load = useCallback(async () => {
     if (!markerId) {
@@ -65,9 +78,13 @@ export default function LabMarkerScreen() {
   }, [load]);
 
   const latest = history.at(-1) ?? null;
+  const filteredHistory = useMemo(
+    () => filterLabHistoryWindow(history, historyWindow),
+    [history, historyWindow],
+  );
   const historyPreview = useMemo(
-    () => [...history].reverse().slice(0, HISTORY_PREVIEW_LIMIT),
-    [history],
+    () => [...filteredHistory].reverse().slice(0, HISTORY_PREVIEW_LIMIT),
+    [filteredHistory],
   );
   const name = getBiomarkerDisplayName(markerId, locale);
 
@@ -124,7 +141,12 @@ export default function LabMarkerScreen() {
 
             <AppCard>
               <Text style={styles.cardTitle}>{copy.trendsTitle}</Text>
-              <LabTrendChart results={history} />
+              <LabHistoryWindowSelector
+                labels={historyWindowLabels}
+                onChange={setHistoryWindow}
+                value={historyWindow}
+              />
+              <LabTrendChart results={filteredHistory} />
             </AppCard>
 
             <View style={styles.section}>
