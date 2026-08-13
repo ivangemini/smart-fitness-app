@@ -111,7 +111,10 @@ export default function LabsScreen() {
     <ScrollView
       contentContainerStyle={[
         styles.content,
-        { paddingBottom: getFloatingTabBarBottomClearance(insets.bottom) },
+        {
+          paddingBottom: getFloatingTabBarBottomClearance(insets.bottom),
+          paddingTop: insets.top + Spacing.three,
+        },
       ]}
       showsVerticalScrollIndicator={false}
       style={styles.screen}>
@@ -127,7 +130,7 @@ export default function LabsScreen() {
           <AuthGateCard />
         ) : error ? (
           <AppCard>
-            <Text style={styles.cardTitle}>{copy.loadFailed}</Text>
+            <Text accessibilityRole="alert" style={styles.cardTitle}>{copy.loadFailed}</Text>
             <AppButton label={copy.retry} onPress={() => void refresh()} variant="secondary" />
           </AppCard>
         ) : (
@@ -143,7 +146,9 @@ export default function LabsScreen() {
               <Text style={styles.caption}>
                 {capabilities.importAvailable ? copy.unsupportedPhoto : importUnavailableText}
               </Text>
-              {uploadError ? <Text style={styles.errorText}>{copy.uploadFailed}</Text> : null}
+              {uploadError ? (
+                <Text accessibilityRole="alert" style={styles.errorText}>{copy.uploadFailed}</Text>
+              ) : null}
             </AppCard>
 
             {previousPanel && currentPanel ? (
@@ -278,7 +283,11 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     centerCard: { alignItems: 'center' },
     container: { gap: Spacing.four, maxWidth: MaxContentWidth, width: '100%' },
-    content: { alignItems: 'center', flexGrow: 1, padding: Spacing.three },
+    content: {
+      alignItems: 'center',
+      flexGrow: 1,
+      paddingHorizontal: Spacing.three,
+    },
     screen: { backgroundColor: colors.background, flex: 1 },
     section: { gap: Spacing.two },
     sectionTitle: {
