@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useRouter } from 'expo-router';
 
-import { AuthGateCard } from '@/components/auth';
 import { AppButton } from '@/components/ui/AppButton';
 import { PersonalDetailsSettingsCard } from '@/features/settings/PersonalDetailsSettingsCard';
 import { SettingsScreenLayout } from '@/features/settings/SettingsScreenLayout';
@@ -15,7 +14,6 @@ export default function ProfileSettingsScreen() {
 
   return (
     <SettingsScreenLayout subtitle={copy.profileSubtitle} title={copy.profile}>
-      <AuthGateCard />
       <PersonalDetailsSettingsCard />
       <AppButton
         label={copy.socialProfile}
