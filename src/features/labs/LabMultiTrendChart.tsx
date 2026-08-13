@@ -14,6 +14,7 @@ export type LabMultiTrendSeries = {
 };
 
 type LabMultiTrendChartProps = {
+  accessibilityLabel?: string;
   mode: LabMultiTrendMode;
   series: readonly LabMultiTrendSeries[];
   absoluteUnit?: string;
@@ -22,7 +23,12 @@ type LabMultiTrendChartProps = {
 const PADDING_X = 16;
 const PADDING_Y = 18;
 
-export function LabMultiTrendChart({ mode, series, absoluteUnit }: LabMultiTrendChartProps) {
+export function LabMultiTrendChart({
+  accessibilityLabel,
+  mode,
+  series,
+  absoluteUnit,
+}: LabMultiTrendChartProps) {
   const { colors } = useAppTheme();
   const [size, setSize] = useState({ width: 0, height: 0 });
   const palette = [colors.chartPrimary, colors.chartSecondary, colors.warning];
@@ -99,6 +105,9 @@ export function LabMultiTrendChart({ mode, series, absoluteUnit }: LabMultiTrend
   return (
     <View style={styles.wrapper}>
       <View
+        accessibilityLabel={accessibilityLabel}
+        accessibilityRole="image"
+        accessible={Boolean(accessibilityLabel)}
         onLayout={handleLayout}
         style={[styles.chart, { backgroundColor: colors.surfaceSecondary }]}>
         {geometry ? (
