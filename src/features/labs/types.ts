@@ -15,6 +15,13 @@ export type LabSemanticState =
 
 export type LabReviewState = 'unreviewed' | 'accepted' | 'corrected' | 'excluded';
 
+export type LabCapabilitiesDto = {
+  uploadConfigured: boolean;
+  processingAvailable: boolean;
+  importAvailable: boolean;
+  reviewRequired: true;
+};
+
 export type LabReferenceIntervalDto = {
   low: number | null;
   high: number | null;
