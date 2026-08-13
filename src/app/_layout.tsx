@@ -88,6 +88,7 @@ function RootNavigator() {
                   <Stack.Screen name="settings/social-profile" options={{ headerShown: false }} />
                   <Stack.Screen name="labs-compare" options={{ headerShown: false }} />
                   <Stack.Screen name="labs-compare-select" options={{ headerShown: false }} />
+                  <Stack.Screen name="labs-trends" options={{ headerShown: false }} />
                   <Stack.Screen name="labs-document/[documentId]" options={{ headerShown: false }} />
                   <Stack.Screen name="labs-marker/[markerId]" options={{ headerShown: false }} />
                   <Stack.Screen name="social/index" options={{ headerShown: false }} />
