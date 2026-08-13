@@ -42,6 +42,7 @@ export type LabsContextValue = {
   error: 'load_failed' | null;
   refresh(): Promise<void>;
   uploadPhoto(asset: LabPhotoAsset): Promise<string>;
+  retryDocument(documentId: string): Promise<LabDocumentDto>;
   getDocument(documentId: string): LabDocumentDto | null;
   getReview(documentId: string): Promise<LabReviewBundleDto>;
   reviewDraft(
@@ -128,6 +129,20 @@ export function LabsProvider({ children }: PropsWithChildren) {
     [capabilities.importAvailable, refresh, repository],
   );
 
+  const retryDocument = useCallback(
+    async (documentId: string): Promise<LabDocumentDto> => {
+      if (!capabilities.processingAvailable) {
+        throw new Error('LAB_PROCESSING_UNAVAILABLE');
+      }
+      const document = await repository.retryDocument(documentId);
+      setDocuments((current) =>
+        current.map((entry) => (entry.id === document.id ? document : entry)),
+      );
+      return document;
+    },
+    [capabilities.processingAvailable, repository],
+  );
+
   const getDocument = useCallback(
     (documentId: string) =>
       documents.find((document) => document.id === documentId) ?? null,
@@ -144,6 +159,7 @@ export function LabsProvider({ children }: PropsWithChildren) {
       error,
       refresh,
       uploadPhoto,
+      retryDocument,
       getDocument,
       getReview: (documentId) => repository.getReview(documentId),
       reviewDraft: (documentId, draftId, action) =>
@@ -167,6 +183,7 @@ export function LabsProvider({ children }: PropsWithChildren) {
       markers,
       refresh,
       repository,
+      retryDocument,
       uploadPhoto,
       uploading,
     ],
