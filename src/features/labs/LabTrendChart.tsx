@@ -7,13 +7,14 @@ import type { LabResultDto } from '@/features/labs/types';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 
 type LabTrendChartProps = {
+  accessibilityLabel?: string;
   results: readonly LabResultDto[];
 };
 
 const CHART_PADDING_X = 16;
 const CHART_PADDING_Y = 18;
 
-export function LabTrendChart({ results }: LabTrendChartProps) {
+export function LabTrendChart({ accessibilityLabel, results }: LabTrendChartProps) {
   const { colors } = useAppTheme();
   const [size, setSize] = useState({ width: 0, height: 0 });
   const ordered = useMemo(
@@ -99,6 +100,9 @@ export function LabTrendChart({ results }: LabTrendChartProps) {
   return (
     <View style={styles.wrapper}>
       <View
+        accessibilityLabel={accessibilityLabel}
+        accessibilityRole="image"
+        accessible={Boolean(accessibilityLabel)}
         onLayout={handleLayout}
         style={[styles.chart, { backgroundColor: colors.surfaceSecondary }]}>
         {geometry ? (
