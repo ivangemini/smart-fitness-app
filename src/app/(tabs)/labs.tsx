@@ -14,6 +14,7 @@ import { LabBiomarkerCard } from '@/features/labs/LabBiomarkerCard';
 import { getBiomarkerDisplayName } from '@/features/labs/biomarkerNames';
 import { LabDocumentCard } from '@/features/labs/LabDocumentCard';
 import { getLabComparisonCopy } from '@/features/labs/labComparisonCopy';
+import { getLabMultiTrendCopy } from '@/features/labs/labMultiTrendCopy';
 import { getLabsCopy } from '@/features/labs/labsCopy';
 import { useLabs } from '@/features/labs/LabsContext';
 import { useAuthSession } from '@/hooks/useAuthSession';
@@ -43,6 +44,7 @@ export default function LabsScreen() {
   const insets = useSafeAreaInsets();
   const copy = useMemo(() => getLabsCopy(locale), [locale]);
   const comparisonCopy = useMemo(() => getLabComparisonCopy(locale), [locale]);
+  const trendCopy = useMemo(() => getLabMultiTrendCopy(locale), [locale]);
   const styles = useMemo(() => createStyles(colors), [colors]);
   const importUnavailableText = locale.toLowerCase().startsWith('ru')
     ? 'Импорт пока выключен: приватное хранилище и processing worker должны быть доступны одновременно.'
@@ -164,6 +166,18 @@ export default function LabsScreen() {
                 <AppButton
                   label={comparisonCopy.chooseButton}
                   onPress={() => router.push('/labs-compare-select')}
+                  variant="secondary"
+                />
+              </AppCard>
+            ) : null}
+
+            {markers.length >= 2 ? (
+              <AppCard>
+                <Text style={styles.cardTitle}>{trendCopy.entryTitle}</Text>
+                <Text style={styles.body}>{trendCopy.entryBody}</Text>
+                <AppButton
+                  label={trendCopy.entryButton}
+                  onPress={() => router.push('/labs-trends')}
                   variant="secondary"
                 />
               </AppCard>
