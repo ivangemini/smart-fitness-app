@@ -23,6 +23,17 @@ export type LabPhotoUploadResult = {
 const isSupportedImageType = (value: string): value is SupportedLabImageType =>
   SUPPORTED_IMAGE_TYPES.includes(value as SupportedLabImageType);
 
+const inferImageType = (asset: LabPhotoAsset): SupportedLabImageType | null => {
+  const explicit = asset.mimeType?.toLowerCase().trim();
+  if (explicit && isSupportedImageType(explicit)) return explicit;
+
+  const fileName = asset.fileName?.toLowerCase().trim() ?? '';
+  if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg')) return 'image/jpeg';
+  if (fileName.endsWith('.png')) return 'image/png';
+  if (fileName.endsWith('.heic') || fileName.endsWith('.heif')) return 'image/heic';
+  return null;
+};
+
 const fallbackFileName = (mediaType: SupportedLabImageType): string => {
   switch (mediaType) {
     case 'image/png':
@@ -39,8 +50,8 @@ export async function uploadLabPhoto(
   repository: Pick<RemoteLabsRepository, 'completeUpload' | 'createUpload'>,
   fetchImpl: typeof fetch = globalThis.fetch.bind(globalThis),
 ): Promise<LabPhotoUploadResult> {
-  const mediaType = asset.mimeType?.toLowerCase().trim();
-  if (!mediaType || !isSupportedImageType(mediaType)) {
+  const mediaType = inferImageType(asset);
+  if (!mediaType) {
     throw new Error('LAB_PHOTO_UNSUPPORTED_TYPE');
   }
 
