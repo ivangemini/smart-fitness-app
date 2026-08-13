@@ -164,9 +164,7 @@ export function LabMultiTrendChart({
             <View
               style={[styles.legendDot, { backgroundColor: palette[index % palette.length] }]}
             />
-            <Text numberOfLines={1} style={[styles.scaleText, { color: colors.textSecondary }]}>
-              {entry.label}
-            </Text>
+            <Text style={[styles.legendText, { color: colors.textSecondary }]}>{entry.label}</Text>
           </View>
         ))}
       </View>
@@ -184,7 +182,18 @@ const styles = StyleSheet.create({
   },
   legend: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
   legendDot: { borderRadius: 999, height: 8, width: 8 },
-  legendItem: { alignItems: 'center', flexDirection: 'row', gap: Spacing.one, maxWidth: '100%' },
+  legendItem: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexShrink: 1,
+    gap: Spacing.one,
+    maxWidth: '100%',
+  },
+  legendText: {
+    flexShrink: 1,
+    fontSize: Typography.caption.fontSize,
+    lineHeight: Typography.caption.lineHeight,
+  },
   scaleRow: { flexDirection: 'row', justifyContent: 'space-between' },
   scaleText: {
     fontSize: Typography.caption.fontSize,
