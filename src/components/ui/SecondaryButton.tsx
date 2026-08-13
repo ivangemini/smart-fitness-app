@@ -27,6 +27,7 @@ type SecondaryButtonProps = {
   label: string;
   loading?: boolean;
   onPress?: () => void;
+  selected?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -38,6 +39,7 @@ export function SecondaryButton({
   label,
   loading,
   onPress,
+  selected,
   style,
 }: SecondaryButtonProps) {
   const { colors, resolvedAppearance } = useAppTheme();
@@ -54,7 +56,7 @@ export function SecondaryButton({
       accessibilityHint={accessibilityHint}
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityRole="button"
-      accessibilityState={state.accessibilityState}
+      accessibilityState={{ ...state.accessibilityState, selected }}
       disabled={state.disabled}
       onPress={state.disabled ? undefined : onPress}
       style={({ pressed }) => [
