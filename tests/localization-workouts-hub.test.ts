@@ -123,7 +123,7 @@ describe('localized Workouts hub contract', () => {
 
     expect(components).toContain("t('workouts.programNameRequired')");
     expect(components).toContain('disabled={!canCreate}');
-    expect(primaryButton).toContain('accessibilityState={state.accessibilityState}');
+    expect(primaryButton).toContain('accessibilityState={{ ...state.accessibilityState, selected }}');
     expect(primaryButton).toContain('disabled={state.disabled}');
   });
 });
