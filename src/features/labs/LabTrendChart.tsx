@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, type LayoutChangeEvent } from 'react-native';
 
 import { Spacing, Typography } from '@/constants/theme';
 import type { LabResultDto } from '@/features/labs/types';
+import { formatLocalizedNumber, useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 
 type LabTrendChartProps = {
@@ -16,6 +17,7 @@ const CHART_PADDING_Y = 18;
 
 export function LabTrendChart({ accessibilityLabel, results }: LabTrendChartProps) {
   const { colors } = useAppTheme();
+  const { locale } = useLocalization();
   const [size, setSize] = useState({ width: 0, height: 0 });
   const ordered = useMemo(
     () => [...results].sort((a, b) => a.collectedAt.localeCompare(b.collectedAt)),
@@ -139,10 +141,10 @@ export function LabTrendChart({ accessibilityLabel, results }: LabTrendChartProp
       {geometry ? (
         <View style={styles.scaleRow}>
           <Text style={[styles.scaleText, { color: colors.textMuted }]}>
-            {geometry.min.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+            {formatLocalizedNumber(geometry.min, locale, 2)}
           </Text>
           <Text style={[styles.scaleText, { color: colors.textMuted }]}>
-            {geometry.max.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+            {formatLocalizedNumber(geometry.max, locale, 2)}
           </Text>
         </View>
       ) : null}
