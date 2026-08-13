@@ -15,12 +15,14 @@ const readSource = (relativePath: string) =>
   readFileSync(resolve(projectRoot, relativePath), 'utf8');
 
 describe('Settings account and security placement', () => {
-  it('surfaces the existing authenticated account controls inside Settings', () => {
-    const source = readSource('src/app/settings/index.tsx');
+  it('keeps authenticated account controls reachable through the Account child route', () => {
+    const settings = readSource('src/app/settings/index.tsx');
+    const account = readSource('src/app/settings/account.tsx');
 
-    expect(source).toContain("import { AuthGateCard } from '@/components/auth';");
-    expect(source).toContain("<SettingsSection title={t('account.title')}>");
-    expect(source).toContain('<AuthGateCard />');
+    expect(settings).toContain("router.push('/settings/account')");
+    expect(account).toContain("import { AuthGateCard } from '@/components/auth';");
+    expect(account).toContain('<AuthGateCard />');
+    expect(account).toContain("title={t('account.title')}");
   });
 
   it('records pluralization and Settings progress in the focused phase file', () => {

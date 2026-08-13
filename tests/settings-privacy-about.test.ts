@@ -11,12 +11,16 @@ const projectRoot = resolve(__dirname, '..');
 const readSource = (path: string) => readFileSync(resolve(projectRoot, path), 'utf8');
 
 describe('Settings privacy and about surfaces', () => {
-  it('surfaces localized privacy and release information in Settings', () => {
+  it('surfaces localized privacy and release information through dedicated Settings child routes', () => {
     const settings = readSource('src/app/settings/index.tsx');
+    const privacy = readSource('src/app/settings/privacy.tsx');
+    const about = readSource('src/app/settings/about.tsx');
     const cards = readSource('src/features/settings/PrivacyAboutCards.tsx');
 
-    expect(settings).toContain('<PrivacySettingsCard />');
-    expect(settings).toContain('<AboutSettingsCard />');
+    expect(settings).toContain("router.push('/settings/privacy')");
+    expect(settings).toContain("router.push('/settings/about')");
+    expect(privacy).toContain('<PrivacySettingsCard />');
+    expect(about).toContain('<AboutSettingsCard />');
     expect(cards).toContain("t('privacy.localBody')");
     expect(cards).toContain("t('privacy.analyticsBody')");
     expect(enMessages['privacy.localBody']).toContain('Anonymous data is never merged');

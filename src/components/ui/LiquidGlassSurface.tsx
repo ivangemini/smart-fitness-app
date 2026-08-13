@@ -3,6 +3,7 @@ import { PropsWithChildren, useMemo } from 'react';
 import { Platform, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { Radii } from '@/constants/theme';
+import { useReduceTransparency } from '@/hooks/useReduceTransparency';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
@@ -23,6 +24,7 @@ export function LiquidGlassSurface({
   variant = 'card',
 }: LiquidGlassSurfaceProps) {
   const { resolvedAppearance } = useAppTheme();
+  const reduceTransparency = useReduceTransparency();
   const glass = useMemo(
     () => resolveLiquidGlassPalette(resolvedAppearance),
     [resolvedAppearance],
@@ -35,6 +37,7 @@ export function LiquidGlassSurface({
         ? glass.elevatedFill
         : glass.cardFill;
   const borderColor = variant === 'control' ? glass.controlBorder : glass.cardBorder;
+  const shouldBlur = blur && !reduceTransparency;
 
   return (
     <View
@@ -50,7 +53,7 @@ export function LiquidGlassSurface({
         },
         style,
       ]}>
-      {blur ? (
+      {shouldBlur ? (
         <BlurView
           blurMethod={Platform.OS === 'android' ? 'dimezisBlurViewSdk31Plus' : undefined}
           intensity={Platform.OS === 'ios' ? 34 : 50}

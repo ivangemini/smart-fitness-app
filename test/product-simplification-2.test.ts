@@ -130,12 +130,13 @@ describe('product simplification 2.0', () => {
     expect(route).toContain('copy.addToMeal(selectedMealLabel)');
   });
 
-  test('Profile owns the plan, Coach owns Coach tools, and Progress stays analytical', () => {
+  test('Profile owns the plan, hidden Coach owns Coach tools, and Account settings own auth controls', () => {
     const profile = readSource('src/app/(tabs)/profile.tsx');
     const profileGoals = readSource('src/features/profile/ProfileGoalsSection.tsx');
     const coach = readSource('src/app/(tabs)/coach.tsx');
     const progress = readSource('src/app/(tabs)/progress.tsx');
     const settings = readSource('src/app/settings/index.tsx');
+    const accountSettings = readSource('src/app/settings/account.tsx');
     expect(profile).not.toContain('ProfileHeaderCard');
     expect(profile).not.toContain('Account Snapshot');
     expect(profile).not.toContain('AuthGateCard');
@@ -146,10 +147,11 @@ describe('product simplification 2.0', () => {
     expect(coach).toContain('/profile/recovery-check-in');
     expect(coach).toContain('/profile/combined-proposal');
     expect(progress).not.toContain('ProgressPlanningSections');
-    expect(settings).toContain('<AuthGateCard />');
+    expect(settings).toContain("router.push('/settings/account')");
+    expect(accountSettings).toContain('<AuthGateCard />');
   });
 
-  test('tab bar is compact and conventional', () => {
+  test('tab bar is compact and conventional with Labs primary and Coach hidden', () => {
     const source = readSource('src/app/(tabs)/_layout.tsx');
     const tabBar = readSource('src/components/navigation/LiquidGlassTabBar.tsx');
 
@@ -158,7 +160,8 @@ describe('product simplification 2.0', () => {
     expect(source).toContain('tabBar={(props) => <LiquidGlassTabBar {...props} />}');
     expect(source).toContain('headerShown: false');
     expect(source).toContain('tabBarHideOnKeyboard: true');
-    expect(source).toContain("title: t('tabs.coach')");
+    expect(source).toContain('name="labs" options={{ title: labsCopy.tabTitle }}');
+    expect(source).toContain('name="coach" options={{ href: null');
     expect(source).toContain('name="profile" options={{ href: null }}');
     expect(tabBar).toContain("import type { BottomTabBarProps } from 'expo-router/js-tabs';");
     expect(tabBar).toContain('BlurView');
@@ -186,6 +189,9 @@ describe('product simplification 2.0', () => {
     const profile = readSource('src/app/(tabs)/profile.tsx');
     const coach = readSource('src/app/(tabs)/coach.tsx');
     const settings = readSource('src/app/settings/index.tsx');
+    const appearanceSettings = readSource('src/app/settings/appearance.tsx');
+    const languageSettings = readSource('src/app/settings/language.tsx');
+    const unitsSettings = readSource('src/app/settings/units.tsx');
     const sessionTable = readSource('src/features/workouts/components/session/SessionSetTable.tsx');
     const exerciseSection = readSource('src/features/workouts/components/session/SessionExerciseSection.tsx');
     const builder = readSource('src/features/workouts/screens/WorkoutBuilderScreen.tsx');
@@ -208,9 +214,12 @@ describe('product simplification 2.0', () => {
     expect(nutritionPicker).toContain('addFoodEntries');
     expect(profile).toContain("router.push('/settings')");
     expect(coach).toContain('/profile/limitations');
-    expect(settings).toContain('settings.appearance');
-    expect(settings).toContain('settings.language');
-    expect(settings).toContain('setWeightUnit');
+    expect(settings).toContain("router.push('/settings/appearance')");
+    expect(settings).toContain("router.push('/settings/language')");
+    expect(settings).toContain("router.push('/settings/units')");
+    expect(appearanceSettings).toContain("t('settings.appearance')");
+    expect(languageSettings).toContain('setLanguagePreference');
+    expect(unitsSettings).toContain('setWeightUnit');
     expect(sessionTable).toContain("t('workouts.session.set')");
     expect(sessionTable).toContain("t('workouts.session.previous')");
     expect(sessionTable).toContain('weightUnit');

@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  FLOATING_COMPANION_ENTRY_GAP,
   FLOATING_TAB_BAR_CONTENT_GAP,
   FLOATING_TAB_BAR_HEIGHT,
   FLOATING_TAB_BAR_MIN_BOTTOM_OFFSET,
+  getFloatingCompanionEntryBottomOffset,
   getFloatingTabBarBottomClearance,
   getFloatingTabBarStickyActionContentPadding,
 } from './floatingTabBarLayout';
@@ -20,6 +22,12 @@ describe('floating tab bar layout metrics', () => {
   it('uses the device safe-area inset when it is larger than the visual minimum', () => {
     expect(getFloatingTabBarBottomClearance(34)).toBe(
       34 + FLOATING_TAB_BAR_HEIGHT + FLOATING_TAB_BAR_CONTENT_GAP,
+    );
+  });
+
+  it('anchors the companion entry to the floating navigation geometry', () => {
+    expect(getFloatingCompanionEntryBottomOffset()).toBe(
+      FLOATING_TAB_BAR_HEIGHT + FLOATING_COMPANION_ENTRY_GAP,
     );
   });
 

@@ -22,13 +22,16 @@ describe('Settings child theme and affordances', () => {
     expect(source).not.toContain('Colors.dark');
   });
 
-  it('uses a Lucide disclosure icon for Coach History in About', () => {
-    const source = readSource('src/features/settings/PrivacyAboutCards.tsx');
+  it('keeps About focused on release and legal information without the removed Coach History affordance', () => {
+    const about = readSource('src/app/settings/about.tsx');
+    const cards = readSource('src/features/settings/PrivacyAboutCards.tsx');
 
-    expect(source).toContain("import { ChevronRight } from 'lucide-react-native';");
-    expect(source).toContain(
-      '<ChevronRight color={colors.textMuted} size={24} strokeWidth={2} />',
-    );
-    expect(source).not.toContain('>›</Text>');
+    expect(about).toContain('<AboutSettingsCard />');
+    expect(cards).toContain("t('about.appVersion')");
+    expect(cards).toContain("t('about.runtime')");
+    expect(cards).toContain("t('about.legalUnavailable')");
+    expect(cards).not.toContain('ChevronRight');
+    expect(cards).not.toContain('Coach History');
+    expect(cards).not.toContain('>›</Text>');
   });
 });

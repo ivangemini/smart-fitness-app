@@ -62,7 +62,7 @@ describe('AppContext public boundaries', () => {
   test.each([
     ['src/app/auth/register.tsx', ['useAppActions']],
     ['src/app/weight-entry.tsx', ['useAppActions']],
-    ['src/app/settings/index.tsx', ['useAppActions']],
+    ['src/app/settings/index.tsx', []],
     ['src/features/settings/DataRecoveryCard.tsx', ['useAppInfrastructure']],
     ['src/features/coach/screens/NutritionCoachScreen.tsx', ['useAppInfrastructure']],
     [

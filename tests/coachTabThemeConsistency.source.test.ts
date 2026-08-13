@@ -16,8 +16,8 @@ const readSource = (relativePath: string) =>
 
 const coachSource = readSource('src/app/(tabs)/coach.tsx');
 
-describe('Coach tab theme consistency', () => {
-  it('resolves the public Coach shell from AppThemeProvider', () => {
+describe('Coach route theme consistency', () => {
+  it('resolves the Coach shell from AppThemeProvider', () => {
     expect(coachSource).toContain('useAppTheme');
     expect(coachSource).toContain('createStyles(colors)');
     expect(coachSource).toContain(
@@ -41,8 +41,10 @@ describe('Coach tab theme consistency', () => {
     expect(coachSource).toContain('router.push(action.route)');
   });
 
-  it('preserves floating-tab clearance and scroll growth', () => {
-    expect(coachSource).toContain('getFloatingTabBarBottomClearance(safeAreaInsets.bottom)');
+  it('uses root-route safe-area clearance and scroll growth after leaving the tab bar', () => {
+    expect(coachSource).toContain('safeAreaInsets.bottom + Spacing.eight');
+    expect(coachSource).toContain('safeAreaInsets.top + Spacing.four');
     expect(coachSource).toContain('flexGrow: 1');
+    expect(coachSource).not.toContain('getFloatingTabBarBottomClearance');
   });
 });

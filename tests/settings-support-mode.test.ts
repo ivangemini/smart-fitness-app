@@ -10,29 +10,33 @@ const { resolve } = require('path') as {
   resolve(...parts: string[]): string;
 };
 const projectRoot = resolve(__dirname, '..');
-const settingsSource = readFileSync(
-  resolve(projectRoot, 'src/app/settings/index.tsx'),
-  'utf8',
-);
+const readSource = (file: string) => readFileSync(resolve(projectRoot, file), 'utf8');
+const settingsSource = readSource('src/app/settings/index.tsx');
+const developerSource = readSource('src/app/settings/developer.tsx');
 
 describe('Settings support diagnostics visibility', () => {
-  it('hides developer controls in production unless support mode is explicit', () => {
-    expect(settingsSource).toContain(
-      "__DEV__ || process.env.EXPO_PUBLIC_SUPPORT_MODE?.trim().toLowerCase() === 'true'",
-    );
+  it('hides the developer route in production unless support mode is explicit', () => {
+    const supportExpression =
+      "__DEV__ || process.env.EXPO_PUBLIC_SUPPORT_MODE?.trim().toLowerCase() === 'true'";
+
+    expect(settingsSource).toContain(supportExpression);
     expect(settingsSource).toContain('{supportDiagnosticsEnabled ? (');
+    expect(developerSource).toContain(supportExpression);
+    expect(developerSource).toContain('if (!supportDiagnosticsEnabled)');
+    expect(developerSource).toContain('<Redirect href="/settings" />');
     expect(settingsSource).not.toContain(
       "process.env.EXPO_PUBLIC_SUPPORT_MODE !== 'false'",
     );
   });
 
-  it('keeps support-only controls inside the visibility boundary', () => {
-    const boundary = settingsSource.indexOf('{supportDiagnosticsEnabled ? (');
-    const resetControl = settingsSource.indexOf('<ProfileActionsCard', boundary);
-    const runtimeControl = settingsSource.indexOf('<ProfileRuntimeInfoCard', boundary);
+  it('keeps support-only controls inside the guarded developer route', () => {
+    const guard = developerSource.indexOf('if (!supportDiagnosticsEnabled)');
+    const resetControl = developerSource.indexOf('<ProfileActionsCard', guard);
+    const runtimeControl = developerSource.indexOf('<ProfileRuntimeInfoCard', guard);
 
-    expect(boundary).toBeGreaterThan(-1);
-    expect(resetControl).toBeGreaterThan(boundary);
-    expect(runtimeControl).toBeGreaterThan(boundary);
+    expect(guard).toBeGreaterThan(-1);
+    expect(resetControl).toBeGreaterThan(guard);
+    expect(runtimeControl).toBeGreaterThan(guard);
+    expect(settingsSource).toContain("router.push('/settings/developer')");
   });
 });

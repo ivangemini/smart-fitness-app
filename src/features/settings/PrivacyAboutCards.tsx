@@ -1,6 +1,4 @@
-import { router } from 'expo-router';
-import { ChevronRight } from 'lucide-react-native';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { AppCard } from '@/components/ui/AppCard';
 import { Spacing, Typography } from '@/constants/theme';
@@ -52,21 +50,6 @@ export function AboutSettingsCard() {
   });
   return (
     <AppCard>
-      <Pressable
-        accessibilityLabel={t('about.coachHistory')}
-        accessibilityRole="button"
-        onPress={() => router.push('/profile/coach-history')}
-        style={[styles.historyLink, { borderColor: colors.borderSubtle }]}>
-        <View style={styles.historyCopy}>
-          <Text style={[styles.itemTitle, { color: colors.textPrimary }]}>
-            {t('about.coachHistory')}
-          </Text>
-          <Text style={[styles.body, { color: colors.textSecondary }]}>
-            {t('about.coachHistoryBody')}
-          </Text>
-        </View>
-        <ChevronRight color={colors.textMuted} size={24} strokeWidth={2} />
-      </Pressable>
       <Row label={t('about.appVersion')} value={diagnostics.appVersion} />
       <Row label={t('about.build')} value={diagnostics.buildNumber} />
       <Row label={t('about.runtime')} value={diagnostics.runtimeVersion} />
@@ -93,14 +76,6 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     gap: Spacing.one,
     paddingVertical: Spacing.two,
-  },
-  historyCopy: { flex: 1, gap: Spacing.one },
-  historyLink: {
-    alignItems: 'center',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    flexDirection: 'row',
-    gap: Spacing.two,
-    paddingBottom: Spacing.three,
   },
   itemTitle: {
     fontSize: Typography.cardTitle.fontSize,

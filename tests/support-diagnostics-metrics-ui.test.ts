@@ -10,29 +10,27 @@ const { resolve } = require('path') as {
   resolve(...parts: string[]): string;
 };
 const projectRoot = resolve(__dirname, '..');
-const readSource = (file: string) =>
-  readFileSync(resolve(projectRoot, file), 'utf8');
+const readSource = (file: string) => readFileSync(resolve(projectRoot, file), 'utf8');
 
 describe('support-only local performance diagnostics', () => {
-  it('keeps the metrics card behind explicit support mode and the collapsed developer section', () => {
+  it('keeps the metrics card behind explicit support mode on the dedicated developer route', () => {
     const settings = readSource('src/app/settings/index.tsx');
-    const supportGuard = settings.indexOf('supportDiagnosticsEnabled ?');
-    const expandedGuard = settings.indexOf('developerExpanded ?');
-    const metricsCard = settings.indexOf('<LocalPerformanceDiagnosticsCard />');
+    const developer = readSource('src/app/settings/developer.tsx');
+    const guard = developer.indexOf('if (!supportDiagnosticsEnabled)');
+    const redirect = developer.indexOf('<Redirect href="/settings" />', guard);
+    const metricsCard = developer.indexOf('<LocalPerformanceDiagnosticsCard />', redirect);
 
     expect(settings).toContain('EXPO_PUBLIC_SUPPORT_MODE');
-    expect(supportGuard).toBeGreaterThan(-1);
-    expect(expandedGuard).toBeGreaterThan(supportGuard);
-    expect(metricsCard).toBeGreaterThan(expandedGuard);
+    expect(settings).toContain("router.push('/settings/developer')");
+    expect(developer).toContain('EXPO_PUBLIC_SUPPORT_MODE');
+    expect(guard).toBeGreaterThan(-1);
+    expect(redirect).toBeGreaterThan(guard);
+    expect(metricsCard).toBeGreaterThan(redirect);
   });
 
   it('renders aggregates only and does not request content, identifiers, paths, or raw failures', () => {
-    const card = readSource(
-      'src/features/settings/LocalPerformanceDiagnosticsCard.tsx',
-    );
-    const copy = readSource(
-      'src/localization/supportDiagnosticsMetricsCopy.ts',
-    );
+    const card = readSource('src/features/settings/LocalPerformanceDiagnosticsCard.tsx');
+    const copy = readSource('src/localization/supportDiagnosticsMetricsCopy.ts');
 
     expect(card).toContain('lastSerializedBytes');
     expect(card).toContain('totalFailures');
@@ -50,12 +48,8 @@ describe('support-only local performance diagnostics', () => {
   });
 
   it('describes the current local-only privacy boundary instead of removed crash reporting', () => {
-    const privacyCard = readSource(
-      'src/features/settings/PrivacyAboutCards.tsx',
-    );
-    const privacyCopy = readSource(
-      'src/localization/privacyCurrentCopy.ts',
-    );
+    const privacyCard = readSource('src/features/settings/PrivacyAboutCards.tsx');
+    const privacyCopy = readSource('src/localization/privacyCurrentCopy.ts');
 
     expect(privacyCard).toContain('getPrivacyCurrentCopy');
     expect(privacyCard).not.toContain("t('privacy.crashBody')");
