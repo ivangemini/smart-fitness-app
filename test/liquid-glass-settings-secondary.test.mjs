@@ -5,8 +5,8 @@ import { describe, expect, it } from 'vitest';
 const readSource = (path) => readFileSync(resolve(process.cwd(), path), 'utf8');
 
 describe('LG-3A Settings secondary Liquid Glass controls', () => {
-  it('uses the shared 44 pt glass back action in Settings', () => {
-    const source = readSource('src/app/settings/index.tsx');
+  it('uses the shared 44 pt glass back action through the shared Settings child layout', () => {
+    const source = readSource('src/features/settings/SettingsScreenLayout.tsx');
 
     expect(source).toContain('LiquidGlassIconButton');
     expect(source).toContain('Icon={ChevronLeft}');
