@@ -14,7 +14,6 @@ const readSource = (relativePath: string) =>
 
 describe('legacy tab route compatibility', () => {
   test.each([
-    ['labs', '/(tabs)/progress'],
     ['track', '/(tabs)/workouts'],
     ['eat', '/(tabs)/nutrition'],
   ])('%s remains a compatibility redirect to %s', (legacyRoute, canonicalRoute) => {
@@ -25,6 +24,15 @@ describe('legacy tab route compatibility', () => {
     expect(source).not.toContain("export { default } from './");
   });
 
+  test('Labs is now a canonical primary tab instead of a Progress redirect', () => {
+    const source = readSource('src/app/(tabs)/labs.tsx');
+
+    expect(source).toContain('export default function LabsScreen()');
+    expect(source).toContain('useLabs()');
+    expect(source).not.toContain("import { Redirect } from 'expo-router'");
+    expect(source).not.toContain('<Redirect href="/(tabs)/progress" />');
+  });
+
   test('Home uses canonical tab routes instead of legacy aliases', () => {
     const source = readSource('src/app/(tabs)/index.tsx');
 
@@ -32,6 +40,5 @@ describe('legacy tab route compatibility', () => {
     expect(source).toContain("router.push('/(tabs)/nutrition')");
     expect(source).not.toContain("'/track'");
     expect(source).not.toContain("'/eat'");
-    expect(source).not.toContain("'/labs'");
   });
 });
