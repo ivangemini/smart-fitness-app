@@ -2,6 +2,7 @@ import { isApiError, type ApiClient } from '@/api/client';
 import type {
   LabCapabilitiesDto,
   LabDocumentDto,
+  LabInterpretationDto,
   LabPanelComparisonDto,
   LabResultDto,
   LabResultDraftDto,
@@ -54,6 +55,7 @@ export type RemoteLabsRepository = {
     previousDocumentId: string,
     currentDocumentId: string,
   ): Promise<LabPanelComparisonDto>;
+  interpretDocument(documentId: string): Promise<LabInterpretationDto>;
 };
 
 export class LabsAuthenticationRequiredError extends Error {
@@ -198,6 +200,16 @@ export const createRemoteLabsRepository = (
         }),
       );
       return response.comparison;
+    },
+    async interpretDocument(documentId) {
+      const response = await withAuth((token) =>
+        apiClient.post<{ interpretation: LabInterpretationDto }, undefined>(
+          `/v1/labs/documents/${encodeURIComponent(documentId)}/interpretation`,
+          undefined,
+          { headers: authHeader(token), retry: false },
+        ),
+      );
+      return response.interpretation;
     },
   };
 };
