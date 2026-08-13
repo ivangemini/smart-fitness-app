@@ -72,23 +72,26 @@ export default function LabsCompareSelectScreen() {
           {panels.map((panel) => {
             const isPrevious = panel.id === previousId;
             const isCurrent = panel.id === currentId;
+            const panelDate = formatDate(new Date(panel.collectedAt!), { dateStyle: 'medium' });
             return (
               <AppCard key={panel.id}>
                 <Text style={styles.cardTitle}>{panel.fileName}</Text>
-                <Text style={styles.meta}>
-                  {formatDate(new Date(panel.collectedAt!), { dateStyle: 'medium' })}
-                </Text>
+                <Text style={styles.meta}>{panelDate}</Text>
                 <View style={styles.actions}>
                   <AppButton
+                    accessibilityLabel={`${copy.selectPrevious}: ${panel.fileName}, ${panelDate}`}
                     disabled={isCurrent}
                     label={isPrevious ? copy.selectedPrevious : copy.selectPrevious}
                     onPress={() => setPreviousId(isPrevious ? null : panel.id)}
+                    selected={isPrevious}
                     variant="secondary"
                   />
                   <AppButton
+                    accessibilityLabel={`${copy.selectCurrent}: ${panel.fileName}, ${panelDate}`}
                     disabled={isPrevious}
                     label={isCurrent ? copy.selectedCurrent : copy.selectCurrent}
                     onPress={() => setCurrentId(isCurrent ? null : panel.id)}
+                    selected={isCurrent}
                     variant="secondary"
                   />
                 </View>
