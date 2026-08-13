@@ -85,7 +85,7 @@ export default function LabsCompareScreen() {
           </AppCard>
         ) : failed || !comparison ? (
           <AppCard>
-            <Text style={styles.body}>{copy.failed}</Text>
+            <Text accessibilityRole="alert" style={styles.body}>{copy.failed}</Text>
             <AppButton label={copy.retry} onPress={() => void load()} variant="secondary" />
           </AppCard>
         ) : (
@@ -166,10 +166,11 @@ const createStyles = (colors: typeof Colors.light) =>
     centerCard: { alignItems: 'center' },
     container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
     content: { alignItems: 'center', flexGrow: 1, paddingHorizontal: Spacing.three },
-    dateColumn: { flex: 1, gap: Spacing.one, minWidth: 0 },
-    dateRow: { flexDirection: 'row', gap: Spacing.three },
+    dateColumn: { flexBasis: 180, flexGrow: 1, gap: Spacing.one, minWidth: 0 },
+    dateRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.three },
     dateValue: {
       color: colors.textPrimary,
+      flexShrink: 1,
       fontSize: Typography.body.fontSize,
       fontWeight: Typography.bodyEmphasized.fontWeight,
       lineHeight: Typography.body.lineHeight,
@@ -198,10 +199,11 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     value: {
       color: colors.textPrimary,
+      flexShrink: 1,
       fontSize: Typography.body.fontSize,
       fontWeight: Typography.bodyEmphasized.fontWeight,
       lineHeight: Typography.body.lineHeight,
     },
-    valueColumn: { flex: 1, gap: Spacing.one, minWidth: 0 },
-    valueRow: { flexDirection: 'row', gap: Spacing.three },
+    valueColumn: { flexBasis: 180, flexGrow: 1, gap: Spacing.one, minWidth: 0 },
+    valueRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.three },
   });
