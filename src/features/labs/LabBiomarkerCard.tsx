@@ -26,9 +26,7 @@ export function LabBiomarkerCard({ name, onPress, result, statusLabel }: LabBiom
       style={({ pressed }) => pressed && styles.pressed}>
       <LiquidGlassSurface style={styles.card}>
         <View style={styles.copy}>
-          <Text numberOfLines={1} style={[styles.name, { color: colors.textPrimary }]}>
-            {name}
-          </Text>
+          <Text style={[styles.name, { color: colors.textPrimary }]}>{name}</Text>
           <Text style={[styles.value, { color: colors.textPrimary }]}>
             {result.value} {result.unit}
           </Text>
@@ -50,17 +48,20 @@ const styles = StyleSheet.create({
   card: { alignItems: 'center', flexDirection: 'row', gap: Spacing.three },
   copy: { flex: 1, gap: Spacing.one, minWidth: 0 },
   name: {
+    flexShrink: 1,
     fontSize: Typography.cardTitle.fontSize,
     fontWeight: Typography.cardTitle.fontWeight,
     lineHeight: Typography.cardTitle.lineHeight,
   },
   pressed: { opacity: 0.74 },
   status: {
+    flexShrink: 1,
     fontSize: Typography.caption.fontSize,
     fontWeight: '600',
     lineHeight: Typography.caption.lineHeight,
   },
   value: {
+    flexShrink: 1,
     fontSize: Typography.body.fontSize,
     fontWeight: '600',
     lineHeight: Typography.body.lineHeight,
