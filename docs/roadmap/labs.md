@@ -4,6 +4,32 @@ Status: approved product direction; implementation in progress.
 
 This focused roadmap defines the Labs / Analyses product boundary. `docs/implementation-plan.md` remains the canonical forward roadmap and should be synchronized after the currently open Stories S10 documentation branch lands, to avoid parallel edits to shared canonical files.
 
+## Implementation snapshot — 2026-08-13
+
+Completed in the current isolated Phase 12 branches:
+
+- Labs replaces Coach as the fifth primary tab; Coach remains a hidden route with a small global Companion entry.
+- Settings root is grouped and child-route based; Account/security is separated from Profile/personal data.
+- Labs server-authoritative mobile state is isolated from legacy local `AppState` sync.
+- Labs document states are modeled as `pending_upload → uploaded → processing → review_required → confirmed`, with explicit `failed` handling.
+- Private object namespace `private/labs/v1/` and signed upload source boundary exist.
+- Image upload client path is implemented for JPEG/PNG/HEIC, but is capability-gated and remains disabled until both private Labs storage and processing worker runtime are activated.
+- PDF remains contract-supported on the backend but has no mobile picker/native dependency yet.
+- Provider-neutral extraction contracts, confidence/provenance handling, deterministic normalization and laboratory-reference classification exist.
+- Review UI supports accept, exclude and manual correction; canonical history is written only after confirmation.
+- Empty extraction and all-excluded confirmation are rejected.
+- Confirmed marker read models, attention surfaces and marker history charts are implemented.
+- Labs import capabilities are fail-closed: source code does not activate production storage, worker, OCR provider, deployment, migration execution or native release work.
+
+Next implementation focus:
+
+1. processing runtime composition and deterministic development/test provider;
+2. stronger route/repository tests for cross-user denial and capability gating;
+3. document lifecycle cleanup/retry semantics;
+4. panel-level comparison/read model;
+5. privacy export/deletion coverage;
+6. PDF native picker only after an explicit native dependency gate.
+
 ## Product goal
 
 Turn laboratory documents into a private, reviewable longitudinal biomarker history. The product must prioritize data integrity over automation: OCR/AI output is a draft until the user verifies it.
