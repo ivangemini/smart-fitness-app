@@ -1,6 +1,12 @@
 export const FLOATING_TAB_BAR_HEIGHT = 64;
 export const FLOATING_TAB_BAR_MIN_BOTTOM_OFFSET = 12;
 export const FLOATING_TAB_BAR_CONTENT_GAP = 16;
+export const FLOATING_COMPANION_ENTRY_SIZE = 44;
+export const FLOATING_COMPANION_ENTRY_GAP = 8;
+
+export function getFloatingCompanionEntryBottomOffset(): number {
+  return FLOATING_TAB_BAR_HEIGHT + FLOATING_COMPANION_ENTRY_GAP;
+}
 
 export function getFloatingTabBarBottomClearance(
   bottomInset: number,

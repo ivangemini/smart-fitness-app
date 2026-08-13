@@ -33,6 +33,7 @@ import { resolveLiquidGlassPalette, type LiquidGlassPalette } from '@/theme/liqu
 import {
   FLOATING_TAB_BAR_HEIGHT,
   FLOATING_TAB_BAR_MIN_BOTTOM_OFFSET,
+  getFloatingCompanionEntryBottomOffset,
 } from './floatingTabBarLayout';
 
 const TAB_ICONS: Record<string, LucideIcon> = {
@@ -243,7 +244,11 @@ export function LiquidGlassTabBar({ state, descriptors, navigation }: BottomTabB
           { bottom: Math.max(insets.bottom, FLOATING_TAB_BAR_MIN_BOTTOM_OFFSET) },
         ]}>
         {coachRoute ? (
-          <View style={styles.companionEntry}>
+          <View
+            style={[
+              styles.companionEntry,
+              { bottom: getFloatingCompanionEntryBottomOffset() },
+            ]}>
             <LiquidGlassIconButton
               accessibilityLabel={coachLabel}
               Icon={Brain}
@@ -351,7 +356,6 @@ const styles = StyleSheet.create({
   companionEntry: {
     position: 'absolute',
     right: 0,
-    top: -56,
     zIndex: 3,
   },
   shadowWide: {
