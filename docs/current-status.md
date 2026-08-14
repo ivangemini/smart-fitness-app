@@ -10,7 +10,7 @@ Exact code, tests and current Git history override this checkpoint if it becomes
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current merged `main`: `7036cb0257fe38a945ec18726389954c82641dd3`.
+Latest runtime/source merge before this documentation synchronization: `7036cb0257fe38a945ec18726389954c82641dd3` (#657). Documentation-only merges may advance `main` without changing that runtime/source baseline.
 
 Recent merged source:
 
@@ -24,13 +24,13 @@ Recent merged source:
 - authenticated mobile push registration client #656;
 - confirmed-result Labs interpretation presentation #657.
 
-There are no open mobile PRs at this checkpoint.
+There are no open mobile runtime/source PRs at this checkpoint before the docs synchronization PR.
 
 ### Backend repository
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Current merged `main`: `404963da88939ab2913a5f8a72ae90a51f77459f`.
+Latest runtime/source merge before this documentation synchronization: `404963da88939ab2913a5f8a72ae90a51f77459f` (#234). Documentation-only merges may advance `main` without changing that runtime/source baseline.
 
 Recent merged push source:
 
@@ -39,13 +39,13 @@ Recent merged push source:
 - #233 — current authenticated device registration invalidation on logout;
 - #234 — remote session and revoke-others registration cleanup.
 
-#234 exact-head `4145b7cad3e87ba53f87e413e76864ba79576a2c` passed Backend CI and Backend PostgreSQL CI with zero review threads before squash merge to `404963d`.
+#234 exact-head `4145b7cad3e87ba53f87e413e76864ba79576a2c` passed Backend CI and Backend PostgreSQL CI with zero review threads before squash merge to runtime/source baseline `404963d`.
 
-There are no open backend PRs at this checkpoint.
+There are no open backend runtime/source PRs at this checkpoint before the docs synchronization PR.
 
 Prepared backend source branch:
 
-- `feat/p14-push-delivery-outbox-worker`, currently equal to backend `main` `404963d` with no additional commit yet.
+- `feat/p14-push-delivery-outbox-worker`, currently equal to backend runtime/source baseline `404963d` with no additional commit yet.
 
 ## Phase 14 status
 
@@ -176,7 +176,7 @@ Do not substitute source CI for provider/device/deployment evidence.
 
 ## Current remaining roadmap
 
-1. Implement durable push outbox/delivery worker from backend `main` `404963d`.
+1. Implement durable push outbox/delivery worker from backend runtime/source baseline `404963d`.
 2. Add the smallest follow-up notification enqueue/provider-feedback package after the worker contract is merged.
 3. Complete concrete APNs/FCM/native push permission/token/deep-link runtime only when the provider/native gate is opened.
 4. Treat Labs source composition as complete for now; remaining work is provider/native/deployment/device evidence or reproduced defects.
