@@ -39,16 +39,18 @@ Backend:
 - #233 — current-device registration invalidation on authenticated logout in the same server transaction as session revocation.
 - #234 — remote-session and revoke-others registration cleanup with exact-head Backend CI + PostgreSQL CI evidence.
 
-Current merged heads at this checkpoint:
+Latest runtime/source merge heads before this documentation synchronization:
 
-- mobile `main`: `7036cb0257fe38a945ec18726389954c82641dd3`;
-- backend `main`: `404963da88939ab2913a5f8a72ae90a51f77459f`.
+- mobile: `7036cb0257fe38a945ec18726389954c82641dd3` (#657);
+- backend: `404963da88939ab2913a5f8a72ae90a51f77459f` (#234).
 
-There are no open PRs in either repository at this checkpoint.
+Documentation-only merges may advance repository `main` without changing that runtime/source baseline. Git history remains authoritative.
+
+There are no open runtime/source PRs in either repository at this checkpoint before the documentation synchronization PRs are opened.
 
 ### Active source work
 
-Backend branch `feat/p14-push-delivery-outbox-worker` exists from backend `main` `404963d` and currently has no additional commit. Its bounded target is the next real-push source package:
+Backend branch `feat/p14-push-delivery-outbox-worker` exists from backend runtime/source baseline `404963d` and currently has no additional commit. Its bounded target is the next real-push source package:
 
 - durable per-device notification outbox;
 - lease/claim ownership for concurrent workers;
@@ -116,7 +118,7 @@ Provider-neutral Steps source is merged. Remaining work is separately gated:
 
 ## Current execution order
 
-1. Implement the durable push outbox/delivery worker as a bounded backend package from `404963d`.
+1. Implement the durable push outbox/delivery worker as a bounded backend package from runtime/source baseline `404963d`.
 2. After that worker is green/merged, add the smallest non-overlapping enqueue/provider-feedback package required for real delivery.
 3. Continue native push permission/token/deep-link composition only when the native/provider gate is explicitly opened.
 4. Treat Labs source composition as complete for now; continue only provider/native/runtime packages or demonstrated defects.
