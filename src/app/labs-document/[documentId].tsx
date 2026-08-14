@@ -16,6 +16,7 @@ import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
 import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme';
+import { LabInterpretationCard } from '@/features/labs/LabInterpretationCard';
 import {
   LabReviewResultCard,
   type LabCorrectionInput,
@@ -50,6 +51,9 @@ export default function LabDocumentReviewScreen() {
     confirmDocument,
     getDocument,
     getReview,
+    interpretDocument,
+    interpretationDocumentId,
+    interpretationState,
     refresh,
     retryDocument,
     reviewDraft,
@@ -198,6 +202,20 @@ export default function LabDocumentReviewScreen() {
             </Text>
             <AppButton label={copy.retry} onPress={() => void refresh()} variant="secondary" />
           </AppCard>
+        ) : document.status === 'confirmed' ? (
+          <>
+            <AppCard>
+              <Text style={styles.cardTitle}>{document.fileName}</Text>
+              <Text style={styles.body}>{copy.status.confirmed}</Text>
+            </AppCard>
+            <LabInterpretationCard
+              documentId={document.id}
+              interpretationDocumentId={interpretationDocumentId}
+              locale={locale}
+              onInterpret={interpretDocument}
+              state={interpretationState}
+            />
+          </>
         ) : document.status !== 'review_required' ? (
           <AppCard>
             <Text style={styles.cardTitle}>{document.fileName}</Text>
