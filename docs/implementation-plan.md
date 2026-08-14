@@ -10,7 +10,7 @@ This file is the **canonical forward roadmap**. Verified evidence belongs in `do
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current `main` at this checkpoint: `7036cb0257fe38a945ec18726389954c82641dd3`.
+Latest runtime/source merge before this documentation synchronization: `7036cb0257fe38a945ec18726389954c82641dd3` (#657). Documentation-only merges may advance `main` without changing that runtime/source baseline.
 
 Merged Phase 14-adjacent source now includes:
 
@@ -24,13 +24,13 @@ Merged Phase 14-adjacent source now includes:
 - authenticated push registration client #656;
 - confirmed-result Labs interpretation presentation #657.
 
-There are no open mobile PRs at this checkpoint.
+There are no open mobile runtime/source PRs at this checkpoint before the docs synchronization PR.
 
 ### Backend
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Current `main` at this checkpoint: `404963da88939ab2913a5f8a72ae90a51f77459f`.
+Latest runtime/source merge before this documentation synchronization: `404963da88939ab2913a5f8a72ae90a51f77459f` (#234). Documentation-only merges may advance `main` without changing that runtime/source baseline.
 
 Merged push source now includes:
 
@@ -41,9 +41,9 @@ Merged push source now includes:
 
 #234 was merged only after exact-head Backend CI and PostgreSQL CI passed and review threads were empty.
 
-There are no open backend PRs at this checkpoint.
+There are no open backend runtime/source PRs at this checkpoint before the docs synchronization PR.
 
-Prepared backend branch `feat/p14-push-delivery-outbox-worker` is based on `404963d` and has no additional commit yet.
+Prepared backend branch `feat/p14-push-delivery-outbox-worker` is based on runtime/source baseline `404963d` and has no additional commit yet.
 
 Release readiness remains lower than source completeness because native/device/provider/deployment/production evidence is separately authorization-gated.
 
@@ -96,7 +96,7 @@ Required properties:
 - bounded retry/backoff using existing policy;
 - provider transports injected behind the existing contract;
 - stale-worker finalization protection through claim identity;
-- exact-registration invalid-token invalidation so delayed provider responses cannot invalidate a newer token;
+- exact-registration invalid-token invalidation so delayed provider responses cannot invalidate a newer credential;
 - no raw reusable token in ordinary outbox/event payloads where a registration reference is sufficient;
 - migration/schema/privacy/account-deletion coverage as applicable;
 - exact-head Backend CI + PostgreSQL CI.
@@ -168,7 +168,7 @@ Still separately gated:
 
 ## Current execution order
 
-1. Implement and validate the durable push outbox/delivery worker from backend `main` `404963d`.
+1. Implement and validate the durable push outbox/delivery worker from backend runtime/source baseline `404963d`.
 2. Merge it only after the applicable exact-head backend gates are green and review-clean.
 3. Add the smallest follow-up enqueue/provider-feedback package without overlapping worker internals.
 4. Enter concrete APNs/FCM/native push activation only when its credentials/native/device authorization gate is opened.
