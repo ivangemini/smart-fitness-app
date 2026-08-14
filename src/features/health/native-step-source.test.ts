@@ -27,6 +27,33 @@ describe('native Steps source', () => {
     await expect(source.getAvailability()).resolves.toBe('permission_required');
   });
 
+  it('keeps an unavailable native bridge unsupported without reading data', async () => {
+    let readCalls = 0;
+    const source = createNativeStepActivitySource(
+      {
+        async isAvailable() {
+          return false;
+        },
+        async getPermissionState() {
+          throw new Error('permission_state_must_not_be_read');
+        },
+        async requestPermission() {
+          throw new Error('permission_must_not_be_requested');
+        },
+        async readStepCount() {
+          readCalls += 1;
+          return null;
+        },
+      },
+      'health_connect',
+    );
+
+    await expect(source.getAvailability()).resolves.toBe('unsupported');
+    await expect(source.requestReadPermission()).resolves.toBe('unsupported');
+    await expect(source.readDailySteps('2026-08-13')).resolves.toBeNull();
+    expect(readCalls).toBe(0);
+  });
+
   it('returns a normalized daily aggregate when available', async () => {
     const source = createNativeStepActivitySource(bridge(), 'healthkit');
     await expect(source.readDailySteps('2026-08-13')).resolves.toEqual({
