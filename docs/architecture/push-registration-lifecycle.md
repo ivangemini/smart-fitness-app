@@ -6,107 +6,149 @@ Updated: 2026-08-14
 
 This document defines the source/runtime boundary required before real external push delivery can be activated.
 
-Current source foundations are provider-neutral. They do not authorize APNs/FCM credentials, native permission prompts, background delivery, production deployment, or physical-device activation.
+Current provider-neutral source now covers registration plus online authenticated logout/session-revocation cleanup. It still does not authorize APNs/FCM credentials, native permission prompts, production workers, deployment or physical-device activation.
 
 ## Identity authority
 
-A push registration must reuse the authenticated server-issued device identity already present in `AuthSession.device.id`.
+A push registration reuses the authenticated server-issued device identity already present in `AuthSession.device.id`.
 
-Do not create a second local push-specific device UUID. A second identity would split session/device ownership from notification ownership and make logout, account switching, revocation, support diagnostics and privacy deletion ambiguous.
-
-The registration ownership tuple is therefore conceptually:
+Do not create a second local push-specific device UUID. Registration ownership is conceptually:
 
 `authenticated user + authenticated device id + platform/provider + current native delivery credential`
 
-The user ID is always taken from backend authentication. It must never be trusted from a mobile registration payload.
+The user ID comes only from backend authentication and is never trusted from a mobile registration payload.
 
 ## Permission boundary
 
 Registration synchronization must not request native notification permission implicitly.
 
-The safe sequence is:
+Safe sequence:
 
-1. inspect the native permission state;
+1. inspect native permission state;
 2. if permission has not been requested, return `permission_required` without prompting;
-3. if permission is denied or unsupported, fail closed without backend registration;
-4. only after permission is already granted, read the native device credential;
-5. only after both permission and credential readiness exist, synchronize the authenticated backend registration.
+3. if denied/unsupported, fail closed without backend registration;
+4. only after permission is already granted, read the native credential;
+5. only after permission + credential readiness exist, synchronize the authenticated backend registration.
 
-This keeps the permission prompt a deliberate product/UI action rather than a hidden side effect of login, app bootstrap, sync, or background work.
+Mobile #656 implements the provider-neutral repository/readiness coordination for this boundary. It does not itself activate a native permission UX or provider transport.
 
 ## Backend ownership boundary
 
-The backend owns registration rows from the authenticated request user. Registration responses must not echo the stored delivery credential.
+Backend #232 establishes owner/device registration persistence and authenticated register/unregister routes.
 
-A repeated registration for the same authenticated user/device updates the active route. If the same provider credential moves between accounts on one physical device, the current authenticated registration must atomically supersede the stale route so the previous account cannot remain the active delivery owner.
+Properties to preserve:
 
-Owner unregister must be non-enumerating: deleting a missing or other-owner device identity may return the same bounded success response rather than exposing registration existence.
+- registration responses do not echo the stored delivery credential;
+- same user/device registration updates the active route;
+- provider/token handoff between accounts is atomic so a previous owner cannot remain active;
+- owner unregister is non-enumerating;
+- routing/credential state is inventoried for lifecycle/privacy review but excluded from candidate Data Access Export surfaces;
+- raw reusable credentials stay out of ordinary logs, diagnostics and model context.
 
 ## Authentication refresh boundary
 
-Mobile registration API calls may retry once after a 401 using the existing auth refresh path.
+Mobile registration API calls may retry once after 401 through the existing auth refresh path.
 
 They must not:
 
 - perform unbounded auth retry loops;
-- invent a fallback user/device identity;
+- invent fallback user/device identity;
 - register without an authenticated access token;
-- log or persist the credential in diagnostics outside the reviewed registration storage boundary.
+- log/persist the credential outside the reviewed registration boundary.
 
-## Logout and account-switch boundary
+## Online logout and session revocation
 
-Real push delivery must not be activated until logout/account-switch semantics are explicitly composed.
+The previously proposed server-assisted pattern is now implemented in source.
 
-Current `AuthContext.logout()` calls the underlying auth service before clearing local session state. A post-logout React effect is therefore not a reliable place to unregister push because the authenticated token may already be revoked or removed.
+### Current-device logout — backend #233
 
-A future activation package must choose and test one of these reviewed patterns:
+Authenticated `/v1/auth/logout`:
 
-### Preferred: pre-logout best-effort unregister
+- revokes the current auth session;
+- invalidates the current authenticated device registration;
+- performs those server-owned lifecycle changes in one database transaction;
+- does not invalidate unrelated account devices.
 
-An AuthService/lifecycle decorator may:
+A client-side post-logout effect is therefore not required for authoritative online current-device cleanup.
 
-1. read the current authenticated session/device ID;
-2. attempt owner-scoped push unregister while the access token is still usable;
-3. proceed with logout even if unregister cannot complete;
-4. clear local auth state using the normal logout path.
+### Remote session revocation — backend #234
 
-Unregister failure must never trap the user inside an authenticated session merely to preserve notification cleanup.
+Authenticated remote-session lifecycle now also cleans registration state:
 
-### Server-assisted revocation
+- `DELETE /v1/auth/sessions/:sessionId` revokes the owned remote session and invalidates that session device registration in one transaction;
+- `POST /v1/auth/sessions/revoke-others` uses set-based non-current session revocation and invalidates only the returned device IDs;
+- current session/device remains active during revoke-others;
+- ownership-safe not-found/current-session rejection behavior is preserved.
 
-Alternatively, the backend logout/session-revocation operation may invalidate registrations linked to the authoritative device/session boundary in the same server-owned lifecycle.
-
-This requires a separately reviewed schema/API coupling because push registrations are currently account/device-owned rather than session-row-owned.
+This closes the normal online session/device cleanup source gap.
 
 ## Offline logout
 
-Offline logout is a specific privacy case. If the client cannot reach the unregister endpoint, the app must still allow local logout.
+Offline logout remains a distinct privacy/runtime case.
 
-Before external delivery activation, the product/provider contract must define how stale registrations are bounded after offline logout. Options may include server-side device/session revocation convergence, short-lived delivery eligibility, or a reviewed reconnect cleanup path.
+If the client cannot reach the backend, local logout must still be allowed. Because no server transaction can run while offline, stale server session/registration state may remain until a later server-side or reconnect convergence path occurs.
 
-Do not activate sensitive notification content while this lifecycle remains unresolved.
+Before external delivery activation, define and test a bounded policy, for example:
+
+- reconnect cleanup using retained non-secret lifecycle intent;
+- server session-expiry/revocation eligibility checks before delivery;
+- short-lived eligibility/registration lease semantics;
+- another reviewed provider-independent convergence mechanism.
+
+Do not activate sensitive notification content while this case remains unresolved.
 
 ## Account deletion
 
-Backend account deletion owns final cleanup through account-owned cascade semantics. The mobile client does not need a successful unregister request to make account deletion complete if the backend deletion transaction removes registration rows.
-
-Provider-side delivery invalidation/cleanup still requires separate provider runtime evidence once a real transport exists.
+Backend account deletion owns final database cleanup through account-owned cascade semantics. Provider-side invalidation/cleanup still requires runtime evidence once a real transport exists.
 
 ## Credential rotation
 
-Native delivery credentials can rotate independently of app account identity.
+Native delivery credentials may rotate independently of account identity.
 
-A future native adapter must treat a newly observed credential as a registration update for the same authenticated `AuthSession.device.id`. It must not create a second device identity merely because the provider credential changed.
+A future native adapter must treat a new credential as an update for the same authenticated `AuthSession.device.id`, not a new device.
+
+Any delayed provider invalid-token response must be scoped to the exact attempted registration version/token. It must not be allowed to invalidate a newer credential that replaced the attempted one.
+
+## Durable delivery worker contract
+
+The next backend source package is a durable push outbox/delivery worker.
+
+Required properties:
+
+- durable PostgreSQL jobs;
+- registration/device reference rather than unnecessary duplication of raw delivery credentials in ordinary job payloads;
+- atomic lease/claim ownership for concurrent workers;
+- bounded retry/backoff using the existing retry policy;
+- deterministic terminal/retry states;
+- injected provider transport boundary;
+- stale-worker protection so a worker that lost its claim cannot finalize a job;
+- permanent-invalid-token feedback scoped to the exact attempted registration;
+- account-deletion/privacy/data-inventory coverage for any new persistent state.
+
+This worker is still provider-neutral source until concrete provider credentials/adapters and production scheduling are explicitly activated.
+
+## Notification enqueue/content boundary
+
+Outbox existence alone does not authorize every in-app notification to become external push.
+
+A separate composition package must define:
+
+- eligible event types;
+- minimum payload/content required for delivery;
+- whether sensitive content is omitted from lock-screen payloads;
+- deep-link target semantics;
+- Story interaction delivery behavior;
+- idempotency/deduplication between event creation and outbox enqueue.
+
+Do not copy private Labs, workout, nutrition, Coach or authentication payloads into push jobs merely because a worker exists.
 
 ## Data Access Export
 
-Registration routing/credential state is security-sensitive operational metadata. It is inventoried for lifecycle/account-deletion review but excluded from candidate Data Access Export surfaces.
+Registration routing/credential state is security-sensitive operational metadata. It remains excluded from candidate Data Access Export surfaces.
 
-User-facing export may include ordinary account/device metadata through the existing reviewed projection; it must not expose reusable notification delivery credentials.
+Future outbox state should likewise expose no reusable credential material. If lifecycle metadata becomes account-owned persistent state, inventory/export policy must be reviewed explicitly rather than inferred.
 
 ## Logging and diagnostics
-
-Backend logger redaction already censors request/response bodies and token-like fields. Future diagnostics must preserve that boundary.
 
 Do not include raw delivery credentials in:
 
@@ -117,23 +159,34 @@ Do not include raw delivery credentials in:
 - user-visible debug screens;
 - model/Coach context.
 
+Provider error handling should use bounded classified outcomes rather than raw credential-bearing payloads.
+
 ## Activation checklist
 
-Before real APNs/FCM delivery is enabled, all of the following need reviewed evidence:
+Before real APNs/FCM delivery is enabled, reviewed evidence is still needed for:
 
-- native permission UX and disclosure;
-- production provider selection and credentials;
-- device credential acquisition/rotation;
+- explicit native permission UX/disclosure;
+- provider selection and credentials;
+- native credential acquisition/rotation;
 - authenticated registration synchronization;
-- logout/account-switch cleanup;
-- offline logout behavior;
-- invalid-provider-response handling;
-- delivery worker retry/dead-letter policy;
-- provider invalid-token feedback and registration invalidation;
+- durable outbox/worker behavior;
+- notification-event enqueue/idempotency;
+- provider adapter behavior;
+- bounded retry/dead-letter policy;
+- permanent invalid-token feedback;
+- offline logout/reconnect convergence;
 - notification privacy/content policy;
+- deep-link routing;
 - physical-device delivery evidence;
 - second-account/device isolation evidence;
 - account-deletion/provider cleanup evidence;
-- production deployment and migration authorization.
+- production deployment/migration/worker authorization.
 
-Source-complete registration seams are prerequisites for this checklist, not substitutes for it.
+Already source-complete and not to be reimplemented:
+
+- authenticated registration persistence/API;
+- mobile authenticated registration client/readiness coordinator;
+- online current-device logout cleanup;
+- online remote-session/revoke-others cleanup.
+
+Source-complete seams are prerequisites for activation, not substitutes for runtime/provider/device evidence.
