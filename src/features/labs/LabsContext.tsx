@@ -5,6 +5,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -87,6 +88,7 @@ export function LabsProvider({ children }: PropsWithChildren) {
   const [interpretationDocumentId, setInterpretationDocumentId] = useState<string | null>(
     null,
   );
+  const interpretationRequestGeneration = useRef(0);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<LabsContextValue['error']>(null);
@@ -104,10 +106,16 @@ export function LabsProvider({ children }: PropsWithChildren) {
     [apiClient, refreshAuth, session?.tokens.accessToken],
   );
 
+  const invalidateInterpretationRequests = useCallback(() => {
+    interpretationRequestGeneration.current += 1;
+    return interpretationRequestGeneration.current;
+  }, []);
+
   const resetInterpretation = useCallback(() => {
+    invalidateInterpretationRequests();
     setInterpretationState(IDLE_INTERPRETATION);
     setInterpretationDocumentId(null);
-  }, []);
+  }, [invalidateInterpretationRequests]);
 
   const refreshInterpretationCapability = useCallback(async () => {
     if (!ready || !isAuthenticated) {
@@ -115,11 +123,20 @@ export function LabsProvider({ children }: PropsWithChildren) {
       return IDLE_INTERPRETATION;
     }
 
+    const generation = invalidateInterpretationRequests();
     const nextState = await loadLabInterpretationCapability(repository);
-    setInterpretationState(nextState);
-    setInterpretationDocumentId(null);
+    if (interpretationRequestGeneration.current === generation) {
+      setInterpretationState(nextState);
+      setInterpretationDocumentId(null);
+    }
     return nextState;
-  }, [isAuthenticated, ready, repository, resetInterpretation]);
+  }, [
+    invalidateInterpretationRequests,
+    isAuthenticated,
+    ready,
+    repository,
+    resetInterpretation,
+  ]);
 
   const refresh = useCallback(async () => {
     if (!ready || !isAuthenticated) {
@@ -132,6 +149,7 @@ export function LabsProvider({ children }: PropsWithChildren) {
       return;
     }
 
+    const interpretationGeneration = invalidateInterpretationRequests();
     setLoading(true);
     try {
       const [nextCapabilities, nextDocuments, nextMarkers, nextInterpretationState] =
@@ -144,22 +162,32 @@ export function LabsProvider({ children }: PropsWithChildren) {
       setCapabilities(nextCapabilities);
       setDocuments(nextDocuments);
       setMarkers(nextMarkers);
-      setInterpretationState(nextInterpretationState);
-      setInterpretationDocumentId(null);
+      if (interpretationRequestGeneration.current === interpretationGeneration) {
+        setInterpretationState(nextInterpretationState);
+        setInterpretationDocumentId(null);
+      }
       setError(null);
     } catch {
       setCapabilities(UNAVAILABLE_CAPABILITIES);
-      setInterpretationState({
-        status: 'unavailable',
-        available: false,
-        interpretation: null,
-      });
-      setInterpretationDocumentId(null);
+      if (interpretationRequestGeneration.current === interpretationGeneration) {
+        setInterpretationState({
+          status: 'unavailable',
+          available: false,
+          interpretation: null,
+        });
+        setInterpretationDocumentId(null);
+      }
       setError('load_failed');
     } finally {
       setLoading(false);
     }
-  }, [isAuthenticated, ready, repository, resetInterpretation]);
+  }, [
+    invalidateInterpretationRequests,
+    isAuthenticated,
+    ready,
+    repository,
+    resetInterpretation,
+  ]);
 
   useEffect(() => {
     void refresh();
@@ -168,6 +196,7 @@ export function LabsProvider({ children }: PropsWithChildren) {
   const interpretDocument = useCallback(
     async (documentId: string): Promise<LabInterpretationState> => {
       if (interpretationState.available !== true) {
+        invalidateInterpretationRequests();
         const unavailableState: LabInterpretationState = {
           status: 'unavailable',
           available: false,
@@ -180,6 +209,7 @@ export function LabsProvider({ children }: PropsWithChildren) {
 
       const previous =
         interpretationDocumentId === documentId ? interpretationState.interpretation : null;
+      const generation = invalidateInterpretationRequests();
       setInterpretationDocumentId(documentId);
       setInterpretationState({
         status: 'running',
@@ -187,10 +217,17 @@ export function LabsProvider({ children }: PropsWithChildren) {
         interpretation: previous,
       });
       const nextState = await runLabInterpretation(repository, documentId, previous);
-      setInterpretationState(nextState);
+      if (interpretationRequestGeneration.current === generation) {
+        setInterpretationState(nextState);
+      }
       return nextState;
     },
-    [interpretationDocumentId, interpretationState, repository],
+    [
+      interpretationDocumentId,
+      interpretationState,
+      invalidateInterpretationRequests,
+      repository,
+    ],
   );
 
   const uploadPhoto = useCallback(
