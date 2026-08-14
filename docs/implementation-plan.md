@@ -8,136 +8,174 @@ This file is the **canonical forward roadmap**. Verified evidence belongs in `do
 
 ### Mobile
 
-- Repository: `ivangemini/smart-fitness-app`.
-- Stories S10 mobile PR #643 is merged.
-- Phase 12 Labs + Settings PR #644 is merged.
-- Native push contract/readiness foundation PR #647 is merged with safe-disabled defaults.
-- Labs interpretation repository PR #648 and state controller PR #653 are merged.
-- Steps provider-neutral runtime source seam PR #651 is merged as `b71e1f6bf3724238ebef4aebc67350d4260fbb5b` after complete exact-head Mobile CI; the subsequent `main` CI also passed the complete gate.
-- Labs interpretation context PR #654 is merged as `f66476fb613a313aae74d1e30befa3a202c98a8f` after complete exact-head Mobile CI. Its generation guard prevents stale asynchronous interpretation runs from overwriting newer document state.
-- A prepared branch `feat/p14-mobile-registration-client` contains the provider-neutral authenticated mobile push-registration client and readiness coordinator. It is not yet merged and does not activate native permission or APNs/FCM delivery.
+Repository: `ivangemini/smart-fitness-app`.
+
+Latest runtime/source merge before this documentation synchronization: `7036cb0257fe38a945ec18726389954c82641dd3` (#657). Documentation-only merges may advance `main` without changing that runtime/source baseline.
+
+Merged Phase 14-adjacent source now includes:
+
+- Stories S10 #643;
+- Phase 12 Labs + Settings #644;
+- native push readiness foundation #647;
+- Labs interpretation repository #648;
+- Steps runtime source seam #651;
+- Labs interpretation controller #653;
+- Labs context composition #654;
+- authenticated push registration client #656;
+- confirmed-result Labs interpretation presentation #657.
+
+There are no open mobile runtime/source PRs at this checkpoint before the docs synchronization PR.
 
 ### Backend
 
-- Repository: `ivangemini/smart-fitness-backend`.
-- Stories S10 PR #229 and Phase 12 Labs PR #230 are merged.
-- Provider-neutral push delivery contracts PR #231 is merged.
-- Push-registration persistence/API PR #232 is merged as `aa0b1e97951fab107756c4138866cd3bc618219b` after exact-head Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI all passed.
-- Migration `0051_push_device_registrations` is registered in the Drizzle journal, applies successfully, is idempotent and passes migrated-schema validation.
+Repository: `ivangemini/smart-fitness-backend`.
 
-Release readiness remains lower than source completeness because physical-device, native-release, provider, deployment and production evidence are separately authorization-gated.
+Latest runtime/source merge before this documentation synchronization: `404963da88939ab2913a5f8a72ae90a51f77459f` (#234). Documentation-only merges may advance `main` without changing that runtime/source baseline.
+
+Merged push source now includes:
+
+- provider-neutral contracts #231;
+- persistent device registration/API #232;
+- current-device cleanup on logout #233;
+- remote-session/revoke-others cleanup #234.
+
+#234 was merged only after exact-head Backend CI and PostgreSQL CI passed and review threads were empty.
+
+There are no open backend runtime/source PRs at this checkpoint before the docs synchronization PR.
+
+Prepared backend branch `feat/p14-push-delivery-outbox-worker` is based on runtime/source baseline `404963d` and has no additional commit yet.
+
+Release readiness remains lower than source completeness because native/device/provider/deployment/production evidence is separately authorization-gated.
 
 ## Operating rules
 
 - Re-check exact mobile/backend `main`, open PRs, `AGENTS.md`, this plan, current status, handoff and focused roadmaps before new work.
-- Prefer bounded evidence-backed packages over cosmetic churn.
-- Preserve routes, stable IDs, private persistence/sync contracts, calculations, authentication/session semantics, workout/program lifecycle, completed-history immutability, Social authority/privacy, active-program owner authority and backend ownership/revision/idempotency contracts unless a task explicitly changes them.
+- Prefer bounded evidence-backed packages over broad speculative refactors.
+- Preserve routes, stable IDs, persistence/sync contracts, calculations, authentication/session semantics, workout/program lifecycle, completed-history immutability, Social authority/privacy, Labs ownership, active-program authority and backend revision/idempotency contracts unless explicitly changed.
 - Follow `docs/architecture/responsive-mobile-ui.md` and `docs/architecture/liquid-glass-ui.md`.
-- Local AsyncStorage remains the active local-state strategy. Reviewed decision evidence: `docs/architecture/local-state-performance-decision.md`.
-- There is no remaining approved autonomous source-refactor phase. Phase 14 is a bounded reviewed product/runtime completion program, not permission to resume broad speculative refactoring.
-- Stories remain in the server-authoritative Social boundary and must not be added to private revisioned `AppState` sync.
-- Provider calls and credentials remain backend-only unless a reviewed native capability explicitly requires device-side provider interaction.
-- Source-complete provider, export, worker, delivery or native seams are not activation authorization.
-- Do not claim physical-device, native-release, deployment, provider or production evidence unless it actually ran and was explicitly authorized.
+- Local AsyncStorage remains the active local-state strategy; see `docs/architecture/local-state-performance-decision.md`.
+- Stories remain server-authoritative Social state and must not enter private revisioned `AppState` sync.
+- Labs remains server-authoritative private health data and must not become Social-visible.
+- Provider calls and credentials remain backend-only except for reviewed native platform APIs required to obtain device-owned credentials/permissions.
+- Source-complete provider, export, worker, delivery or native seams are not production activation authorization.
 
 ## Phase status
 
 - **Phases 1–10:** complete for their established source/CI scope.
-- **Phase 11 Liquid Glass + Home convergence:** source/CI-complete for the authorized LG-1 through LG-5 scope. Later demonstrated regressions may receive bounded fixes; there is no implicit LG-6/LG-7 refactor program.
-- **Stories S10:** source-complete across mobile/backend. Remaining work is runtime/deployment/device evidence only unless a concrete regression is reproduced.
-- **Phase 12 Labs + Settings:** source foundation merged. Provider/runtime/native document-import completion remains separately gated.
-- **Phase 13 Companion v1:** merged baseline retained; pet/cosmetics/progression expansion remains deferred unless explicitly reprioritized.
-- **Phase 14:** active bounded runtime/source-completion program described below.
+- **Phase 11:** source/CI-complete for the authorized Liquid Glass + Home convergence scope; future work is bounded demonstrated defects only.
+- **Stories S10:** source-complete; runtime/deployment/device evidence remains.
+- **Phase 12 Labs + Settings:** source composition now includes confirmed-result interpretation presentation; provider/native/runtime activation remains gated.
+- **Phase 13 Companion v1:** retained; richer pet/cosmetics/progression remains deferred.
+- **Phase 14:** active bounded runtime/source-completion program.
 
 ## Phase 14 active workstreams
 
-### P14-A — Labs interpretation composition
+### P14-A — Real push delivery
 
-**Current source status:** context integration complete through PR #654.
+This is the current highest-priority source workstream.
 
-Established:
+Already source-complete:
 
-- authenticated repository and interpretation state controller;
-- capability loading through `LabsContext`;
-- fail-closed unavailable state;
-- document-scoped retained interpretation;
-- stale asynchronous run invalidation;
-- logout/refresh invalidation of in-flight interpretation writes.
+- provider-neutral delivery contracts;
+- owner/device persistent registrations;
+- authenticated mobile registration client;
+- reuse of `AuthSession.device.id`;
+- one refresh-on-401 mobile retry;
+- fail-closed readiness coordination without implicit permission prompts;
+- atomic provider-token account handoff;
+- current-device cleanup on authenticated logout;
+- remote-session/revoke-others cleanup;
+- credential redaction/export exclusion/privacy inventory boundaries.
 
-Remaining source candidates must preserve confirmed-data-only interpretation, explicit review before canonical confirmation, minimum necessary model context and no automatic diagnosis/treatment mutation.
+Next backend package: durable push outbox/delivery worker.
+
+Required properties:
+
+- durable per-device jobs in PostgreSQL;
+- lease/claim semantics for concurrent workers;
+- bounded retry/backoff using existing policy;
+- provider transports injected behind the existing contract;
+- stale-worker finalization protection through claim identity;
+- exact-registration invalid-token invalidation so delayed provider responses cannot invalidate a newer credential;
+- no raw reusable token in ordinary outbox/event payloads where a registration reference is sufficient;
+- migration/schema/privacy/account-deletion coverage as applicable;
+- exact-head Backend CI + PostgreSQL CI.
+
+Later non-overlapping packages:
+
+- notification-event enqueue composition;
+- concrete APNs/FCM adapter(s);
+- permanent-invalid-token feedback;
+- native permission UX and credential acquisition/rotation;
+- offline logout/reconnect cleanup policy;
+- notification content/deep-link policy and Story interaction delivery;
+- physical-device and second-account/device evidence.
 
 Still separately gated:
 
-- production OCR/storage/model provider activation;
-- native PDF picker/dependency rollout;
-- backend deployment/migration execution;
-- physical-device/import/provider evidence.
+- provider credentials;
+- APNs/FCM activation;
+- production worker scheduling;
+- backend deployment/migrations;
+- native build/install, OTA/EAS and device evidence.
 
-### P14-B — Stories runtime evidence
+### P14-B — Labs / Analyses completion
 
-Stories S10 source is already merged. Remaining work is evidence, not duplicate source implementation.
+Provider-neutral source composition is now complete through mobile #657:
 
-Use the consolidated runtime matrix in `docs/qa/stories-s10-runtime-matrix.md` and distinguish:
+- repository/state/context boundary;
+- fail-closed capability handling;
+- stale async generation protection;
+- confirmed-document-only interpretation;
+- bounded confirmed-result presentation;
+- provider/model provenance display without raw provider payload exposure;
+- explicit non-diagnostic/non-treatment product copy.
+
+Remaining work is mainly provider/native/runtime activation:
+
+- production private object storage/OCR/model provider decision/configuration;
+- backend deployment/migrations in an authorized environment;
+- PDF native picker/dependency rollout;
+- internal Labs-to-model tool exposure policy;
+- physical-device/accessibility/provider evidence.
+
+Do not interpret raw OCR drafts or mutate treatment/diagnosis state.
+
+### P14-C — Stories runtime evidence
+
+Stories S10 source is merged. Use `docs/qa/stories-s10-runtime-matrix.md` and distinguish:
 
 1. source/CI evidence;
 2. deployed backend/migration evidence;
 3. physical-device evidence;
 4. second-device/privacy/lifecycle evidence.
 
-Repair only demonstrated runtime defects. Preserve chronological Following semantics and server-authoritative Story access.
-
-### P14-C — Real push delivery
-
-**Backend registration source is merged through PR #232. Mobile client source is prepared but not yet merged.**
-
-Next source package:
-
-- publish the prepared authenticated mobile registration repository and readiness coordinator as its own bounded PR;
-- bind registration to existing `AuthSession.device.id` rather than creating a second device UUID;
-- preserve one refresh-on-401 retry and fail before network access without an authenticated session;
-- require native readiness before backend registration;
-- never request native permission automatically from the repository/coordinator;
-- preserve account-switch token handoff and owner-scoped unregister semantics;
-- keep registration credentials out of API responses, logs and Data Access Export candidate surfaces.
-
-After that, separately review logout/device-revocation composition, notification outbox/delivery worker, provider adapter, retry/invalid-token policy, deep-link routing and Story interaction delivery.
-
-Still separately gated:
-
-- APNs/FCM/Expo transport activation;
-- provider credentials;
-- native permission prompt rollout;
-- production delivery worker;
-- backend deployment;
-- OTA/EAS/native release/device evidence.
+Repair only reproduced defects. Preserve chronological Following semantics and server-authoritative Story access.
 
 ### P14-D — Steps / native health activity
 
-**Provider-neutral source seam is merged through PR #651.**
-
-Established:
-
-- fail-closed runtime source registry;
-- typed daily Steps hook;
-- unavailable default;
-- no fake or workout-derived steps.
+Provider-neutral source seam is merged.
 
 Still separately gated:
 
 - HealthKit/Health Connect dependency selection;
-- permission/disclosure UX;
-- native adapter implementation;
-- physical-device/native build evidence;
-- Home presentation changes dependent on real native data.
+- read-only adapter implementation;
+- explicit permission/disclosure UX;
+- timezone/day-boundary semantics;
+- denied/unsupported behavior;
+- physical-device evidence;
+- Home presentation changes dependent on real native aggregate data.
 
 ## Current execution order
 
-1. Publish and merge the canonical Phase 14 documentation consolidation.
-2. Rebase/validate/publish the prepared mobile push-registration client against mobile `main` and merged backend #232.
-3. Add logout/account-switch/device-revocation composition only after the mobile registration client contract is green and merged.
-4. Continue Labs confirmed-result presentation/provider-independent composition only where source changes remain useful without activating external providers.
-5. Collect Stories runtime evidence only in authorized environments; do not manufacture duplicate source work.
-6. Enter HealthKit/Health Connect, APNs/FCM, PDF-native, provider, deployment or physical-device work only after the corresponding explicit authorization gate is opened.
+1. Implement and validate the durable push outbox/delivery worker from backend runtime/source baseline `404963d`.
+2. Merge it only after the applicable exact-head backend gates are green and review-clean.
+3. Add the smallest follow-up enqueue/provider-feedback package without overlapping worker internals.
+4. Enter concrete APNs/FCM/native push activation only when its credentials/native/device authorization gate is opened.
+5. Treat Labs source composition as complete until provider/native/runtime work is explicitly opened or a concrete defect is reproduced.
+6. Collect Stories runtime evidence only in authorized environments.
+7. Enter HealthKit/Health Connect only after explicit dependency/permission authorization.
+8. Synchronize roadmap/status/handoff after every material merged checkpoint.
 
 ## Validation policy
 
@@ -153,7 +191,7 @@ Mobile runtime/code PRs require exact-head Mobile CI:
 
 Backend source PRs require the repository's relevant exact-head gates, including PostgreSQL and account-deletion validation when schema/privacy surfaces change.
 
-Documentation-only synchronization uses diff/ancestry verification when workflows intentionally ignore Markdown-only changes. Documentation must not claim runtime/provider/device evidence that did not actually run.
+Documentation-only synchronization uses diff/ancestry verification when workflows intentionally ignore Markdown-only changes. Documentation must not claim runtime/provider/device evidence that did not run.
 
 ## Closed activation gates
 
@@ -161,15 +199,16 @@ Without direct authorization, do not:
 
 - deploy the backend;
 - execute production migrations;
-- activate APNs/FCM or provider delivery;
-- configure/rotate provider credentials;
-- request native push permission from users;
-- activate HealthKit or Health Connect;
-- add a native PDF/health/push dependency solely to bypass the reviewed gate;
+- activate/schedule production push workers;
+- activate APNs/FCM or configure/rotate provider credentials;
+- request native push permission implicitly;
+- activate HealthKit/Health Connect;
+- activate production Labs storage/OCR/model providers;
+- add native PDF/health/push dependencies solely to bypass a reviewed gate;
 - publish OTA/EAS updates;
-- create/install a native release build;
-- access or mutate production data;
-- submit to an app store.
+- create/install native release builds;
+- access/mutate production data;
+- submit to app stores.
 
 ## Deferred product scope
 
@@ -177,7 +216,7 @@ Do not begin without explicit reprioritization:
 
 - algorithmic Following feed ranking/retention changes;
 - broad Coach product/material expansion;
-- Companion pet/cosmetics/progression expansion beyond the current v1 baseline;
+- Companion pet/cosmetics/progression expansion beyond current v1;
 - DMs/groups/trainer marketplace/subscriptions;
 - public private-health/body/nutrition/Coach data;
 - broad autonomous UI/refactor phases unrelated to a demonstrated defect or reviewed product contract.
