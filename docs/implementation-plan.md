@@ -24,7 +24,7 @@ Merged Phase 14-adjacent source now includes:
 - authenticated push registration client #656;
 - confirmed-result Labs interpretation presentation #657.
 
-There are no open mobile runtime/source PRs at this checkpoint before the docs synchronization PR.
+Current source package #659 closes provider-neutral Steps local-day/day-boundary semantics without native activation.
 
 ### Backend
 
@@ -41,9 +41,7 @@ Merged push source now includes:
 
 #234 was merged only after exact-head Backend CI and PostgreSQL CI passed and review threads were empty.
 
-There are no open backend runtime/source PRs at this checkpoint before the docs synchronization PR.
-
-Prepared backend branch `feat/p14-push-delivery-outbox-worker` is based on runtime/source baseline `404963d` and has no additional commit yet.
+Phase 14 push worker/enqueue work continues in bounded backend PRs; provider credentials, deployment and worker activation remain separately gated.
 
 Release readiness remains lower than source completeness because native/device/provider/deployment/production evidence is separately authorization-gated.
 
@@ -88,9 +86,9 @@ Already source-complete:
 - remote-session/revoke-others cleanup;
 - credential redaction/export exclusion/privacy inventory boundaries.
 
-Next backend package: durable push outbox/delivery worker.
+Current backend packages cover the durable push outbox/delivery worker and transactional Story interaction enqueue composition.
 
-Required properties:
+Required worker properties:
 
 - durable per-device jobs in PostgreSQL;
 - lease/claim semantics for concurrent workers;
@@ -104,12 +102,11 @@ Required properties:
 
 Later non-overlapping packages:
 
-- notification-event enqueue composition;
 - concrete APNs/FCM adapter(s);
 - permanent-invalid-token feedback;
 - native permission UX and credential acquisition/rotation;
 - offline logout/reconnect cleanup policy;
-- notification content/deep-link policy and Story interaction delivery;
+- notification content/deep-link policy and remaining delivery composition;
 - physical-device and second-account/device evidence.
 
 Still separately gated:
@@ -155,28 +152,31 @@ Repair only reproduced defects. Preserve chronological Following semantics and s
 
 ### P14-D — Steps / native health activity
 
-Provider-neutral source seam is merged.
+Provider-neutral source seam is merged. Current package #659 adds source-level local calendar-day semantics:
 
-Still separately gated:
+- half-open `[local midnight, next local midnight)` native query windows;
+- DST-safe 23/24/25-hour day handling;
+- strict invalid local-date rejection;
+- explicit unsupported/denied fail-closed evidence.
+
+Still separately gated after #659:
 
 - HealthKit/Health Connect dependency selection;
 - read-only adapter implementation;
 - explicit permission/disclosure UX;
-- timezone/day-boundary semantics;
-- denied/unsupported behavior;
+- native denied/unsupported runtime evidence;
 - physical-device evidence;
 - Home presentation changes dependent on real native aggregate data.
 
 ## Current execution order
 
-1. Implement and validate the durable push outbox/delivery worker from backend runtime/source baseline `404963d`.
-2. Merge it only after the applicable exact-head backend gates are green and review-clean.
-3. Add the smallest follow-up enqueue/provider-feedback package without overlapping worker internals.
-4. Enter concrete APNs/FCM/native push activation only when its credentials/native/device authorization gate is opened.
-5. Treat Labs source composition as complete until provider/native/runtime work is explicitly opened or a concrete defect is reproduced.
-6. Collect Stories runtime evidence only in authorized environments.
-7. Enter HealthKit/Health Connect only after explicit dependency/permission authorization.
-8. Synchronize roadmap/status/handoff after every material merged checkpoint.
+1. Validate/review/merge the durable push outbox/delivery worker.
+2. Validate the smallest transactional Story enqueue/source-removal package on top of the worker, then retarget it to `main` after the worker merge.
+3. Enter concrete APNs/FCM/native push activation only when its credentials/native/device authorization gate is opened.
+4. Treat Labs source composition as complete until provider/native/runtime work is explicitly opened or a concrete defect is reproduced.
+5. Collect Stories runtime evidence only in authorized environments.
+6. Complete #659 provider-neutral Steps local-day semantics; enter HealthKit/Health Connect only after explicit dependency/permission authorization.
+7. Synchronize roadmap/status/handoff after every material merged checkpoint.
 
 ## Validation policy
 
