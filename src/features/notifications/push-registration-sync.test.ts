@@ -8,11 +8,11 @@ const remote = (register = vi.fn()) =>
   ({ register, unregister: vi.fn() }) as unknown as RemotePushRegistrationRepository;
 
 const readyClient = (): NativePushClient => ({
-  getPermissionState: vi.fn(async () => 'granted'),
-  requestPermission: vi.fn(async () => 'granted'),
+  getPermissionState: vi.fn(async () => 'granted' as const),
+  requestPermission: vi.fn(async () => 'granted' as const),
   getDeviceToken: vi.fn(async () => ({
-    platform: 'ios',
-    provider: 'apns',
+    platform: 'ios' as const,
+    provider: 'apns' as const,
     token: 'x'.repeat(16),
   })),
 });
@@ -37,8 +37,8 @@ describe('syncPushRegistration', () => {
   it('does not contact the remote repository before permission exists', async () => {
     const register = vi.fn();
     const client: NativePushClient = {
-      getPermissionState: vi.fn(async () => 'not_requested'),
-      requestPermission: vi.fn(async () => 'granted'),
+      getPermissionState: vi.fn(async () => 'not_requested' as const),
+      requestPermission: vi.fn(async () => 'granted' as const),
       getDeviceToken: vi.fn(async () => null),
     };
 
@@ -52,8 +52,8 @@ describe('syncPushRegistration', () => {
   it('fails closed when native push is unsupported', async () => {
     const register = vi.fn();
     const client: NativePushClient = {
-      getPermissionState: vi.fn(async () => 'unsupported'),
-      requestPermission: vi.fn(async () => 'unsupported'),
+      getPermissionState: vi.fn(async () => 'unsupported' as const),
+      requestPermission: vi.fn(async () => 'unsupported' as const),
       getDeviceToken: vi.fn(async () => null),
     };
 
