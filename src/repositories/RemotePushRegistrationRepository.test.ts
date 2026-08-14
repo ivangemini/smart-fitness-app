@@ -67,6 +67,29 @@ describe('RemotePushRegistrationRepository', () => {
     ).rejects.toThrow('invalid_push_registration_response');
   });
 
+  it('rejects a valid response bound to a different device', async () => {
+    const post = vi.fn(async () => ({
+      registration: {
+        deviceId: 'device-2',
+        platform: 'ios' as const,
+        provider: 'apns' as const,
+      },
+    }));
+    const repository = createRemotePushRegistrationRepository(
+      { post } as unknown as ApiClient,
+      auth,
+    );
+
+    await expect(
+      repository.register({
+        deviceId: 'device-1',
+        platform: 'ios',
+        provider: 'apns',
+        token: '1234567890abcdef',
+      }),
+    ).rejects.toThrow('push_registration_response_mismatch');
+  });
+
   it('unregisters the authenticated device using an encoded path', async () => {
     const remove = vi.fn(async () => undefined);
     const repository = createRemotePushRegistrationRepository(
