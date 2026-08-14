@@ -1,119 +1,208 @@
 # Latest Handoff
 
-Updated: 2026-08-12
+Updated: 2026-08-14
 
-## Checkpoint
+Exact Git history, source and CI override prose if this handoff becomes stale.
 
-- Mobile repo: `ivangemini/smart-fitness-app`.
-- Latest merged mobile Stories baseline remains S9-F PR #641, merge `a5da4b85ac42f9560faa5fd0516fef2244e9c7a7`.
-- Active S10 mobile PR #643 implements the explicitly prioritized S10-A through S10-E source package. Runtime/source head `692dea96e692fdecdb9db87341c5758cdf2fed01` passed complete Mobile CI #2217 / run `31631890545` before later documentation-only synchronization.
-- PR #617 remains a bounded post-LG-5 Workouts persistence regression fix; LG-5 merged demonstrated-defect runtime batches remain **38**.
-- Backend repo: `ivangemini/smart-fitness-backend`.
-- Latest merged backend Stories baseline remains S9-F PR #228, merge `e23fd62c31c3067c96898138efa2bbf60f2b1d0a`.
-- Active backend S10 PR #229 implements server-authoritative S10-A through S10-E. Current source head at this handoff is `fb68a88844fe895588a477cefa971e5fae8328ac`; do not call it merge-ready until exact-head Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI all pass.
-- Backend routine CI uses `[self-hosted, linux, x64, hermes-backend-ci]` on `hermes-backend-ci-01`; mobile keeps its separate `[self-hosted, linux, x64, hermes-mobile-ci]` registration.
-- Backend issue #217 is closed. Backend PR #222 active-training-program authority remains merged.
-- **Home active-program selection is source/CI-complete across backend and mobile; issue #618 is closed as completed.**
-- **Stories S9-A through S9-F remain merged/source-CI complete. S10-A through S10-E are the current explicitly authorized Stories product-source package.**
-- **LG-4 Workouts source convergence and LG-5 validation-first source/CI QA are complete for their scopes.**
-- **There is no separate autonomous source-refactor phase.**
-- Coach product/material expansion remains deferred.
+## Current verified checkpoint
 
-Exact Git history, source and tests override stale handoff prose.
+### Mobile
 
-## Home active-program handoff
+Repository: `ivangemini/smart-fitness-app`.
 
-The reviewed contract in `docs/architecture/home-active-program-contract.md` is source/CI-complete.
+Merged Phase 14-adjacent source at this checkpoint:
 
-Backend:
+- Stories S10 mobile #643;
+- Phase 12 Labs + Settings #644;
+- native push contract/readiness #647;
+- Labs interpretation repository boundary #648;
+- Labs interpretation state controller #653;
+- Steps provider-neutral runtime seam #651, merged as `b71e1f6bf3724238ebef4aebc67350d4260fbb5b` after complete exact-head Mobile CI. Post-merge main CI also passed the full Mobile gate.
 
-- `fitness_profiles.active_training_program_id` is a nullable owner-private UUID;
-- `null` means product-default mode;
-- no training-program FK is used, preserving offline/out-of-order sync and stale-reference repair;
-- repository/sync paths persist and materialize the selector;
-- omitted legacy payload fields normalize to `null`;
-- PostgreSQL tests verify nullable/no-FK behavior;
-- owner data export excludes the raw selector UUID.
+Active mobile PR:
 
-Mobile:
+- #654 — `LabsContext` interpretation composition.
+- Current head at this handoff: `bcf7372868b1721ff298714e0999bf4071f12a2e`.
+- Branch is based on the merged Steps baseline.
+- It loads interpretation capability with Labs state, exposes explicit run/capability actions, fails closed when unavailable, retains previous output only for the originating document and uses request-generation invalidation so a late response from an older document/run cannot overwrite newer state or a reset/logout state.
+- Exact-head Mobile CI is required before merge.
 
-- `ProfileState.activeTrainingProgramId` is `string | null`;
-- custom selections use the existing canonical training-program sync UUID mapping, including local legacy `program-*` IDs;
-- profile metadata persistence and push/pull sync carry the selector;
-- Program Detail exposes explicit `Set as active` / `Use default program` actions without showing raw UUIDs;
-- deleting the selected custom program clears the selector in the same mutation;
-- sync pull repairs stale selectors after training-program/profile application;
-- Home resolves schedule authority deterministically from the selector and no longer uses favorite, recency, array order or `getWorkoutPrograms(workouts)[0]`.
+Prepared but unpublished mobile branch:
 
-Not established by this completion: backend deployment/migration execution, second-device runtime evidence, native/device release evidence or production activation.
+- `feat/p14-mobile-registration-client` — authenticated push registration repository + readiness coordinator. No PR. Do not describe as merged or CI-validated source.
 
-## CI handoff
+Documentation consolidation branch:
 
-- Mobile S10 runtime/source validation: Mobile CI #2217 / run `31631890545` — success on `692dea96e692fdecdb9db87341c5758cdf2fed01`, including line limits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
-- Backend S10 current source head: `fb68a88844fe895588a477cefa971e5fae8328ac`; exact-head Backend CI/PostgreSQL/Account Deletion Receipt evidence must all be green before merge-ready status.
-- Backend runner: repo-scoped `hermes-backend-ci-01`, label `[self-hosted, linux, x64, hermes-backend-ci]`.
-- Mobile runner: separate repo-scoped registration using `[self-hosted, linux, x64, hermes-mobile-ci]`.
-- Do not substitute these custom labels for one another or move routine validation back to hosted runners for convenience.
-- Preserve exact-head validation, path filters, `cancel-in-progress`, merge-push deduplication and complete gates.
-- Documentation-only synchronization may be verified by ancestry/diff when Markdown path filters intentionally skip runtime CI; do not pretend a docs-only head is a newly executed runtime gate.
+- `docs/p14-runtime-completion` — intentionally no PR in this publish workflow.
+- It now updates the Phase 14 roadmap, Labs roadmap, roadmap index, current status, Stories runtime matrix, push lifecycle contract and this handoff.
 
-## Stories handoff
+### Backend
 
-The merged image-only v1 and reviewed S9-A through S9-F baseline remains complete. The active expansion is the explicitly prioritized S10-A through S10-E contract in `docs/architecture/stories-s10-contract.md`.
+Repository: `ivangemini/smart-fitness-backend`.
 
-### Merged baseline
+Merged baseline:
 
-- **Image-only v1:** server authority/privacy/expiry/viewed state plus mobile Home strip/viewer, managed-image authoring, bounded preprocessing, signed upload and restart-safe recovery.
-- **S9-A direct camera:** source/CI-complete still-photo acquisition through the same `story_image` pipeline; native/device evidence gated.
-- **S9-B captions:** source/CI-complete strict caption persistence/moderation/export/mobile integration; deployed migration/provider/runtime evidence gated.
-- **S9-C bounded overlay:** source/CI-complete bounded overlay authority/rendering; deployed migration/provider/runtime evidence gated.
-- **S9-D private Story Like:** source/CI-complete dedicated private Like authority and privacy-separated mobile interaction surfaces.
-- **S9-E bounded Story Reactions:** source/CI-complete across backend and mobile; fixed `love | fire | strong | clap`, one non-owner reaction, owner aggregates only, no reactor identity/ranking/AppState coupling.
-- **S9-F bounded in-app interaction notifications:** source/CI-complete across backend and mobile; no external push provider.
+- Stories S10 backend #229;
+- Phase 12 Labs backend #230;
+- provider-neutral push delivery contracts #231.
 
-### Active S10 package
+Active backend PR:
 
-- **S10-A viewer list:** owner-only identities from authoritative Story views. Do not expose liker/reactor identities as part of this surface.
-- **S10-B Close Friends/audience:** exact audience `following | close_friends`; member must follow owner; membership is database-constrained to the follow edge, removed directionally on unfollow and both ways on block; re-follow does not resurrect membership; replay returns persisted membership metadata.
-- **S10-C replies:** private moderated 1–1,000 character non-owner replies to readable active Stories. Backend is idempotent and mobile preserves one retry identity for the same normalized `storyId + body` until confirmed success. No DMs/threading.
-- **S10-D push preference:** request state only. `deliveryProviderAvailable=false` and `effectiveEnabled=false`; no APNs/FCM/native/provider activation.
-- **S10-E Archive/Highlights:** expired owned Stories may retain approved managed media in owner Archive; ephemeral active interactions are cleared; Highlights remain owner-managed and do not make expired Stories active again.
+- #232 — persistent owner-scoped push registrations and authenticated registration HTTP boundary.
+- Current exact head at this handoff: `12bf0f03c1d36ee30a06a222341a3de9f56d735d`.
+- Required gates: Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI.
 
-### S10 rollout rule
+## Phase 14 workstreams
 
-The S10 backend accepts the old create payload because omitted audience defaults to `following`; the S10 mobile client can send the new strict audience field that the pre-S10 backend rejects. Any later authorized runtime rollout must therefore be **backend S10 first → mobile S10 second**.
+Focused roadmap: `docs/roadmap/phase14-active-workstreams.md`.
 
-This is source compatibility guidance only. No backend deployment, production migration, OTA/EAS publication, native build/install, provider activation or production rollout has been authorized or executed by this handoff.
+### P14-A — Labs interpretation composition
 
-## LG-5 closure
+Active PR #654.
 
-LG-5 remains closed at **38 demonstrated-defect runtime batches**. The final four packages remain:
+Current source contract:
 
-- #610 New Routine arbitrary-exercise virtualization — batch 35;
-- #611 Program Workout Editor arbitrary draft-exercise virtualization — batch 36;
-- #614 Safety Gate narrow-width/localized-copy/accessibility hardening — batch 37;
-- #613 Program Editor/Picker interaction-material convergence — batch 38.
+- capability loads alongside Labs documents/markers;
+- `LabsContext` exposes typed interpretation state, capability refresh and explicit run action;
+- unavailable capability fails closed;
+- unauthenticated/reset refresh clears interpretation state;
+- previous output is retained only for the same document ID;
+- request-generation guards reject stale async writes from earlier documents/runs or pre-reset requests;
+- no external model provider activation;
+- no raw OCR draft interpretation path;
+- no treatment/diagnostic mutation.
 
-PR #612 was intentionally not merged because the program-day collections are bounded by the seven-day `WeekdayKey` model. PR #617 is a later bounded persistence regression fix, not a new LG-5 package.
+A user-facing confirmed-result interpretation card was investigated but is not part of #654 because the screen mutation was rejected by the tooling boundary. Do not claim that presentation surface as merged.
 
-## Next work
+### P14-B — Push registration persistence and HTTP boundary
 
-1. Finish backend S10 exact-head CI and fix only demonstrated failures; do not broaden the contract.
-2. Keep mobile PR #643 aligned with the reviewed S10 backend contract; source CI is green on `692dea96e692fdecdb9db87341c5758cdf2fed01`.
-3. Synchronize remaining canonical docs/privacy inventory as needed and verify docs-only ancestry/diffs.
-4. Move PR #229 and PR #643 to merge-ready only after their source/CI and documentation boundaries are coherent.
-5. Do not deploy migrations, backend runtime, APNs/FCM/provider configuration, OTA/EAS/native builds or production changes without direct authorization.
-6. Keep LG-H3 Steps blocked until a reviewed real native health/activity source, dependency and permission/disclosure contract exists and physical runtime work is authorized.
-7. Preserve chronological Following semantics; LG-H4 ranking/retention remains later.
-8. Keep Coach product/material expansion deferred until explicit reprioritization.
-9. Future Stories product work outside S10 requires another explicit product/privacy contract; candidate inventory is not implicit authorization.
+Active backend PR #232.
 
-## Contracts to preserve
+Current source contract:
 
-Do not change workout/program lifecycle, active-session draft persistence, completed-history read-only semantics, private persistence/sync schemas, exercise repository/provider behavior, Social/Stories server authority/privacy, Coach API/auth contracts, active-program owner authority, or backend ownership/revision/idempotency contracts as incidental follow-up.
+- migration `0051_push_device_registrations.sql`;
+- 0051 registered in Drizzle `meta/_journal.json` as `idx: 51`;
+- canonical Drizzle table/schema export;
+- authenticated `POST /v1/push/registrations`;
+- owner-scoped non-enumerating `DELETE /v1/push/registrations/:deviceId`;
+- strict iOS/APNs and Android/FCM request validation;
+- response deliberately excludes reusable delivery credential material;
+- owner-scoped active list/invalidation store;
+- atomic provider/credential handoff so an account switch cannot leave the old owner as the active route;
+- logger body/token redaction covers the new endpoint;
+- technical data inventory includes the table without rewriting unrelated privacy documentation;
+- Data Access Export inventories the state but classifies routing/credential material as `excluded_secret`, `surfaceId=null`, `rowScope=none`;
+- account deletion owns final cascade cleanup.
 
-Potentially long collections retain one suitable virtualized boundary with stable identity. Keyboard forms retain active-input/primary-action reachability. Direct interaction feedback changes material state rather than relying on generic opacity. Safe-area ownership remains singular per edge.
+Important repaired PostgreSQL defect:
 
-Keep `docs/architecture/local-state-performance-decision.md` referenced from `docs/implementation-plan.md`. Preserve the explicit authorization marker: **no separate autonomous source-refactor phase is currently authorized**.
+- the 0051 SQL file initially existed but was missing from Drizzle `_journal.json`;
+- therefore `db:migrate` did not execute 0051 even though the migration command itself succeeded;
+- after adding the journal entry, PostgreSQL CI successfully applied all migrations, passed migration idempotency and passed actual migrated-schema validation before entering broader Social/sync PostgreSQL tests.
 
-Do not perform authorization-gated OTA/EAS publication, native build/install, backend deployment, migration execution, production/provider activation, credential/DNS, native-health or store actions unless explicitly requested.
+### P14-C — Steps
+
+Provider-neutral source seam is **merged** through #651.
+
+Merged behavior:
+
+- fail-closed runtime activity source;
+- default `unavailable` source;
+- daily aggregate hook;
+- no fake or workout-derived steps;
+- no HealthKit/Health Connect activation or native dependency in this package.
+
+Remaining work is the separately gated native adapter/permission/device-evidence package.
+
+### P14-D — Stories runtime evidence
+
+Stories S10 source is merged. Remaining work is evidence/runtime validation only unless a defect is reproduced.
+
+The runtime matrix is consolidated on the docs branch at `docs/qa/stories-s10-runtime-matrix.md`. Existing PR #650 remains stale-ancestry documentation work and is not a source blocker.
+
+## Prepared mobile Push source
+
+Branch: `feat/p14-mobile-registration-client`.
+
+Prepared source currently establishes:
+
+- authenticated registration/unregister repository;
+- one access-token refresh retry after HTTP 401;
+- no network request when authenticated access token is absent;
+- strict platform/provider response parsing;
+- response device/platform/provider binding to the original request;
+- encoded unregister path;
+- readiness coordinator that never requests notification permission implicitly;
+- no backend registration until permission and native credential readiness already exist.
+
+Future composition must reuse the existing server-issued `AuthSession.device.id`; do not generate a second push-specific device UUID.
+
+`docs/architecture/push-registration-lifecycle.md` records the unresolved real-delivery lifecycle: explicit permission UX, pre-logout or server-assisted cleanup, offline logout, account switching, credential rotation, invalid-provider feedback, retry/dead-letter policy, logging/privacy controls and physical-device evidence.
+
+## CI state / policy
+
+### Mobile
+
+Exact-head runtime/source validation requires:
+
+- repository file line audit;
+- changed-file line audit;
+- TypeScript;
+- full regression suite;
+- expanded-model smoke;
+- Expo export;
+- Expo Doctor.
+
+Steps #651 passed this complete gate before merge, and its post-merge main run passed the complete gate again.
+
+### Backend
+
+Exact-head runtime/source validation requires the applicable combination of:
+
+- lint/format/build/full tests;
+- production-config validation;
+- PostgreSQL migration/schema/API/sync validation;
+- Account Deletion Receipt CI for relevant schema/privacy changes.
+
+For #232, migration application, idempotency and migrated-schema validation have already passed on the repaired journal path. Broader PostgreSQL Social/sync tests and the other exact-head workflows remain required before merge.
+
+## Privacy / lifecycle findings to preserve
+
+- Push routing/credential state is account-owned but security-sensitive and is excluded from Data Access Export candidate surfaces.
+- Push registration API responses do not echo the stored delivery credential.
+- Backend logger redacts request/response bodies and token-like fields.
+- A provider/credential can move atomically to the current authenticated owner, preventing stale account delivery ownership during account switching.
+- Mobile push composition must use the existing authenticated device identity.
+- Real delivery must define logout/offline-logout behavior before activation.
+- Labs interpretation consumes confirmed structured data; raw OCR drafts are not authoritative health history.
+- Stories remain server-authoritative and outside private revisioned `AppState` sync.
+
+## Next execution order
+
+1. Finish exact-head Mobile CI for #654, check review threads, squash-merge if green.
+2. Finish backend #232 exact-head Backend CI + PostgreSQL CI + Account Deletion Receipt CI; fix only demonstrated failures and distinguish runner teardown flakes from source defects.
+3. After #232 merges, rebase/validate the prepared mobile registration client and publish it as a separate bounded PR in a later publish workflow.
+4. Synchronize canonical docs from the final merged SHAs before publishing the docs consolidation branch.
+5. Enter native/provider/runtime evidence work only when its explicit gate is opened.
+
+## Closed activation gates
+
+Without direct authorization, do not:
+
+- deploy the backend;
+- execute production migrations;
+- activate APNs/FCM;
+- add/rotate provider credentials;
+- request native notification permission implicitly;
+- activate HealthKit/Health Connect;
+- add native PDF/health/push dependencies solely to bypass a reviewed gate;
+- publish OTA/EAS;
+- build/install native releases on physical devices;
+- access or mutate production data;
+- submit to app stores.
+
+## Existing architectural contracts to preserve
+
+Do not change workout/program lifecycle, active-session draft persistence, completed-history immutability, private persistence/sync schemas, exercise repository/provider behavior, Social/Stories authority/privacy, Coach auth/API contracts, active-program owner authority, backend ownership/revision/idempotency semantics or privacy/export boundaries as incidental follow-up.
+
+Potentially long collections retain suitable virtualized boundaries with stable identity. Keyboard forms retain active-input/primary-action reachability. Safe-area ownership remains singular per edge. Keep `docs/architecture/local-state-performance-decision.md` referenced from the canonical implementation plan. There is no separate autonomous broad refactor phase unless explicitly prioritized again.

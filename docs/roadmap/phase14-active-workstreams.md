@@ -1,122 +1,207 @@
 # Phase 14 — Active product workstreams
 
-Updated: 2026-08-13
+Updated: 2026-08-14
 
-Status: explicitly prioritized and authorized for source implementation.
+Status: explicitly prioritized source program; provider/native/deployment activation remains separately gated.
 
-This roadmap supersedes stale forward-looking statements that still describe Stories S10, Labs Phase 12, or Companion Phase 13 as pending source work. Exact Git history remains authoritative.
+This is the focused Phase 14 roadmap. It supersedes stale forward-looking statements that describe Stories S10 or Phase 12 Labs/Settings as pending source work. Exact code, tests and Git history remain authoritative.
 
-## Baseline
+## Verified merged baseline
 
-- Mobile main: `ada5d58f70dc9192ba893189b09518f7109566d4` (Phase 13 Companion v1 merged after Phase 12 Labs/Settings).
-- Backend main: `0b868611cc3bcca83434808acb99861c7e8eab75` (Phase 12 Labs foundation merged after Stories S10).
-- Stories S10 source is merged in both repositories.
-- Phase 12 Labs source foundation is merged in both repositories.
-- Phase 13 Companion v1 is merged on mobile and remains intentionally basic; no pet/cosmetics expansion is active.
-- No open PR existed in either repository at this checkpoint.
+### Stories
+
+- Stories S10 backend PR #229 is merged.
+- Stories S10 mobile PR #643 is merged.
+- Source authority exists for viewers, Close Friends/audience, replies, fail-closed push preference state, Archive and Highlights.
+- Further Stories work in Phase 14 is runtime/evidence validation plus bounded fixes for reproduced defects, not duplicate S10 implementation.
+
+### Labs and Settings
+
+- Phase 12 Labs backend PR #230 is merged.
+- Phase 12 Labs/Settings mobile PR #644 is merged.
+- Labs is the fifth primary tab; Settings uses grouped child-route information architecture.
+- Labs document review, confirmed biomarker history, comparisons, trends, private ingestion seams, bounded interpretation contracts and privacy lifecycle are source-established.
+- Production storage/OCR/model providers and PDF-native picker activation remain separate gates.
+
+### Companion
+
+- Phase 13 Companion v1 is merged on mobile and remains intentionally basic.
+- Pet/cosmetics/naming/richer progression is not part of the active Phase 14 source package unless separately reprioritized.
+
+### Push foundation
+
+- Backend provider-neutral delivery contracts are merged through PR #231.
+- Mobile native push contract/readiness foundation is merged through PR #647.
+- No APNs/FCM delivery provider, native permission flow, credential set, background delivery worker or production activation is implied by those merges.
+
+### Labs interpretation foundation
+
+- Mobile repository interpretation endpoint boundary is merged through PR #648.
+- Mobile interpretation state controller is merged through PR #653.
+- Interpretation remains fail-closed when backend capability is unavailable.
+
+### Steps source seam
+
+- Mobile PR #651 is merged as `b71e1f6bf3724238ebef4aebc67350d4260fbb5b` after complete exact-head Mobile CI.
+- The merged source provides a fail-closed runtime activity-source registry and daily Steps hook.
+- The default source remains unavailable; no fake or workout-derived steps are introduced.
+- HealthKit/Health Connect dependency, permission UX and physical-device evidence remain separately gated.
 
 ## Active workstreams
 
-The user explicitly prioritized these four workstreams for parallel implementation:
-
 ### P14-A — Labs completion
 
-Goal: turn the merged fail-closed Labs foundation into a complete user flow while preserving review-before-confirmation and private health-data boundaries.
+Current mobile source PR: #654.
 
-Source scope:
+Current target:
 
-- add mobile PDF document selection using a reviewed native dependency;
-- preserve image import and private upload contracts;
-- complete production-capable extraction/OCR provider composition behind explicit configuration;
-- complete processing worker composition, bounded retries, observability and failure states;
-- surface structured AI interpretation for confirmed data only;
-- expose the already implemented read-only Labs tools to Companion/Coach through an explicit minimum-context policy;
-- preserve provenance, audit metadata, export, deletion and ownership guarantees;
-- add end-to-end source tests for document → extraction → review → confirmation → interpretation.
+- expose interpretation capability/state through `LabsContext`;
+- preserve previous interpretation only for the originating document;
+- use request-generation invalidation so a late async result from an older document/run cannot overwrite a newer state;
+- invalidate in-flight interpretation writes across refresh/logout/fail-closed resets;
+- keep provider execution behind the existing authenticated repository boundary;
+- preserve review-before-confirmation and private health-data boundaries;
+- do not enable external provider execution or treatment/diagnostic mutation through source composition alone.
 
-Activation boundary:
+After this source layer is stable, a user-facing confirmed-result interpretation surface may be added only under the same confirmed-data/provenance/fail-closed constraints.
 
-- provider credentials, production storage/provider activation, backend deployment and production migrations remain separate controlled actions;
-- raw documents never enter ordinary Companion/model context;
-- provider output never becomes canonical laboratory history without user review.
+Still gated:
+
+- production object storage/OCR/model provider configuration;
+- backend deployment and production migration execution;
+- PDF mobile native dependency/picker;
+- model-tool exposure policy for Companion/Coach;
+- physical-device/provider/runtime evidence.
 
 ### P14-B — Stories runtime completion
 
-Goal: close the gap between merged S10 source and demonstrated runtime behavior.
+Stories S10 source is already merged. Current work is evidence/runtime validation.
 
-Scope:
+Use `docs/qa/stories-s10-runtime-matrix.md` to distinguish:
 
-- validate S10 migrations and API behavior in an authorized non-destructive runtime environment;
-- validate camera/picker, upload/finalize, restart recovery, expiry, Close Friends, replies, Archive/Highlights and privacy behavior on physical devices;
-- validate second-device/read-after-write behavior where applicable;
-- repair only demonstrated runtime defects without reopening the S10 product contract;
-- preserve rollout compatibility: backend S10 before mobile S10 when runtime rollout is performed.
+1. source/CI evidence;
+2. backend runtime/migration evidence;
+3. physical-device evidence;
+4. second-device/privacy/lifecycle evidence.
 
-Production deployment, production migration execution, OTA/EAS publication and store submission are not implied by source work and remain explicit final actions.
+Repair only demonstrated runtime defects without reopening the S10 product contract. Preserve rollout compatibility: backend authority before mobile activation when a future runtime rollout is explicitly authorized.
 
 ### P14-C — Real push delivery
 
-Goal: replace the S10 safe-disabled push seam with a real provider-neutral delivery architecture and native permission/token lifecycle.
+Current backend source PR: #232.
 
-Source scope:
+Current provider-neutral source target:
 
-- mobile notification permission UX with no prompt on launch and explicit user intent;
-- native token acquisition/refresh/revocation lifecycle;
-- authenticated owner-scoped device-token registration API;
-- token hashing/redaction rules for logs and exports;
-- backend notification outbox/delivery worker with idempotency, bounded retries and terminal invalid-token handling;
-- APNs/FCM/Expo transport adapter boundary selected by reviewed configuration;
-- Story interaction notifications as the first consumer without coupling the delivery core to Stories;
-- deep-link routing through typed application destinations;
-- account deletion/logout/device revocation cleanup;
-- deterministic tests with provider adapters mocked/faked.
+- owner-scoped persistent device registrations;
+- migration, Drizzle journal and actual migrated-schema parity;
+- authenticated register/unregister routes;
+- route-boundary platform/provider validation;
+- atomic provider-token handoff so account switching cannot leave a stale active owner route;
+- logger redaction and response behavior that do not expose reusable delivery credentials;
+- technical data inventory/account deletion coverage;
+- Data Access Export policy that inventories registration state but excludes reusable routing/credential material from candidate exports.
 
-Activation boundary:
+A prepared mobile branch `feat/p14-mobile-registration-client` adds:
 
-- provider credentials and production push delivery are not committed to source or activated implicitly;
-- permission denial must remain a normal supported state;
-- no health/Labs content is placed in lock-screen notification text by default.
+- authenticated registration/unregister repository;
+- one auth-refresh retry on HTTP 401;
+- fail-closed response parsing bound to the requested device/platform/provider;
+- readiness-to-registration coordination that never requests native permission implicitly.
+
+Future composition must reuse `AuthSession.device.id`; do not invent a second push-specific device UUID.
+
+Real external delivery additionally requires the lifecycle contract in `docs/architecture/push-registration-lifecycle.md`, including explicit permission UX, logout/account-switch cleanup, offline logout behavior, provider invalid-token feedback, delivery retry policy and physical-device evidence.
+
+Provider credentials, APNs/FCM activation and production delivery remain closed gates.
 
 ### P14-D — Steps / native health activity
 
-Goal: replace the blocked/fake Steps concept with real device health data.
+Provider-neutral source seam is merged through PR #651.
 
-Source scope:
+Established source contract:
 
-- iOS HealthKit read-only step-count integration first;
-- Android Health Connect adapter under the same application contract;
-- explicit permission/request UX initiated by the user;
-- daily step aggregation using source-local timestamps/timezone semantics;
-- deterministic unavailable/denied/not-supported states;
-- no inferred steps from workouts;
-- no write access to HealthKit/Health Connect for the initial package;
-- no raw health samples in Social, telemetry or ordinary model context;
-- Home consumes only the bounded daily aggregate contract;
-- native adapter is isolated behind a testable repository/service boundary.
+- fail-closed runtime source registry;
+- daily Steps hook over a typed activity source;
+- deterministic unavailable state;
+- no inferred/workout-derived steps;
+- no raw health samples in Social/telemetry/model context.
 
-Native dependency choices require compatibility validation with Expo SDK 56 / React Native 0.85.3 and a development/release build; Expo Go is not evidence for native health or remote push.
+Remaining native/runtime package:
+
+- reviewed iOS HealthKit read-only adapter/dependency;
+- reviewed Android Health Connect adapter/dependency;
+- explicit user-initiated permission UX;
+- source-local timestamp/timezone semantics;
+- physical-device evidence and denied/unsupported paths;
+- Home presentation only after the real aggregate source is available.
+
+Do not activate HealthKit/Health Connect or add a native dependency merely because the provider-neutral source seam is merged.
 
 ## Parallel execution
 
-These workstreams should proceed independently whenever files/contracts do not overlap:
+Independent workstreams should proceed in parallel when contracts/files do not overlap:
 
-- Labs: backend processing/provider + mobile import/interpretation;
-- Stories runtime: validation and bounded fixes;
-- Push: backend delivery foundation + mobile native permission/token layer;
-- Steps: native health adapter + Home aggregate presentation.
+- Labs: interpretation composition and later provider/runtime evidence;
+- Stories: runtime matrix and bounded reproduced defects;
+- Push: backend registration source plus prepared mobile registration client;
+- Steps: native health work only when its dependency/permission gate is explicitly opened.
 
-Shared files such as root app configuration, package manifests, authentication lifecycle and canonical docs must be integrated deliberately rather than edited concurrently by independent branches.
+Shared files such as authentication lifecycle, package manifests, root app configuration and canonical roadmaps must be integrated deliberately rather than edited concurrently by independent branches.
 
 ## Validation gates
 
-Every mobile runtime/source head must pass authoritative Mobile CI: line limits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
+### Mobile source
 
-Every backend runtime/source head must pass Backend CI and relevant PostgreSQL/account-deletion gates.
+Every runtime/source head requires exact-head Mobile CI:
 
-Native push/health packages additionally require a native build and physical-device evidence before they are called runtime-complete. Provider-backed Labs/push work additionally requires configured-environment evidence before it is called activated.
+- repository/changed-file line audits;
+- TypeScript;
+- full regression suite;
+- expanded-model smoke;
+- Expo export;
+- Expo Doctor.
+
+### Backend source
+
+Every backend runtime/source head requires the applicable exact-head gates:
+
+- Backend CI;
+- PostgreSQL migration/integration CI;
+- Account Deletion Receipt CI for schema/privacy changes.
+
+### Native/provider/runtime
+
+Native push/health packages additionally require native build and physical-device evidence before runtime-complete status. Provider-backed Labs/push work requires configured-environment evidence before activation-complete status.
+
+Source CI does not substitute for those gates.
+
+## Closed activation boundaries
+
+Without direct authorization, Phase 14 source work must not:
+
+- deploy the backend;
+- execute production migrations;
+- activate APNs/FCM;
+- add or rotate provider credentials;
+- request native push permission implicitly;
+- activate HealthKit or Health Connect;
+- add a new native PDF/health/push dependency solely to bypass a reviewed gate;
+- publish OTA/EAS;
+- build/install native releases on physical devices;
+- access/mutate production user data;
+- submit to app stores.
+
+## Current execution order
+
+1. Finish exact-head CI and merge Labs context PR #654 if green/review-clean.
+2. Finish backend push registration PR #232 through Backend CI, PostgreSQL CI and Account Deletion Receipt CI; fix real schema/privacy defects and distinguish unrelated runner teardown flakes.
+3. After backend #232 is merged, validate and publish the prepared mobile registration client as a separate bounded PR in a later publish workflow.
+4. Synchronize `ROADMAP_PROGRESS.md`, `docs/implementation-plan.md`, `docs/current-status.md`, focused roadmaps and handoff from final merged SHAs.
+5. Enter native/provider/runtime evidence packages only when their explicit gates are opened.
 
 ## Deferred
 
-- Companion pet/cosmetics/naming/richer progression remains deferred; keep the existing Phase 13 v1 baseline.
-- Feed ranking/retention remains deferred; chronological Following stays authoritative.
-- Broad autonomous refactoring remains unauthorized; changes must serve one of the four active product workstreams or a demonstrated regression.
+- Companion pet/cosmetics/naming/richer progression unless reprioritized;
+- feed ranking/retention; chronological Following remains authoritative;
+- broad Coach product/material expansion;
+- broad autonomous refactoring outside an active product contract or demonstrated defect.
