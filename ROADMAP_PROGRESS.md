@@ -9,18 +9,25 @@ This is the canonical cross-program roadmap index for:
 
 Use it together with `docs/implementation-plan.md`, `docs/current-status.md`, `docs/handoffs/latest.md`, `docs/roadmap/phase14-active-workstreams.md`, focused roadmaps and repository `AGENTS.md`. Exact source, tests, migrations and Git history override stale prose.
 
+Focused roadmap index:
+
+- `docs/roadmap/release-and-account.md`;
+- `docs/roadmap/localization-settings.md`;
+- `docs/roadmap/data-quality-and-scale.md`;
+- `docs/roadmap/phase14-active-workstreams.md`.
+
 ## Verified phase baseline
 
 - Phases 1–10: complete for their established source/CI scope.
 - Phase 11 Liquid Glass + Home convergence: complete for the authorized source/CI scope; only reproduced bounded regressions remain eligible for follow-up.
 - Stories S10: source-complete across mobile/backend; remaining work is runtime/deployment/device evidence plus reproduced defects.
-- Phase 12 Labs + Settings: source foundation is merged; external provider/native/runtime activation remains gated.
+- Phase 12 Labs + Settings: provider-neutral source composition is complete through confirmed-result presentation; external provider/native/runtime activation remains gated.
 - Phase 13 Companion v1: merged baseline retained; richer pet/cosmetics/progression remains deferred unless reprioritized.
 - **Phase 14 remains the active bounded completion program.**
 
 ## Current Phase 14 checkpoint
 
-### Completed / merged
+### Completed / merged baseline
 
 Mobile:
 
@@ -39,50 +46,43 @@ Backend:
 - #233 — current-device registration invalidation on authenticated logout in the same server transaction as session revocation.
 - #234 — remote-session and revoke-others registration cleanup with exact-head Backend CI + PostgreSQL CI evidence.
 
-Latest runtime/source merge heads before this documentation synchronization:
+Latest runtime/source merge heads before the current Phase 14 packages:
 
 - mobile: `7036cb0257fe38a945ec18726389954c82641dd3` (#657);
 - backend: `404963da88939ab2913a5f8a72ae90a51f77459f` (#234).
 
 Documentation-only merges may advance repository `main` without changing that runtime/source baseline. Git history remains authoritative.
 
-There are no open runtime/source PRs in either repository at this checkpoint before the documentation synchronization PRs are opened.
-
 ### Active source work
 
-Backend branch `feat/p14-push-delivery-outbox-worker` exists from backend runtime/source baseline `404963d` and currently has no additional commit. Its bounded target is the next real-push source package:
+Mobile #659 (`feat/p14-steps-local-day-window`) closes provider-neutral Steps day-boundary semantics:
 
-- durable per-device notification outbox;
-- lease/claim ownership for concurrent workers;
-- bounded retry/backoff using the existing retry policy;
-- injected provider transport boundary rather than production credential activation;
-- stale-worker protection through claim identity;
-- exact-registration invalid-token cleanup so a delayed provider response cannot invalidate a newer token;
-- PostgreSQL lifecycle evidence and privacy/schema inventory updates where required.
+- device-local calendar-day windows;
+- half-open `[local midnight, next local midnight)` native query contract;
+- DST-safe 23/24/25-hour days without adjacent-day overlap;
+- invalid local-date rejection;
+- fail-closed unsupported/denied source evidence.
 
-This branch is source preparation only. It does not activate APNs/FCM, credentials, worker scheduling, deployment or production delivery.
+Backend #237 covers the durable push outbox/delivery worker. Backend #238 is the stacked Story interaction enqueue/source-removal package. Provider credentials, deployment, production scheduling and native activation remain outside both packages.
 
 ## Remaining active roadmap
 
 ### 1. Real push delivery — highest-priority source work
 
-Still required before external delivery can be considered source-complete:
+Current packages close the durable worker and Story interaction enqueue composition. Remaining after their validated merge:
 
-1. durable push outbox schema/store/lease worker;
-2. enqueue composition from eligible in-app notification events without widening private data exposure;
-3. provider adapter(s) behind the reviewed transport contract;
-4. retry/dead-letter and permanent invalid-token feedback into registration state;
-5. mobile native permission UX and native credential acquisition/rotation;
-6. authenticated registration synchronization using existing `AuthSession.device.id`;
-7. offline-logout/reconnect cleanup policy;
-8. notification deep-link/content policy and Story interaction delivery integration;
-9. physical-device and second-account/device isolation evidence.
+1. concrete provider adapter(s) behind the reviewed transport contract;
+2. permanent-invalid-token/provider-feedback composition not already handled by the worker;
+3. mobile native permission UX and native credential acquisition/rotation;
+4. authenticated registration synchronization and offline-logout/reconnect convergence;
+5. notification deep-link/content policy and any remaining external-delivery composition;
+6. physical-device and second-account/device isolation evidence.
 
 Online server-assisted logout and remote-session cleanup are already source-complete through backend #233/#234 and must not be reimplemented.
 
 ### 2. Labs / Analyses
 
-The provider-neutral interpretation chain and confirmed-result presentation are now source-complete through mobile #657.
+The provider-neutral interpretation chain and confirmed-result presentation are source-complete through mobile #657.
 
 Remaining work is mostly activation/runtime:
 
@@ -107,24 +107,24 @@ Do not manufacture duplicate source work because runtime evidence is missing.
 
 ### 4. Steps / native health activity
 
-Provider-neutral Steps source is merged. Remaining work is separately gated:
+After #659, provider-neutral Steps source includes day-boundary and fail-closed source semantics. Remaining work is separately gated:
 
 - HealthKit read-only adapter/dependency;
 - Health Connect adapter/dependency;
 - explicit permission/disclosure UX;
-- timezone/day-boundary semantics;
-- denied/unsupported behavior;
+- native denied/unsupported runtime evidence;
 - physical-device evidence and final Home presentation against real aggregate data.
 
 ## Current execution order
 
-1. Implement the durable push outbox/delivery worker as a bounded backend package from runtime/source baseline `404963d`.
-2. After that worker is green/merged, add the smallest non-overlapping enqueue/provider-feedback package required for real delivery.
-3. Continue native push permission/token/deep-link composition only when the native/provider gate is explicitly opened.
-4. Treat Labs source composition as complete for now; continue only provider/native/runtime packages or demonstrated defects.
-5. Collect Stories runtime evidence only in authorized environments.
-6. Enter HealthKit/Health Connect only after the dependency/permission gate is opened.
-7. Synchronize canonical docs after each materially merged checkpoint.
+1. Validate/review/merge backend #237 durable push outbox/delivery worker.
+2. Complete #238 Story source-removal regression, retarget it to `main` after #237, then exact-head validate/review/merge.
+3. Exact-head validate/review/merge mobile #659 independently.
+4. Continue native push permission/token/deep-link composition only when the native/provider gate is explicitly opened.
+5. Treat Labs source composition as complete for now; continue only provider/native/runtime packages or demonstrated defects.
+6. Collect Stories runtime evidence only in authorized environments.
+7. Enter HealthKit/Health Connect only after the dependency/permission gate is opened.
+8. Synchronize canonical docs after each materially merged checkpoint.
 
 ## Working rules
 

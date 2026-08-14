@@ -15,13 +15,39 @@ export type NativeStepBridge = {
   }): Promise<{ steps: number; measuredAt: string } | null>;
 };
 
-const localDayBounds = (localDate: string) => {
-  const start = new Date(`${localDate}T00:00:00`);
-  const end = new Date(`${localDate}T23:59:59.999`);
-  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+const LOCAL_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+export type LocalDayStepWindow = {
+  localDate: string;
+  startDate: string;
+  endDate: string;
+};
+
+export const createLocalDayStepWindow = (localDate: string): LocalDayStepWindow => {
+  if (!LOCAL_DATE_PATTERN.test(localDate)) {
     throw new Error('invalid_local_date');
   }
-  return { startDate: start.toISOString(), endDate: end.toISOString() };
+
+  const [year, month, day] = localDate.split('-').map(Number);
+  const start = new Date(year, month - 1, day);
+  if (
+    start.getFullYear() !== year ||
+    start.getMonth() !== month - 1 ||
+    start.getDate() !== day
+  ) {
+    throw new Error('invalid_local_date');
+  }
+
+  // Native health stores are queried over the device's local calendar day.
+  // Use a half-open [local midnight, next local midnight) interval so DST
+  // transitions naturally produce 23/24/25-hour windows without overlap.
+  const end = new Date(year, month - 1, day + 1);
+
+  return {
+    localDate,
+    startDate: start.toISOString(),
+    endDate: end.toISOString(),
+  };
 };
 
 export function createNativeStepActivitySource(
@@ -45,10 +71,14 @@ export function createNativeStepActivitySource(
     },
     async readDailySteps(localDate) {
       if ((await getAvailability()) !== 'available') return null;
-      const value = await bridge.readStepCount(localDayBounds(localDate));
+      const window = createLocalDayStepWindow(localDate);
+      const value = await bridge.readStepCount({
+        startDate: window.startDate,
+        endDate: window.endDate,
+      });
       if (!value) return null;
       return normalizeDailyStepAggregate({
-        localDate,
+        localDate: window.localDate,
         steps: value.steps,
         source,
         measuredAt: value.measuredAt,

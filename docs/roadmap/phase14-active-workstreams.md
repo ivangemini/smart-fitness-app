@@ -143,9 +143,9 @@ Repair only demonstrated runtime defects. Preserve chronological Following seman
 
 ### P14-D — Steps / native health activity
 
-**Status: provider-neutral source seam complete; native package gated.**
+**Status: provider-neutral source seam plus local-day boundary semantics complete; native package remains gated.**
 
-Merged contract:
+Merged/source baseline before this package includes:
 
 - fail-closed runtime source registry;
 - daily aggregate hook;
@@ -153,15 +153,24 @@ Merged contract:
 - no fake/workout-derived steps;
 - no raw health samples in Social/telemetry/model context.
 
-Remaining:
+Current source package `feat/p14-steps-local-day-window` / PR #659 adds:
+
+- device-local calendar-day query semantics;
+- a half-open `[local midnight, next local midnight)` native bridge interval;
+- DST-safe 23/24/25-hour local day handling without adjacent-day overlap;
+- strict rejection of impossible local calendar dates;
+- explicit fail-closed unsupported/denied source evidence.
+
+Remaining after this source package:
 
 - reviewed iOS HealthKit read-only adapter/dependency;
 - reviewed Android Health Connect adapter/dependency;
 - explicit user-initiated permission/disclosure UX;
-- timezone/day-boundary semantics;
-- denied/unsupported paths;
+- native denied/unsupported runtime evidence;
 - physical-device evidence;
 - Home presentation after real aggregate data is available.
+
+No HealthKit/Health Connect dependency, entitlement, permission request, native build or activation is introduced by the local-day package.
 
 ## Parallel execution rules
 
@@ -171,7 +180,7 @@ Good candidates:
 
 - push worker internals vs read-only Stories evidence collection;
 - Labs runtime/provider planning vs push backend work;
-- Steps dependency review vs backend push work when no shared package/app config is edited.
+- Steps source semantics/dependency review vs backend push work when no shared package/app config is edited.
 
 Shared authentication lifecycle, database schema/journal, package manifests, root configuration and canonical roadmap files require deliberate integration rather than concurrent overlapping branches.
 
@@ -210,7 +219,7 @@ Source CI does not substitute for those gates.
 4. Enter concrete APNs/FCM/native push activation only after explicit authorization.
 5. Keep Labs source closed unless a concrete defect appears; otherwise next Labs work is provider/native/runtime evidence.
 6. Collect Stories runtime evidence in authorized environments.
-7. Enter HealthKit/Health Connect only after explicit native dependency/permission authorization.
+7. Complete provider-neutral Steps day-boundary semantics in parallel, then enter HealthKit/Health Connect only after explicit native dependency/permission authorization.
 8. Synchronize canonical status/roadmap/handoff after material merges.
 
 ## Closed activation boundaries
