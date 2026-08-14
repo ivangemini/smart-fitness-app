@@ -17,6 +17,11 @@ import {
   type RemoteLabsRepository,
 } from '@/repositories/RemoteLabsRepository';
 
+import {
+  loadLabInterpretationCapability,
+  runLabInterpretation,
+  type LabInterpretationState,
+} from './labInterpretationState';
 import { uploadLabPhoto, type LabPhotoAsset } from './labPhotoUpload';
 import type {
   LabCapabilitiesDto,
@@ -34,14 +39,24 @@ const UNAVAILABLE_CAPABILITIES: LabCapabilitiesDto = {
   reviewRequired: true,
 };
 
+const IDLE_INTERPRETATION: LabInterpretationState = {
+  status: 'idle',
+  available: null,
+  interpretation: null,
+};
+
 export type LabsContextValue = {
   capabilities: LabCapabilitiesDto;
   documents: LabDocumentDto[];
   markers: LabResultDto[];
+  interpretationState: LabInterpretationState;
+  interpretationDocumentId: string | null;
   loading: boolean;
   uploading: boolean;
   error: 'load_failed' | null;
   refresh(): Promise<void>;
+  refreshInterpretationCapability(): Promise<LabInterpretationState>;
+  interpretDocument(documentId: string): Promise<LabInterpretationState>;
   uploadPhoto(asset: LabPhotoAsset): Promise<string>;
   retryDocument(documentId: string): Promise<LabDocumentDto>;
   getDocument(documentId: string): LabDocumentDto | null;
@@ -67,6 +82,11 @@ export function LabsProvider({ children }: PropsWithChildren) {
   const [capabilities, setCapabilities] = useState<LabCapabilitiesDto>(UNAVAILABLE_CAPABILITIES);
   const [documents, setDocuments] = useState<LabDocumentDto[]>([]);
   const [markers, setMarkers] = useState<LabResultDto[]>([]);
+  const [interpretationState, setInterpretationState] =
+    useState<LabInterpretationState>(IDLE_INTERPRETATION);
+  const [interpretationDocumentId, setInterpretationDocumentId] = useState<string | null>(
+    null,
+  );
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<LabsContextValue['error']>(null);
@@ -84,11 +104,29 @@ export function LabsProvider({ children }: PropsWithChildren) {
     [apiClient, refreshAuth, session?.tokens.accessToken],
   );
 
+  const resetInterpretation = useCallback(() => {
+    setInterpretationState(IDLE_INTERPRETATION);
+    setInterpretationDocumentId(null);
+  }, []);
+
+  const refreshInterpretationCapability = useCallback(async () => {
+    if (!ready || !isAuthenticated) {
+      resetInterpretation();
+      return IDLE_INTERPRETATION;
+    }
+
+    const nextState = await loadLabInterpretationCapability(repository);
+    setInterpretationState(nextState);
+    setInterpretationDocumentId(null);
+    return nextState;
+  }, [isAuthenticated, ready, repository, resetInterpretation]);
+
   const refresh = useCallback(async () => {
     if (!ready || !isAuthenticated) {
       setCapabilities(UNAVAILABLE_CAPABILITIES);
       setDocuments([]);
       setMarkers([]);
+      resetInterpretation();
       setError(null);
       setLoading(false);
       return;
@@ -96,26 +134,64 @@ export function LabsProvider({ children }: PropsWithChildren) {
 
     setLoading(true);
     try {
-      const [nextCapabilities, nextDocuments, nextMarkers] = await Promise.all([
-        repository.getCapabilities(),
-        repository.listDocuments(),
-        repository.listMarkers(),
-      ]);
+      const [nextCapabilities, nextDocuments, nextMarkers, nextInterpretationState] =
+        await Promise.all([
+          repository.getCapabilities(),
+          repository.listDocuments(),
+          repository.listMarkers(),
+          loadLabInterpretationCapability(repository),
+        ]);
       setCapabilities(nextCapabilities);
       setDocuments(nextDocuments);
       setMarkers(nextMarkers);
+      setInterpretationState(nextInterpretationState);
+      setInterpretationDocumentId(null);
       setError(null);
     } catch {
       setCapabilities(UNAVAILABLE_CAPABILITIES);
+      setInterpretationState({
+        status: 'unavailable',
+        available: false,
+        interpretation: null,
+      });
+      setInterpretationDocumentId(null);
       setError('load_failed');
     } finally {
       setLoading(false);
     }
-  }, [isAuthenticated, ready, repository]);
+  }, [isAuthenticated, ready, repository, resetInterpretation]);
 
   useEffect(() => {
     void refresh();
   }, [refresh]);
+
+  const interpretDocument = useCallback(
+    async (documentId: string): Promise<LabInterpretationState> => {
+      if (interpretationState.available !== true) {
+        const unavailableState: LabInterpretationState = {
+          status: 'unavailable',
+          available: false,
+          interpretation: null,
+        };
+        setInterpretationState(unavailableState);
+        setInterpretationDocumentId(null);
+        return unavailableState;
+      }
+
+      const previous =
+        interpretationDocumentId === documentId ? interpretationState.interpretation : null;
+      setInterpretationDocumentId(documentId);
+      setInterpretationState({
+        status: 'running',
+        available: true,
+        interpretation: previous,
+      });
+      const nextState = await runLabInterpretation(repository, documentId, previous);
+      setInterpretationState(nextState);
+      return nextState;
+    },
+    [interpretationDocumentId, interpretationState, repository],
+  );
 
   const uploadPhoto = useCallback(
     async (asset: LabPhotoAsset): Promise<string> => {
@@ -159,10 +235,14 @@ export function LabsProvider({ children }: PropsWithChildren) {
       capabilities,
       documents,
       markers,
+      interpretationState,
+      interpretationDocumentId,
       loading,
       uploading,
       error,
       refresh,
+      refreshInterpretationCapability,
+      interpretDocument,
       uploadPhoto,
       retryDocument,
       getDocument,
@@ -186,9 +266,13 @@ export function LabsProvider({ children }: PropsWithChildren) {
       documents,
       error,
       getDocument,
+      interpretDocument,
+      interpretationDocumentId,
+      interpretationState,
       loading,
       markers,
       refresh,
+      refreshInterpretationCapability,
       repository,
       retryDocument,
       uploadPhoto,
