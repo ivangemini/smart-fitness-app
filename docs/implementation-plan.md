@@ -1,6 +1,6 @@
 # Smart Fitness — Implementation Plan
 
-Updated: 2026-08-14
+Updated: 2026-08-15
 
 This file is the **canonical forward roadmap**. Verified evidence belongs in `docs/current-status.md` and `docs/handoffs/latest.md`. Focused Phase 14 scope belongs in `docs/roadmap/phase14-active-workstreams.md`. Exact code, tests, current Git history and repository `AGENTS.md` override stale prose.
 
@@ -10,38 +10,39 @@ This file is the **canonical forward roadmap**. Verified evidence belongs in `do
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Latest runtime/source merge before this documentation synchronization: `7036cb0257fe38a945ec18726389954c82641dd3` (#657). Documentation-only merges may advance `main` without changing that runtime/source baseline.
+Latest runtime/source merge: `2d34fca37bfed92289b097f89ccb8b36d13a1353` (#659).
 
-Merged Phase 14-adjacent source now includes:
+Merged Phase 14-adjacent source includes:
 
 - Stories S10 #643;
 - Phase 12 Labs + Settings #644;
-- native push readiness foundation #647;
+- native push readiness #647;
 - Labs interpretation repository #648;
-- Steps runtime source seam #651;
+- Steps source seam #651;
 - Labs interpretation controller #653;
 - Labs context composition #654;
-- authenticated push registration client #656;
-- confirmed-result Labs interpretation presentation #657.
-
-Current source package #659 closes provider-neutral Steps local-day/day-boundary semantics without native activation.
+- authenticated push-registration client #656;
+- confirmed-result Labs interpretation presentation #657;
+- Steps local-day/DST/fail-closed semantics #659.
 
 ### Backend
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Latest runtime/source merge before this documentation synchronization: `404963da88939ab2913a5f8a72ae90a51f77459f` (#234). Documentation-only merges may advance `main` without changing that runtime/source baseline.
+Latest runtime/source merge: `dc99dd4d483acfd47c03e0bab9801b7d7d8f6634` (#238).
 
-Merged push source now includes:
+Merged push source includes:
 
-- provider-neutral contracts #231;
+- provider-neutral delivery contracts #231;
 - persistent device registration/API #232;
 - current-device cleanup on logout #233;
-- remote-session/revoke-others cleanup #234.
+- remote-session/revoke-others cleanup #234;
+- durable outbox/delivery worker #237;
+- Story interaction enqueue/source-removal cancellation #238.
 
-#234 was merged only after exact-head Backend CI and PostgreSQL CI passed and review threads were empty.
+#237 passed exact-head Backend CI, PostgreSQL CI and Account Deletion Receipt CI before merge. #238 passed exact-head Backend CI and PostgreSQL CI, including the Story delete/expiry claimed-job cancellation regression, before merge.
 
-Phase 14 push worker/enqueue work continues in bounded backend PRs; provider credentials, deployment and worker activation remain separately gated.
+There are no open runtime/source PRs in either repository at this checkpoint.
 
 Release readiness remains lower than source completeness because native/device/provider/deployment/production evidence is separately authorization-gated.
 
@@ -49,77 +50,65 @@ Release readiness remains lower than source completeness because native/device/p
 
 - Re-check exact mobile/backend `main`, open PRs, `AGENTS.md`, this plan, current status, handoff and focused roadmaps before new work.
 - Prefer bounded evidence-backed packages over broad speculative refactors.
-- There is no remaining approved autonomous source-refactor phase; new source work must belong to a bounded roadmap package or a demonstrated defect.
+- There is no remaining approved autonomous broad source-refactor phase; new source work must belong to a bounded roadmap package or a demonstrated defect.
 - Preserve routes, stable IDs, persistence/sync contracts, calculations, authentication/session semantics, workout/program lifecycle, completed-history immutability, Social authority/privacy, Labs ownership, active-program authority and backend revision/idempotency contracts unless explicitly changed.
 - Follow `docs/architecture/responsive-mobile-ui.md` and `docs/architecture/liquid-glass-ui.md`.
 - Local AsyncStorage remains the active local-state strategy; see `docs/architecture/local-state-performance-decision.md`.
 - Stories remain server-authoritative Social state and must not enter private revisioned `AppState` sync.
 - Labs remains server-authoritative private health data and must not become Social-visible.
 - Provider calls and credentials remain backend-only except for reviewed native platform APIs required to obtain device-owned credentials/permissions.
-- Source-complete provider, export, worker, delivery or native seams are not production activation authorization.
+- Source-complete provider, worker, delivery or native seams are not production activation authorization.
 
 ## Phase status
 
 - **Phases 1–10:** complete for their established source/CI scope.
 - **Phase 11:** source/CI-complete for the authorized Liquid Glass + Home convergence scope; future work is bounded demonstrated defects only.
 - **Stories S10:** source-complete; runtime/deployment/device evidence remains.
-- **Phase 12 Labs + Settings:** source composition now includes confirmed-result interpretation presentation; provider/native/runtime activation remains gated.
+- **Phase 12 Labs + Settings:** provider-neutral source composition is complete through confirmed-result interpretation presentation; provider/native/runtime activation remains gated.
 - **Phase 13 Companion v1:** retained; richer pet/cosmetics/progression remains deferred.
-- **Phase 14:** active bounded runtime/source-completion program.
+- **Phase 14:** active bounded completion program, but the remaining large workstreams now cross explicit activation/runtime gates.
 
-## Phase 14 active workstreams
+## Phase 14 workstreams
 
 ### P14-A — Real push delivery
 
-This is the current highest-priority source workstream.
+#### Source-complete foundation
 
-Already source-complete:
+Backend/mobile source now covers:
 
 - provider-neutral delivery contracts;
 - owner/device persistent registrations;
-- authenticated mobile registration client;
-- reuse of `AuthSession.device.id`;
-- one refresh-on-401 mobile retry;
+- authenticated mobile registration client using `AuthSession.device.id`;
 - fail-closed readiness coordination without implicit permission prompts;
 - atomic provider-token account handoff;
-- current-device cleanup on authenticated logout;
+- current-device logout cleanup;
 - remote-session/revoke-others cleanup;
+- durable PostgreSQL outbox jobs;
+- claim/lease semantics and stale-worker finalization protection;
+- bounded retry/backoff;
+- exact-registration invalid-token invalidation with credential-rotation protection;
+- Story like/reaction/reply enqueue behind an explicitly enabled provider-availability seam and owner preference;
+- source-removal cancellation for direct interaction removal and Story deletion/expiry;
+- PostgreSQL evidence for source-removal cancellation of already-claimed jobs;
 - credential redaction/export exclusion/privacy inventory boundaries.
 
-Current backend packages cover the durable push outbox/delivery worker and transactional Story interaction enqueue composition.
+#### Remaining push work
 
-Required worker properties:
+The remaining major packages cross provider/native/runtime gates:
 
-- durable per-device jobs in PostgreSQL;
-- lease/claim semantics for concurrent workers;
-- bounded retry/backoff using existing policy;
-- provider transports injected behind the existing contract;
-- stale-worker finalization protection through claim identity;
-- exact-registration invalid-token invalidation so delayed provider responses cannot invalidate a newer credential;
-- no raw reusable token in ordinary outbox/event payloads where a registration reference is sufficient;
-- migration/schema/privacy/account-deletion coverage as applicable;
-- exact-head Backend CI + PostgreSQL CI.
+- concrete APNs/FCM adapter implementation and configured-environment validation;
+- provider credentials and production worker scheduling;
+- explicit native notification permission UX;
+- native credential acquisition/rotation and synchronization;
+- offline logout/reconnect convergence policy and evidence;
+- final notification privacy/content/deep-link policy for external delivery;
+- physical-device and second-account/device isolation evidence.
 
-Later non-overlapping packages:
-
-- concrete APNs/FCM adapter(s);
-- permanent-invalid-token feedback;
-- native permission UX and credential acquisition/rotation;
-- offline logout/reconnect cleanup policy;
-- notification content/deep-link policy and remaining delivery composition;
-- physical-device and second-account/device evidence.
-
-Still separately gated:
-
-- provider credentials;
-- APNs/FCM activation;
-- production worker scheduling;
-- backend deployment/migrations;
-- native build/install, OTA/EAS and device evidence.
+Do not rebuild the durable worker or Story enqueue path.
 
 ### P14-B — Labs / Analyses completion
 
-Provider-neutral source composition is now complete through mobile #657:
+Provider-neutral source composition is complete through confirmed-result interpretation presentation:
 
 - repository/state/context boundary;
 - fail-closed capability handling;
@@ -137,7 +126,7 @@ Remaining work is mainly provider/native/runtime activation:
 - internal Labs-to-model tool exposure policy;
 - physical-device/accessibility/provider evidence.
 
-Do not interpret raw OCR drafts or mutate treatment/diagnosis state.
+Do not interpret raw OCR drafts or mutate diagnosis/treatment state.
 
 ### P14-C — Stories runtime evidence
 
@@ -152,31 +141,37 @@ Repair only reproduced defects. Preserve chronological Following semantics and s
 
 ### P14-D — Steps / native health activity
 
-Provider-neutral source seam is merged. Current package #659 adds source-level local calendar-day semantics:
+Provider-neutral source is complete through #659:
 
-- half-open `[local midnight, next local midnight)` native query windows;
-- DST-safe 23/24/25-hour day handling;
-- strict invalid local-date rejection;
-- explicit unsupported/denied fail-closed evidence.
+- fail-closed runtime source registry;
+- daily aggregate hook;
+- deterministic unavailable state;
+- device-local calendar-day query contract;
+- DST-safe 23/24/25-hour day windows;
+- invalid-date rejection;
+- unsupported/denied source evidence;
+- no fake/workout-derived Steps;
+- no raw health samples in Social/telemetry/model context.
 
-Still separately gated after #659:
+Still separately gated:
 
-- HealthKit/Health Connect dependency selection;
-- read-only adapter implementation;
+- HealthKit read-only adapter/dependency;
+- Health Connect adapter/dependency;
 - explicit permission/disclosure UX;
 - native denied/unsupported runtime evidence;
 - physical-device evidence;
-- Home presentation changes dependent on real native aggregate data.
+- Home presentation dependent on real native aggregate data.
 
 ## Current execution order
 
-1. Validate/review/merge the durable push outbox/delivery worker.
-2. Validate the smallest transactional Story enqueue/source-removal package on top of the worker, then retarget it to `main` after the worker merge.
-3. Enter concrete APNs/FCM/native push activation only when its credentials/native/device authorization gate is opened.
-4. Treat Labs source composition as complete until provider/native/runtime work is explicitly opened or a concrete defect is reproduced.
-5. Collect Stories runtime evidence only in authorized environments.
-6. Complete #659 provider-neutral Steps local-day semantics; enter HealthKit/Health Connect only after explicit dependency/permission authorization.
-7. Synchronize roadmap/status/handoff after every material merged checkpoint.
+1. Keep canonical docs aligned with mobile `2d34fca` and backend `dc99dd4d`.
+2. Do not start another broad source package merely because Phase 14 is active; the remaining large work is gated.
+3. Continue read-only contract audits, QA preparation and bounded demonstrated-defect fixes that do not cross a gate.
+4. Open concrete APNs/FCM/native push work only after explicit provider/native authorization.
+5. Treat Labs source composition as complete until provider/native/runtime work is explicitly opened or a concrete defect is reproduced.
+6. Collect Stories runtime evidence only in authorized environments.
+7. Enter HealthKit/Health Connect only after explicit dependency/permission authorization.
+8. Re-synchronize roadmap/status/handoff after every material merged checkpoint.
 
 ## Validation policy
 
@@ -188,7 +183,7 @@ Mobile runtime/code PRs require exact-head Mobile CI:
 - full regression suite;
 - expanded-model smoke;
 - Expo export;
-- Expo Doctor.
+- pinned released Expo Doctor baseline until the reviewed SDK upgrade is opened.
 
 Backend source PRs require the repository's relevant exact-head gates, including PostgreSQL and account-deletion validation when schema/privacy surfaces change.
 

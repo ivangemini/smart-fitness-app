@@ -1,6 +1,6 @@
 # Smart Fitness Current Status
 
-Updated: 2026-08-14
+Updated: 2026-08-15
 
 Exact code, tests and current Git history override this checkpoint if it becomes stale.
 
@@ -10,112 +10,100 @@ Exact code, tests and current Git history override this checkpoint if it becomes
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Latest runtime/source merge before this documentation synchronization: `7036cb0257fe38a945ec18726389954c82641dd3` (#657). Documentation-only merges may advance `main` without changing that runtime/source baseline.
+Latest runtime/source merge: `2d34fca37bfed92289b097f89ccb8b36d13a1353` (#659).
 
 Recent merged source:
 
 - Stories S10 #643;
 - Phase 12 Labs + Settings #644;
-- native push readiness foundation #647;
+- native push readiness #647;
 - Labs interpretation repository #648;
 - Steps runtime source seam #651;
-- Labs interpretation state controller #653;
+- Labs interpretation controller #653;
 - Labs context composition #654;
-- authenticated mobile push registration client #656;
-- confirmed-result Labs interpretation presentation #657.
+- authenticated push registration client #656;
+- confirmed-result Labs interpretation presentation #657;
+- Steps local-day/DST/fail-closed source semantics #659.
 
-There are no open mobile runtime/source PRs at this checkpoint before the docs synchronization PR.
+There are no open mobile runtime/source PRs at this checkpoint.
 
 ### Backend repository
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Latest runtime/source merge before this documentation synchronization: `404963da88939ab2913a5f8a72ae90a51f77459f` (#234). Documentation-only merges may advance `main` without changing that runtime/source baseline.
+Latest runtime/source merge: `dc99dd4d483acfd47c03e0bab9801b7d7d8f6634` (#238).
 
 Recent merged push source:
 
 - #231 — provider-neutral delivery contracts;
 - #232 — persistent push registrations and authenticated register/unregister boundary;
 - #233 — current authenticated device registration invalidation on logout;
-- #234 — remote session and revoke-others registration cleanup.
+- #234 — remote session and revoke-others registration cleanup;
+- #237 — durable PostgreSQL push outbox + provider-neutral delivery worker;
+- #238 — transactional Story interaction enqueue + source-removal cancellation.
 
-#234 exact-head `4145b7cad3e87ba53f87e413e76864ba79576a2c` passed Backend CI and Backend PostgreSQL CI with zero review threads before squash merge to runtime/source baseline `404963d`.
+#237 final exact head `d093bbd843ec9340c647f3ec6b9dee81914a608b` passed Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI before squash merge to `3ff5d598d12c3e0d612f9371084fabc8a3200754`.
 
-There are no open backend runtime/source PRs at this checkpoint before the docs synchronization PR.
+#238 final exact head `ff762d56b130233b57ea0ddc8b27531d0de4779a` passed Backend CI and Backend PostgreSQL CI before squash merge to `dc99dd4d483acfd47c03e0bab9801b7d7d8f6634`. PostgreSQL coverage includes Story deletion and expiry cancelling an already-claimed delivery and stale completion/retry fencing.
 
-Prepared backend source branch:
-
-- `feat/p14-push-delivery-outbox-worker`, currently equal to backend runtime/source baseline `404963d` with no additional commit yet.
+There are no open backend runtime/source PRs at this checkpoint.
 
 ## Phase 14 status
 
 `docs/roadmap/phase14-active-workstreams.md` is the focused active roadmap.
 
-Phase 14 now consists of:
+Phase 14 currently consists of:
 
-1. durable/real push delivery completion;
+1. real external push activation/runtime completion;
 2. Labs provider/native/runtime completion after source composition;
 3. Stories runtime evidence and bounded defect repair;
 4. Steps native health activity.
 
-Provider/native/deployment activation remains separately gated from source completion.
+The provider-neutral source-critical path for durable push delivery, Story enqueue/source-removal and Steps local-day semantics is merged. Provider/native/deployment activation remains separately gated from source completion.
 
 ## Push delivery
 
 ### Source-complete foundation
 
-Backend:
+Backend/mobile source now includes:
 
 - provider-neutral delivery contracts;
-- owner/device registration persistence and migration `0051_push_device_registrations`;
-- Drizzle journal/schema parity;
+- owner/device registration persistence;
 - authenticated registration and owner-scoped unregister routes;
 - iOS/APNs and Android/FCM route validation;
 - registration responses that do not echo reusable credentials;
 - atomic provider/token handoff between accounts;
-- account-deletion/privacy inventory/export exclusion coverage;
-- current-device cleanup on logout #233;
-- remote-session and revoke-others cleanup #234.
-
-Mobile:
-
-- typed native readiness contract;
-- authenticated register/unregister repository;
-- one access-token refresh retry after 401;
-- fail before network access without authenticated session;
-- strict response/request identity binding;
-- readiness coordinator that never requests notification permission implicitly;
-- registration bound to existing `AuthSession.device.id`.
-
-### Important lifecycle state
-
-Online server-assisted session cleanup is now source-complete:
-
-- logout invalidates the current authenticated device registration in the same backend transaction as session revocation;
-- explicit remote-session deletion invalidates that session device registration;
-- revoke-others invalidates only devices returned by the set-based non-current session revocation;
-- current session/device registration remains active during revoke-others.
-
-Offline logout/reconnect behavior is still unresolved for real provider activation and remains an explicit lifecycle gate.
-
-### Current next source package
-
-`feat/p14-push-delivery-outbox-worker` targets:
-
+- current-device cleanup on logout;
+- remote-session/revoke-others cleanup;
+- authenticated mobile registration client bound to `AuthSession.device.id`;
+- one mobile access-token refresh retry after 401;
+- readiness coordination that never requests notification permission implicitly;
 - durable PostgreSQL outbox jobs;
-- lease/claim semantics;
-- bounded retries/backoff;
-- injected provider transport;
-- stale-worker finalization protection;
-- exact-registration invalid-token cleanup;
-- schema/privacy/account deletion coverage as required;
-- exact-head Backend CI/PostgreSQL evidence.
+- claim/lease ownership and stale-worker fencing;
+- bounded retry/backoff;
+- exact-registration invalid-token invalidation with credential-rotation protection;
+- Story like/reaction/reply enqueue behind explicit provider availability plus owner preference;
+- source-removal cancellation for unlike/reaction clear/reply delete and Story deletion/expiry;
+- PostgreSQL claimed-job cancellation regression evidence;
+- raw provider tokens excluded from durable outbox content.
 
-No production worker scheduling, APNs/FCM credentials or external delivery is active.
+### Remaining activation/runtime state
+
+Still unresolved or gated before real external delivery:
+
+- concrete APNs/FCM transport adapter and configured-environment evidence;
+- provider credentials and production worker scheduling;
+- native push permission UX;
+- native credential acquisition/rotation;
+- offline logout/reconnect convergence policy/evidence;
+- final external notification content/privacy/deep-link policy;
+- physical-device and second-account/device evidence.
+
+No production worker, APNs/FCM credentials or external delivery is active from the merged source packages alone.
 
 ## Labs / Analyses
 
-Phase 12 backend/mobile source is merged and Phase 14 provider-neutral interpretation composition now extends through #657.
+Phase 12 backend/mobile source and Phase 14 provider-neutral interpretation composition are source-complete through confirmed-result presentation.
 
 Established source includes:
 
@@ -126,7 +114,7 @@ Established source includes:
 - minimum confirmed interpretation context and bounded provenance;
 - fail-closed mobile capability/state/context composition;
 - stale async run protection;
-- confirmed-result interpretation presentation with bounded `reference_context`, `trend_context` and `data_quality_context` findings;
+- confirmed-result interpretation presentation;
 - provider/model provenance display without exposing raw provider payloads;
 - explicit copy separating informational context from diagnosis/treatment.
 
@@ -148,19 +136,26 @@ Do not convert missing deployed/device evidence into duplicate source implementa
 
 ## Steps
 
-Provider-neutral daily Steps source seam is merged.
+Provider-neutral daily Steps source is merged through #659.
+
+Source now covers:
+
+- deterministic unavailable/fail-closed state;
+- device-local calendar-day queries;
+- half-open local midnight boundaries;
+- DST-safe 23/24/25-hour days;
+- impossible-date rejection;
+- unsupported/denied source evidence;
+- no fake/workout-derived Steps.
 
 Remaining work is separately gated native implementation/evidence:
 
 - HealthKit adapter/dependency;
 - Health Connect adapter/dependency;
 - explicit permission/disclosure UX;
-- timezone/day semantics;
-- denied/unsupported paths;
+- native denied/unsupported runtime evidence;
 - physical-device evidence;
 - real aggregate-driven Home presentation.
-
-No fake/workout-derived steps are allowed.
 
 ## Companion
 
@@ -168,21 +163,22 @@ Phase 13 Companion v1 remains the bounded merged baseline. Richer pet/cosmetics/
 
 ## CI execution
 
-Mobile authoritative routine CI uses `[self-hosted, linux, x64, hermes-mobile-ci]` and includes line audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
+Mobile authoritative routine CI uses `[self-hosted, linux, x64, hermes-mobile-ci]` and includes line audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor. Expo Doctor is currently pinned to released baseline `1.20.1` until a reviewed SDK upgrade is opened.
 
-Backend authoritative routine CI uses `[self-hosted, linux, x64, hermes-backend-ci]` and includes the applicable lint/format/build/tests, PostgreSQL migration/schema/API/sync evidence and account-deletion receipt validation when relevant.
+Backend authoritative routine CI uses `[self-hosted, linux, x64, hermes-backend-ci]` and includes applicable lint/format/build/tests, PostgreSQL migration/schema/API/sync evidence and account-deletion receipt validation when relevant.
 
 Do not substitute source CI for provider/device/deployment evidence.
 
 ## Current remaining roadmap
 
-1. Implement durable push outbox/delivery worker from backend runtime/source baseline `404963d`.
-2. Add the smallest follow-up notification enqueue/provider-feedback package after the worker contract is merged.
-3. Complete concrete APNs/FCM/native push permission/token/deep-link runtime only when the provider/native gate is opened.
-4. Treat Labs source composition as complete for now; remaining work is provider/native/deployment/device evidence or reproduced defects.
-5. Collect Stories runtime evidence in authorized environments.
-6. Implement HealthKit/Health Connect only after explicit dependency/permission authorization.
-7. Keep broad Coach/Companion expansion and feed-ranking scope deferred unless reprioritized.
+1. Keep canonical docs aligned with merged mobile `2d34fca` and backend `dc99dd4d`.
+2. Do not recreate #237/#238/#659 work; those source packages are closed.
+3. Continue only bounded source fixes for reproduced defects and read-only/QA preparation that does not cross activation gates.
+4. Enter concrete APNs/FCM/native push work only after explicit provider/native authorization.
+5. Treat Labs source composition as complete for now; remaining work is provider/native/deployment/device evidence or reproduced defects.
+6. Collect Stories runtime evidence in authorized environments.
+7. Implement HealthKit/Health Connect only after explicit dependency/permission authorization.
+8. Keep broad Coach/Companion expansion and feed-ranking scope deferred unless reprioritized.
 
 ## Safety / activation boundaries
 

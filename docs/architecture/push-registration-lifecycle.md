@@ -1,12 +1,12 @@
 # Push registration lifecycle contract
 
-Updated: 2026-08-14
+Updated: 2026-08-15
 
 ## Status
 
 This document defines the source/runtime boundary required before real external push delivery can be activated.
 
-Current provider-neutral source now covers registration plus online authenticated logout/session-revocation cleanup. It still does not authorize APNs/FCM credentials, native permission prompts, production workers, deployment or physical-device activation.
+Current provider-neutral source now covers authenticated registration, online logout/session-revocation cleanup, the durable outbox/worker, and transactional Story interaction enqueue/source-removal cancellation. It still does not authorize APNs/FCM credentials, native permission prompts, production worker scheduling, deployment or physical-device activation.
 
 ## Identity authority
 
@@ -58,8 +58,6 @@ They must not:
 
 ## Online logout and session revocation
 
-The previously proposed server-assisted pattern is now implemented in source.
-
 ### Current-device logout — backend #233
 
 Authenticated `/v1/auth/logout`:
@@ -73,10 +71,10 @@ A client-side post-logout effect is therefore not required for authoritative onl
 
 ### Remote session revocation — backend #234
 
-Authenticated remote-session lifecycle now also cleans registration state:
+Authenticated remote-session lifecycle also cleans registration state:
 
 - `DELETE /v1/auth/sessions/:sessionId` revokes the owned remote session and invalidates that session device registration in one transaction;
-- `POST /v1/auth/sessions/revoke-others` uses set-based non-current session revocation and invalidates only the returned device IDs;
+- `POST /v1/auth/sessions/revoke-others` invalidates only devices associated with the revoked non-current sessions;
 - current session/device remains active during revoke-others;
 - ownership-safe not-found/current-session rejection behavior is preserved.
 
@@ -84,16 +82,26 @@ This closes the normal online session/device cleanup source gap.
 
 ## Offline logout
 
-Offline logout remains a distinct privacy/runtime case.
+Offline logout remains a distinct privacy/runtime case and is **not source-complete for external delivery activation**.
 
-If the client cannot reach the backend, local logout must still be allowed. Because no server transaction can run while offline, stale server session/registration state may remain until a later server-side or reconnect convergence path occurs.
+Current mobile behavior intentionally allows local logout when the backend is unreachable. `createAuthService.logout()` attempts authenticated `/v1/auth/logout` and then clears access/refresh tokens plus local session metadata in `finally`, even if the request fails.
 
-Before external delivery activation, define and test a bounded policy, for example:
+That property must be preserved: do **not** retain an access token or refresh token after logout merely so a later reconnect can unregister push state.
 
-- reconnect cleanup using retained non-secret lifecycle intent;
-- server session-expiry/revocation eligibility checks before delivery;
-- short-lived eligibility/registration lease semantics;
-- another reviewed provider-independent convergence mechanism.
+### 2026-08-15 source audit
+
+The current contracts do not expose a safe post-logout authenticated cleanup path once local credentials have been erased. The mobile push-registration repository correctly requires authentication for unregister.
+
+A server-session eligibility check alone is also insufficient as the logout-convergence policy: the default refresh/session lifetime is 30 days. Treating an unrevoked server session as delivery eligibility could therefore leave a stale registration eligible far too long after an offline local logout.
+
+Do not solve this by:
+
+- persisting access/refresh tokens after logout;
+- adding an unauthenticated `deviceId`-only unregister endpoint;
+- treating the current 30-day session expiry as an acceptable push privacy lease;
+- inventing a second device identity disconnected from `AuthSession.device.id`.
+
+Before external delivery activation, choose and test a bounded convergence policy with an explicit security model, for example a narrowly scoped revocation capability/lease or another reviewed mechanism that does not preserve general authentication credentials after logout. That design decision remains activation-gated rather than an autonomous source patch.
 
 Do not activate sensitive notification content while this case remains unresolved.
 
@@ -107,46 +115,52 @@ Native delivery credentials may rotate independently of account identity.
 
 A future native adapter must treat a new credential as an update for the same authenticated `AuthSession.device.id`, not a new device.
 
-Any delayed provider invalid-token response must be scoped to the exact attempted registration version/token. It must not be allowed to invalidate a newer credential that replaced the attempted one.
+Delayed provider invalid-token feedback must be scoped to the exact attempted registration version/token. It must not invalidate a newer credential that replaced the attempted one.
 
-## Durable delivery worker contract
+Backend #237 implements this source-side fencing for the durable worker path.
 
-The next backend source package is a durable push outbox/delivery worker.
+## Durable delivery worker contract — source complete
 
-Required properties:
+Backend #237 merged the provider-neutral durable delivery worker.
+
+Implemented properties include:
 
 - durable PostgreSQL jobs;
-- registration/device reference rather than unnecessary duplication of raw delivery credentials in ordinary job payloads;
-- atomic lease/claim ownership for concurrent workers;
-- bounded retry/backoff using the existing retry policy;
+- registration/device reference rather than duplication of raw delivery credentials in ordinary job payloads;
+- atomic claim/lease ownership for concurrent workers;
+- bounded retry/backoff;
 - deterministic terminal/retry states;
 - injected provider transport boundary;
-- stale-worker protection so a worker that lost its claim cannot finalize a job;
-- permanent-invalid-token feedback scoped to the exact attempted registration;
-- account-deletion/privacy/data-inventory coverage for any new persistent state.
+- stale-worker finalization protection through claim identity;
+- exact-registration invalid-token handling with credential-rotation protection;
+- account-deletion/privacy/data-inventory coverage.
 
-This worker is still provider-neutral source until concrete provider credentials/adapters and production scheduling are explicitly activated.
+This remains provider-neutral source until concrete provider credentials/adapters and production scheduling are explicitly activated.
 
-## Notification enqueue/content boundary
+## Story notification enqueue/content boundary — source complete for current Story event class
 
-Outbox existence alone does not authorize every in-app notification to become external push.
+Backend #238 connects eligible Story like/reaction/reply notifications to the durable outbox only when both conditions are true:
 
-A separate composition package must define:
+- provider availability is explicitly injected as `true`;
+- the Story owner has enabled the interaction push preference.
 
-- eligible event types;
-- minimum payload/content required for delivery;
-- whether sensitive content is omitted from lock-screen payloads;
-- deep-link target semantics;
-- Story interaction delivery behavior;
-- idempotency/deduplication between event creation and outbox enqueue.
+Current external-message content is intentionally generic:
 
-Do not copy private Labs, workout, nutrition, Coach or authentication payloads into push jobs merely because a worker exists.
+- title: `Smart Fitness`;
+- body: `You have new Story activity.`;
+- destination: `/social/story/:storyId`.
+
+The destination resolves to the existing authenticated Story viewer. The mobile viewer fails closed when no authenticated session exists and does not load Story content while logged out.
+
+Source removal cancels undelivered pending/retryable/claimed jobs for unlike/reaction clear/reply deletion and Story deletion/expiry. Claim-token fencing prevents a cancelled job from later being finalized or retried by a stale worker.
+
+Important runtime limit: once a provider send has actually begun, source cancellation cannot retract an already in-flight external request. Do not describe claim fencing as a provider-level recall guarantee. Generic lock-screen copy and provider/device runtime evidence remain part of activation review.
+
+Do not copy private Labs, workout, nutrition, Coach or authentication payloads into push jobs merely because the worker exists.
 
 ## Data Access Export
 
-Registration routing/credential state is security-sensitive operational metadata. It remains excluded from candidate Data Access Export surfaces.
-
-Future outbox state should likewise expose no reusable credential material. If lifecycle metadata becomes account-owned persistent state, inventory/export policy must be reviewed explicitly rather than inferred.
+Registration routing/credential state and durable delivery operational copies are security-sensitive/internal lifecycle metadata. They remain excluded from candidate Data Access Export surfaces unless a later reviewed policy explicitly changes that boundary.
 
 ## Logging and diagnostics
 
@@ -168,15 +182,11 @@ Before real APNs/FCM delivery is enabled, reviewed evidence is still needed for:
 - explicit native permission UX/disclosure;
 - provider selection and credentials;
 - native credential acquisition/rotation;
-- authenticated registration synchronization;
-- durable outbox/worker behavior;
-- notification-event enqueue/idempotency;
-- provider adapter behavior;
-- bounded retry/dead-letter policy;
-- permanent invalid-token feedback;
+- authenticated registration synchronization on real devices;
+- concrete provider adapter behavior;
 - offline logout/reconnect convergence;
-- notification privacy/content policy;
-- deep-link routing;
+- final notification privacy/content policy for the enabled event set;
+- provider-level behavior for cancellation races/in-flight sends;
 - physical-device delivery evidence;
 - second-account/device isolation evidence;
 - account-deletion/provider cleanup evidence;
@@ -187,6 +197,9 @@ Already source-complete and not to be reimplemented:
 - authenticated registration persistence/API;
 - mobile authenticated registration client/readiness coordinator;
 - online current-device logout cleanup;
-- online remote-session/revoke-others cleanup.
+- online remote-session/revoke-others cleanup;
+- durable outbox/worker;
+- Story interaction enqueue/idempotency/source-removal cancellation;
+- Story deep-link route existence and authenticated viewer fail-closed behavior.
 
 Source-complete seams are prerequisites for activation, not substitutes for runtime/provider/device evidence.
