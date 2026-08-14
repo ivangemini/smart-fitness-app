@@ -10,7 +10,7 @@ This is the focused Phase 14 roadmap. Exact code, tests and Git history remain a
 
 ### Mobile
 
-Current `main`: `7036cb0257fe38a945ec18726389954c82641dd3`.
+Latest runtime/source merge before this documentation synchronization: `7036cb0257fe38a945ec18726389954c82641dd3` (#657). Documentation-only merges may advance `main` without changing that runtime/source baseline.
 
 Merged Phase 14-adjacent work now includes:
 
@@ -26,7 +26,7 @@ Merged Phase 14-adjacent work now includes:
 
 ### Backend
 
-Current `main`: `404963da88939ab2913a5f8a72ae90a51f77459f`.
+Latest runtime/source merge before this documentation synchronization: `404963da88939ab2913a5f8a72ae90a51f77459f` (#234). Documentation-only merges may advance `main` without changing that runtime/source baseline.
 
 Merged push work now includes:
 
@@ -35,9 +35,9 @@ Merged push work now includes:
 - current-device logout cleanup #233;
 - remote-session/revoke-others cleanup #234.
 
-There are no open PRs in either repository at this checkpoint.
+There are no open runtime/source PRs in either repository at this checkpoint before the documentation synchronization PRs.
 
-Prepared next branch: backend `feat/p14-push-delivery-outbox-worker`, currently equal to `main` with no additional commit.
+Prepared next branch: backend `feat/p14-push-delivery-outbox-worker`, currently equal to backend runtime/source baseline `404963d` with no additional commit.
 
 ## Active workstreams
 
@@ -204,7 +204,7 @@ Source CI does not substitute for those gates.
 
 ## Current execution order
 
-1. Build durable push outbox/delivery worker from backend `404963d`.
+1. Build durable push outbox/delivery worker from backend runtime/source baseline `404963d`.
 2. Exact-head validate/review/merge that bounded worker package.
 3. Add enqueue/provider-feedback composition as the next smallest non-overlapping push package.
 4. Enter concrete APNs/FCM/native push activation only after explicit authorization.
