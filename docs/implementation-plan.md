@@ -51,6 +51,7 @@ Release readiness remains lower than source completeness because native/device/p
 
 - Re-check exact mobile/backend `main`, open PRs, `AGENTS.md`, this plan, current status, handoff and focused roadmaps before new work.
 - Prefer bounded evidence-backed packages over broad speculative refactors.
+- There is no remaining approved autonomous source-refactor phase; new source work must belong to a bounded roadmap package or a demonstrated defect.
 - Preserve routes, stable IDs, persistence/sync contracts, calculations, authentication/session semantics, workout/program lifecycle, completed-history immutability, Social authority/privacy, Labs ownership, active-program authority and backend revision/idempotency contracts unless explicitly changed.
 - Follow `docs/architecture/responsive-mobile-ui.md` and `docs/architecture/liquid-glass-ui.md`.
 - Local AsyncStorage remains the active local-state strategy; see `docs/architecture/local-state-performance-decision.md`.
