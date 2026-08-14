@@ -21,7 +21,7 @@ Phase 14 mobile source subsequently merged:
 - #654 — interpretation capability/state composition through `LabsContext` with stale async run protection;
 - #657 — confirmed-result interpretation presentation.
 
-Current mobile `main` at this checkpoint is `7036cb0257fe38a945ec18726389954c82641dd3`.
+Latest mobile runtime/source merge before this documentation synchronization is `7036cb0257fe38a945ec18726389954c82641dd3` (#657). Documentation-only merges may advance `main` without changing that runtime/source baseline.
 
 ## Current source-complete interpretation path
 
