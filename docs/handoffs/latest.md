@@ -10,7 +10,7 @@ Exact Git history, source and CI override prose if this handoff becomes stale.
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current `main`: `7036cb0257fe38a945ec18726389954c82641dd3`.
+Latest runtime/source merge before this documentation synchronization: `7036cb0257fe38a945ec18726389954c82641dd3` (#657). Documentation-only merges may advance `main` without changing that runtime/source baseline.
 
 Recent merged Phase 14-adjacent source:
 
@@ -22,13 +22,13 @@ Recent merged Phase 14-adjacent source:
 - #656 — authenticated mobile push-registration client;
 - #657 — confirmed-result Labs interpretation presentation.
 
-There are no open mobile PRs at this checkpoint.
+There are no open mobile runtime/source PRs at this checkpoint before the docs synchronization PR.
 
 ### Backend
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Current `main`: `404963da88939ab2913a5f8a72ae90a51f77459f`.
+Latest runtime/source merge before this documentation synchronization: `404963da88939ab2913a5f8a72ae90a51f77459f` (#234). Documentation-only merges may advance `main` without changing that runtime/source baseline.
 
 Merged push lifecycle sequence:
 
@@ -44,17 +44,17 @@ Before merge:
 - Backend CI: green;
 - Backend PostgreSQL CI: green;
 - review threads: 0;
-- branch was exactly one commit ahead of then-current backend `main`.
+- branch was exactly one commit ahead of then-current backend runtime/source `main`.
 
-Squash merge: `404963da88939ab2913a5f8a72ae90a51f77459f`.
+Squash merge runtime/source baseline: `404963da88939ab2913a5f8a72ae90a51f77459f`.
 
-There are no open backend PRs at this checkpoint.
+There are no open backend runtime/source PRs at this checkpoint before the docs synchronization PR.
 
 Prepared next backend branch:
 
 - `feat/p14-push-delivery-outbox-worker`;
-- currently points to `404963d` with no additional commit;
-- no overlapping PR exists.
+- currently points to runtime/source baseline `404963d` with no additional commit;
+- no overlapping runtime/source PR exists.
 
 ## Active continuation target
 
@@ -141,7 +141,7 @@ Do not weaken CI or substitute source CI for provider/device/deployment evidence
 
 ## Next execution order
 
-1. Implement durable push outbox/delivery worker on `feat/p14-push-delivery-outbox-worker` from backend `404963d`.
+1. Implement durable push outbox/delivery worker on `feat/p14-push-delivery-outbox-worker` from backend runtime/source baseline `404963d`.
 2. Validate exact head; inspect review threads; merge only the validated head.
 3. Add enqueue/provider-feedback composition as a separate bounded package if it can remain non-overlapping.
 4. Enter concrete APNs/FCM/native permission/token/deep-link activation only after explicit authorization.
