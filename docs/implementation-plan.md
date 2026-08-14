@@ -34,6 +34,7 @@ Release readiness remains lower than source completeness because physical-device
 - Preserve routes, stable IDs, private persistence/sync contracts, calculations, authentication/session semantics, workout/program lifecycle, completed-history immutability, Social authority/privacy, active-program owner authority and backend ownership/revision/idempotency contracts unless a task explicitly changes them.
 - Follow `docs/architecture/responsive-mobile-ui.md` and `docs/architecture/liquid-glass-ui.md`.
 - Local AsyncStorage remains the active local-state strategy. Reviewed decision evidence: `docs/architecture/local-state-performance-decision.md`.
+- There is no remaining approved autonomous source-refactor phase. Phase 14 is a bounded reviewed product/runtime completion program, not permission to resume broad speculative refactoring.
 - Stories remain in the server-authoritative Social boundary and must not be added to private revisioned `AppState` sync.
 - Provider calls and credentials remain backend-only unless a reviewed native capability explicitly requires device-side provider interaction.
 - Source-complete provider, export, worker, delivery or native seams are not activation authorization.
