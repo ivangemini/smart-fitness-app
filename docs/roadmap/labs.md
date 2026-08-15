@@ -1,10 +1,10 @@
 # Labs roadmap
 
-Updated: 2026-08-14
+Updated: 2026-08-15
 
-Status: **Phase 12 source foundation and Phase 14 provider-neutral interpretation composition are merged; provider/native/runtime activation remains gated.**
+Status: **Phase 12 source foundation, Phase 14 provider-neutral interpretation composition and the internal confirmed-structured-facts-only Labs → Coach/model exposure policy are source-complete; provider/native/runtime activation remains gated.**
 
-This focused roadmap defines the Labs / Analyses product boundary. `docs/implementation-plan.md` remains the canonical forward roadmap. Exact code, tests and Git history override stale prose.
+This focused roadmap defines the Labs / Analyses product boundary. `docs/implementation-plan.md` remains the canonical forward roadmap. Exact code, tests and Git history override stale prose. Detailed backend source behavior lives in backend `docs/project-context.md` rather than being copied here.
 
 ## Product goal
 
@@ -21,7 +21,16 @@ Phase 14 mobile source subsequently merged:
 - #654 — interpretation capability/state composition through `LabsContext` with stale async run protection;
 - #657 — confirmed-result interpretation presentation.
 
-Latest mobile runtime/source merge before this documentation synchronization is `7036cb0257fe38a945ec18726389954c82641dd3` (#657). Documentation-only merges may advance `main` without changing that runtime/source baseline.
+Backend #241 subsequently hardens the private/provider boundary:
+
+- public storage-unavailable errors no longer expose object-storage/provider diagnostics;
+- Labs → Coach/model tool schemas are strict rather than silently stripping unknown fields;
+- the explicit policy is `confirmed_structured_facts_only`;
+- raw document bytes, OCR/full extracted text and provider payloads are prohibited at that boundary;
+- treatment mutation remains prohibited;
+- regression tests reject private/raw extras at the tool contract.
+
+The latest merged backend source checkpoint is `2b73f34e168d7a6a1dd4087df1a1992e44137d54` (#241). Mobile documentation-only merges may advance `main` without changing the latest runtime/source behavior.
 
 ## Current source-complete interpretation path
 
@@ -34,7 +43,8 @@ Backend provides:
 - bounded structured findings with confidence/provenance;
 - provider-neutral StructuredModel adapter seam;
 - orchestration and minimum-metadata audit trail;
-- authenticated fail-closed interpretation route unless an explicit Labs provider is injected.
+- authenticated fail-closed interpretation route unless an explicit Labs provider is injected;
+- a read-only Labs tool/service contract whose allowed model-facing shape is confirmed structured facts only.
 
 Mobile provides:
 
@@ -48,7 +58,7 @@ Mobile provides:
 - EN/RU informational copy that separates context from diagnosis or treatment instructions;
 - fail-closed behavior that preserves confirmed source data when interpretation is unavailable or fails.
 
-This source completion does **not** imply that a production OCR/model/storage provider is configured or active.
+This source completion does **not** imply that a production OCR/model/storage provider is configured or active, or that ordinary Coach/Companion runtime is automatically allowed to invoke Labs tools.
 
 ## Safety and integrity contract
 
@@ -67,8 +77,10 @@ These constraints remain authoritative:
 - Unknown/malformed provenance fails closed.
 - Provider/model audit identity comes from transport metadata, not generated content.
 - Raw provider payloads and generated interpretation text are not persisted in the minimum audit table.
-- Coach/model access remains minimum-context and read-only by default.
-- No treatment mutation is authorized by interpretation source completion.
+- Labs → Coach/model access is minimum-context, confirmed-structured-facts-only and read-only by default.
+- Raw uploaded documents, object keys/signed URLs, OCR/full extracted text, unreviewed drafts and provider payloads are prohibited model/tool inputs.
+- Unknown fields at the model/tool contract are rejected rather than silently stripped.
+- No treatment mutation is authorized by interpretation or internal tool source completion.
 
 ## Package status
 
@@ -82,7 +94,7 @@ These constraints remain authoritative:
 
 ### L12-L — Coach tools
 
-**Internal source-complete; model exposure gated.** Read-only owner-scoped service exists and is not automatically exposed to ordinary model runtime.
+**Internal service + exposure policy source-complete; ordinary runtime wiring gated.** The owner-scoped read-only service exists and backend #241 fixes the allowed model/tool shape to confirmed structured facts only. Ordinary Coach/Companion runtime must not gain access merely because that contract exists; wiring/capability authorization remains a separate reviewed decision.
 
 ### L12-M — Privacy lifecycle
 
@@ -98,7 +110,7 @@ These constraints remain authoritative:
 
 ## Remaining Labs roadmap
 
-There is no currently identified missing provider-neutral interpretation source layer after #657.
+There is no currently identified missing provider-neutral interpretation or model-exposure-policy source layer after backend #241.
 
 Remaining work is:
 
@@ -106,7 +118,7 @@ Remaining work is:
 2. define provider retention/training/region/credential policy;
 3. configure provider/runtime only under explicit authorization;
 4. deploy backend changes and execute production migrations only under explicit authorization;
-5. decide whether/how the internal read-only Labs service may be exposed to Coach/Companion model tools;
+5. separately review and authorize any ordinary Coach/Companion runtime wiring to the already-bounded read-only Labs tools;
 6. add a mobile PDF picker only after explicit native dependency review;
 7. collect small-screen, Dynamic Type, VoiceOver, provider failure, physical-device and release evidence;
 8. fix only reproduced product/runtime defects instead of reopening already-complete source layers.
@@ -120,6 +132,7 @@ Without direct authorization, Labs work must not:
 - activate object-storage/OCR/model providers;
 - add/rotate provider credentials;
 - access production Labs data;
+- wire Labs tools into ordinary Coach/Companion model runtime;
 - add a PDF native picker dependency;
 - publish OTA/EAS;
 - build/install a native release on a device;
