@@ -18,11 +18,15 @@ const session = {
 } as AuthSession;
 
 const createClient = (permission: 'not_requested' | 'granted' = 'granted') => {
+  let currentPermission = permission;
   let tokenListener: ((token: NativePushToken) => void) | null = null;
   let responseListener: ((response: PushNotificationResponse) => void) | null = null;
   const client: NativePushClient = {
-    getPermissionState: vi.fn(async () => permission),
-    requestPermission: vi.fn(async () => 'granted' as const),
+    getPermissionState: vi.fn(async () => currentPermission),
+    requestPermission: vi.fn(async () => {
+      currentPermission = 'granted';
+      return 'granted' as const;
+    }),
     getDeviceToken: vi.fn(async () => ({
       platform: 'ios' as const,
       provider: 'apns' as const,
