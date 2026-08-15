@@ -3,8 +3,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { ApiError, type ApiClient } from '@/api/client';
 import { createRemotePushRegistrationRepository } from './RemotePushRegistrationRepository';
 
+const expectedDeviceId = 'device-auth-test';
 const payload = {
-  deviceId: 'device-auth-test',
   platform: 'ios' as const,
   provider: 'apns' as const,
   token: 'x'.repeat(16),
@@ -12,7 +12,7 @@ const payload = {
 
 const response = {
   registration: {
-    deviceId: payload.deviceId,
+    deviceId: expectedDeviceId,
     platform: payload.platform,
     provider: payload.provider,
   },
@@ -39,7 +39,9 @@ describe('RemotePushRegistrationRepository auth', () => {
       },
     );
 
-    await expect(repository.register(payload)).resolves.toEqual(response.registration);
+    await expect(repository.register(payload, expectedDeviceId)).resolves.toEqual(
+      response.registration,
+    );
     expect(refreshAccessToken).toHaveBeenCalledOnce();
     expect(post).toHaveBeenNthCalledWith(
       2,
@@ -62,7 +64,9 @@ describe('RemotePushRegistrationRepository auth', () => {
       },
     );
 
-    await expect(repository.register(payload)).rejects.toMatchObject({
+    await expect(
+      repository.register(payload, expectedDeviceId),
+    ).rejects.toMatchObject({
       name: 'PushRegistrationAuthenticationRequiredError',
     });
     expect(post).not.toHaveBeenCalled();
