@@ -36,7 +36,8 @@ Release readiness remains lower than source completeness because native/device/p
 
 - Re-check exact mobile/backend `main`, open PRs, `AGENTS.md`, this plan, current status, handoff and focused roadmaps before new work.
 - Prefer bounded evidence-backed packages over broad speculative refactors.
-- There is no approved autonomous broad source-refactor phase; new source work must belong to a bounded roadmap package or a demonstrated defect.
+- There is no remaining approved autonomous source-refactor phase; new source work must belong to a bounded roadmap package or a demonstrated defect.
+- The reviewed local-state storage/performance decision remains `docs/architecture/local-state-performance-decision.md`; do not introduce SQLite without a new evidence-backed decision.
 - Preserve routes, stable IDs, persistence/sync contracts, calculations, authentication/session semantics, workout/program lifecycle, completed-history immutability, Social authority/privacy, Labs ownership, active-program authority and backend revision/idempotency contracts unless explicitly changed.
 - Stories remain server-authoritative Social state and Labs remains server-authoritative private health data.
 - Provider calls and credentials remain backend-only except reviewed native APIs required to obtain device-owned credentials/permissions.
