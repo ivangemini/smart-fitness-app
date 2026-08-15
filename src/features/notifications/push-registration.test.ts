@@ -7,18 +7,24 @@ const client = (
   permission: PushPermissionState,
   token = '0123456789abcdef0123456789abcdef',
 ): NativePushClient => ({
-  async getPermissionState() { return permission; },
-  async requestPermission() { return permission; },
+  async getPermissionState() {
+    return permission;
+  },
+  async requestPermission() {
+    return permission;
+  },
   async getDeviceToken() {
     return permission === 'granted'
-      ? { platform: 'ios', provider: 'apns', token } as const
+      ? ({ platform: 'ios', provider: 'apns', token } as const)
       : null;
   },
 });
 
 describe('push registration readiness', () => {
   it('does not request permission implicitly', async () => {
-    await expect(resolvePushRegistration(client('not_requested'))).resolves.toEqual({
+    await expect(
+      resolvePushRegistration(client('not_requested')),
+    ).resolves.toEqual({
       status: 'permission_required',
       permission: 'not_requested',
     });
@@ -31,8 +37,10 @@ describe('push registration readiness', () => {
     });
   });
 
-  it('returns only provider routing data after permission and token availability', async () => {
-    await expect(resolvePushRegistration(client('granted'))).resolves.toEqual({
+  it('returns provider routing data without client-selected device authority', async () => {
+    const readiness = await resolvePushRegistration(client('granted'));
+
+    expect(readiness).toEqual({
       status: 'ready',
       registration: {
         platform: 'ios',
@@ -40,5 +48,8 @@ describe('push registration readiness', () => {
         token: '0123456789abcdef0123456789abcdef',
       },
     });
+    if (readiness.status === 'ready') {
+      expect(readiness.registration).not.toHaveProperty('deviceId');
+    }
   });
 });
