@@ -62,45 +62,58 @@ const ensureAndroidChannel = async (): Promise<void> => {
   });
 };
 
-export const createExpoNativePushClient = (): NativePushClient => ({
-  async getPermissionState() {
-    if (Platform.OS !== 'ios' && Platform.OS !== 'android') return 'unsupported';
-    await ensureAndroidChannel();
-    return mapPermission(await Notifications.getPermissionsAsync());
-  },
+export const createExpoNativePushClient = (): NativePushClient => {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
 
-  async requestPermission() {
-    if (Platform.OS !== 'ios' && Platform.OS !== 'android') return 'unsupported';
-    await ensureAndroidChannel();
-    const permissions = await Notifications.requestPermissionsAsync({
-      ios: { allowAlert: true, allowBadge: true, allowSound: true },
-    });
-    return mapPermission(permissions);
-  },
+  return {
+    async getPermissionState() {
+      if (Platform.OS !== 'ios' && Platform.OS !== 'android') return 'unsupported';
+      await ensureAndroidChannel();
+      return mapPermission(await Notifications.getPermissionsAsync());
+    },
 
-  async getDeviceToken() {
-    if (Platform.OS !== 'ios' && Platform.OS !== 'android') return null;
-    await ensureAndroidChannel();
-    return normalizeDeviceToken(await Notifications.getDevicePushTokenAsync());
-  },
+    async requestPermission() {
+      if (Platform.OS !== 'ios' && Platform.OS !== 'android') return 'unsupported';
+      await ensureAndroidChannel();
+      const permissions = await Notifications.requestPermissionsAsync({
+        ios: { allowAlert: true, allowBadge: true, allowSound: true },
+      });
+      return mapPermission(permissions);
+    },
 
-  subscribeToTokenChanges(listener) {
-    const subscription = Notifications.addPushTokenListener((token) => {
-      const normalized = normalizeDeviceToken(token);
-      if (normalized) listener(normalized);
-    });
-    return { remove: () => subscription.remove() };
-  },
+    async getDeviceToken() {
+      if (Platform.OS !== 'ios' && Platform.OS !== 'android') return null;
+      await ensureAndroidChannel();
+      return normalizeDeviceToken(await Notifications.getDevicePushTokenAsync());
+    },
 
-  subscribeToNotificationResponses(listener) {
-    const subscription = Notifications.addNotificationResponseReceivedListener(
-      (response) => listener(responseData(response)),
-    );
-    return { remove: () => subscription.remove() };
-  },
+    subscribeToTokenChanges(listener) {
+      const subscription = Notifications.addPushTokenListener((token) => {
+        const normalized = normalizeDeviceToken(token);
+        if (normalized) listener(normalized);
+      });
+      return { remove: () => subscription.remove() };
+    },
 
-  async getLastNotificationResponse() {
-    const response = await Notifications.getLastNotificationResponseAsync();
-    return response ? responseData(response) : null;
-  },
-});
+    subscribeToNotificationResponses(listener) {
+      const subscription = Notifications.addNotificationResponseReceivedListener(
+        (response) => listener(responseData(response)),
+      );
+      return { remove: () => subscription.remove() };
+    },
+
+    async getLastNotificationResponse() {
+      const response = await Notifications.getLastNotificationResponseAsync();
+      if (!response) return null;
+      await Notifications.clearLastNotificationResponseAsync();
+      return responseData(response);
+    },
+  };
+};
