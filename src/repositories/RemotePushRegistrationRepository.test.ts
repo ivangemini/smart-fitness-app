@@ -33,6 +33,7 @@ describe('RemotePushRegistrationRepository', () => {
       platform: 'ios',
       provider: 'apns',
     });
+    expect(post).toHaveBeenCalledOnce();
     expect(post).toHaveBeenCalledWith(
       '/v1/push/registrations',
       registration,
@@ -41,7 +42,6 @@ describe('RemotePushRegistrationRepository', () => {
         retry: false,
       }),
     );
-    expect(post.mock.calls[0]?.[1]).not.toHaveProperty('deviceId');
   });
 
   it('rejects a mismatched platform/provider response', async () => {
