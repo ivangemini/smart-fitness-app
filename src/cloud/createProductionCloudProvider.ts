@@ -193,8 +193,7 @@ const normalizeConflictKey = (
 ): string | null =>
   typeof entityType === "string" &&
   entityType.trim() &&
-  typeof entityId === "string" &&
-  entityId.trim()
+  typeof entityId === "string" && entityId.trim()
     ? `${entityType.trim()}:${entityId.trim()}`
     : null;
 
@@ -314,8 +313,7 @@ const toPullResult = (
 const canPushOperationForUser = (
   operation: SyncOperation,
   userId: string,
-): boolean =>
-  !operation.metadata?.userId || operation.metadata.userId === userId;
+): boolean => operation.metadata?.userId === userId;
 
 export const createProductionCloudProvider = ({
   apiClient,
