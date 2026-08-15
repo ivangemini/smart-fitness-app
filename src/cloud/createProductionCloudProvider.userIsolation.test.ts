@@ -2,7 +2,9 @@ import { describe, expect, it, vi } from 'vitest';
 
 import type { ApiClient, ApiRequestOptions } from '@/api/client';
 import type { AuthService } from '@/auth';
+import { normalizeOfflineSyncQueueOperation } from './CloudQueueHelpers';
 import type { SyncBatch, SyncOperation } from './CloudSyncTypes';
+import { toOfflineSyncQueueSyncOperation } from './CloudQueueHelpers';
 import { createProductionCloudProvider } from './createProductionCloudProvider';
 
 const userId = '11111111-1111-4111-8111-111111111111';
@@ -76,7 +78,7 @@ const makeBatch = (operations: SyncOperation[]): SyncBatch => ({
 });
 
 describe('production sync provider user isolation', () => {
-  it('sends current-user and unowned operations but excludes another user', async () => {
+  it('sends only current-user operations and excludes unowned or another-user operations', async () => {
     const requests: ApiRequestOptions[] = [];
     const apiClient = {
       async request(options: ApiRequestOptions) {
@@ -109,11 +111,10 @@ describe('production sync provider user isolation', () => {
     };
     expect(body.operations.map((operation) => operation.entityId)).toEqual([
       '44444444-4444-4444-8444-444444444444',
-      '55555555-5555-4555-8555-555555555555',
     ]);
   });
 
-  it('does not call the backend when every queued operation belongs to another user', async () => {
+  it('does not call the backend when every queued operation is unowned or belongs to another user', async () => {
     const request = vi.fn();
     const provider = createProductionCloudProvider({
       apiClient: { request } as unknown as ApiClient,
@@ -124,12 +125,31 @@ describe('production sync provider user isolation', () => {
 
     const result = await provider.pushOperations(
       makeBatch([
+        makeOperation('55555555-5555-4555-8555-555555555555'),
         makeOperation('66666666-6666-4666-8666-666666666666', otherUserId),
       ]),
     );
 
     expect(request).not.toHaveBeenCalled();
-    expect(result.pendingOperations).toBe(1);
+    expect(result.pendingOperations).toBe(2);
     expect(result.appliedOperations).toBeUndefined();
+  });
+
+  it('preserves actorId as user provenance when normalizing legacy queue entries', () => {
+    const normalized = normalizeOfflineSyncQueueOperation({
+      opId: 'workoutSessions:77777777-7777-4777-8777-777777777777',
+      entityType: 'workoutSessions',
+      entityId: '77777777-7777-4777-8777-777777777777',
+      action: 'update',
+      actorId: userId,
+      idempotencyKey: 'legacy-key',
+      payload: { id: '77777777-7777-4777-8777-777777777777' },
+      clientTimestamp: '2026-07-22T10:00:00.000Z',
+      retryCount: 0,
+      status: 'pending',
+    });
+
+    expect(normalized?.metadata?.userId).toBe(userId);
+    expect(normalized ? toOfflineSyncQueueSyncOperation(normalized).metadata?.userId : null).toBe(userId);
   });
 });
