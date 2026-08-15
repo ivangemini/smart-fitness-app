@@ -18,24 +18,23 @@ const client = (
 
 describe('push registration readiness', () => {
   it('does not request permission implicitly', async () => {
-    await expect(resolvePushRegistration(client('not_requested'), 'device-1')).resolves.toEqual({
+    await expect(resolvePushRegistration(client('not_requested'))).resolves.toEqual({
       status: 'permission_required',
       permission: 'not_requested',
     });
   });
 
   it('fails closed for denied permissions', async () => {
-    await expect(resolvePushRegistration(client('denied'), 'device-1')).resolves.toEqual({
+    await expect(resolvePushRegistration(client('denied'))).resolves.toEqual({
       status: 'unavailable',
       permission: 'denied',
     });
   });
 
-  it('returns a normalized registration only after permission and token availability', async () => {
-    await expect(resolvePushRegistration(client('granted'), 'device-1')).resolves.toEqual({
+  it('returns only provider routing data after permission and token availability', async () => {
+    await expect(resolvePushRegistration(client('granted'))).resolves.toEqual({
       status: 'ready',
       registration: {
-        deviceId: 'device-1',
         platform: 'ios',
         provider: 'apns',
         token: '0123456789abcdef0123456789abcdef',
