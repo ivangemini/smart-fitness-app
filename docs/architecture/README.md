@@ -1,14 +1,20 @@
 # Mobile Architecture Index
 
-Updated: 2026-08-12
+Updated: 2026-08-15
 
-This directory contains focused architecture evidence. Use this index instead of creating overlapping broad summaries.
+This directory contains focused mobile architecture evidence. Use this index instead of creating overlapping broad summaries.
 
-For stable cross-repository orientation, read `../project-context.md`. For current execution state, read `../current-status.md`. For roadmap sequencing, read `../implementation-plan.md`.
+Documentation roles:
+
+- `../project-context.md` — stable mobile/product orientation;
+- `../current-status.md` — short current checkpoint;
+- `../handoffs/latest.md` — continuation/restart state;
+- `../implementation-plan.md` — canonical cross-repository forward roadmap;
+- backend `docs/project-context.md` — canonical detailed backend baseline.
 
 ## State and persistence
 
-- `app-context-consumer-inventory.md` — focused state-boundary migration and the zero-production-consumer invariant.
+- `app-context-consumer-inventory.md` — focused state-boundary migration and zero-production-consumer invariant.
 - `local-state-performance-decision.md` — measured decision to retain the single AsyncStorage `AppState` architecture.
 - `persistence-operation-matrix.md` — persistence and mutation behavior by operation.
 - `persistence-measurement-results.md` — measured persistence evidence.
@@ -21,20 +27,33 @@ For stable cross-repository orientation, read `../project-context.md`. For curre
 - `cloud-module-inventory.md` — cloud/synchronization module responsibilities.
 - `sync-conflict-resolution-mobile-intent.md` — explicit local-versus-account conflict intent and reconciliation.
 - `placeholder-timestamp-inventory.md` — placeholder timestamp audit.
-- `bounded-adversarial-validation.md` — generated state-machine and adversarial validation boundary.
+- `bounded-adversarial-validation.md` — generated state-machine/adversarial validation boundary.
 - `privacy-safe-support-diagnostics.md` — bounded local support diagnostics.
 
-## Media, Social, links, platform composition, CI, and UI layout
+## Media, Social, platform composition, CI and UI layout
 
 - `mobile-managed-media-composition-analysis.md` — managed-media composition boundary.
-- `story-reactions-contract.md` — S9-E bounded Story Reactions product/privacy/API contract and backend-first implementation order.
+- `story-reactions-contract.md` — bounded Story Reactions product/privacy/API contract.
 - `password-reset-app-links.md` — password-reset universal/app link architecture.
-- `mobile-ci-runner-policy.md` — authoritative self-hosted Hermes routing for routine Mobile CI and bounded hosted-runner fallback policy.
+- `mobile-ci-runner-policy.md` — authoritative self-hosted Hermes CI routing.
 - `list-performance-baseline.md` — list-rendering performance baseline.
-- `responsive-mobile-ui.md` — responsive layout, Safe Area, floating navigation, sticky action, scrolling, keyboard, and validation contract.
+- `responsive-mobile-ui.md` — Safe Area, floating navigation, sticky actions, scrolling, keyboard and responsive layout contract.
+
+## Backend references
+
+Do not maintain backend API/database/schema copies in this mobile architecture tree or in `docs/backend/`.
+
+Use the backend repository directly:
+
+- `ivangemini/smart-fitness-backend/docs/project-context.md` — detailed backend baseline;
+- `ivangemini/smart-fitness-backend/docs/api-reference.md` — test-checked Fastify route inventory;
+- `ivangemini/smart-fitness-backend/docs/data-model.md` — test-checked Drizzle schema inventory;
+- `ivangemini/smart-fitness-backend/docs/architecture/README.md` — focused backend architecture index.
+
+`../backend/README.md` is redirect-only.
 
 ## Maintenance rule
 
-Update this index when a focused architecture document is added, renamed, superseded, or removed.
+Update this index when a focused architecture document is added, renamed, superseded or removed.
 
-Do not add generic `mobile-architecture.md`, `system-overview.md`, or `data-sync.md` files unless a future audit proves that the existing project context, implementation plan, and focused documents cannot represent the required information without material ambiguity.
+Do not add generic `mobile-architecture.md`, `system-overview.md`, duplicate backend overviews or duplicate `data-sync.md` files unless a future audit proves the canonical/focused documents cannot represent the required information without material ambiguity.
