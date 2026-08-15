@@ -13,7 +13,10 @@ export type PushRegistrationAuthGateway = {
 };
 
 export type RemotePushRegistrationRepository = {
-  register(registration: PushRegistrationPayload): Promise<RegisteredPushDevice>;
+  register(
+    registration: PushRegistrationPayload,
+    expectedDeviceId: string,
+  ): Promise<RegisteredPushDevice>;
   unregister(deviceId: string): Promise<void>;
 };
 
@@ -56,9 +59,10 @@ const parseRegisteredDevice = (value: unknown): RegisteredPushDevice => {
 const assertRegistrationMatchesRequest = (
   registered: RegisteredPushDevice,
   requested: PushRegistrationPayload,
+  expectedDeviceId: string,
 ): RegisteredPushDevice => {
   if (
-    registered.deviceId !== requested.deviceId ||
+    registered.deviceId !== expectedDeviceId ||
     registered.platform !== requested.platform ||
     registered.provider !== requested.provider
   ) {
@@ -88,7 +92,7 @@ export const createRemotePushRegistrationRepository = (
   };
 
   return {
-    async register(registration) {
+    async register(registration, expectedDeviceId) {
       const response = await withAuth((token) =>
         apiClient.post<unknown, PushRegistrationPayload>(
           '/v1/push/registrations',
@@ -102,6 +106,7 @@ export const createRemotePushRegistrationRepository = (
       return assertRegistrationMatchesRequest(
         parseRegisteredDevice(response),
         registration,
+        expectedDeviceId,
       );
     },
     async unregister(deviceId) {

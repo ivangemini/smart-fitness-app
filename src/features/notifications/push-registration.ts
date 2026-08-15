@@ -5,9 +5,7 @@ import {
   type PushPermissionState,
 } from './push-contract';
 
-export type PushRegistrationPayload = NativePushToken & {
-  deviceId: string;
-};
+export type PushRegistrationPayload = NativePushToken;
 
 export type PushRegistrationReadiness =
   | { status: 'ready'; registration: PushRegistrationPayload }
@@ -17,7 +15,6 @@ export type PushRegistrationReadiness =
 
 export async function resolvePushRegistration(
   client: NativePushClient,
-  deviceId: string,
 ): Promise<PushRegistrationReadiness> {
   const permission = await client.getPermissionState();
   if (permission === 'not_requested') {
@@ -32,9 +29,6 @@ export async function resolvePushRegistration(
 
   return {
     status: 'ready',
-    registration: {
-      ...normalizeNativePushToken(token),
-      deviceId,
-    },
+    registration: normalizeNativePushToken(token),
   };
 }
