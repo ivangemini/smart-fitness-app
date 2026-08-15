@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import { AppState } from 'react-native';
 
 import { formatLocalDate } from '@/lib';
 
+import { getNextLocalDayRefreshDelay } from './daily-step-refresh';
 import { getStepActivitySource } from './stepSourceRuntime';
 import type { DailyStepAggregate, HealthActivityAvailability } from './steps-contract';
 
@@ -11,8 +13,11 @@ export type DailyStepsState = {
   loading: boolean;
 };
 
-export function useDailySteps(date = new Date()): DailyStepsState {
-  const localDate = formatLocalDate(date);
+export function useDailySteps(date?: Date): DailyStepsState {
+  const fixedDateTimestamp = date?.getTime() ?? null;
+  const [liveDate, setLiveDate] = useState(() => date ?? new Date());
+  const [refreshRevision, setRefreshRevision] = useState(0);
+  const localDate = formatLocalDate(date ?? liveDate);
   const [state, setState] = useState<DailyStepsState>({
     availability: 'unavailable',
     aggregate: null,
@@ -20,8 +25,32 @@ export function useDailySteps(date = new Date()): DailyStepsState {
   });
 
   useEffect(() => {
+    if (fixedDateTimestamp !== null) return;
+
+    const refresh = () => {
+      setLiveDate(new Date());
+      setRefreshRevision((current) => current + 1);
+    };
+
+    const timeout = setTimeout(
+      refresh,
+      getNextLocalDayRefreshDelay(new Date()),
+    );
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') refresh();
+    });
+
+    return () => {
+      clearTimeout(timeout);
+      subscription.remove();
+    };
+  }, [fixedDateTimestamp, localDate]);
+
+  useEffect(() => {
     let cancelled = false;
     const source = getStepActivitySource();
+
+    setState((current) => ({ ...current, loading: true }));
 
     void (async () => {
       const availability = await source.getAvailability();
@@ -29,6 +58,11 @@ export function useDailySteps(date = new Date()): DailyStepsState {
         availability === 'available'
           ? await source.readDailySteps(localDate)
           : null;
+
+      if (aggregate && aggregate.localDate !== localDate) {
+        throw new Error('step_date_mismatch');
+      }
+
       if (!cancelled) {
         setState({ availability, aggregate, loading: false });
       }
@@ -41,7 +75,7 @@ export function useDailySteps(date = new Date()): DailyStepsState {
     return () => {
       cancelled = true;
     };
-  }, [localDate]);
+  }, [localDate, refreshRevision]);
 
   return state;
 }
