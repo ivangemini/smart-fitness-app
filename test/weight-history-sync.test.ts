@@ -200,7 +200,12 @@ describe('production cloud provider', () => {
           action: 'upsert',
           payload: { id: 'w1', weight: 81.2 },
           revision: { id: 'rev-0', number: 0, createdAt: '2025-01-01T00:00:00.000Z' },
-          metadata: { entityName: 'weightHistory', source: 'local', deviceId: 'device-a' },
+          metadata: {
+            entityName: 'weightHistory',
+            source: 'local',
+            deviceId: 'device-a',
+            userId: 'user-1',
+          },
           createdAt: '2025-01-03T12:00:00.000Z',
         },
       ],
