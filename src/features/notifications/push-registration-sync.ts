@@ -16,7 +16,7 @@ export async function syncPushRegistration(
   repository: RemotePushRegistrationRepository,
   deviceId: string,
 ): Promise<PushRegistrationSyncResult> {
-  const readiness = await resolvePushRegistration(client, deviceId);
+  const readiness = await resolvePushRegistration(client);
 
   if (readiness.status !== 'ready') {
     return { status: readiness.status };
@@ -24,6 +24,6 @@ export async function syncPushRegistration(
 
   return {
     status: 'registered',
-    registration: await repository.register(readiness.registration),
+    registration: await repository.register(readiness.registration, deviceId),
   };
 }
