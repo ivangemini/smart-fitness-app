@@ -11,10 +11,25 @@ export type NativePushToken = {
   token: string;
 };
 
+export type PushNotificationResponse = {
+  destination?: unknown;
+};
+
+export type PushSubscription = {
+  remove(): void;
+};
+
 export interface NativePushClient {
   getPermissionState(): Promise<PushPermissionState>;
   requestPermission(): Promise<PushPermissionState>;
   getDeviceToken(): Promise<NativePushToken | null>;
+  subscribeToTokenChanges?(
+    listener: (token: NativePushToken) => void,
+  ): PushSubscription;
+  subscribeToNotificationResponses?(
+    listener: (response: PushNotificationResponse) => void,
+  ): PushSubscription;
+  getLastNotificationResponse?(): Promise<PushNotificationResponse | null>;
 }
 
 export function normalizeNativePushToken(
