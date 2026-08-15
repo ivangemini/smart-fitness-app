@@ -81,11 +81,27 @@ The deterministic PostgreSQL race regression verifies both serialization orders:
 
 Cancelling an already-claimed database row fences stale finalization/retry but does not retract a provider send that has already begun externally. Current API composition still leaves provider availability disabled, so this is source/privacy hardening rather than external-delivery activation.
 
+### 2026-08-15 bounded integration audit
+
+A provider-neutral read-only audit found no additional source defect to repair before activation:
+
+- mobile readiness remains intentionally source-only/unwired to native notification APIs; `expo-notifications` is not present and #656 explicitly defers native/app composition;
+- `/social/story/:storyId` exists as the reviewed Expo Router destination, and the Story viewer waits for auth readiness and returns before private Story fetch when unauthenticated;
+- Story preference routes instantiate `createSocialStoryArchiveService(db)` without provider options;
+- Story like/reaction routes instantiate their services without provider availability;
+- the shared Story enqueue helper returns `0` unless `deliveryProviderAvailable === true`.
+
+Therefore current API composition remains fail-closed for external Story delivery. No source PR was created from the audit because no provider-neutral defect was reproduced.
+
+Canonical future push activation/evidence checklist: `docs/qa/push-runtime-evidence-matrix.md`.
+
 ### Offline logout boundary
 
 Local logout security is permanently regression-covered by #660. If the device is offline, authoritative backend session/registration cleanup still cannot occur immediately.
 
 Before real external delivery, define a bounded server/reconnect convergence mechanism that does not retain reusable auth credentials after logout. A lease/eligibility design should only be introduced together with an actual native/runtime synchronization path capable of maintaining it.
+
+The push runtime matrix treats offline/reconnect convergence as an explicit activation stop-gate rather than claiming that green source CI can solve an offline authority update.
 
 ### Remaining activation/runtime state
 
@@ -129,7 +145,7 @@ Do not substitute source CI for provider/device/deployment evidence.
 
 1. Keep canonical docs aligned with mobile `97bb0ab` and backend `37cd865`.
 2. Do not recreate #237/#238/#239/#240/#659/#660 work; those source packages are closed.
-3. Continue only bounded source fixes for reproduced defects and read-only/QA preparation that does not cross activation gates.
+3. Use `docs/qa/push-runtime-evidence-matrix.md` for future push evidence; continue only bounded source fixes for reproduced defects and read-only/QA preparation that does not cross activation gates.
 4. Enter concrete APNs/FCM/native push work only after explicit provider/native authorization.
 5. Treat Labs source composition as complete for now; remaining work is provider/native/deployment/device evidence or reproduced defects.
 6. Collect Stories runtime evidence in authorized environments.

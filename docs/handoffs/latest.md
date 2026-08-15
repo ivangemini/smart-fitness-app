@@ -76,6 +76,17 @@ Source-complete behavior now includes:
 
 Important runtime limit: terminalizing a claimed database row cannot recall a provider request whose external send has already begun. Provider-level behavior remains activation evidence, not a database guarantee.
 
+### 2026-08-15 bounded push integration audit
+
+The provider-neutral source audit found no new defect requiring a source PR:
+
+- mobile push readiness/registration is intentionally not wired to native notification APIs before the native/provider gate; `expo-notifications` is absent;
+- `/social/story/:storyId` is a real route and the Story viewer returns before private Story fetch when auth is unavailable;
+- Story preference, like and reaction route composition does not enable provider availability;
+- shared Story enqueue returns `0` unless `deliveryProviderAvailable === true`.
+
+The canonical stop/go checklist for future activation is now `docs/qa/push-runtime-evidence-matrix.md`. Use it instead of inferring runtime readiness from source CI.
+
 Still unresolved before real delivery activation:
 
 - concrete APNs/FCM adapter/configuration;
@@ -85,7 +96,9 @@ Still unresolved before real delivery activation:
 - final external notification privacy/content policy;
 - physical-device and second-account/device evidence.
 
-See `docs/architecture/push-registration-lifecycle.md`.
+The matrix treats offline/reconnect convergence as a blocking activation row. A device with no network path cannot update backend authority at the instant of local logout, and access/refresh credentials must not be retained to fake that convergence.
+
+See `docs/architecture/push-registration-lifecycle.md` and `docs/qa/push-runtime-evidence-matrix.md`.
 
 ## Labs state
 
@@ -115,7 +128,7 @@ Do not weaken CI or substitute source CI for provider/device/deployment evidence
 
 1. Keep `ROADMAP_PROGRESS.md`, `docs/implementation-plan.md`, `docs/current-status.md`, this handoff and `docs/roadmap/phase14-active-workstreams.md` synchronized to mobile `97bb0ab` / backend `37cd865`.
 2. Do not reopen #237/#238/#239/#240/#659/#660 as duplicate source packages.
-3. Continue bounded read-only audits, QA preparation and reproduced-defect repair while activation gates remain closed.
+3. Use `docs/qa/push-runtime-evidence-matrix.md` for future push activation/evidence; continue bounded read-only audits, QA preparation and reproduced-defect repair while activation gates remain closed.
 4. Enter APNs/FCM/native push only after explicit provider/native authorization.
 5. Enter HealthKit/Health Connect only after explicit dependency/permission authorization.
 6. Treat Labs source composition as complete until provider/native/runtime work is opened or a concrete defect appears.

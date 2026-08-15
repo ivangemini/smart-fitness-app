@@ -28,6 +28,8 @@ There are no open runtime/source PRs in either repository at this checkpoint.
 
 **Status: provider-neutral durable source path complete through Story enqueue/source-removal/preference opt-out; external provider/native/runtime activation remains gated.**
 
+Canonical activation/evidence checklist: `docs/qa/push-runtime-evidence-matrix.md`. Source CI alone must not be used to mark provider, physical-device, second-account/device or offline/reconnect rows complete.
+
 #### Completed source foundation
 
 Backend:
@@ -74,7 +76,7 @@ Important boundary: cancelling a claimed row cannot recall a provider send that 
 
 #### Remaining push work
 
-The remaining large work crosses provider/native/runtime gates:
+The remaining large work crosses provider/native/runtime gates and is tracked as evidence rows in `docs/qa/push-runtime-evidence-matrix.md`:
 
 1. concrete APNs/FCM provider adapters and configured-environment evidence;
 2. provider credentials and production worker scheduling;
@@ -83,6 +85,8 @@ The remaining large work crosses provider/native/runtime gates:
 5. offline logout/reconnect server convergence without retaining reusable auth credentials;
 6. final external notification content/privacy/deep-link policy;
 7. physical-device and second-account/device isolation evidence.
+
+Offline logout/reconnect is an activation stop-gate: a device with no network path cannot immediately update backend authority, so real delivery must not be called complete until a bounded convergence/privacy policy is explicitly accepted and exercised. Do not weaken local logout by retaining access/refresh credentials for deferred cleanup.
 
 Do not duplicate online cleanup, durable outbox/worker, Story enqueue/source-removal/opt-out, active-list expiry semantics or local offline-logout erasure.
 
@@ -132,7 +136,7 @@ Native push/health packages require native build and physical-device evidence be
 
 1. Keep canonical docs synchronized to mobile `97bb0ab` / backend `37cd865`.
 2. Do not reopen the merged durable worker, Story enqueue/source-removal/opt-out, Steps local-day, active-list or offline-logout packages.
-3. Continue only read-only audits, QA preparation and bounded reproduced-defect fixes while activation gates remain closed.
+3. Use `docs/qa/push-runtime-evidence-matrix.md` for any future push activation/evidence work; continue only read-only audits, QA preparation and bounded reproduced-defect fixes while activation gates remain closed.
 4. Enter concrete APNs/FCM/native push only after explicit provider/native authorization.
 5. Keep Labs source closed unless a concrete defect appears; otherwise next Labs work is provider/native/runtime evidence.
 6. Collect Stories runtime evidence only in authorized environments.
