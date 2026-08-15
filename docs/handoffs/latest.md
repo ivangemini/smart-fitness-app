@@ -1,6 +1,6 @@
 # Latest Handoff
 
-Updated: 2026-08-14
+Updated: 2026-08-15
 
 Exact Git history, source and CI override prose if this handoff becomes stale.
 
@@ -10,118 +10,86 @@ Exact Git history, source and CI override prose if this handoff becomes stale.
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Latest runtime/source merge before this documentation synchronization: `7036cb0257fe38a945ec18726389954c82641dd3` (#657). Documentation-only merges may advance `main` without changing that runtime/source baseline.
+Latest runtime/source merge: `97bb0abf5b097739cf30805cc26e4ef62435c01d` (#660).
 
-Recent merged Phase 14-adjacent source:
+Recent Phase 14-adjacent source includes native push readiness #647, Labs interpretation #648/#653/#654/#657, Steps source/day-boundary work #651/#659, authenticated mobile push registration #656 and offline-logout local credential/session cleanup regression #660.
 
-- #647 — native push readiness foundation;
-- #648 — Labs interpretation repository boundary;
-- #651 — Steps runtime source seam;
-- #653 — Labs interpretation state controller;
-- #654 — Labs interpretation composition through `LabsContext`;
-- #656 — authenticated mobile push-registration client;
-- #657 — confirmed-result Labs interpretation presentation.
-
-There are no open mobile runtime/source PRs at this checkpoint before the docs synchronization PR.
+#660 means deferred server cleanup must never be implemented by retaining access/refresh credentials after local logout.
 
 ### Backend
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Latest runtime/source merge before this documentation synchronization: `404963da88939ab2913a5f8a72ae90a51f77459f` (#234). Documentation-only merges may advance `main` without changing that runtime/source baseline.
+Latest runtime/source merge: `37cd865ef94bfc9b2eef4c554ba83e3179726541` (#240).
 
-Merged push lifecycle sequence:
+Merged push/auth sequence:
 
 - #231 — provider-neutral delivery contracts;
 - #232 — persistent device registrations + authenticated register/unregister API;
 - #233 — current-device registration invalidation on logout;
-- #234 — remote-session/revoke-others registration cleanup.
+- #234 — remote-session/revoke-others registration cleanup;
+- #237 — durable PostgreSQL delivery outbox + provider-neutral worker;
+- #238 — Story interaction enqueue + source-removal cancellation;
+- #239 — expired sessions excluded from active-device/session listing;
+- #240 — Story preference opt-out cancellation + enqueue/opt-out race serialization.
 
-#234 final exact head: `4145b7cad3e87ba53f87e413e76864ba79576a2c`.
+#239 final exact head `f7279651abf98e9658600f082abd1071ad80602e` passed Backend CI and Backend PostgreSQL CI with review threads 0 before squash merge to `a2792afe34608e49ba83abcc8fa7ca9a14661b36`.
 
-Before merge:
+#240 final exact head `cbcf858e0d6e1b88b8583493ad98ca75f1cc0e55` passed Backend CI and the full Backend PostgreSQL CI with review threads 0 before squash merge to `37cd865ef94bfc9b2eef4c554ba83e3179726541`.
 
-- Backend CI: green;
-- Backend PostgreSQL CI: green;
-- review threads: 0;
-- branch was exactly one commit ahead of then-current backend runtime/source `main`.
-
-Squash merge runtime/source baseline: `404963da88939ab2913a5f8a72ae90a51f77459f`.
-
-There are no open backend runtime/source PRs at this checkpoint before the docs synchronization PR.
-
-Prepared next backend branch:
-
-- `feat/p14-push-delivery-outbox-worker`;
-- currently points to runtime/source baseline `404963d` with no additional commit;
-- no overlapping runtime/source PR exists.
+There are no open runtime/source PRs in either repository at this checkpoint.
 
 ## Active continuation target
 
-The next bounded Phase 14 source package is **durable push outbox/delivery worker**.
+There is **no remaining large independent source-only package** that should be started automatically without crossing a provider/native/runtime gate.
 
-Target properties:
+The next meaningful work is gate-dependent:
 
-- durable per-device jobs in PostgreSQL;
-- registration-reference-based delivery rather than copying raw reusable credentials into ordinary outbox payloads;
-- lease/claim ownership suitable for concurrent workers;
-- bounded retries/backoff using the existing push retry policy;
-- injected provider transport boundary with no production credential activation;
-- stale-worker protection so a worker that loses its lease cannot finalize a job;
-- permanent invalid-token feedback scoped to the exact registration version/token that was attempted, preventing a delayed provider response from invalidating a newer credential;
-- deterministic terminal/retry state and PostgreSQL evidence;
-- privacy/data-inventory/account-deletion coverage for any new table/state;
-- applicable exact-head Backend CI and PostgreSQL CI before merge.
+- concrete APNs/FCM delivery and configured-environment evidence;
+- native push permission/token lifecycle;
+- offline logout/reconnect server convergence without retained credentials;
+- HealthKit/Health Connect native adapters and permissions;
+- Labs production storage/OCR/model/native picker runtime;
+- Stories deployment/device evidence.
 
-Out of scope for this worker package:
-
-- live APNs/FCM activation;
-- provider credentials;
-- native permission prompts;
-- native build/install;
-- production worker scheduling;
-- backend deployment/migration execution;
-- OTA/EAS;
-- production data access.
+Until a gate is explicitly opened, continue only read-only contract/audit work, QA/evidence preparation, bounded fixes for reproduced defects and canonical documentation synchronization. Do not manufacture duplicate source work solely because runtime evidence is unavailable.
 
 ## Push lifecycle state to preserve
 
-Already source-complete:
+Source-complete behavior now includes:
 
 - registration uses authenticated owner + existing `AuthSession.device.id`;
-- mobile repository retries once after auth 401 and fails before network without authenticated session;
+- mobile registration retries once after auth 401 and fails before network without authenticated session;
 - readiness coordination never requests permission implicitly;
 - token/account handoff is atomic;
 - current-device backend logout cleanup is transactional (#233);
-- remote-session delete and revoke-others cleanup are transactional (#234);
-- current session/device remains active during revoke-others;
-- raw delivery credentials remain excluded from normal API responses, export candidate surfaces, logs/model context.
+- remote-session delete/revoke-others cleanup is transactional (#234);
+- durable jobs are account/device scoped and omit raw reusable provider credentials (#237);
+- claim-token fencing prevents stale worker finalization (#237);
+- delayed invalid-token feedback cannot invalidate a rotated credential (#237);
+- Story interaction enqueue is fail-closed unless provider availability and owner preference allow it (#238);
+- Story source removal terminalizes matching undelivered jobs and fences stale completion (#238);
+- active-session/device listing excludes expired sessions while cleanup remains broader (#239);
+- local logout erases credentials/session even when remote logout fails (#660);
+- Story interaction enqueue and preference opt-out serialize on the preference row, so a completed opt-out cannot leave a late queued Story job (#240);
+- opt-out terminalizes only matching pending/retryable/claimed Story jobs and preserves unrelated push categories (#240).
+
+Important runtime limit: terminalizing a claimed database row cannot recall a provider request whose external send has already begun. Provider-level behavior remains activation evidence, not a database guarantee.
 
 Still unresolved before real delivery activation:
 
-- offline logout/reconnect convergence;
-- concrete provider adapter and permanent-invalid-token semantics in runtime;
-- notification enqueue/content policy;
+- concrete APNs/FCM adapter/configuration;
+- provider credentials and production worker schedule;
 - native permission UX and native credential acquisition/rotation;
-- deep-link routing and Story interaction delivery;
+- offline logout/reconnect server convergence;
+- final external notification privacy/content policy;
 - physical-device and second-account/device evidence.
 
 See `docs/architecture/push-registration-lifecycle.md`.
 
 ## Labs state
 
-Labs source composition now includes #654 and #657.
-
-Merged behavior:
-
-- interpretation capability/state is composed through `LabsContext`;
-- stale asynchronous runs cannot overwrite newer document/reset state;
-- interpretation runs only for confirmed documents through the existing authenticated boundary;
-- confirmed-result presentation is bounded to structured reference/trend/data-quality context;
-- provider/model provenance may be displayed without raw provider payloads;
-- copy distinguishes informational context from diagnosis/treatment.
-
-Remaining Labs work is provider/native/runtime activation, not another duplicate interpretation state layer.
+Labs provider-neutral source composition remains complete through confirmed-result interpretation presentation. Remaining Labs work is provider/native/runtime activation, not another duplicate interpretation state layer.
 
 ## Stories state
 
@@ -129,7 +97,11 @@ Stories S10 source is merged. Continue only runtime matrix evidence and bounded 
 
 ## Steps state
 
-Provider-neutral Steps seam is merged. HealthKit/Health Connect adapters, permissions and device evidence remain separately gated.
+Provider-neutral Steps source is merged through #659 with device-local/DST-safe day windows and fail-closed unsupported/denied semantics. HealthKit/Health Connect adapters, permissions and device evidence remain separately gated.
+
+## Companion state
+
+Companion remains at the bounded Phase 13 v1 baseline. Richer pet/cosmetics/naming/progression remains deferred unless explicitly reprioritized.
 
 ## CI policy
 
@@ -141,29 +113,18 @@ Do not weaken CI or substitute source CI for provider/device/deployment evidence
 
 ## Next execution order
 
-1. Implement durable push outbox/delivery worker on `feat/p14-push-delivery-outbox-worker` from backend runtime/source baseline `404963d`.
-2. Validate exact head; inspect review threads; merge only the validated head.
-3. Add enqueue/provider-feedback composition as a separate bounded package if it can remain non-overlapping.
-4. Enter concrete APNs/FCM/native permission/token/deep-link activation only after explicit authorization.
-5. Treat Labs provider-neutral source composition as complete; continue provider/native/runtime evidence only when opened.
-6. Collect Stories and Steps device/runtime evidence only in authorized environments.
-7. Re-synchronize canonical docs after each material merge.
+1. Keep `ROADMAP_PROGRESS.md`, `docs/implementation-plan.md`, `docs/current-status.md`, this handoff and `docs/roadmap/phase14-active-workstreams.md` synchronized to mobile `97bb0ab` / backend `37cd865`.
+2. Do not reopen #237/#238/#239/#240/#659/#660 as duplicate source packages.
+3. Continue bounded read-only audits, QA preparation and reproduced-defect repair while activation gates remain closed.
+4. Enter APNs/FCM/native push only after explicit provider/native authorization.
+5. Enter HealthKit/Health Connect only after explicit dependency/permission authorization.
+6. Treat Labs source composition as complete until provider/native/runtime work is opened or a concrete defect appears.
+7. Collect Stories/Labs/Steps physical-device or deployed evidence only in authorized environments.
+8. Re-synchronize canonical docs after every material merge.
 
 ## Closed activation gates
 
-Without direct authorization, do not:
-
-- deploy backend code or execute production migrations;
-- schedule/activate production workers;
-- activate APNs/FCM or change provider credentials;
-- request native notification permission implicitly;
-- activate HealthKit/Health Connect;
-- activate production Labs storage/OCR/model providers;
-- add native PDF/health/push dependencies solely to bypass a reviewed gate;
-- publish OTA/EAS;
-- build/install native releases;
-- access or mutate production data;
-- submit to app stores.
+Without direct authorization, do not deploy backend code or production migrations, schedule/activate production workers, activate APNs/FCM or provider credentials, request native notification permission implicitly, activate HealthKit/Health Connect, activate production Labs providers, add native dependencies solely to bypass a reviewed gate, publish OTA/EAS, build/install native releases, access/mutate production data or submit to app stores.
 
 ## Existing architectural contracts to preserve
 
