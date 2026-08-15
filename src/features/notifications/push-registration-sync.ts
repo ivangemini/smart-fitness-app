@@ -18,6 +18,13 @@ export async function syncPushRegistration(
 ): Promise<PushRegistrationSyncResult> {
   const readiness = await resolvePushRegistration(client);
 
+  if (readiness.status === 'unavailable') {
+    if (readiness.permission === 'denied') {
+      await repository.unregister(deviceId);
+    }
+    return { status: 'unavailable' };
+  }
+
   if (readiness.status !== 'ready') {
     return { status: readiness.status };
   }
