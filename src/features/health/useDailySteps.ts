@@ -44,7 +44,7 @@ export function useDailySteps(date?: Date): DailyStepsState {
       clearTimeout(timeout);
       subscription.remove();
     };
-  }, [fixedDateTimestamp, localDate]);
+  }, [fixedDateTimestamp, localDate, refreshRevision]);
 
   useEffect(() => {
     let cancelled = false;
