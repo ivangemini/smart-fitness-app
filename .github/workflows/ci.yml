@@ -13,7 +13,7 @@ on:
       - '**/*.md'
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: mobile-ci-${{ github.event.pull_request.number || github.ref }}
@@ -41,12 +41,20 @@ jobs:
       - name: Generate push dependency lock
         run: npm install --package-lock-only --ignore-scripts
 
-      - name: Upload generated push lock
-        uses: actions/upload-artifact@v4
-        with:
-          name: push-package-lock
-          path: package-lock.json
-          retention-days: 1
+      - name: Commit generated push lock
+        if: github.event_name == 'pull_request'
+        env:
+          HEAD_BRANCH: ${{ github.head_ref }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          if git diff --cached --quiet; then
+            echo "package-lock.json already synchronized"
+          else
+            git commit -m "chore(push): sync notifications lock"
+            git push origin "HEAD:${HEAD_BRANCH}"
+          fi
 
       - name: Install dependencies
         run: npm ci
