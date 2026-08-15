@@ -8,8 +8,14 @@ const auth = {
   refreshAccessToken: async () => null,
 };
 
+const registration = {
+  platform: 'ios' as const,
+  provider: 'apns' as const,
+  token: '1234567890abcdef',
+};
+
 describe('RemotePushRegistrationRepository', () => {
-  it('registers the native token without exposing it in the returned device', async () => {
+  it('registers the native token without sending client-selected device authority', async () => {
     const post = vi.fn(async () => ({
       registration: {
         deviceId: 'device-1',
@@ -22,14 +28,7 @@ describe('RemotePushRegistrationRepository', () => {
       auth,
     );
 
-    const registration = {
-      deviceId: 'device-1',
-      platform: 'ios' as const,
-      provider: 'apns' as const,
-      token: '1234567890abcdef',
-    };
-
-    await expect(repository.register(registration)).resolves.toEqual({
+    await expect(repository.register(registration, 'device-1')).resolves.toEqual({
       deviceId: 'device-1',
       platform: 'ios',
       provider: 'apns',
@@ -42,6 +41,7 @@ describe('RemotePushRegistrationRepository', () => {
         retry: false,
       }),
     );
+    expect(post.mock.calls[0]?.[1]).not.toHaveProperty('deviceId');
   });
 
   it('rejects a mismatched platform/provider response', async () => {
@@ -58,16 +58,11 @@ describe('RemotePushRegistrationRepository', () => {
     );
 
     await expect(
-      repository.register({
-        deviceId: 'device-1',
-        platform: 'ios',
-        provider: 'apns',
-        token: '1234567890abcdef',
-      }),
+      repository.register(registration, 'device-1'),
     ).rejects.toThrow('invalid_push_registration_response');
   });
 
-  it('rejects a valid response bound to a different device', async () => {
+  it('rejects a valid response bound to a different authenticated device', async () => {
     const post = vi.fn(async () => ({
       registration: {
         deviceId: 'device-2',
@@ -81,12 +76,7 @@ describe('RemotePushRegistrationRepository', () => {
     );
 
     await expect(
-      repository.register({
-        deviceId: 'device-1',
-        platform: 'ios',
-        provider: 'apns',
-        token: '1234567890abcdef',
-      }),
+      repository.register(registration, 'device-1'),
     ).rejects.toThrow('push_registration_response_mismatch');
   });
 
