@@ -4,33 +4,23 @@ Expo / React Native client for Smart Fitness.
 
 ## Current foundation
 
-- Offline-first local `AppState` persisted through AsyncStorage.
+- Offline-first local `AppState` persisted through AsyncStorage for private fitness state.
 - Focused state boundaries for production consumers; the full compatibility `AppContext` is internal only.
 - Native access and refresh tokens stored through Expo SecureStore.
-- Authenticated revision-aware synchronization with explicit conflicts, tombstones, idempotency, restart recovery, and bounded diagnostics.
-- Deterministic and structured Nutrition, Strength, Safety & Recovery, and Combined Coach flows.
+- Authenticated revision-aware synchronization with explicit conflicts, tombstones, idempotency, restart recovery and bounded diagnostics.
+- Deterministic and structured Nutrition, Strength, Safety & Recovery and Combined Coach flows.
+- Private server-authoritative Labs / Analyses with review-before-confirmation and provider-gated interpretation.
+- Server-authoritative Social/Stories domains and managed-media contracts.
 - Explicit confirmation before any Coach proposal changes user data.
-- Provider-neutral mobile code; food, model, moderation, media, and other provider credentials remain backend-only.
+- Provider-neutral mobile code; provider credentials remain backend-only.
 
 ## Synchronization coverage
 
-First-class synchronization exists for:
+First-class synchronization exists for weight history, completed workout sessions/sets, workout templates, food entries, nutrition targets, fitness profiles, user limitations, recovery check-ins, body measurements, training programs, custom exercises, meal templates and account-scoped Nutrition library items.
 
-- weight history;
-- completed workout sessions and sets;
-- custom workout templates;
-- food entries;
-- nutrition targets;
-- fitness profiles;
-- user limitations;
-- recovery check-ins;
-- typed body measurements;
-- training programs;
-- custom exercises;
-- meal templates;
-- account-scoped Nutrition library items.
+Social/Stories and Labs are server-authoritative domains outside private revisioned `AppState` synchronization.
 
-Physical standalone validation for offline termination/restart, reconnect, recovery, and second-device conflicts remains separate from source-level test coverage.
+Physical standalone validation for offline termination/restart, reconnect, recovery and second-device conflicts remains separate from source-level test coverage.
 
 ## Documentation
 
@@ -43,11 +33,9 @@ Start with:
 - [Cross-repository implementation plan](docs/implementation-plan.md)
 - [Architecture index](docs/architecture/README.md)
 - [Disaster recovery](docs/operations/disaster-recovery.md)
-- [Disaster recovery readiness](docs/operations/disaster-recovery-readiness.md)
-- [External recovery registry](docs/operations/external-recovery-registry.md)
 - [Project learnings](PROJECT_LEARNINGS.md)
 
-Focused architecture, privacy, QA, roadmap, release, and operations evidence remains under `docs/`.
+Backend documentation is canonical in `ivangemini/smart-fitness-backend`. Mobile [`docs/backend/README.md`](docs/backend/README.md) is a redirect only; backend API/database/architecture copies must not be maintained here.
 
 ## Run
 
@@ -62,8 +50,8 @@ Set `EXPO_PUBLIC_API_BASE_URL` for the backend. Production defaults to `https://
 
 `EXPO_PUBLIC_FOOD_API_BASE_URL` is a backwards-compatible fallback only where already supported.
 
-Do not add FatSecret, model-provider, moderation-provider, storage-provider, or other service credentials to Expo environment variables. The app consumes normalized backend DTOs and never calls those providers directly.
+Do not add model, moderation, storage, OCR, push-provider or other service credentials to Expo environment variables. The app consumes normalized backend DTOs and never calls those providers directly.
 
 ## Release boundary
 
-A merge to `main` is not an OTA, native build, device installation, backend deployment, or production activation. Native dependency, plugin, entitlement, Pod, runtime, or binary changes require a matching native build.
+A merge to `main` is not an OTA, native build, device installation, backend deployment or production activation. Native dependency/plugin/entitlement/Pod/runtime/binary changes require a matching native build and explicit release authorization.
