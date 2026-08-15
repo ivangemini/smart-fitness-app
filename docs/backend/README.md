@@ -1,29 +1,16 @@
-# Backend Architecture 1.0
+# Backend documentation redirect
 
-Architecture-first contract for the future cloud backend of `smart-fitness-app`.
+This directory is intentionally **non-canonical**.
 
-## Scope
+Historical backend API/database/architecture copies were removed because they drifted from the actual `ivangemini/smart-fitness-backend` source. Do not add new backend snapshots here.
 
-- No HTTP implementation
-- No auth implementation
-- No database implementation
-- No mobile app integration
-- Documentation only
+Canonical backend documentation:
 
-## Documents
+- [Detailed backend baseline](https://github.com/ivangemini/smart-fitness-backend/blob/main/docs/project-context.md)
+- [API reference](https://github.com/ivangemini/smart-fitness-backend/blob/main/docs/api-reference.md)
+- [Data model reference](https://github.com/ivangemini/smart-fitness-backend/blob/main/docs/data-model.md)
+- [Architecture index](https://github.com/ivangemini/smart-fitness-backend/blob/main/docs/architecture/README.md)
+- [Current backend status](https://github.com/ivangemini/smart-fitness-backend/blob/main/docs/current-status.md)
+- [Latest backend handoff](https://github.com/ivangemini/smart-fitness-backend/blob/main/docs/handoffs/latest.md)
 
-- [API Contract](./api-contract.md)
-- [Database Design](./database-design.md)
-- [Sync Flow](./sync-flow.md)
-- [Security](./security.md)
-- [Repository Mapping](./repository-mapping.md)
-- [Migration Strategy](./migration-strategy.md)
-- [Future Architecture](./future-architecture.md)
-
-## Design principles
-
-- Local-first remains the primary client behavior.
-- Backend is additive and versioned.
-- Sync is device-aware and conflict-aware.
-- User-owned history is soft-deleted, not hard-deleted.
-- Zero data loss is the migration target.
+Mobile-specific backend integration contracts belong under mobile `docs/architecture/`, `docs/qa/` or another focused mobile area, not as copies of backend source documentation.
