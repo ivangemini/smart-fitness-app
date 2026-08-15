@@ -50,7 +50,12 @@ export function useDailySteps(date?: Date): DailyStepsState {
     let cancelled = false;
     const source = getStepActivitySource();
 
-    setState((current) => ({ ...current, loading: true }));
+    setState((current) => ({
+      ...current,
+      aggregate:
+        current.aggregate?.localDate === localDate ? current.aggregate : null,
+      loading: true,
+    }));
 
     void (async () => {
       const availability = await source.getAvailability();
