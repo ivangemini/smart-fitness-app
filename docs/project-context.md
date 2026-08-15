@@ -1,10 +1,10 @@
 # Smart Fitness Project Context
 
-Updated: 2026-08-12
+Updated: 2026-08-15
 
 ## Purpose
 
-Smart Fitness is an offline-first fitness application covering workouts, nutrition, progress, profile/authentication, synchronization, deterministic structured AI Coach workflows, and a privacy-first server-authoritative Social workout network.
+Smart Fitness is an offline-first fitness application covering workouts, nutrition, progress, profile/authentication, synchronization, deterministic structured AI Coach workflows, a privacy-first server-authoritative Social workout network, private Labs / Analyses and the bounded Companion presentation layer.
 
 Repositories:
 
@@ -12,45 +12,66 @@ Repositories:
 - backend: `ivangemini/smart-fitness-backend`;
 - production API: `https://api.peptonio.com`.
 
-This file is stable orientation context. Mutable execution state belongs in `docs/current-status.md`; detailed roadmap state belongs in `docs/implementation-plan.md` and focused roadmap files.
+This file is stable mobile/product orientation context. Mutable execution state belongs in `docs/current-status.md`; forward sequencing belongs in `docs/implementation-plan.md` and focused roadmap files.
+
+The canonical **detailed backend baseline** lives only in backend `docs/project-context.md`. Do not recreate backend API/database/architecture snapshots in this repository.
 
 ## Product surfaces
 
 The mobile application currently contains:
 
-- social-first Home with compact personal daily fitness context, server-backed Stories, and the Social workout feed;
+- social-first Home with compact personal daily fitness context, server-backed Stories and the Social workout feed;
 - Workouts and active workout logging;
-- Nutrition diary, targets, reusable meals, and saved library items;
+- Nutrition diary, targets, reusable meals and saved library items;
 - Progress and measurements;
-- Profile, authentication, Data & Sync, and privacy-facing controls;
-- Nutrition, Strength, Safety & Recovery, and Combined Coach surfaces;
-- Social profiles, relationships, Stories, workout posts, following feed, reactions, comments, notifications, reporting/moderation surfaces, and managed-media contracts.
+- Labs / Analyses as a private, server-authoritative longitudinal laboratory-results surface;
+- authentication, Data & Sync and privacy-facing controls;
+- Nutrition, Strength, Safety & Recovery and Combined Coach surfaces;
+- Social profiles, relationships, Stories, workout posts, following feed, reactions, comments, notifications, reporting/moderation surfaces and managed-media contracts;
+- Companion v1 as the user-facing motivational/presentation layer over canonical Coach/fitness history.
 
-Home Stories are a real server-authoritative domain. The completed baseline covers image-only v1 plus reviewed S9-A through S9-F source contracts. The explicitly prioritized S10 source boundary adds owner-only viewer activity, Close Friends/per-Story audience, bounded private replies, a fail-closed provider-neutral push-preference seam, and owner Archive/Highlights. Exact S10 product/privacy rules live in `docs/architecture/stories-s10-contract.md`; environment, native/provider and release activation remain separate authorization gates in `docs/roadmap/stories.md`.
+Home Stories are a real server-authoritative domain. S10 adds owner viewer activity, Close Friends/per-Story audience, bounded private replies, provider-neutral push preference and owner Archive/Highlights. Environment, native/provider and release activation remain separate gates.
 
-Real steps likewise require a reviewed device-health/activity source rather than inferred or demo values.
+Real Steps require a reviewed device health/activity source rather than inferred or demo values. Home consumes the provider-neutral Steps source and remains fail closed when no authorized native source is registered.
 
-Excluded unless explicitly approved:
+### Labs / Analyses boundary
 
-- blood-test analysis;
-- diagnosis;
-- pharmacology, hormone, SARM, or medication dosing;
+Labs is **approved product scope**. It is not excluded merely because it contains blood-test data.
+
+The approved boundary is:
+
+- private server-authoritative lab documents/results;
+- OCR/extraction output remains reviewable draft data until explicit confirmation;
+- confirmed structured facts, source units and laboratory reference intervals are authoritative;
+- chart/reference classifications are descriptive presentation states, not diagnoses;
+- panel comparison must not claim health improvement/worsening from classification movement alone;
+- interpretation uses confirmed minimum structured context and bounded validated output;
+- provider-backed extraction/interpretation is capability-gated and fail closed;
+- mobile never calls OCR/vision/model providers directly;
+- Labs stays outside private revisioned `AppState` sync and uses its own server-authoritative repository/context boundary.
+
+Still excluded unless separately reviewed/authorized:
+
+- diagnosis, emergency triage or clinical urgency inference;
+- prescriptions, medication dosing, pharmacology, hormone or SARM protocols;
+- unrestricted model access to raw Labs documents/provider payloads;
 - marketplace;
-- payments and subscriptions;
-- unreviewed Social/Stories domains outside the approved focused roadmaps and contracts.
+- payments/subscriptions;
+- unreviewed Social/Stories domains outside approved focused roadmaps/contracts.
 
 ## Mobile architecture
 
-- Expo SDK 56, React Native, Expo Router, and TypeScript.
-- One authoritative internal `AppState` is persisted through AsyncStorage.
+- Expo SDK 56, React Native, Expo Router and TypeScript.
+- One authoritative internal `AppState` is persisted through AsyncStorage for private offline-first fitness state.
 - Production screens consume focused state boundaries rather than the full compatibility `useAppContext` hook.
 - Ordered observable mutations protect critical persistence paths.
 - Native access and refresh tokens use Expo SecureStore.
 - API access is centralized under `src/api/`.
 - Synchronization orchestration lives in `src/context/SyncContext.tsx` and `src/cloud/`.
 - Presentation uses the adaptive Liquid Glass system documented in `docs/architecture/liquid-glass-ui.md`.
+- Social/Stories and Labs are separate server-authoritative domains and do not become private revisioned `AppState` entities.
 
-Local AsyncStorage remains the active storage strategy; architecture-only design options are not implementation authorization.
+Local AsyncStorage remains the active storage strategy for the private offline-first state; architecture-only alternatives are not implementation authorization.
 
 ## Backend authority
 
@@ -61,10 +82,20 @@ The backend is the only server authority for:
 - synchronized conflicts and tombstones;
 - Coach orchestration and confirmation;
 - provider access and secrets;
-- Social, Stories, and managed-media authority;
-- privacy, retention, deletion, and export source controls.
+- Social, Stories and managed-media authority;
+- Labs server authority;
+- privacy, retention, deletion and export source controls.
 
-Mobile must not call food, model, moderation, classifier, OCR, storage, email, or other providers directly.
+Mobile must not call food, model, moderation, classifier, OCR, storage, email, push or other providers directly.
+
+Canonical backend references:
+
+- backend `docs/project-context.md` — detailed baseline;
+- backend `docs/api-reference.md` — test-checked route inventory;
+- backend `docs/data-model.md` — test-checked exported schema inventory;
+- backend `docs/architecture/README.md` — focused architecture index.
+
+`docs/backend/README.md` in this repository is redirect-only.
 
 ## Synchronization model
 
@@ -112,52 +143,45 @@ Fastify route
 → PostgreSQL / Drizzle
 ```
 
-Implemented user-facing categories:
-
-- deterministic Nutrition review;
-- Nutrition Strategy proposal and confirmation;
-- deterministic Strength review;
-- Strength Strategy proposal and confirmation;
-- deterministic Safety & Recovery review;
-- Combined Review;
-- Combined Proposal with Safety-capped effective Strength;
-- separate explicit application paths;
-- run history, provenance, trust state, and privacy-safe coverage.
+Implemented user-facing categories include Nutrition, Strength, Safety & Recovery, Combined Review and Combined Proposal with explicit application/confirmation boundaries and persisted provenance/trust state.
 
 Automatic application is prohibited. Hidden chain-of-thought is not stored.
 
-## Social, Stories, media, and private state
+## Social, Stories, media and private state
 
 Private fitness state uses revisioned synchronization.
 
-Social, Stories, and managed media are separate server-authoritative domains and must not be inserted into private `AppState` synchronization. The Home feed and Story strip reuse this Social authority, account-scoped caches, pagination, block/private-profile enforcement, and moderation boundaries.
+Social, Stories and managed media are separate server-authoritative domains. Labs is also server-authoritative private health data and remains non-Social.
 
-Stories retain one server-owned managed-image lifecycle and active visibility authority while reviewed product slices add bounded behavior around it. The backend owns authenticated creation, expiry/archive transitions, Following/Close Friends visibility, viewed state, replies, Highlights, interaction lifecycle, owner deletion, account-deletion cascade, retention cleanup and the `story_image` managed-media lifecycle. Mobile strictly consumes that authority and must not fabricate server Story rows, audience membership, viewer/reply activity, archive state, effective push delivery or managed-media approval.
+A shared workout is an immutable bounded public snapshot created only through the explicit Social sharing flow. Home does not make private workout/nutrition/progress/Labs/Coach data public merely by displaying personal context next to Social content.
 
-S10 is specifically bounded by `docs/architecture/stories-s10-contract.md`: owner viewer lists are separate from liker/reactor identity privacy; Close Friends membership is subordinate to an authoritative follow edge; reply retries preserve idempotency identity; the push preference remains ineffective until a separately approved provider/native package; Archive/Highlights do not make expired Stories active again. `docs/roadmap/stories.md` separates source/CI completion from authorization-gated environment, physical-runtime and release evidence.
+Provider-backed capabilities remain disabled or fail closed until configuration, policy, infrastructure, deployment and evidence requirements are explicitly satisfied.
 
-A shared workout remains an immutable bounded public snapshot created only through the explicit Social sharing flow. Home does not make private workout/nutrition/progress data public merely by displaying personal metrics next to Social content.
+## Companion boundary
 
-Provider-backed capabilities remain disabled or fail closed until configuration, policy, infrastructure, deployment, and evidence requirements are explicitly satisfied.
+Companion is not a second Coach, health record, workout store or recommendation authority.
+
+Progression may be derived deterministically from canonical completed history and must not mutate source fitness data. Current v1 rewards unique completed workout days only and avoids punishment, guilt, streak-loss mechanics and rewards for medical testing, food restriction or weight loss.
+
+Provider/model-backed conversational or autonomous Companion behavior requires a separately reviewed contract.
 
 ## Documentation hierarchy
 
 Use this order when statements conflict:
 
-1. exact code, migrations, schemas, tests, and current Git history;
-2. `docs/implementation-plan.md`;
-3. `docs/current-status.md`;
-4. focused architecture, privacy, operations, QA, and release documents;
-5. `docs/project-context.md`;
-6. `PROJECT_LEARNINGS.md`;
-7. old PR descriptions, chat summaries, and historical notes.
-
-For Stories, `docs/roadmap/stories.md` is the focused source/release/expansion roadmap and `docs/architecture/stories-s10-contract.md` defines the reviewed S10 product/privacy boundary; both must agree with the canonical implementation plan. For the Liquid Glass/Home UI program, `docs/roadmap/liquid-glass.md` is the focused execution/evidence roadmap.
+1. exact code, migrations, schemas, tests and current Git history;
+2. `docs/implementation-plan.md` for cross-repository forward sequencing;
+3. `docs/current-status.md` for the short current checkpoint;
+4. focused architecture/privacy/operations/QA/release documents;
+5. this project context for stable mobile/product orientation;
+6. backend `docs/project-context.md` for detailed backend baseline facts;
+7. `PROJECT_LEARNINGS.md`;
+8. old PR descriptions, chat summaries and historical notes.
 
 Permanent agent rules belong in `AGENTS.md`. The latest restart checkpoint belongs in `docs/handoffs/latest.md`.
 
 ## Change discipline
 
-A pull request that changes architecture, synchronization coverage, roadmap state, active blockers, Social privacy boundaries, or deployment boundaries must update the corresponding documentation in the same change.
+A pull request that changes architecture, synchronization coverage, product scope, active blockers, Social/Labs privacy boundaries, provider gates or deployment boundaries must update the corresponding canonical documentation in the same change.
 
-Do not create a second broad overview when a current canonical file already covers the subject. Add a focused document or update the architecture/index hierarchy instead.
+Do not create a second backend API/database/architecture overview in `docs/backend/`; keep that directory redirect-only and put mobile-specific integration contracts under the appropriate focused mobile documentation area.
