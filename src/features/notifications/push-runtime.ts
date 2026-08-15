@@ -121,6 +121,7 @@ export class PushRuntime {
   }
 
   private handleDestination(value: unknown): void {
+    if (!this.options.getSession()) return;
     const destination = parsePushDestination(value);
     if (destination) this.options.navigate(destination);
   }
