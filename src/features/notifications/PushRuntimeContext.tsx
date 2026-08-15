@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { AppState } from 'react-native';
 
 import { getMobileApiBaseUrl } from '@/api';
 import { createApiClient } from '@/api/client';
@@ -15,6 +16,7 @@ import { AuthContext } from '@/auth/AuthContext';
 import { createRemotePushRegistrationRepository } from '@/repositories/RemotePushRegistrationRepository';
 
 import { createExpoNativePushClient } from './expo-native-push-client';
+import { shouldRenewPushRegistrationOnAppStateChange } from './push-app-state-renewal';
 import type { NativePushClient } from './push-contract';
 import { PushRuntime, type PushRuntimeSnapshot } from './push-runtime';
 
@@ -33,6 +35,7 @@ export function PushRuntimeProvider({ children, client }: PushRuntimeProviderPro
   const auth = useContext(AuthContext);
   const router = useRouter();
   const authRef = useRef(auth);
+  const appStateRef = useRef(AppState.currentState);
   const [snapshot, setSnapshot] = useState<PushRuntimeSnapshot>({
     permission: 'not_requested',
     registration: 'idle',
@@ -79,6 +82,21 @@ export function PushRuntimeProvider({ children, client }: PushRuntimeProviderPro
     if (!auth?.ready) return;
     void runtime.syncCurrentRegistration();
   }, [auth?.ready, auth?.session?.device.id, runtime]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      const previousState = appStateRef.current;
+      appStateRef.current = nextState;
+      if (
+        shouldRenewPushRegistrationOnAppStateChange(previousState, nextState) &&
+        authRef.current?.ready &&
+        authRef.current.session
+      ) {
+        void runtime.syncCurrentRegistration();
+      }
+    });
+    return () => subscription.remove();
+  }, [runtime]);
 
   const value = useMemo<PushRuntimeContextValue>(
     () => ({

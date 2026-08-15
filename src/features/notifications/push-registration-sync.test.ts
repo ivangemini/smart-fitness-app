@@ -4,8 +4,8 @@ import type { RemotePushRegistrationRepository } from '@/repositories/RemotePush
 import type { NativePushClient } from './push-contract';
 import { syncPushRegistration } from './push-registration-sync';
 
-const remote = (register = vi.fn()) =>
-  ({ register, unregister: vi.fn() }) as unknown as RemotePushRegistrationRepository;
+const remote = (register = vi.fn(), unregister = vi.fn()) =>
+  ({ register, unregister }) as unknown as RemotePushRegistrationRepository;
 
 const readyClient = (): NativePushClient => ({
   getPermissionState: vi.fn(async () => 'granted' as const),
@@ -26,7 +26,9 @@ describe('syncPushRegistration', () => {
     }));
     const client = readyClient();
 
-    await expect(syncPushRegistration(client, remote(register), 'device-1')).resolves.toMatchObject({
+    await expect(
+      syncPushRegistration(client, remote(register), 'device-1'),
+    ).resolves.toMatchObject({
       status: 'registered',
       registration: { deviceId: 'device-1' },
     });
@@ -43,30 +45,66 @@ describe('syncPushRegistration', () => {
 
   it('does not contact the remote repository before permission exists', async () => {
     const register = vi.fn();
+    const unregister = vi.fn();
     const client: NativePushClient = {
       getPermissionState: vi.fn(async () => 'not_requested' as const),
       requestPermission: vi.fn(async () => 'granted' as const),
       getDeviceToken: vi.fn(async () => null),
     };
 
-    await expect(syncPushRegistration(client, remote(register), 'device-1')).resolves.toEqual({
-      status: 'permission_required',
-    });
+    await expect(
+      syncPushRegistration(client, remote(register, unregister), 'device-1'),
+    ).resolves.toEqual({ status: 'permission_required' });
     expect(register).not.toHaveBeenCalled();
+    expect(unregister).not.toHaveBeenCalled();
     expect(client.requestPermission).not.toHaveBeenCalled();
   });
 
-  it('fails closed when native push is unsupported', async () => {
+  it('invalidates the remote registration after explicit permission denial', async () => {
     const register = vi.fn();
+    const unregister = vi.fn(async () => undefined);
+    const client: NativePushClient = {
+      getPermissionState: vi.fn(async () => 'denied' as const),
+      requestPermission: vi.fn(async () => 'denied' as const),
+      getDeviceToken: vi.fn(async () => null),
+    };
+
+    await expect(
+      syncPushRegistration(client, remote(register, unregister), 'device-1'),
+    ).resolves.toEqual({ status: 'unavailable' });
+    expect(register).not.toHaveBeenCalled();
+    expect(unregister).toHaveBeenCalledWith('device-1');
+  });
+
+  it('does not infer registration deletion from an unsupported runtime', async () => {
+    const register = vi.fn();
+    const unregister = vi.fn();
     const client: NativePushClient = {
       getPermissionState: vi.fn(async () => 'unsupported' as const),
       requestPermission: vi.fn(async () => 'unsupported' as const),
       getDeviceToken: vi.fn(async () => null),
     };
 
-    await expect(syncPushRegistration(client, remote(register), 'device-1')).resolves.toEqual({
-      status: 'unavailable',
-    });
+    await expect(
+      syncPushRegistration(client, remote(register, unregister), 'device-1'),
+    ).resolves.toEqual({ status: 'unavailable' });
     expect(register).not.toHaveBeenCalled();
+    expect(unregister).not.toHaveBeenCalled();
+  });
+
+  it('does not invalidate a known registration for a temporary token failure', async () => {
+    const register = vi.fn();
+    const unregister = vi.fn();
+    const client: NativePushClient = {
+      getPermissionState: vi.fn(async () => 'granted' as const),
+      requestPermission: vi.fn(async () => 'granted' as const),
+      getDeviceToken: vi.fn(async () => null),
+    };
+
+    await expect(
+      syncPushRegistration(client, remote(register, unregister), 'device-1'),
+    ).resolves.toEqual({ status: 'token_unavailable' });
+    expect(register).not.toHaveBeenCalled();
+    expect(unregister).not.toHaveBeenCalled();
   });
 });
