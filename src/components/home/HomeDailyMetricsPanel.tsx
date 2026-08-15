@@ -12,7 +12,9 @@ import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
+import { useDailySteps } from '@/features/health/useDailySteps';
 import type { HomeSocialCopy } from '@/features/home/homeSocialCopy';
+import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import {
   resolveLiquidGlassPalette,
@@ -92,12 +94,18 @@ export function HomeDailyMetricsPanel({
   workoutTitle,
 }: HomeDailyMetricsPanelProps) {
   const { colors, resolvedAppearance } = useAppTheme();
+  const { formatNumber } = useLocalization();
+  const dailySteps = useDailySteps();
   const glass = useMemo(
     () => resolveLiquidGlassPalette(resolvedAppearance),
     [resolvedAppearance],
   );
   const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const [expanded, setExpanded] = useState(false);
+  const displayedStepsValue =
+    dailySteps.availability === 'available' && dailySteps.aggregate
+      ? formatNumber(dailySteps.aggregate.steps)
+      : stepsValue;
 
   const toggleExpanded = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -139,7 +147,7 @@ export function HomeDailyMetricsPanel({
         <View style={styles.statusRow}>
           <View style={styles.statusItem}>
             <Text style={styles.statusLabel}>{copy.steps}</Text>
-            <Text style={styles.statusValue}>{stepsValue}</Text>
+            <Text style={styles.statusValue}>{displayedStepsValue}</Text>
           </View>
           <View style={styles.statusDivider} />
           <View style={styles.workoutCopy}>
