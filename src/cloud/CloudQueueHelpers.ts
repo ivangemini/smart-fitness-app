@@ -240,8 +240,12 @@ export const normalizeOfflineSyncQueueOperation = (
           payload,
         });
   const rawMetadata = isRecord(operation.metadata) ? operation.metadata : undefined;
+  const metadataUserId = isString(rawMetadata?.userId)
+    ? rawMetadata.userId.trim()
+    : actorId;
   const metadata = {
     ...rawMetadata,
+    ...(metadataUserId ? { userId: metadataUserId } : {}),
     ...(isWeightHistoryEntity(entityType) ? { entityName: 'weightHistory' } : {}),
     ...(isNutritionLibraryEntity(entityType)
       ? { clientId: isString(rawMetadata?.clientId) ? rawMetadata.clientId.trim() : rawEntityId }

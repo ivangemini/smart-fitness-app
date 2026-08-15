@@ -68,6 +68,7 @@ const batch: SyncBatch = {
       },
       metadata: {
         requestId: 'queue:weightHistory:weight-1:update:unique',
+        userId: 'user-1',
       },
       createdAt: '2026-07-22T09:00:00.000Z',
     },
@@ -247,6 +248,7 @@ describe('createProductionCloudProvider', () => {
           },
           metadata: {
             requestId: 'queue:fitnessProfiles:profile-1:update:unique',
+            userId: 'user-1',
           },
           createdAt: '2026-07-23T12:00:00.000Z',
         },
