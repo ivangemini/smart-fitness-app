@@ -1,132 +1,138 @@
 # Push runtime evidence matrix
 
-Updated: 2026-08-15
+Updated: 2026-08-16
 
-Status: provider-neutral source contract is complete; external provider/native/runtime activation remains authorization-gated under Phase 14.
+Status: concrete backend provider transports and mobile native runtime are source/CI-complete; configured-provider, physical-device, second-device/account, offline/reconnect and production activation evidence remain incomplete.
 
-This matrix is the canonical evidence checklist for real push delivery. A scenario is complete only when its required environment was actually exercised. Source tests and CI do not substitute for configured-provider, native-device, second-account/device or reconnect evidence.
+This matrix is the canonical stop/go checklist for real push delivery. A scenario is complete only when its required environment was actually exercised. Source tests and CI do not substitute for configured-provider or physical-device evidence.
 
 Current source baselines:
 
-- mobile runtime/source: `97bb0abf5b097739cf30805cc26e4ef62435c01d` (#660);
-- backend runtime/source: `37cd865ef94bfc9b2eef4c554ba83e3179726541` (#240).
+- mobile: `de2f0f01d2167aa91d7167130159f1b63c595b35` (#667);
+- backend: `c7108f3fb98818cdb726c28a4e235ef642b7902d` (#245).
 
-Current API composition keeps Story delivery provider availability disabled. This document does not authorize APNs/FCM activation, native dependency changes, provider credentials, worker scheduling, builds, deployment or production data access.
+No production APNs/FCM credential, worker schedule, backend deployment, native build/install or production data access is authorized by this document.
 
 ## Evidence levels
 
 - **Source/CI** — deterministic repository contract evidence.
-- **Configured provider runtime** — authorized non-production backend plus a concrete APNs/FCM transport/configuration.
-- **Physical device** — native app on a real supported device with reviewed permission/token integration.
-- **Second device/account** — independent authenticated clients used to prove account/device isolation.
-- **Offline/reconnect** — network-loss and reconnect behavior where server authority cannot be updated at the instant of local logout.
+- **Configured provider runtime** — authorized non-production backend using concrete APNs/FCM configuration.
+- **Physical device** — native app on a real supported device.
+- **Second device/account** — independent authenticated clients proving isolation.
+- **Offline/reconnect** — network-loss/reconnect behavior where server authority cannot update at local logout time.
 
 ## Source / CI foundation
 
 | Scenario | Required evidence | Status |
 | --- | --- | --- |
-| Authenticated device registration API | owner/device registration persists without echoing reusable provider credentials | complete — #232 |
-| Current-device logout | online logout invalidates the linked device registration transactionally | complete — #233 |
-| Remote session / revoke-others | server-side session revocation invalidates linked registrations | complete — #234 |
-| Durable delivery queue | PostgreSQL outbox, bounded retry/backoff, claim lease and stale-worker fencing | complete — #237 |
-| Invalid provider credential feedback | only the exact still-current registration can be invalidated; rotated credentials are protected | complete — #237 |
-| Story interaction enqueue | like/reaction/reply enqueue is fail-closed unless provider availability and owner preference both allow it | complete — #238 |
-| Story source removal | unlike/reaction clear/reply delete/Story deletion or expiry terminalizes matching undelivered jobs | complete — #238 |
-| Active session listing | expired sessions are not presented as active devices while cleanup semantics remain broader | complete — #239 |
-| Story preference opt-out | pending/retryable/claimed Story jobs are terminalized without cancelling unrelated push categories | complete — #240 |
-| Enqueue vs opt-out race | preference-row serialization prevents a completed opt-out from leaving a late queued Story job | complete — #240 |
-| Mobile readiness contract | readiness does not request permission implicitly and fails closed for unsupported/not-requested/denied states | complete — #647/#656 |
-| Mobile authenticated registration client | registration uses existing `AuthSession.device.id`, fails without auth and has one reviewed 401 refresh retry | complete — #656 |
-| Offline local logout erasure | access token, refresh token and session metadata are removed even when remote logout fails | complete — #660 |
-| Story deep-link target | `/social/story/:storyId` maps to the Story viewer and unauthenticated state returns before private Story fetch | complete — source audit 2026-08-15 |
-| Provider activation default | current Story route/service composition does not pass provider availability; enqueue requires it to be exactly `true` | complete — source audit 2026-08-15 |
+| Authenticated registration API | server-owned owner/device registration persists without echoing reusable credentials | complete — #232/#663 |
+| Current-device logout | online logout invalidates linked registration transactionally | complete — #233 |
+| Remote session / revoke-others | server-side revocation invalidates linked registrations | complete — #234 |
+| Durable delivery queue | outbox, bounded retry, claim lease and stale-worker fencing | complete — #237 |
+| Invalid-token fencing | only exact current registration can be invalidated; rotated token protected | complete — #237 |
+| Story interaction enqueue | enqueue requires explicit provider availability + owner preference | complete — #238 |
+| Story source removal | interaction/Story removal terminalizes matching undelivered jobs | complete — #238 |
+| Active session listing | expired sessions excluded while cleanup semantics remain broader | complete — #239 |
+| Story preference opt-out | matching pending/retryable/claimed jobs terminalized; unrelated categories preserved | complete — #240 |
+| Enqueue vs opt-out race | preference-row serialization prevents late queued Story job after completed opt-out | complete — #240 |
+| Concrete APNs transport | reviewed HTTP/2 transport maps provider results into delivery contract | complete source — #242 |
+| Concrete FCM transport | reviewed HTTP v1 transport maps provider/auth results into delivery contract | complete source — #242 |
+| Provider config default | delivery remains off unless master switch + provider switch + complete credentials are present | complete source — #245 |
+| Explicit native permission UX | bootstrap does not request permission; Settings action is the explicit request point | complete source — #667 |
+| Native device-token acquisition | granted/provisional state obtains APNs/FCM device token and registers against auth device | complete source — #667 |
+| Native token rotation | token listener re-registers rotated credential | complete source — #667 |
+| Foreground presentation | foreground handler is configured | complete source — #667 |
+| Cold-start tap consumption | last notification response is handled then cleared | complete source — #667 |
+| Story destination allowlist | only reviewed Story destination is routable and active auth is required | complete source — #667 |
+| Offline local logout erasure | access token, refresh token and session metadata erased even when remote logout fails | complete — #660 |
 
 ## Configured provider runtime
 
-These rows remain pending until a provider/native gate is explicitly opened.
+Source adapters exist, but these rows remain pending until an authorized configured environment is exercised.
 
 | Scenario | Required evidence | Status |
 | --- | --- | --- |
-| Concrete transport adapter | authorized environment can send through the reviewed APNs/FCM adapter without bypassing the outbox | pending configured-provider evidence |
-| Worker restart recovery | claimed/expired jobs recover according to lease/backoff semantics across a worker restart | pending configured-provider evidence |
-| Provider success finalization | one successful provider response finalizes only the claimed job/token pair | pending configured-provider evidence |
-| Transient provider failure | retryable provider result schedules bounded retry without losing claim fencing | pending configured-provider evidence |
-| Permanent invalid token | provider invalid-token result disables only the exact still-current registration | pending configured-provider evidence |
-| Credential rotation race | delayed feedback for an old token cannot disable the newly rotated token | pending configured-provider evidence |
-| Provider timeout / unknown result | retry policy is explicitly reviewed for duplicate-delivery risk; no stronger exactly-once claim is made than the provider supports | pending configured-provider evidence |
-| Redaction | logs/errors do not expose raw provider tokens or credentials | pending configured-provider evidence |
-| Generic Story content | external notification title/body remains privacy-minimized and contains no Story/reply/actor content | pending configured-provider evidence |
-| Provider-disabled environment | when provider availability is off, user preference cannot imply effective external delivery | pending configured-provider evidence |
+| APNs configured send | real configured APNs transport sends through durable worker | pending configured-provider evidence |
+| FCM configured send | real configured FCM transport sends through durable worker | pending configured-provider evidence |
+| Worker restart recovery | expired claims recover according to lease/backoff across restart | pending configured-provider evidence |
+| Provider success finalization | success finalizes only claimed job/token pair | pending configured-provider evidence |
+| Transient failure | retryable result schedules bounded retry without losing fencing | pending configured-provider evidence |
+| Permanent invalid token | invalid-token feedback disables only exact current registration | pending configured-provider evidence |
+| Credential rotation race | delayed old-token feedback cannot disable replacement token | pending configured-provider evidence |
+| Provider timeout / unknown result | duplicate-delivery risk and retry semantics are explicitly evidenced | pending configured-provider evidence |
+| Redaction | logs/errors expose neither raw provider token nor provider credentials | pending configured-provider evidence |
+| Generic notification content | title/body remain privacy-minimized and exclude Story/reply/actor/private-health content | pending configured-provider evidence |
+| Provider-disabled environment | user preference cannot imply effective delivery while master/provider switch is off | pending configured-provider evidence |
 
 ## Physical-device permission and token lifecycle
 
+The native source path exists; every row below still requires physical-device evidence.
+
 | Scenario | Required evidence | Status |
 | --- | --- | --- |
-| Permission entry point | permission request occurs only from explicit reviewed UX, never from readiness/background bootstrap | pending physical-device evidence |
-| Not requested | no native token registration and no backend registration | pending physical-device evidence |
-| Denied | no registration; UI remains truthful about unavailable delivery | pending physical-device evidence |
-| Unsupported platform/runtime | deterministic unavailable state and no backend registration | pending physical-device evidence |
-| Granted/provisional | native credential is acquired and synchronized to the authenticated `AuthSession.device.id` | pending physical-device evidence |
-| Token acquisition failure | temporary inability to acquire a token is not misclassified as permission revocation and does not delete a known-good registration by inference | pending physical-device evidence |
-| Token rotation | new credential replaces the old credential for the intended device/account and stale feedback cannot remove it | pending physical-device evidence |
-| Permission revoked after registration | next authoritative lifecycle sync removes or disables the known registration according to reviewed semantics | pending physical-device evidence |
-| Foreground delivery | notification behavior matches reviewed foreground UX | pending physical-device evidence |
-| Background delivery | generic notification is delivered without leaking private Story content | pending physical-device evidence |
-| Terminated-app delivery | generic notification behavior is verified from a terminated app | pending physical-device evidence |
-| Tap deep link while authenticated | Story notification opens only the reviewed `/social/story/:storyId` destination | pending physical-device evidence |
-| Tap deep link while logged out | app does not perform a private Story fetch and presents bounded unauthenticated/unavailable state | pending physical-device evidence |
+| Permission entry point | native prompt appears only after explicit Settings action | pending physical-device evidence |
+| Not requested | no device-token/backend registration occurs | pending physical-device evidence |
+| Denied | no new registration; UI truthfully reports blocked/unavailable state | pending physical-device evidence |
+| Unsupported runtime/platform | deterministic unavailable state and no registration | pending physical-device evidence |
+| Granted/provisional | native credential synchronizes to authenticated `AuthSession.device.id` | pending physical-device evidence |
+| Token acquisition failure | failure is not misclassified as permission revocation and does not infer-delete known-good registration | pending physical-device evidence |
+| Token rotation | rotated credential replaces prior registration for intended device/account | pending physical-device evidence |
+| Permission revoked after registration | reviewed authoritative lifecycle converges registration eligibility correctly | pending design + physical-device evidence |
+| Foreground delivery | visible behavior matches reviewed foreground UX | pending physical-device evidence |
+| Background delivery | privacy-minimized notification delivered without private content leak | pending physical-device evidence |
+| Terminated-app delivery | privacy-minimized notification behavior verified from terminated app | pending physical-device evidence |
+| Tap while authenticated | only reviewed Story destination opens | pending physical-device evidence |
+| Tap while logged out | no private Story fetch occurs; bounded unauthenticated state remains | pending physical-device evidence |
 
 ## Second-device / account isolation
 
 | Scenario | Required evidence | Status |
 | --- | --- | --- |
-| Same account on devices A + B | each active registration receives only intended account events and can be independently revoked | pending second-device evidence |
-| Logout on device A | A stops being eligible after authoritative online logout while B remains eligible | pending second-device evidence |
-| Revoke device B remotely | B stops being eligible without invalidating A | pending second-device evidence |
-| Revoke all other sessions | all linked remote registrations become ineligible while current device remains valid | pending second-device evidence |
-| Account A → B handoff on one device | registration ownership/token handoff cannot leave B receiving A private content or A receiving B content | pending second-account evidence |
-| Story owner opt-out | disabling Story push prevents later undelivered Story interaction jobs from reaching the provider | pending second-device evidence |
-| Interaction removed before send | source-removal cancellation prevents an undelivered stale interaction notification | pending second-device evidence |
-| Story deleted/expired before send | undelivered Story interaction notification is suppressed | pending second-device evidence |
-| Claimed job cancelled before provider call | stale worker finalization remains fenced and provider is not invoked after the authoritative cancellation point | pending configured-provider/second-device evidence |
-| Provider call already started | observed behavior is documented; database cancellation is not described as recalling an already-started external send | pending configured-provider evidence |
+| Same account on devices A + B | registrations remain independently addressable/revocable | pending second-device evidence |
+| Logout device A | A becomes ineligible after authoritative online logout; B remains valid | pending second-device evidence |
+| Revoke device B remotely | B becomes ineligible without invalidating A | pending second-device evidence |
+| Revoke all other sessions | remote linked registrations become ineligible while current device remains | pending second-device evidence |
+| Account A → B handoff on one device | no cross-account notification eligibility/content survives handoff | pending second-account evidence |
+| Story owner opt-out | later undelivered Story jobs do not reach provider | pending second-device/configured-provider evidence |
+| Interaction removed before send | cancelled undelivered interaction does not reach provider | pending second-device/configured-provider evidence |
+| Story deleted/expired before send | undelivered Story interaction notification suppressed | pending second-device/configured-provider evidence |
+| Provider call already started | observed boundary documented; DB cancellation is not described as recall | pending configured-provider evidence |
 
 ## Offline logout / reconnect boundary
 
-Immediate remote convergence is impossible while the device has no network path to the backend. Local logout must still erase reusable auth credentials; those credentials must not be retained merely to perform deferred push cleanup.
+Immediate authoritative backend cleanup is impossible without connectivity. Local logout must still erase reusable auth credentials; those credentials must not be retained merely for deferred push cleanup.
 
 | Scenario | Required evidence | Status |
 | --- | --- | --- |
-| Offline local logout | access/refresh/session data is erased locally and private Story deep links fail closed | source complete — #660 + deep-link audit; physical evidence pending |
-| Reconnect while still logged out | reviewed lifecycle does not silently re-authenticate or re-register the logged-out account | pending design/runtime evidence |
-| Server registration convergence | a bounded reconnect/eligibility mechanism removes or expires the stale server registration without retaining reusable auth credentials after logout | **blocking before real delivery activation** |
-| Network returns before app code runs | privacy policy explicitly accounts for the fact that the OS/provider may regain connectivity before JavaScript can perform cleanup | **blocking policy/runtime evidence** |
-| Login as a different account after offline logout | old-account registration converges safely before/with new-account registration; no cross-account notification content is exposed | pending second-account/reconnect evidence |
-| Long-offline device | stale eligibility has a documented bound or accepted privacy-minimized behavior; no claim of immediate server revocation is made | **blocking before real delivery activation** |
+| Offline local logout | credentials/session erased locally and notification Story route fails closed | source complete; physical evidence pending |
+| Reconnect while logged out | runtime does not silently re-authenticate or re-register old account | pending design/runtime evidence |
+| Server registration convergence | bounded mechanism removes/expires stale server eligibility without retained auth credentials | **blocking before real delivery activation** |
+| Network returns before app code runs | privacy policy accounts for provider/OS connectivity before JS cleanup | **blocking policy/runtime evidence** |
+| Login as different account after offline logout | old-account eligibility converges safely before/with new-account registration | pending second-account/reconnect evidence |
+| Long-offline device | stale eligibility has documented bound or explicitly accepted privacy-minimized behavior | **blocking before real delivery activation** |
 
 ## Stop / go rule for external activation
 
-Do **not** call real push delivery activation-complete while any of the following is missing:
+Do **not** call real push delivery runtime-complete while any of the following is missing:
 
-1. reviewed concrete provider adapter/configuration and configured-environment evidence;
-2. explicit native permission UX plus credential acquisition/rotation evidence on a physical device;
-3. authenticated/unauthenticated Story deep-link evidence;
-4. current-device, remote-device and account-handoff isolation evidence;
-5. an accepted and tested offline logout/reconnect convergence policy that does not retain reusable auth credentials;
+1. configured APNs/FCM runtime evidence through the reviewed worker/transports;
+2. physical-device permission/token/background/terminated-app evidence;
+3. authenticated and logged-out deep-link device evidence;
+4. second-device/account isolation evidence;
+5. accepted and tested offline logout/reconnect convergence without credential retention;
 6. reviewed external notification content/privacy behavior;
-7. evidence that provider failures/timeouts do not invalidate the wrong credential or create unbounded retry behavior.
+7. timeout/failure evidence demonstrating bounded retry and correct credential invalidation.
 
-A provider send that already started externally cannot be recalled by terminalizing the corresponding database row. Completion language must preserve that boundary.
+Production rollout remains a separate action after runtime evidence. A provider send already started externally cannot be recalled by terminalizing its database row.
 
 ## Regression rules
 
-- Fix only reproduced defects discovered by this matrix; do not reopen durable outbox, Story enqueue, opt-out or logout source packages without evidence.
-- Do not treat Expo Go as native push evidence.
-- Do not activate APNs/FCM, add provider credentials, schedule production workers, build/install native releases or deploy backend changes merely to fill this matrix without direct authorization.
+- Fix only reproduced defects discovered by this matrix; do not reopen durable outbox, Story enqueue/opt-out, provider adapter or logout packages without evidence.
+- Do not treat Expo Go or source CI as physical-device push evidence.
+- Do not activate APNs/FCM credentials, schedule production workers, deploy backend changes, publish/build/install releases or access production data merely to fill this matrix without direct authorization.
 - Do not persist raw provider credentials in ordinary outbox payloads or expose them in responses/logs.
 - Do not weaken local logout by retaining access/refresh credentials for deferred cleanup.
-- Do not mark a provider/device/reconnect row complete from source inspection or CI alone.
 
 ## Completion rule
 
-Real push delivery may be called runtime-complete only when every blocking row has a concrete evidence reference or an explicitly accepted platform/environment exclusion, and the source/CI baselines still pass. Production rollout remains a separate controlled action.
+Real push delivery may be called runtime-complete only when every blocking row has concrete evidence or an explicitly accepted environment/platform exclusion and the source/CI baselines still pass. Production rollout remains separately controlled.
