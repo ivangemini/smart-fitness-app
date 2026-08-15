@@ -18,7 +18,7 @@ const readyClient = (): NativePushClient => ({
 });
 
 describe('syncPushRegistration', () => {
-  it('registers an already-ready native boundary without requesting permission', async () => {
+  it('registers routing data and keeps device authority outside the request payload', async () => {
     const register = vi.fn(async () => ({
       deviceId: 'device-1',
       platform: 'ios' as const,
@@ -30,7 +30,14 @@ describe('syncPushRegistration', () => {
       status: 'registered',
       registration: { deviceId: 'device-1' },
     });
-    expect(register).toHaveBeenCalledOnce();
+    expect(register).toHaveBeenCalledWith(
+      {
+        platform: 'ios',
+        provider: 'apns',
+        token: 'x'.repeat(16),
+      },
+      'device-1',
+    );
     expect(client.requestPermission).not.toHaveBeenCalled();
   });
 
