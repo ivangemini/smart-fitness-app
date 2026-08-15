@@ -16,6 +16,11 @@ Focused roadmap index:
 - `docs/roadmap/data-quality-and-scale.md`;
 - `docs/roadmap/phase14-active-workstreams.md`.
 
+Phase 14 runtime evidence checklists:
+
+- `docs/qa/push-runtime-evidence-matrix.md`;
+- `docs/qa/stories-s10-runtime-matrix.md`.
+
 ## Verified phase baseline
 
 - Phases 1–10: complete for their established source/CI scope.
@@ -88,11 +93,17 @@ Merged provider-neutral foundation now includes:
 
 This does **not** mean external delivery is activated. Cancelling a claimed database row fences database finalization/retry but cannot retract a provider send that has already begun outside the database.
 
+The 2026-08-15 bounded integration audit found no new provider-neutral defect. Native push APIs remain intentionally unwired before authorization, the Story route/deep-link fails closed before private fetch when unauthenticated, current Story API composition does not enable provider availability, and the shared enqueue helper requires `deliveryProviderAvailable === true`.
+
+Future push activation/evidence is governed by `docs/qa/push-runtime-evidence-matrix.md`; source CI does not satisfy its provider/device/account/reconnect rows.
+
 ### Offline logout boundary
 
 Local logout security semantics are regression-covered by #660, but server-side convergence while the device is offline remains unresolved before real external push activation.
 
 Allowed future solutions must not depend on retaining reusable auth credentials after logout. A reviewed provider-independent eligibility/lease or reconnect mechanism should only be introduced together with the native/runtime synchronization path that can actually maintain it.
+
+The push evidence matrix marks server convergence, network-return-before-app-code behavior and long-offline eligibility/privacy semantics as activation blockers rather than pretending immediate remote revocation is possible without connectivity.
 
 ### Steps
 
@@ -110,7 +121,7 @@ Stories source remains complete. Missing runtime/device/deployment evidence must
 
 ### 1. Real external push delivery
 
-The remaining work crosses provider/native/runtime gates:
+Use `docs/qa/push-runtime-evidence-matrix.md` as the stop/go checklist. The remaining work crosses provider/native/runtime gates:
 
 1. concrete APNs/FCM adapter implementation and configured-environment evidence;
 2. provider credentials and production worker scheduling;
@@ -138,7 +149,7 @@ Remaining work is separately gated: HealthKit/Health Connect adapters/dependenci
 
 1. Keep canonical docs synchronized with merged mobile `97bb0ab` / backend `37cd865` baselines.
 2. Do not open another broad autonomous source package solely to keep Phase 14 busy; the remaining large items are provider/native/runtime gated.
-3. Continue read-only audits, QA preparation and bounded fixes for demonstrated defects without crossing those gates.
+3. Use the push runtime evidence matrix for future push work; otherwise continue read-only audits, QA preparation and bounded fixes for demonstrated defects without crossing those gates.
 4. Enter APNs/FCM/native push only after explicit authorization for that gate.
 5. Enter HealthKit/Health Connect only after explicit dependency/permission authorization.
 6. Run Labs/Stories deployment or physical-device evidence only in authorized environments.
