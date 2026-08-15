@@ -68,9 +68,13 @@ Backend/mobile source now covers authenticated owner/device registration, `AuthS
 
 Database cancellation cannot recall an external provider send that already began. Current provider availability remains disabled, so merged #240 is source/privacy hardening only.
 
+The 2026-08-15 bounded integration audit found no additional provider-neutral source defect: native push APIs remain intentionally unwired before the gate, the Story deep-link route exists and fails closed before private fetch when logged out, Story route composition does not enable provider availability, and the shared enqueue helper requires `deliveryProviderAvailable === true`.
+
+Canonical activation/evidence checklist: `docs/qa/push-runtime-evidence-matrix.md`.
+
 #### Remaining push work
 
-The remaining major packages cross explicit gates:
+The remaining major packages cross explicit gates and must be completed against the push runtime evidence matrix:
 
 - concrete APNs/FCM adapters and configured-environment evidence;
 - provider credentials and production worker scheduling;
@@ -79,6 +83,8 @@ The remaining major packages cross explicit gates:
 - offline logout/reconnect server convergence without retained credentials;
 - final notification privacy/content/deep-link policy;
 - physical-device and second-account/device isolation evidence.
+
+Offline/reconnect convergence is a stop-gate before real delivery activation. A network-isolated device cannot immediately update backend authority, and access/refresh credentials must not be retained after logout to create artificial convergence.
 
 Do not rebuild the durable worker, Story enqueue/source-removal/opt-out paths, active-list expiry semantics or local logout behavior.
 
@@ -98,7 +104,7 @@ Provider-neutral source is complete through #659 with fail-closed availability, 
 
 1. Keep canonical docs synchronized to mobile `97bb0ab` and backend `37cd865`.
 2. Do not start another broad source package merely because Phase 14 is active; remaining large work is gated.
-3. Continue read-only audits, QA preparation and bounded demonstrated-defect fixes that do not cross a gate.
+3. Use `docs/qa/push-runtime-evidence-matrix.md` for future push activation/evidence; otherwise continue read-only audits, QA preparation and bounded demonstrated-defect fixes that do not cross a gate.
 4. Open concrete APNs/FCM/native push work only after explicit provider/native authorization.
 5. Treat Labs source composition as complete until provider/native/runtime work is explicitly opened or a concrete defect is reproduced.
 6. Collect Stories runtime evidence only in authorized environments.
