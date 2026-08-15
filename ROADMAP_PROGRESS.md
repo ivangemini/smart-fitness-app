@@ -9,6 +9,12 @@ This is the canonical cross-program roadmap index for:
 
 Use it with `docs/implementation-plan.md`, `docs/current-status.md`, `docs/handoffs/latest.md`, `docs/roadmap/phase14-active-workstreams.md`, focused QA matrices and repository `AGENTS.md`. Exact source, tests, migrations and Git history override stale prose.
 
+Focused roadmap references retained as stable contracts:
+
+- `docs/roadmap/release-and-account.md`;
+- `docs/roadmap/localization-settings.md`;
+- `docs/roadmap/data-quality-and-scale.md`.
+
 ## Verified phase baseline
 
 - Phases 1–10: complete for established source/CI scope.
