@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useRouter } from 'expo-router';
 import {
+  Bell,
   CircleUserRound,
   Database,
   Info,
@@ -81,6 +82,12 @@ export default function SettingsScreen() {
             label: copy.units,
             onPress: () => router.push('/settings/units'),
             value: unitsValue,
+          },
+          {
+            Icon: Bell,
+            key: 'notifications',
+            label: copy.notifications,
+            onPress: () => router.push('/settings/notifications'),
           },
         ]}
         title={copy.preferences}
