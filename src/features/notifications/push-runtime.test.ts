@@ -156,6 +156,6 @@ describe('PushRuntime', () => {
     emitResponse({ destination: '/social/story/story-1' });
 
     expect(register).not.toHaveBeenCalled();
-    expect(navigate).toHaveBeenCalledWith('/social/story/story-1');
+    expect(navigate).not.toHaveBeenCalled();
   });
 });
