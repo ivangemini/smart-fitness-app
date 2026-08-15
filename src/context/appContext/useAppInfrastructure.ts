@@ -16,6 +16,7 @@ import { createSyncCoordinator, type SyncCoordinator } from '@/cloud';
 import { createProductionCloudProvider } from '@/cloud/createProductionCloudProvider';
 import { defaultState as defaultAppState } from '@/data/defaults';
 import { createRepositoryFactory } from '@/repositories';
+import { createRemotePushRegistrationRepository } from '@/repositories/RemotePushRegistrationRepository';
 import { createAsyncStorageAdapter } from '@/storage';
 import { createAsyncStorageOperationQueueStore } from '@/storage/AsyncStorageOperationQueueStore';
 import { createSecureTokenStorageAdapter } from '@/storage/SecureTokenStorageAdapter';
@@ -74,6 +75,15 @@ export function useAppInfrastructure(
   const apiClient = useMemo(
     () => createApiClient({ baseUrl: getMobileApiBaseUrl() }),
     [],
+  );
+  const pushRegistrationRepository = useMemo(
+    () =>
+      createRemotePushRegistrationRepository(apiClient, {
+        getAccessToken: () => authService.getAccessToken(),
+        refreshAccessToken: async () =>
+          (await authService.refresh())?.tokens.accessToken ?? null,
+      }),
+    [apiClient, authService],
   );
   const capabilityService = useMemo(
     () => createCapabilityService(apiClient),
@@ -138,6 +148,7 @@ export function useAppInfrastructure(
   return {
     authService,
     capabilityService,
+    pushRegistrationRepository,
     queueStore,
     repository,
     syncCoordinator,
