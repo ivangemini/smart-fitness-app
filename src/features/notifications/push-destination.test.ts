@@ -11,10 +11,12 @@ describe('parsePushDestination', () => {
 
   it.each([
     'https://example.com/phish',
+    '//example.com/social/story/story-1',
     'smartfitness://social/story/story-1',
     '/settings/account',
     '/social/story/',
     '/social/story/../settings',
+    '/social/story/story-1/extra',
     '/social/story/story-1?redirect=https://example.com',
     '/social/story/story-1#fragment',
     '/social/story/story%2Fsettings',
@@ -24,6 +26,8 @@ describe('parsePushDestination', () => {
 
   it('rejects non-string provider data', () => {
     expect(parsePushDestination(null)).toBeNull();
-    expect(parsePushDestination({ destination: '/social/story/story-1' })).toBeNull();
+    expect(
+      parsePushDestination({ destination: '/social/story/story-1' }),
+    ).toBeNull();
   });
 });
