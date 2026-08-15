@@ -9,8 +9,10 @@ import {
   useState,
 } from 'react';
 
+import { getMobileApiBaseUrl } from '@/api';
+import { createApiClient } from '@/api/client';
 import { AuthContext } from '@/auth/AuthContext';
-import type { RemotePushRegistrationRepository } from '@/repositories/RemotePushRegistrationRepository';
+import { createRemotePushRegistrationRepository } from '@/repositories/RemotePushRegistrationRepository';
 
 import { createExpoNativePushClient } from './expo-native-push-client';
 import type { NativePushClient } from './push-contract';
@@ -24,35 +26,44 @@ export type PushRuntimeContextValue = PushRuntimeSnapshot & {
 const PushRuntimeContext = createContext<PushRuntimeContextValue | null>(null);
 
 type PushRuntimeProviderProps = PropsWithChildren<{
-  repository: RemotePushRegistrationRepository;
   client?: NativePushClient;
 }>;
 
-export function PushRuntimeProvider({
-  children,
-  repository,
-  client,
-}: PushRuntimeProviderProps) {
+export function PushRuntimeProvider({ children, client }: PushRuntimeProviderProps) {
   const auth = useContext(AuthContext);
   const router = useRouter();
-  const sessionRef = useRef(auth?.session ?? null);
+  const authRef = useRef(auth);
   const [snapshot, setSnapshot] = useState<PushRuntimeSnapshot>({
     permission: 'not_requested',
     registration: 'idle',
   });
 
-  sessionRef.current = auth?.session ?? null;
+  authRef.current = auth;
 
   const nativeClient = useMemo(
     () => client ?? createExpoNativePushClient(),
     [client],
+  );
+  const apiClient = useMemo(
+    () => createApiClient({ baseUrl: getMobileApiBaseUrl() }),
+    [],
+  );
+  const repository = useMemo(
+    () =>
+      createRemotePushRegistrationRepository(apiClient, {
+        getAccessToken: async () =>
+          authRef.current?.session?.tokens.accessToken ?? null,
+        refreshAccessToken: async () =>
+          (await authRef.current?.refresh())?.tokens.accessToken ?? null,
+      }),
+    [apiClient],
   );
   const runtime = useMemo(
     () =>
       new PushRuntime({
         client: nativeClient,
         repository,
-        getSession: () => sessionRef.current,
+        getSession: () => authRef.current?.session ?? null,
         navigate: (destination) => router.push(destination as Href),
         onSnapshot: setSnapshot,
       }),
@@ -89,6 +100,8 @@ export function PushRuntimeProvider({
 
 export function usePushRuntime(): PushRuntimeContextValue {
   const value = useContext(PushRuntimeContext);
-  if (!value) throw new Error('usePushRuntime must be used within PushRuntimeProvider');
+  if (!value) {
+    throw new Error('usePushRuntime must be used within PushRuntimeProvider');
+  }
   return value;
 }
