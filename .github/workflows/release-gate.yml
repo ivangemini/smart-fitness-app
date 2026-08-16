@@ -231,7 +231,7 @@ jobs:
       - name: Checkout backend
         uses: actions/checkout@v4
         with:
-          repository: hon4olo/smart-fitness-backend
+          repository: ivangemini/smart-fitness-backend
           ref: ${{ inputs.backend_ref }}
           path: backend
           fetch-depth: 0
