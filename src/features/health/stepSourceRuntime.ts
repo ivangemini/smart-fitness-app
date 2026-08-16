@@ -1,6 +1,7 @@
-import { unavailableStepActivitySource, type StepActivitySource } from './steps-contract';
+import { createPlatformStepActivitySource } from './platform-step-source';
+import type { StepActivitySource } from './steps-contract';
 
-let source: StepActivitySource = unavailableStepActivitySource('unavailable');
+let source: StepActivitySource = createPlatformStepActivitySource();
 
 export const getStepActivitySource = (): StepActivitySource => source;
 
@@ -9,5 +10,5 @@ export const setStepActivitySource = (nextSource: StepActivitySource): void => {
 };
 
 export const resetStepActivitySource = (): void => {
-  source = unavailableStepActivitySource('unavailable');
+  source = createPlatformStepActivitySource();
 };
