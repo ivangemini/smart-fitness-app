@@ -10,70 +10,58 @@ Exact code, tests, migrations and current Git history override this checkpoint i
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Latest runtime/source merge: `4ea37c11c81fafc64c2ef5e1e8479868b66e689e` (#675).
+Latest runtime/source merge: `f87b3ea07588e255f6773b1fcac7b4ec8c9f4238` (#682).
 
-Recent Phase 14 push source includes:
+Recent Phase 14 source now includes:
 
-- #663 — registration aligned to server-owned authenticated device authority;
-- #667 — native Expo Notifications runtime, explicit notification settings UX, native APNs/FCM token acquisition, token rotation synchronization, foreground presentation, cold-start tap consumption and auth-gated allowlisted Story routing;
-- #669 — foreground registration reconciliation and lease renewal;
-- #674 — queued operation user-provenance enforcement across auth changes;
-- #675 — authenticated-only foreground push renewal and signed-out regression coverage.
+- #663/#667/#669/#674/#675 — authenticated native push registration/runtime, foreground renewal, auth-transition provenance and privacy-preserving routing foundations;
+- #681 — generic Labs signed-upload support for PDF/JPEG/PNG/HEIC without bypassing private upload authority;
+- #682 — read-only iOS HealthKit and Android Health Connect daily-step adapters, platform runtime wiring, Android `READ_STEPS`, Expo/native dependency configuration, npm-generated lockfile and native PDF document picker for Labs.
+
+#682 passed exact-head Mobile CI: dependency install, repository and changed-file audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
 
 ### Backend repository
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Latest runtime/source merge: `b1643893fc42c57ceaaa54094a1c1c4e1e58b068` (#252).
+Latest runtime/source merge: `c88410455fa9428724910bfc66da5846f7c4070a` (#254).
 
-Recent Phase 14 push/security source includes:
+#254 adds the authorized Labs private-processing runtime:
 
-- #237 — durable PostgreSQL outbox + provider-neutral worker;
-- #238/#240 — Story enqueue/source-removal/preference cancellation and race hardening;
-- #242 — concrete APNs HTTP/2 and FCM HTTP v1 transports;
-- #245 — explicit fail-closed provider environment composition;
-- #246 — atomic refresh-token CAS rotation with concurrent HTTP regression coverage;
-- #247 — bounded manual push worker plus configurable registration freshness lease for offline-registration convergence;
-- #249 — privacy-minimized generic Story notification payload regression coverage;
-- #250 — provider-token account handoff regression proving one current authenticated owner/device;
-- #252 — privacy-safe push delivery readiness manifest/CLI, rollout and rollback evidence template, source-prepared Docker/systemd one-shot entrypoints and operational runbook without activating provider delivery.
+- bounded Gemini document extraction for PDF/JPEG/PNG/HEIC;
+- strict structured extraction validation and draft-only review semantics;
+- fail-closed `LAB_PROCESSING_ENABLED` / provider configuration;
+- private-object-storage + extraction runtime composition;
+- privacy-safe processing readiness output;
+- one-shot Labs processing worker;
+- production Compose variable plumbing plus Docker/systemd rollout templates and rollback runbook.
 
-Provider delivery remains disabled unless the explicit master/provider switches and complete credentials are supplied. #252 prepares rollout verification and rollback contracts only; no provider credential, production deployment, scheduler activation or physical-device evidence is implied.
+#254 merged only after exact-head Backend CI, PostgreSQL CI and Account Deletion Receipt CI were all green. No credential, deployment, migration execution, scheduler activation or production provider call is implied by source readiness.
 
 ## Phase 14 status
 
-**Phase 14 has reached source/CI completion for the currently authorized provider-neutral/native contracts.** Remaining work is environment evidence or separately gated activation, not an unfinished general implementation package.
-
-Focused roadmap: `docs/roadmap/phase14-active-workstreams.md`.
+**Phase 14 source/CI scope now includes the explicitly authorized native-health, native PDF import and Labs private-processing packages.** External provider, deployed-environment and physical-device evidence remains distinct from source completion.
 
 ### P14-A — Push
 
-Source/CI now covers registration authority, logout/session cleanup, durable delivery, provider transports, fail-closed configuration, bounded registration freshness, native token lifecycle, auth-only foreground renewal, generic external payload privacy, account handoff and a privacy-safe operational readiness/rollback contract.
+Source/CI covers authenticated registration authority, logout/session cleanup, durable delivery, APNs/FCM transports, fail-closed configuration, registration freshness, native token lifecycle, auth-only foreground renewal, privacy-minimized payloads, account handoff and rollout/readiness tooling.
 
-The offline logout boundary is now bounded at source level by two complementary rules:
-
-- mobile erases reusable auth credentials even when remote logout cannot run;
-- backend delivery eligibility expires unless an authenticated client renews the registration freshness lease.
-
-That removes the prior source-level stop-gate without weakening logout by retaining credentials.
-
-The merged rollout-readiness source adds a read-only `push:delivery-readiness` manifest that reports only provider selection, credential-field presence, configuration validity, registration lease and readiness booleans. It does not emit provider identifiers, private keys, service-account addresses or raw credential values. A reviewed rollout/rollback runbook and external evidence-record template now define the staging-first activation order while keeping master delivery disabled through initial deployment.
-
-Runtime evidence still pending:
-
-- configured APNs/FCM sends through the reviewed worker;
-- provider success/transient/permanent/timeout/restart/redaction behavior in an authorized environment;
-- physical-device permission/token/background/terminated-app behavior;
-- authenticated/logged-out notification tap behavior;
-- second-device/account isolation against real clients/providers;
-- offline/reconnect ordering evidence, including network restoration before JS execution;
-- production credentials, worker scheduling and deployment as separately authorized rollout actions.
-
-Canonical checklist: `docs/qa/push-runtime-evidence-matrix.md`. Backend operational runbook: `docs/operations/push-delivery-rollout.md` in `smart-fitness-backend`.
+Remaining evidence: configured APNs/FCM sends, provider failure/retry/timeout/restart behavior, physical-device notification behavior, second-device/account isolation, offline/reconnect ordering, deployment and production scheduling.
 
 ### P14-B — Labs / Analyses
 
-Provider-neutral Labs source remains complete through confirmed-result interpretation presentation. Remaining work is explicitly gated provider/native/deployment scope: production private storage/OCR/model configuration, authorized migrations/deployment, PDF native picker/dependency, internal model-tool exposure policy and provider/device/accessibility evidence.
+Mobile source contains a native PDF picker and the generic private signed-upload path supports PDF/JPEG/PNG/HEIC. Backend #254 supplies fail-closed private-processing composition, Gemini extraction, privacy-safe readiness and a bounded one-shot worker.
+
+Remaining evidence:
+
+- configured private storage and model credentials in an authorized environment;
+- backend staging deployment/migrations;
+- controlled provider-output/redaction/error evidence;
+- worker execution/scheduling evidence;
+- physical-device PDF/photo picker and accessibility evidence;
+- production provider activation as a separate rollout decision.
+
+Extracted rows remain drafts until explicit user confirmation; source does not diagnose, prescribe, infer missing values or convert units.
 
 ### P14-C — Stories
 
@@ -81,29 +69,27 @@ Stories S10 remains source-complete. Continue only deployment/device/privacy evi
 
 ### P14-D — Steps
 
-Provider-neutral Steps source remains complete through deterministic unavailable state, device-local calendar-day windows, DST-safe 23/24/25-hour handling and no fake/workout-derived Steps. HealthKit/Health Connect integration and physical-device evidence remain separately gated.
+Native source/CI is complete:
 
-## Companion
+- iOS read-only HealthKit `StepCount` adapter;
+- Android read-only Health Connect `Steps` aggregate adapter;
+- Android `android.permission.health.READ_STEPS` only for this slice;
+- device-local calendar-day and DST-safe 23/24/25-hour semantics preserved;
+- no workout-derived or fake steps;
+- native dependencies and npm lockfile committed and exact-head Mobile CI green.
 
-Phase 13 Companion v1 remains the bounded merged baseline. Richer pet/cosmetics/naming/progression stays deferred unless explicitly reprioritized.
-
-## CI execution
-
-Mobile authoritative routine CI uses `[self-hosted, linux, x64, hermes-mobile-ci]` and includes repository/changed-file audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
-
-Backend authoritative routine CI uses `[self-hosted, linux, x64, hermes-backend-ci]` and applicable lint/format/build/test/PostgreSQL/account-deletion gates. Backend #252 merged only after exact-head Backend CI, PostgreSQL CI and Account Deletion Receipt CI all passed.
-
-Do not substitute source CI or a green readiness manifest for configured-provider, physical-device, deployment or production evidence.
+Remaining evidence is native-build/physical-device behavior: user permission flow, unsupported/no-data states, real aggregate reads and Home presentation on supported devices.
 
 ## Current remaining roadmap
 
-1. Keep Phase 14 source closed unless a reproduced defect or explicitly opened gated package appears.
-2. Use `docs/qa/push-runtime-evidence-matrix.md` plus the backend rollout runbook/evidence template for remaining P14-A external evidence.
-3. Collect Stories/Labs/Steps provider/device/deployed evidence only in authorized environments.
-4. Keep provider-backed capabilities fail closed until their activation gates are explicitly opened.
-5. Re-synchronize canonical docs after material runtime-evidence or rollout checkpoints.
-6. Move ordinary autonomous source work to the next explicitly prioritized roadmap phase rather than creating artificial Phase 14 refactors.
+1. Run Labs staging readiness/deployment/provider evidence using #254 and reviewed rollback controls.
+2. Collect HealthKit/Health Connect physical-device/native-build evidence for #682.
+3. Use `docs/qa/push-runtime-evidence-matrix.md` for remaining push provider/device evidence.
+4. Keep Stories evidence-only unless a runtime defect is reproduced.
+5. Define the next ordinary autonomous product phase explicitly instead of manufacturing additional Phase 14 refactors.
 
-## Safety / activation boundaries
+## Activation boundaries
 
-Do not perform without direct authorization: OTA/EAS publication, native release build/install, backend deployment, production migrations, production push worker scheduling, production data access/mutation, APNs/FCM credential activation/rotation, HealthKit/Health Connect activation, production Labs provider activation, DNS changes, destructive production cleanup or app-store submission.
+The user has explicitly authorized HealthKit/Health Connect, Labs provider/staging runtime work, backend staging deployment/migrations, APNs/FCM staging work, native/EAS builds and physical-device QA. Execution still requires the relevant environment access, credentials/signing material and/or physical device; source completion must not be reported as executed runtime evidence.
+
+Production credential rotation, production worker scheduling, production user-data mutation, destructive cleanup, DNS changes and app-store submission remain deliberate rollout actions with their own evidence and rollback controls.
