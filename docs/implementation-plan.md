@@ -26,14 +26,17 @@ The native Expo Notifications runtime from #667 remains the reviewed base for ex
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Latest runtime/source merge: `8592cd9ea0291796e5c5d8c810bfe11ec21826da` (#250).
+Latest runtime/source merge: `b1643893fc42c57ceaaa54094a1c1c4e1e58b068` (#252).
 
 Recent Phase 14 push source now additionally includes:
 
 - #246 — atomic refresh-token CAS rotation and concurrent refresh regression coverage;
 - #247 — bounded manual delivery worker plus configurable registration freshness lease that bounds stale offline-registration eligibility without retaining logout credentials;
 - #249 — regression coverage locking privacy-minimized generic Story notification payloads;
-- #250 — PostgreSQL account-handoff coverage proving one provider token converges atomically to the latest authenticated account/device owner.
+- #250 — PostgreSQL account-handoff coverage proving one provider token converges atomically to the latest authenticated account/device owner;
+- #252 — privacy-safe push readiness manifest/CLI, rollout and rollback evidence template, operational runbook and source-prepared one-shot Docker/systemd entrypoints.
+
+#252 passed exact-head Backend CI, PostgreSQL CI and Account Deletion Receipt CI before merge. Its readiness tooling is read-only and does not call providers or activate delivery.
 
 No provider credential, production worker schedule, backend deployment or production activation is implied by these merges.
 
@@ -44,7 +47,7 @@ No provider credential, production worker schedule, backend deployment or produc
 - **Stories S10:** source-complete; runtime/deployment/device evidence remains.
 - **Phase 12 Labs + Settings:** provider-neutral source composition complete through confirmed-result interpretation presentation.
 - **Phase 13 Companion v1:** retained; richer pet/cosmetics/progression deferred.
-- **Phase 14:** **source/CI completion checkpoint reached for the currently authorized provider-neutral/native contracts.** Remaining work is external evidence, gated native/provider integration, deployment or production activation rather than an unfinished general source package.
+- **Phase 14:** **source/CI completion checkpoint reached for the currently authorized provider-neutral/native contracts, including source-prepared push rollout/readiness tooling.** Remaining work is external evidence, gated native/provider integration, deployment or production activation rather than an unfinished general source package.
 
 ## Phase 14 completion state
 
@@ -72,9 +75,11 @@ Merged source now covers:
 - auth-gated allowlisted Story notification routing;
 - privacy-minimized generic Story notification payload regression coverage;
 - account A → B provider-token ownership handoff regression coverage;
-- atomic refresh-token rotation under concurrent HTTP refresh attempts.
+- atomic refresh-token rotation under concurrent HTTP refresh attempts;
+- privacy-safe read-only provider readiness manifest/CLI with no credential-value output;
+- staging-first rollout/rollback runbook, external evidence template and one-shot operational entrypoint templates without scheduler activation.
 
-Canonical activation/evidence checklist: `docs/qa/push-runtime-evidence-matrix.md`.
+Canonical activation/evidence checklist: `docs/qa/push-runtime-evidence-matrix.md`. Backend operational contract: `docs/operations/push-delivery-rollout.md` and `deploy/operations/push-delivery-rollout.template.json`.
 
 Remaining push work is **environment evidence and rollout**, not another duplicate provider-neutral implementation:
 
@@ -82,10 +87,10 @@ Remaining push work is **environment evidence and rollout**, not another duplica
 2. physical-device permission, token, foreground/background/terminated-app and deep-link evidence;
 3. second-device/account evidence against real clients/providers;
 4. offline/reconnect evidence showing the registration freshness lease and authenticated foreground renewal behave as designed in real runtime ordering;
-5. provider timeout/unknown-result and redaction evidence;
+5. provider timeout/unknown-result, restart recovery and redaction evidence;
 6. provider credentials, worker scheduling and deployment only under separate authorization.
 
-Do not rebuild the durable worker, Story enqueue/cancellation paths, provider transports, registration lease or native runtime merely because external evidence remains pending.
+Do not rebuild the durable worker, Story enqueue/cancellation paths, provider transports, registration lease, readiness tooling or native runtime merely because external evidence remains pending.
 
 ### P14-B — Labs / Analyses completion
 
@@ -102,7 +107,7 @@ Do not rebuild the durable worker, Story enqueue/cancellation paths, provider tr
 ## Current execution order
 
 1. Treat Phase 14 provider-neutral/native source composition as closed unless a reproduced defect or explicitly opened gated package appears.
-2. Use `docs/qa/push-runtime-evidence-matrix.md` for P14-A external evidence; never infer provider/device completion from source CI.
+2. Use `docs/qa/push-runtime-evidence-matrix.md` plus the backend rollout/readiness contract for P14-A external evidence; never infer provider/device completion from source CI or readiness output.
 3. Collect Stories/Labs/Steps provider/device/deployed evidence only in authorized environments.
 4. Keep provider-backed capabilities fail closed while credentials/deployment/native activation gates remain closed.
 5. Re-synchronize roadmap/status/handoff after every material runtime-evidence or rollout checkpoint.
