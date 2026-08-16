@@ -20,21 +20,24 @@ Latest runtime/source merge remains `f87b3ea07588e255f6773b1fcac7b4ec8c9f4238` (
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Latest runtime/operations merge: `e67e446c7819ae531da35f8a9a00c6c17eb50bad` (#256).
+Latest runtime/operations merge: `84dc828aacb1e030215447cc710c63aaa17c930c` (#257).
 
-#254 merged the fail-closed Labs private-processing runtime with private storage + Gemini extraction composition, strict structured output, readiness/worker entrypoints and rollout/rollback plumbing. #255 added the isolated `smart-fitness-staging` Compose topology. #256 then made the bounded staging bootstrap permanent and recorded real Hermes evidence while retaining fail-closed provider defaults.
+#254 merged the fail-closed Labs private-processing runtime with private storage + Gemini extraction composition, strict structured output, readiness/worker entrypoints and rollout/rollback plumbing. #255 added the isolated `smart-fitness-staging` Compose topology. #256 made the bounded staging bootstrap permanent and recorded real Hermes evidence while retaining fail-closed provider defaults. #257 added the credential-blind `staging:labs-evidence` gate for the later configured-provider pass.
 
-Exact-head Backend CI, PostgreSQL CI and Account Deletion Receipt CI were green for #256 before merge.
+Exact-head Backend CI, PostgreSQL CI and Account Deletion Receipt CI were green for #257 before merge. Post-merge Backend CI and PostgreSQL CI were also green.
 
-Verified Hermes staging evidence from the #256 rollout pass:
+Verified Hermes staging evidence:
 
 - Compose project `smart-fitness-staging` exists separately from production;
 - backend is exposed only on `127.0.0.1:3100`;
 - staging PostgreSQL has no host port and uses dedicated staging state/networking;
 - staging secrets live in an external runner-owned `0600` environment file;
 - loopback `/health` succeeds;
-- Labs readiness is fail-closed: `enabled=false`, `storageReady=false`, `extractionReady=false`, `interpretationEnabled=false`, `ready=false`;
-- production Compose, production credentials, production user data and production schedulers were not used.
+- Labs readiness remains fail-closed before provider configuration;
+- a temporary evidence-only #258 probe confirmed `env_file=true provider_fields=false activation_flags=false` and was closed without merge;
+- no Gemini/storage call, Labs worker invocation, staging mutation or production operation occurred during that probe.
+
+The current Labs configured-provider boundary is therefore external configuration, not missing source/runtime plumbing: staging-only private-storage and Gemini prerequisites must be supplied before the bounded synthetic evidence pass can run.
 
 ## Phase status
 
@@ -51,14 +54,20 @@ Source/CI complete. Remaining work is configured APNs/FCM staging evidence, phys
 
 ## P14-B — Labs / Analyses
 
-Source/CI and initial isolated-staging evidence are complete through backend #256. The staging topology boots independently on Hermes, health is verified and Labs remains safely disabled/unready until staging-only storage/model prerequisites are supplied.
+Source/CI, isolated-staging evidence and the bounded configured-provider evidence gate are complete through backend #257. The staging topology boots independently on Hermes, health is verified and Labs remains safely disabled/unready until staging-only storage/model prerequisites are supplied.
+
+Current confirmed blocker:
+
+```text
+env_file=true provider_fields=false activation_flags=false
+```
 
 Remaining work:
 
 1. configure a **staging-only** HTTPS S3-compatible private-storage bucket/namespace and credentials;
 2. configure a **staging-only** Gemini credential/model;
-3. enable Labs only in staging and require `labs:processing-readiness` to return `ready=true`;
-4. process one synthetic document with exactly one bounded worker pass;
+3. enable Labs only in staging and require `labs:processing-readiness` to return exact `ready=true` while interpretation remains disabled;
+4. upload/process one synthetic document with exactly one bounded `staging:labs-evidence` worker pass;
 5. capture privacy-safe success/error/redaction/lifecycle evidence before enabling any periodic scheduler;
 6. collect physical-device PDF/photo picker and accessibility evidence.
 
@@ -92,7 +101,7 @@ This is an explicit prioritization and therefore supersedes the previous restric
 
 ## Current execution order
 
-1. Fully complete the currently active Phase 14 work, beginning with staging-only HTTPS private object storage + Gemini prerequisites and bounded synthetic Labs evidence on the already bootstrapped Hermes staging environment, then complete the remaining authorized native/device/provider evidence.
+1. Fully complete the currently active Phase 14 work. The first hard gate is now confirmed as staging-only HTTPS private object storage + Gemini prerequisites, followed by bounded synthetic Labs evidence and the remaining authorized native/device/provider evidence.
 2. **Highest priority immediately after Phase 14 completion:** run the full Liquid Glass coverage audit and migrate every remaining partial/legacy user-facing screen or state until the app is design-system consistent end-to-end.
 3. Keep Stories evidence-only unless a concrete runtime defect is reproduced during Phase 14 completion or the Liquid Glass audit.
 4. Do not begin unrelated Phase 15 feature expansion or broad architecture refactors before the Liquid Glass convergence priority is complete.
