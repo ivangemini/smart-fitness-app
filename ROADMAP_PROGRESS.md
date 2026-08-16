@@ -4,6 +4,12 @@ Updated: 2026-08-16
 
 This is the canonical cross-program roadmap index for mobile `ivangemini/smart-fitness-app` and backend `ivangemini/smart-fitness-backend`. Exact source, tests, migrations and Git history override stale prose.
 
+Focused roadmap references retained as stable contracts:
+
+- `docs/roadmap/release-and-account.md`;
+- `docs/roadmap/localization-settings.md`;
+- `docs/roadmap/data-quality-and-scale.md`.
+
 ## Verified phase baseline
 
 - Phases 1–10: complete for established source/CI scope.
