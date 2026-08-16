@@ -42,6 +42,25 @@
       "expo-secure-store",
       "expo-notifications",
       [
+        "@kingstinct/react-native-healthkit",
+        {
+          "NSHealthShareUsageDescription": "Smart Fitness reads your step count to show daily activity.",
+          "NSHealthUpdateUsageDescription": false,
+          "background": false
+        }
+      ],
+      "react-native-health-connect",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
+            "minSdkVersion": 26
+          }
+        }
+      ],
+      [
         "expo-camera",
         {
           "cameraPermission": "We use the camera to scan food barcodes and capture photos for Stories.",
