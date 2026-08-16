@@ -15,7 +15,7 @@ Focused roadmap references retained as stable contracts:
 - Phases 1–10: complete for established source/CI scope.
 - Phase 11 Liquid Glass + Home convergence: source/CI-complete.
 - Stories S10: source-complete; deployment/device/privacy evidence remains.
-- Phase 12 Labs + Settings: provider-neutral source composition complete; native PDF import and private-processing runtime source are merged; provider/deployment/device evidence remains.
+- Phase 12 Labs + Settings: provider-neutral source composition complete; native PDF import, private-processing runtime source and isolated backend staging topology are merged; configured-provider/deployment/device evidence remains.
 - Phase 13 Companion v1: bounded baseline retained; richer progression/cosmetics deferred.
 - Phase 14: source/CI completion checkpoint reached for the currently authorized contracts. Ordinary autonomous Phase 14 source work is closed except for bounded reproduced-defect repair or reviewed contract changes.
 
@@ -25,15 +25,15 @@ There is currently no separately approved Phase 15/general successor source pack
 
 ### Mobile
 
-Latest runtime/source merge: `f87b3ea07588e255f6773b1fcac7b4ec8c9f4238` (#682).
+Latest repository merge: `267c6cb75c05b015ac21062a536ce0b36112df1c` (#684). Latest runtime/source merge remains `f87b3ea07588e255f6773b1fcac7b4ec8c9f4238` (#682).
 
-Relevant merged work includes native Expo Notifications, push reconciliation/provenance hardening, read-only HealthKit/Health Connect Steps integration and native PDF document picking for Labs. #682 passed exact-head Mobile CI.
+Relevant merged work includes native Expo Notifications, push reconciliation/provenance hardening, read-only HealthKit/Health Connect Steps integration and native PDF document picking for Labs. #684 subsequently made typed-route validation reproducible on persistent Hermes checkouts and restored roadmap/local-state documentation contracts. Applicable exact-head Mobile CI passed.
 
 ### Backend
 
-Latest runtime/source merge: `c88410455fa9428724910bfc66da5846f7c4070a` (#254).
+Latest runtime/source merge: `0ab06b98fc1941911d9fcc8f39af588a86cb25e5` (#255).
 
-#254 merged the fail-closed Labs private-processing runtime: private storage/model extraction composition, strict structured output, privacy-safe readiness, bounded worker commands, production configuration templates and rollout/rollback documentation. It passed exact-head Backend CI, PostgreSQL CI and Account Deletion Receipt CI.
+#254 merged the fail-closed Labs private-processing runtime: private storage/model extraction composition, strict structured output, privacy-safe readiness, bounded worker commands, production configuration templates and rollout/rollback documentation. #255 added a separate `smart-fitness-staging` Compose topology with dedicated PostgreSQL state, loopback-only ingress, separate provider egress and fail-closed staging defaults. #255 passed exact-head Backend CI, PostgreSQL CI and Account Deletion Receipt CI.
 
 ## What Phase 14 source now guarantees
 
@@ -45,7 +45,7 @@ Remaining evidence is external: configured-provider sends, physical devices, sec
 
 ### Labs / Analyses
 
-Native PDF picking is merged in mobile #682 and private extraction runtime is merged in backend #254. Remaining work is configured private storage/model evidence, staging deployment/migrations, provider-output/redaction/error evidence, worker execution/scheduling evidence, physical-device picker/accessibility evidence and separately reviewed model-tool exposure policy.
+Native PDF picking is merged in mobile #682, private extraction runtime is merged in backend #254, and isolated staging topology is merged in backend #255. Remaining work is initial staging boot/migration evidence, configured private storage/model evidence, provider-output/redaction/error evidence, bounded worker execution evidence, physical-device picker/accessibility evidence and separately reviewed model-tool exposure policy.
 
 ### Stories
 
@@ -57,8 +57,8 @@ Read-only HealthKit/Health Connect source integration and permission/disclosure 
 
 ## Current execution order
 
-1. Run Labs staging readiness/deployment/provider evidence using #254.
-2. Run HealthKit/Health Connect native-build/physical-device evidence using #682.
+1. Boot and validate Labs staging using backend #255, then collect configured private-storage/Gemini evidence with synthetic fixtures only.
+2. Run HealthKit/Health Connect native-build/physical-device evidence using mobile #682 on the current #684 validation baseline.
 3. Continue push configured-provider/device evidence through the canonical matrix.
 4. Keep Stories evidence-only unless runtime reproduces a defect.
 5. Do not manufacture Phase 15 or a broad refactor package without explicit reprioritization.
