@@ -20,14 +20,15 @@ Recent P14-A completion packages:
 
 ### Backend
 
-Latest runtime/source merge: `8592cd9ea0291796e5c5d8c810bfe11ec21826da` (#250).
+Latest runtime/source merge: `b1643893fc42c57ceaaa54094a1c1c4e1e58b068` (#252).
 
 Recent P14-A completion packages:
 
 - #246 — atomic refresh-token CAS rotation;
 - #247 — bounded manual delivery worker and registration freshness lease;
 - #249 — generic privacy-minimized Story notification payload regression;
-- #250 — provider-token account handoff regression.
+- #250 — provider-token account handoff regression;
+- #252 — privacy-safe push delivery readiness preflight, rollout/rollback evidence template, operational runbook and one-shot deployment entrypoint templates.
 
 ## P14-A — Real push delivery
 
@@ -53,7 +54,10 @@ Backend:
 - configurable registration freshness lease that bounds stale offline eligibility without retained logout credentials;
 - privacy-minimized generic Story notification payload contract;
 - atomic provider-token ownership convergence on account handoff;
-- atomic refresh-token CAS rotation under concurrency.
+- atomic refresh-token CAS rotation under concurrency;
+- read-only `push:delivery-readiness` manifest reporting bounded provider-selection/configuration readiness without credential values;
+- staging-first rollout/rollback runbook and external evidence-record template;
+- source-prepared Docker/systemd one-shot readiness entrypoints without scheduler activation.
 
 Mobile:
 
@@ -81,6 +85,20 @@ The previous source-level stop-gate is closed by a bounded convergence model:
 
 This does **not** substitute for physical/provider runtime evidence about ordering when OS/provider connectivity returns before JS executes.
 
+### Operational rollout contract
+
+Backend #252 adds source-prepared operational readiness without performing environment mutation:
+
+1. record exact green backend/mobile and rollback SHAs externally;
+2. keep `PUSH_DELIVERY_ENABLED=false` through initial migration/deployment;
+3. run the read-only readiness manifest and require selected provider configuration to be valid without exposing credential values;
+4. activate only in an explicitly authorized environment, staging before production;
+5. use bounded one-shot worker verification before enabling any scheduler;
+6. capture provider, device, isolation, privacy/redaction and rollback evidence externally;
+7. disable master delivery and scheduling first during rollback while preserving durable jobs/audit state.
+
+A green readiness manifest proves configuration shape only. It is not provider send, physical-device, deployed-backend or production evidence.
+
 ### Remaining push work
 
 1. **Configured-provider runtime evidence** — exercise APNs/FCM transports through the durable worker in an authorized non-production environment, including success, transient failure, permanent invalid token, timeout/unknown result, restart recovery and redaction.
@@ -89,7 +107,7 @@ This does **not** substitute for physical/provider runtime evidence about orderi
 4. **Offline/reconnect runtime evidence** — verify freshness expiry and authenticated renewal under real device/network ordering.
 5. **Production rollout** — provider credentials, backend deployment and worker scheduling remain separate explicit activation actions.
 
-Do not reopen the durable worker, Story enqueue/cancellation paths, provider transports, registration lease or native runtime merely because runtime evidence remains pending.
+Do not reopen the durable worker, Story enqueue/cancellation paths, provider transports, registration lease, readiness tooling or native runtime merely because runtime evidence remains pending.
 
 ## P14-B — Labs / Analyses completion
 
@@ -129,16 +147,16 @@ Exact-head Mobile CI requires repository/changed-file audits, TypeScript, full r
 
 ### Backend source
 
-Applicable exact-head gates include Backend CI, PostgreSQL CI and Account Deletion Receipt CI when schema/privacy/account lifecycle surfaces change.
+Applicable exact-head gates include Backend CI, PostgreSQL CI and Account Deletion Receipt CI when schema/privacy/account lifecycle surfaces change. #252 passed all three on its validated head before merge.
 
 ### Provider/device/runtime
 
-Configured-provider runtime and physical-device evidence remain distinct from source CI. Source tests do not complete those rows.
+Configured-provider runtime and physical-device evidence remain distinct from source CI. Source tests and readiness tooling do not complete those rows.
 
 ## Next execution order
 
 1. Keep Phase 14 source closed unless runtime evidence reproduces a defect or a gated package is explicitly opened.
-2. Use the push runtime evidence matrix for P14-A external evidence.
+2. Use the push runtime evidence matrix plus the backend rollout runbook/evidence template for P14-A external evidence.
 3. Run configured-provider, physical-device, deployment or production actions only with direct authorization.
 4. Keep Labs source closed unless provider/native/runtime work is explicitly opened or a concrete defect appears.
 5. Collect Stories/Steps runtime evidence only in authorized environments.
