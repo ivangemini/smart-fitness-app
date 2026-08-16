@@ -2,7 +2,7 @@
 
 Updated: 2026-08-16
 
-Status: explicitly prioritized bounded completion program; provider/device/deployment/production activation remains separately gated.
+Status: **source/CI completion checkpoint reached for the currently authorized Phase 14 contracts.** Remaining work is external evidence or separately gated provider/native/deployment activation.
 
 Exact code, tests, migrations and Git history remain authoritative.
 
@@ -10,25 +10,32 @@ Exact code, tests, migrations and Git history remain authoritative.
 
 ### Mobile
 
-Latest runtime/source merge: `de2f0f01d2167aa91d7167130159f1b63c595b35` (#667).
+Latest runtime/source merge: `4ea37c11c81fafc64c2ef5e1e8479868b66e689e` (#675).
 
-P14-A mobile source now includes server-owned registration contract alignment #663 and the native Expo Notifications runtime #667.
+Recent P14-A completion packages:
+
+- #669 — foreground registration reconciliation and lease renewal;
+- #674 — queued-operation user provenance across auth transitions;
+- #675 — authenticated-only foreground push renewal.
 
 ### Backend
 
-Latest runtime/source merge: `c7108f3fb98818cdb726c28a4e235ef642b7902d` (#245).
+Latest runtime/source merge: `8592cd9ea0291796e5c5d8c810bfe11ec21826da` (#250).
 
-P14-A backend source now includes concrete APNs/FCM transports #242 and fail-closed environment composition #245 in addition to the durable outbox/worker and Story enqueue/cancellation foundation.
+Recent P14-A completion packages:
 
-## Active workstreams
+- #246 — atomic refresh-token CAS rotation;
+- #247 — bounded manual delivery worker and registration freshness lease;
+- #249 — generic privacy-minimized Story notification payload regression;
+- #250 — provider-token account handoff regression.
 
-### P14-A — Real push delivery
+## P14-A — Real push delivery
 
-**Status: provider/native source and CI path complete; configured-provider, physical-device, isolation, reconnect and rollout evidence remain.**
+**Status: source/CI complete for the reviewed architecture; configured-provider, physical-device, second-device/account and rollout evidence remain.**
 
 Canonical stop/go checklist: `docs/qa/push-runtime-evidence-matrix.md`.
 
-#### Completed source foundation
+### Completed source foundation
 
 Backend:
 
@@ -41,7 +48,12 @@ Backend:
 - Story interaction enqueue and source-removal/preference cancellation;
 - concrete APNs HTTP/2 transport;
 - concrete FCM HTTP v1 transport;
-- fail-closed provider composition requiring `PUSH_DELIVERY_ENABLED=true`, explicit provider enablement and complete credentials.
+- fail-closed provider composition requiring `PUSH_DELIVERY_ENABLED=true`, explicit provider enablement and complete credentials;
+- bounded one-shot manual worker entry point;
+- configurable registration freshness lease that bounds stale offline eligibility without retained logout credentials;
+- privacy-minimized generic Story notification payload contract;
+- atomic provider-token ownership convergence on account handoff;
+- atomic refresh-token CAS rotation under concurrency.
 
 Mobile:
 
@@ -52,48 +64,62 @@ Mobile:
 - no implicit permission prompt during bootstrap;
 - APNs/FCM native device-token acquisition after allowed/provisional permission;
 - token-rotation listener and re-registration;
+- foreground registration reconciliation/lease renewal only while an authenticated device exists;
 - foreground notification presentation;
 - one-time cold-start notification response consumption;
 - Story destination allowlist;
-- active-auth requirement before notification routing;
-- `expo-notifications` config plugin and reproducible npm lockfile.
+- active-auth requirement before notification routing.
 
-#667 exact head `923435267ae09e02671dcafcb04c88dfeae31ff2` passed all Mobile CI gates before merge.
+### Offline/reconnect source contract
 
-#### Remaining push work
+The previous source-level stop-gate is closed by a bounded convergence model:
+
+1. offline logout always removes reusable auth credentials locally;
+2. the backend does not treat a registration as indefinitely eligible — delivery requires freshness within the configured registration lease;
+3. authenticated foreground runtime renews the registration; signed-out foreground runtime does not;
+4. a token reused under a different authenticated account/device converges to that latest owner atomically.
+
+This does **not** substitute for physical/provider runtime evidence about ordering when OS/provider connectivity returns before JS executes.
+
+### Remaining push work
 
 1. **Configured-provider runtime evidence** — exercise APNs/FCM transports through the durable worker in an authorized non-production environment, including success, transient failure, permanent invalid token, timeout/unknown result, restart recovery and redaction.
 2. **Physical-device evidence** — permission states, granted/provisional token sync, token rotation, foreground/background/terminated-app delivery and authenticated/logged-out Story taps.
-3. **Second-device/account isolation** — independent revoke/logout/account handoff and Story preference/source-removal behavior.
-4. **Offline logout/reconnect convergence** — stale server registration eligibility must converge without retaining reusable auth credentials after logout; policy must cover network returning before JS runs and long-offline devices.
-5. **External content/privacy policy** — keep notification content privacy-minimized and do not expose Story/reply/actor/private-health content before the reviewed in-app fetch.
-6. **Production rollout** — provider credentials and worker scheduling remain separate explicit activation actions.
+3. **Second-device/account evidence** — real-client independent revoke/logout/account handoff and Story preference/source-removal behavior.
+4. **Offline/reconnect runtime evidence** — verify freshness expiry and authenticated renewal under real device/network ordering.
+5. **Production rollout** — provider credentials, backend deployment and worker scheduling remain separate explicit activation actions.
 
-Do not rebuild the durable worker, Story enqueue/cancellation paths, provider transports or native runtime merely because runtime evidence remains pending.
+Do not reopen the durable worker, Story enqueue/cancellation paths, provider transports, registration lease or native runtime merely because runtime evidence remains pending.
 
-### P14-B — Labs / Analyses completion
+## P14-B — Labs / Analyses completion
 
 **Status: provider-neutral source composition complete; provider/native/runtime work gated.**
 
 Remaining work: production private storage/OCR/model provider selection/configuration, authorized backend deployment/migrations, PDF native picker/dependency, internal Labs/model tool exposure policy and provider/device/accessibility/runtime evidence.
 
-### P14-C — Stories runtime completion
+## P14-C — Stories runtime completion
 
 **Status: source-complete; evidence/runtime only unless a defect is reproduced.**
 
 Use `docs/qa/stories-s10-runtime-matrix.md` to distinguish source/CI, deployed backend/migration, physical-device and second-device/privacy/lifecycle evidence.
 
-### P14-D — Steps / native health activity
+## P14-D — Steps / native health activity
 
 **Status: provider-neutral source complete through local-day/DST-safe/fail-closed semantics; native health integration remains gated.**
 
 Remaining: reviewed HealthKit/Health Connect read-only adapters/dependencies, explicit user-initiated permission/disclosure UX, denied/unsupported runtime evidence, physical-device evidence and Home presentation against real aggregate data.
 
-## Parallel execution rules
+## Completion interpretation
 
-Independent work may proceed in parallel when contracts/files do not overlap. While activation gates remain closed, useful work is limited to read-only audits, QA/evidence preparation, bounded reproduced-defect fixes and canonical documentation synchronization.
+Phase 14 should now be treated as **closed for ordinary autonomous source work**. It is not accurate to call external runtime or production activation complete until the required environments have actually been exercised.
 
-Do not create broad source branches merely to keep Phase 14 busy. Shared auth lifecycle, database schema/journal, package manifests and root configuration require deliberate integration.
+Reopen a Phase 14 source package only for:
+
+- a reproduced defect from runtime evidence;
+- an explicitly authorized provider/native/deployment package;
+- a reviewed contract change.
+
+Do not create broad source branches merely to keep Phase 14 active.
 
 ## Validation gates
 
@@ -109,15 +135,14 @@ Applicable exact-head gates include Backend CI, PostgreSQL CI and Account Deleti
 
 Configured-provider runtime and physical-device evidence remain distinct from source CI. Source tests do not complete those rows.
 
-## Current execution order
+## Next execution order
 
-1. Keep canonical docs synchronized to mobile `de2f0f01` / backend `c7108f3f`.
-2. Use the push runtime evidence matrix for the next P14-A work.
-3. Resolve offline logout/reconnect convergence before calling real push delivery runtime-complete.
-4. Run configured-provider, physical-device, deployment or production actions only with direct authorization.
-5. Keep Labs source closed unless provider/native/runtime work is explicitly opened or a concrete defect appears.
-6. Collect Stories/Steps runtime evidence only in authorized environments.
-7. Re-synchronize canonical docs after material merges.
+1. Keep Phase 14 source closed unless runtime evidence reproduces a defect or a gated package is explicitly opened.
+2. Use the push runtime evidence matrix for P14-A external evidence.
+3. Run configured-provider, physical-device, deployment or production actions only with direct authorization.
+4. Keep Labs source closed unless provider/native/runtime work is explicitly opened or a concrete defect appears.
+5. Collect Stories/Steps runtime evidence only in authorized environments.
+6. Move autonomous source work to the next explicitly prioritized roadmap package.
 
 ## Closed activation boundaries
 
