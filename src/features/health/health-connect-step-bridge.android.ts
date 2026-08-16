@@ -22,28 +22,24 @@ const ensureAvailable = async (): Promise<boolean> => {
   return initialization;
 };
 
+const isGrantedStepsReadPermission = (permission: unknown): boolean =>
+  typeof permission === 'object' &&
+  permission !== null &&
+  'accessType' in permission &&
+  'recordType' in permission &&
+  permission.accessType === 'read' &&
+  permission.recordType === 'Steps';
+
 export const healthConnectStepBridge = createHealthConnectStepBridge({
   isAvailable: ensureAvailable,
   async hasReadPermission() {
     if (!(await ensureAvailable())) return false;
-    const permissions = await getGrantedPermissions();
-    return permissions.some(
-      (permission) =>
-        'accessType' in permission &&
-        'recordType' in permission &&
-        permission.accessType === 'read' &&
-        permission.recordType === 'Steps',
-    );
+    return (await getGrantedPermissions()).some(isGrantedStepsReadPermission);
   },
   async requestReadPermission() {
     if (!(await ensureAvailable())) return false;
-    const permissions = await requestPermission([STEPS_READ_PERMISSION]);
-    return permissions.some(
-      (permission) =>
-        'accessType' in permission &&
-        'recordType' in permission &&
-        permission.accessType === 'read' &&
-        permission.recordType === 'Steps',
+    return (await requestPermission([STEPS_READ_PERMISSION])).some(
+      isGrantedStepsReadPermission,
     );
   },
   async readCumulativeSteps({ startDate, endDate }) {
@@ -56,6 +52,6 @@ export const healthConnectStepBridge = createHealthConnectStepBridge({
         endTime: endDate,
       },
     });
-    return result.COUNT_TOTAL;
+    return Number.isFinite(result.COUNT_TOTAL) ? result.COUNT_TOTAL : null;
   },
 });
