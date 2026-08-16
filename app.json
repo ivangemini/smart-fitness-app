@@ -21,6 +21,9 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
+      "permissions": [
+        "android.permission.health.READ_STEPS"
+      ],
       "predictiveBackGestureEnabled": false,
       "package": "com.dzahard28.smartfitnessapp"
     },
@@ -41,6 +44,25 @@
       "expo-image",
       "expo-secure-store",
       "expo-notifications",
+      [
+        "@kingstinct/react-native-healthkit",
+        {
+          "NSHealthShareUsageDescription": "Smart Fitness reads your step count to show daily activity.",
+          "NSHealthUpdateUsageDescription": false,
+          "background": false
+        }
+      ],
+      "react-native-health-connect",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
+            "minSdkVersion": 26
+          }
+        }
+      ],
       [
         "expo-camera",
         {
