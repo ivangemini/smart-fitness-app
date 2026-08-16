@@ -21,6 +21,9 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
+      "permissions": [
+        "android.permission.health.READ_STEPS"
+      ],
       "predictiveBackGestureEnabled": false,
       "package": "com.dzahard28.smartfitnessapp"
     },
