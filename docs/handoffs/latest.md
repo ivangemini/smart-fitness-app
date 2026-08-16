@@ -24,24 +24,27 @@ The reviewed native runtime from #667 remains the base for explicit notification
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Latest runtime/source merge: `8592cd9ea0291796e5c5d8c810bfe11ec21826da` (#250).
+Latest runtime/source merge: `b1643893fc42c57ceaaa54094a1c1c4e1e58b068` (#252).
 
 Recent P14-A completion source:
 
 - #246 — atomic refresh-token CAS rotation and concurrent refresh regression coverage;
 - #247 — bounded manual delivery worker plus configurable registration freshness lease;
 - #249 — privacy-minimized generic Story notification payload regression;
-- #250 — provider-token account handoff regression proving a single current account/device owner.
+- #250 — provider-token account handoff regression proving a single current account/device owner;
+- #252 — privacy-safe push readiness preflight, rollout/rollback evidence contract, operational runbook and source-prepared one-shot Docker/systemd entrypoints.
+
+#252 merged only after exact-head Backend CI, PostgreSQL CI and Account Deletion Receipt CI were green. The readiness command is read-only and credential-minimized; it does not call APNs/FCM or enable delivery.
 
 No provider credential, production worker schedule, backend deploy or production activation is part of these merges.
 
 ## Phase 14 completion checkpoint
 
-Phase 14 is now **closed for ordinary source/CI implementation work under the currently authorized contracts**.
+Phase 14 is **closed for ordinary source/CI implementation work under the currently authorized contracts**.
 
 This means:
 
-- P14-A has a complete reviewed provider-neutral/native source path;
+- P14-A has a complete reviewed provider-neutral/native source path plus a source-prepared operational rollout/readiness contract;
 - P14-B Labs provider-neutral source composition is complete;
 - P14-C Stories is source-complete;
 - P14-D Steps is provider-neutral source-complete.
@@ -70,13 +73,15 @@ Merged behavior includes:
 - provider token reuse under a different account/device converges atomically to the latest owner;
 - Story external title/body remain generic/privacy-minimized by regression contract;
 - notification destinations pass through the Story allowlist and require an active authenticated session;
-- refresh-token rotation uses atomic CAS and rejects concurrent reuse.
+- refresh-token rotation uses atomic CAS and rejects concurrent reuse;
+- `push:delivery-readiness` exposes only bounded provider-selection/configuration/readiness booleans and credential-field presence, never credential values;
+- the backend rollout runbook requires staging-first verification, immutable green SHAs/rollback refs, master delivery disabled through initial deployment and external evidence capture before scheduling.
 
-Important boundary: source behavior is not physical-device or configured-provider evidence. A provider request already started externally cannot be recalled by later database cancellation.
+Important boundary: source behavior and readiness tooling are not physical-device or configured-provider evidence. A provider request already started externally cannot be recalled by later database cancellation.
 
 ## Remaining Phase 14 evidence only
 
-Use `docs/qa/push-runtime-evidence-matrix.md` as the P14-A stop/go checklist. Remaining evidence includes:
+Use `docs/qa/push-runtime-evidence-matrix.md` as the P14-A stop/go checklist and the backend `docs/operations/push-delivery-rollout.md` plus `deploy/operations/push-delivery-rollout.template.json` as the operational evidence contract. Remaining evidence includes:
 
 1. configured APNs/FCM runtime through the reviewed worker/transports;
 2. provider success/transient/permanent/timeout/restart/redaction behavior;
@@ -107,7 +112,7 @@ Phase 13 Companion v1 remains the bounded baseline. Richer progression/cosmetics
 
 1. Do not manufacture additional Phase 14 source work merely because external evidence is still pending.
 2. Reopen P14 only for a reproduced runtime defect, a reviewed contract change or an explicitly authorized gated provider/native/deployment package.
-3. Use the push runtime evidence matrix for any P14-A external verification.
+3. Use the push runtime evidence matrix and backend rollout contract for P14-A external verification.
 4. Run configured-provider, physical-device, deployment or production actions only with direct authorization.
 5. Keep Labs source closed unless provider/native/runtime work is explicitly opened or a concrete defect appears.
 6. Collect Stories/Steps runtime evidence only in authorized environments.
