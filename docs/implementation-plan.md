@@ -74,13 +74,28 @@ Source-complete. Continue only runtime/deployment/device/privacy evidence and bo
 
 Source/CI includes reviewed read-only HealthKit and Health Connect adapters plus permission/disclosure wiring. Remaining work is native-build/physical-device evidence for support detection, permissions, real aggregate reads, local-day/DST behavior and Home presentation.
 
+## Priority UI convergence — complete Liquid Glass coverage
+
+Immediately after the currently active Phase 14 work is fully completed, perform a repository-wide screen and navigation audit for Liquid Glass consistency and treat every uncovered or partially migrated user-facing surface as the next highest-priority implementation work.
+
+Required scope:
+
+1. inventory every reachable tab, primary screen, secondary screen, modal, sheet, picker, empty/error/loading state and persistent navigation/action surface;
+2. classify each surface as fully converged, partially converged or legacy/non-Liquid-Glass using the established shared material/navigation primitives rather than visual guesswork alone;
+3. migrate every partial or legacy surface to the same established Liquid Glass design language, including hierarchy, materials, typography, spacing, controls, navigation, safe-area behavior and interaction states;
+4. remove obsolete one-off styling/material implementations when a reviewed shared primitive already exists, without changing unrelated business logic or persistence contracts;
+5. validate small-screen/responsive layout, Dynamic Island/notch/Home Indicator safe areas, scrolling, keyboard interaction, accessibility/reduced-transparency behavior and dark appearance across the migrated surfaces;
+6. add or update regression/source-contract coverage so newly converged screens cannot silently fall back to legacy styling;
+7. update the roadmap with the exact audited inventory and close this priority only when no reachable in-scope user-facing screen remains partially migrated or visually inconsistent with the established Liquid Glass system.
+
+This is an explicit prioritization and therefore supersedes the previous restriction against inventing a new broad post-Phase-14 package. Do not begin unrelated Phase 15 feature expansion before this convergence audit and remediation are complete.
+
 ## Current execution order
 
-1. Supply/configure staging-only HTTPS private object storage + Gemini prerequisites, then run bounded synthetic Labs evidence on the already bootstrapped Hermes staging environment.
-2. Collect HealthKit/Health Connect native-build/physical-device evidence for mobile #682 on the current validation baseline.
-3. Continue push configured-provider/device evidence through the existing runtime matrix.
-4. Keep Stories evidence-only unless a concrete runtime defect is reproduced.
-5. Do not manufacture a Phase 15 or broad refactor package without explicit prioritization.
+1. Fully complete the currently active Phase 14 work, beginning with staging-only HTTPS private object storage + Gemini prerequisites and bounded synthetic Labs evidence on the already bootstrapped Hermes staging environment, then complete the remaining authorized native/device/provider evidence.
+2. **Highest priority immediately after Phase 14 completion:** run the full Liquid Glass coverage audit and migrate every remaining partial/legacy user-facing screen or state until the app is design-system consistent end-to-end.
+3. Keep Stories evidence-only unless a concrete runtime defect is reproduced during Phase 14 completion or the Liquid Glass audit.
+4. Do not begin unrelated Phase 15 feature expansion or broad architecture refactors before the Liquid Glass convergence priority is complete.
 
 ## Validation policy
 
