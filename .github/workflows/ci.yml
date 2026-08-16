@@ -2,13 +2,18 @@ name: Mobile CI
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
   pull_request:
     paths-ignore:
       - 'docs/**'
       - '**/*.md'
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: mobile-ci-${{ github.event.pull_request.number || github.ref }}
@@ -16,14 +21,15 @@ concurrency:
 
 jobs:
   validate:
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false
+    if: >-
+      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false) &&
+      (github.event_name != 'push' || !startsWith(github.event.head_commit.message, 'Merge pull request #'))
     runs-on: [self-hosted, linux, x64, hermes-mobile-ci]
-    timeout-minutes: 15
+    timeout-minutes: 35
     steps:
-      - name: Checkout feature branch
+      - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
 
       - name: Set up Node.js
@@ -32,18 +38,30 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Materialize dependency lock
-        run: npm install --package-lock-only
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Commit generated dependency lock
-        shell: bash
-        run: |
-          if git diff --quiet -- package-lock.json; then
-            echo "package-lock.json already current"
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- package-lock.json
-          git commit -m "chore(health): update native dependency lock"
-          git push origin "HEAD:${{ github.event.pull_request.head.ref }}"
+      - name: Repository file line audit
+        run: node scripts/check-repository-file-lines.mjs
+
+      - name: Changed file line limit
+        run: node scripts/check-changed-file-lines.mjs
+
+      - name: TypeScript
+        run: npx tsc --noEmit
+
+      - name: Full regression suite
+        run: npm test
+
+      - name: Smoke expanded model runner
+        env:
+          EXPECTED_MOBILE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          SYNC_INTENT_PROPERTY_SEED_COUNT: '129'
+          SYNC_INTENT_PROPERTY_EVIDENCE_PATH: expanded-model-smoke-evidence.json
+        run: node scripts/run-expanded-sync-intent-model.mjs
+
+      - name: Expo export
+        run: npx expo export --clear
+
+      - name: Expo Doctor
+        run: npx expo-doctor@1.20.1
