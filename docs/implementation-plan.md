@@ -12,24 +12,24 @@ Reviewed local-state storage decision: `docs/architecture/local-state-performanc
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Latest runtime/source merge: `f87b3ea07588e255f6773b1fcac7b4ec8c9f4238` (#682).
+Latest repository merge: `267c6cb75c05b015ac21062a536ce0b36112df1c` (#684).
 
-#682 closes the native-source gaps for Phase 14 Steps/Labs with read-only HealthKit/Health Connect adapters, native health permission/disclosure plumbing, Android `READ_STEPS`, Home integration against real aggregate data and native PDF document picking. It passed exact-head Mobile CI.
+Latest runtime/source merge remains `f87b3ea07588e255f6773b1fcac7b4ec8c9f4238` (#682). #682 closes the native-source gaps for Phase 14 Steps/Labs with read-only HealthKit/Health Connect adapters, native health permission/disclosure plumbing, Android `READ_STEPS`, Home integration against real aggregate data and native PDF document picking. #684 then stabilized reproducible Expo typed-route validation and restored roadmap/local-state documentation contracts. Both passed their applicable exact-head Mobile CI.
 
 ### Backend
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Latest runtime/source merge: `c88410455fa9428724910bfc66da5846f7c4070a` (#254).
+Latest runtime/source merge: `0ab06b98fc1941911d9fcc8f39af588a86cb25e5` (#255).
 
-#254 closes the authorized Labs private-processing source package with fail-closed private storage + Gemini extraction composition, strict structured output, readiness/worker entrypoints, production configuration plumbing and rollout/rollback templates. It passed exact-head Backend CI, PostgreSQL CI and Account Deletion Receipt CI before merge.
+#254 merged the fail-closed Labs private-processing runtime with private storage + Gemini extraction composition, strict structured output, readiness/worker entrypoints, production configuration plumbing and rollout/rollback templates. #255 then added the isolated Hermes staging topology: a separate `smart-fitness-staging` Compose project, dedicated PostgreSQL volume/network, loopback-only backend ingress, separate provider egress, fresh staging-only secrets and fail-closed provider defaults. #255 passed exact-head Backend CI, PostgreSQL CI and Account Deletion Receipt CI before merge.
 
 ## Phase status
 
 - Phases 1–10: complete for established source/CI scope.
 - Phase 11: source/CI-complete for authorized Liquid Glass + Home convergence.
 - Stories S10: source-complete; runtime/deployment/device evidence remains.
-- Phase 12 Labs + Settings: provider-neutral source composition complete; native PDF import and private-processing runtime source are now merged; provider/deployment/device evidence remains.
+- Phase 12 Labs + Settings: provider-neutral source composition complete; native PDF import, private-processing runtime and isolated staging topology are merged; configured-provider/deployment/device evidence remains.
 - Phase 13 Companion v1: retained; richer progression/cosmetics deferred.
 - Phase 14: source/CI completion checkpoint reached for currently authorized contracts. Remaining work is external evidence, configured-provider/deployment activation or reproduced-defect repair.
 
@@ -39,7 +39,7 @@ Source/CI complete. Remaining work is configured APNs/FCM runtime evidence, phys
 
 ## P14-B — Labs / Analyses
 
-Source/CI now includes native PDF import and fail-closed private processing. Remaining work is environment evidence: configured private storage/model provider, authorized staging deployment/migrations, controlled provider-output/redaction/error evidence, physical-device PDF/image picking, accessibility evidence and any separately reviewed model-tool exposure policy.
+Source/CI now includes native PDF import, fail-closed private processing and an isolated Hermes staging topology. Remaining work is environment evidence: initial staging boot/migrations, configured private storage/model provider, controlled provider-output/redaction/error evidence, physical-device PDF/image picking, accessibility evidence and any separately reviewed model-tool exposure policy.
 
 Draft extraction remains confirmation-gated and must not infer diagnosis, treatment or missing values.
 
@@ -53,8 +53,8 @@ Source/CI includes reviewed read-only HealthKit and Health Connect adapters plus
 
 ## Current execution order
 
-1. Collect Labs staging readiness/deployment/provider evidence using backend #254.
-2. Collect HealthKit/Health Connect native-build/physical-device evidence for mobile #682.
+1. Boot and validate the merged isolated Labs staging topology from backend #255, then collect configured private-storage/Gemini evidence with synthetic fixtures only.
+2. Collect HealthKit/Health Connect native-build/physical-device evidence for mobile #682 on the current #684 validation baseline.
 3. Continue push configured-provider/device evidence through the existing runtime matrix.
 4. Keep Stories evidence-only unless a concrete runtime defect is reproduced.
 5. Do not manufacture a Phase 15 or broad refactor package without explicit prioritization.
