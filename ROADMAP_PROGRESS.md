@@ -1,6 +1,6 @@
 # Smart Fitness Roadmap Progress
 
-Updated: 2026-08-16
+Updated: 2026-08-17
 
 This is the canonical cross-program roadmap index for mobile `ivangemini/smart-fitness-app` and backend `ivangemini/smart-fitness-backend`. Exact source, tests, migrations and Git history override stale prose.
 
@@ -15,7 +15,7 @@ Focused roadmap references retained as stable contracts:
 - Phases 1–10: complete for established source/CI scope.
 - Phase 11 Liquid Glass + Home convergence: source/CI-complete.
 - Stories S10: source-complete; deployment/device/privacy evidence remains.
-- Phase 12 Labs + Settings: provider-neutral source composition complete; native PDF import, private-processing runtime source and isolated backend staging topology are merged; configured-provider/deployment/device evidence remains.
+- Phase 12 Labs + Settings: provider-neutral source composition, native PDF import, private-processing runtime and isolated Hermes staging bootstrap/evidence are complete; configured-provider/device evidence remains.
 - Phase 13 Companion v1: bounded baseline retained; richer progression/cosmetics deferred.
 - Phase 14: source/CI completion checkpoint reached for the currently authorized contracts. Ordinary autonomous Phase 14 source work is closed except for bounded reproduced-defect repair or reviewed contract changes.
 
@@ -25,17 +25,15 @@ There is currently no separately approved Phase 15/general successor source pack
 
 ### Mobile
 
-Latest repository merge: `267c6cb75c05b015ac21062a536ce0b36112df1c` (#684). Latest runtime/source merge remains `f87b3ea07588e255f6773b1fcac7b4ec8c9f4238` (#682).
-
-Relevant merged work includes native Expo Notifications, push reconciliation/provenance hardening, read-only HealthKit/Health Connect Steps integration and native PDF document picking for Labs. #684 subsequently made typed-route validation reproducible on persistent Hermes checkouts and restored roadmap/local-state documentation contracts. Applicable exact-head Mobile CI passed.
+Latest repository/docs merge before this checkpoint: `8b483a200cb1eeb2c6a1173cfa2dcc6ac58f2722` (#685). Latest runtime/source merge remains `f87b3ea07588e255f6773b1fcac7b4ec8c9f4238` (#682); #684 (`267c6cb75c05b015ac21062a536ce0b36112df1c`) stabilized persistent-checkout typed-route validation. Applicable exact-head Mobile CI passed.
 
 ### Backend
 
-Latest runtime/source merge: `0ab06b98fc1941911d9fcc8f39af588a86cb25e5` (#255).
+Latest runtime/operations merge: `e67e446c7819ae531da35f8a9a00c6c17eb50bad` (#256).
 
-#254 merged the fail-closed Labs private-processing runtime: private storage/model extraction composition, strict structured output, privacy-safe readiness, bounded worker commands, production configuration templates and rollout/rollback documentation. #255 added a separate `smart-fitness-staging` Compose topology with dedicated PostgreSQL state, loopback-only ingress, separate provider egress and fail-closed staging defaults. #255 passed exact-head Backend CI, PostgreSQL CI and Account Deletion Receipt CI.
+#254 merged fail-closed Labs private processing. #255 added the isolated `smart-fitness-staging` topology. #256 retained the bounded permanent staging bootstrap, strengthened isolation guards and recorded real Hermes staging evidence. Exact-head Backend CI, PostgreSQL CI and Account Deletion Receipt CI were green before merge.
 
-## What Phase 14 source now guarantees
+## What Phase 14 now proves
 
 ### Push
 
@@ -45,7 +43,18 @@ Remaining evidence is external: configured-provider sends, physical devices, sec
 
 ### Labs / Analyses
 
-Native PDF picking is merged in mobile #682, private extraction runtime is merged in backend #254, and isolated staging topology is merged in backend #255. Remaining work is initial staging boot/migration evidence, configured private storage/model evidence, provider-output/redaction/error evidence, bounded worker execution evidence, physical-device picker/accessibility evidence and separately reviewed model-tool exposure policy.
+Native PDF picking is merged in mobile #682 and private extraction runtime in backend #254. Backend #255/#256 now additionally prove an isolated Hermes staging project can boot separately from production with loopback-only backend ingress, a private staging database, dedicated staging state, external runner-owned secrets, successful `/health` and fail-closed Labs readiness.
+
+Remaining work is no longer initial staging boot. It is:
+
+- staging-only **HTTPS** S3-compatible private storage/namespace and credentials;
+- staging-only Gemini credential/model;
+- readiness `ready=true` after configuration;
+- one synthetic upload and exactly one bounded worker pass;
+- privacy-safe provider/output/error/redaction/lifecycle evidence;
+- physical-device picker/accessibility evidence.
+
+The current S3-compatible transport intentionally rejects non-HTTPS endpoints. Do not weaken that security boundary or substitute plain internal MinIO merely to bypass the configured-storage gate.
 
 ### Stories
 
@@ -57,14 +66,14 @@ Read-only HealthKit/Health Connect source integration and permission/disclosure 
 
 ## Current execution order
 
-1. Boot and validate Labs staging using backend #255, then collect configured private-storage/Gemini evidence with synthetic fixtures only.
-2. Run HealthKit/Health Connect native-build/physical-device evidence using mobile #682 on the current #684 validation baseline.
+1. Configure staging-only HTTPS private storage + Gemini prerequisites and run bounded synthetic Labs processing evidence on the already bootstrapped Hermes staging environment.
+2. Run HealthKit/Health Connect native-build/physical-device evidence using mobile #682 on the current validation baseline.
 3. Continue push configured-provider/device evidence through the canonical matrix.
 4. Keep Stories evidence-only unless runtime reproduces a defect.
 5. Do not manufacture Phase 15 or a broad refactor package without explicit reprioritization.
 
 ## Authorization / release boundary
 
-HealthKit/Health Connect, Labs provider/staging runtime, backend staging deployment/migrations, APNs/FCM staging, native/EAS builds and physical-device QA are explicitly authorized. Actual execution still requires available access, secrets/signing material and devices.
+HealthKit/Health Connect, Labs provider/staging runtime, backend staging deployment/migrations, APNs/FCM staging, native/EAS builds and physical-device QA are explicitly authorized. Actual execution still requires available credentials/signing material and devices.
 
 Production credential rotation, production worker scheduling, production user-data mutation, destructive cleanup, DNS changes and app-store submission remain deliberate rollout actions with separate evidence and rollback requirements.
