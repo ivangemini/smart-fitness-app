@@ -1,8 +1,8 @@
 # Phase 14 — Active product workstreams
 
-Updated: 2026-08-16
+Updated: 2026-08-17
 
-Status: **source/CI completion now includes the explicitly opened native-health, native PDF import and Labs private-processing runtime packages.** Remaining work is configured-environment, deployment and physical-device evidence rather than another broad source implementation pass.
+Status: **source/CI completion plus initial isolated Hermes staging evidence are complete for the explicitly opened native-health, native PDF import and Labs private-processing packages.** Remaining work is configured-provider and physical-device evidence rather than another broad source implementation pass.
 
 Exact code, tests, migrations and Git history remain authoritative.
 
@@ -12,13 +12,13 @@ Exact code, tests, migrations and Git history remain authoritative.
 
 Latest runtime/source merge: `f87b3ea07588e255f6773b1fcac7b4ec8c9f4238` (#682).
 
-#682 merged read-only iOS HealthKit + Android Health Connect daily-step integration, native configuration/dependencies, Android `READ_STEPS`, npm-generated lockfile and native Labs PDF picking. It passed exact-head Mobile CI.
+#682 merged read-only iOS HealthKit + Android Health Connect daily-step integration, native configuration/dependencies, Android `READ_STEPS`, npm-generated lockfile and native Labs PDF picking. It passed exact-head Mobile CI. #684 (`267c6cb75c05b015ac21062a536ce0b36112df1c`) subsequently stabilized reproducible typed-route validation.
 
 ### Backend
 
-Latest runtime/source merge: `c88410455fa9428724910bfc66da5846f7c4070a` (#254).
+Latest runtime/operations merge: `e67e446c7819ae531da35f8a9a00c6c17eb50bad` (#256).
 
-#254 merged the fail-closed Labs private-processing runtime: Gemini extraction, private storage composition, privacy-safe readiness, bounded one-shot worker and rollout/rollback deployment templates. It passed exact-head Backend CI, PostgreSQL CI and Account Deletion Receipt CI.
+#254 merged the fail-closed Labs private-processing runtime. #255 added the isolated `smart-fitness-staging` topology. #256 made the bounded staging bootstrap permanent, strengthened env isolation and recorded real Hermes staging evidence. Exact-head Backend CI, PostgreSQL CI and Account Deletion Receipt CI passed before merge.
 
 ## P14-A — Real push delivery
 
@@ -36,30 +36,38 @@ Remaining evidence:
 
 ## P14-B — Labs / Analyses
 
-**Status: native import and private-processing source/CI complete. Environment/provider/device evidence remains.**
+**Status: native import, private-processing source/CI and initial isolated-staging boot/health evidence complete. Configured-provider/device evidence remains.**
 
-Merged source provides:
+Merged source/runtime provides:
 
 - native PDF/photo import through the shared private signed-upload path;
-- Gemini extraction for PDF/JPEG/PNG/HEIC;
-- strict structured-result validation;
+- Gemini extraction for PDF/JPEG/PNG/HEIC with strict structured-result validation;
 - no diagnosis, treatment, missing-value inference or unit conversion in extraction;
 - draft-only rows pending explicit confirmation;
-- fail-closed `LAB_PROCESSING_ENABLED` and provider configuration;
-- private storage + extraction composition;
-- privacy-safe readiness;
+- fail-closed private storage + extraction composition and privacy-safe readiness;
 - bounded one-shot processing worker;
-- Compose/systemd/Docker rollout plumbing and rollback guidance.
+- isolated `smart-fitness-staging` topology and permanent `npm run staging:bootstrap` entrypoint.
+
+Verified Hermes staging evidence:
+
+- backend only on `127.0.0.1:3100`;
+- staging PostgreSQL has no host port and retains dedicated staging state/networking;
+- separate runner-owned `0600` staging environment;
+- loopback `/health` succeeds;
+- readiness is `enabled=false`, `storageReady=false`, `extractionReady=false`, `interpretationEnabled=false`, `ready=false`;
+- no production Compose/credentials/user data and no Labs worker/scheduler were used.
 
 Remaining evidence:
 
-1. configure authorized non-production private storage and model credentials;
-2. deploy backend/migrations in staging;
-3. prove readiness without credential leakage;
-4. process controlled documents and record provider/output/redaction/error behavior;
-5. collect native PDF/photo picker and accessibility evidence;
-6. keep extracted rows confirmation-gated;
-7. treat production provider activation/scheduling as a separate rollout decision.
+1. configure staging-only **HTTPS** S3-compatible private storage/namespace and credentials;
+2. configure staging-only Gemini credentials/model;
+3. require `labs:processing-readiness` to return `ready=true` before processing;
+4. process one synthetic document with exactly one bounded worker pass;
+5. record privacy-safe provider/output/redaction/error/lifecycle evidence;
+6. collect native PDF/photo picker and accessibility evidence;
+7. keep production provider activation/scheduling as a separate rollout decision.
+
+The existing S3 transport is HTTPS-only. Do not weaken TLS validation or add plain internal MinIO merely to bypass the configured-storage evidence gate.
 
 ## P14-C — Stories
 
@@ -83,11 +91,11 @@ Remaining evidence:
 
 ## Completion interpretation
 
-Phase 14 remains closed for ordinary autonomous source work after #682/#254. Runtime evidence can reopen only a bounded defect fix or reviewed contract change.
+Phase 14 remains closed for ordinary autonomous source work. Runtime evidence can reopen only a bounded defect fix or reviewed contract change.
 
 ## Next execution order
 
-1. collect Labs staging deployment/storage/model evidence using #254;
+1. configure Labs staging-only HTTPS private storage + Gemini prerequisites and run bounded synthetic processing evidence;
 2. collect HealthKit/Health Connect physical-device evidence for #682;
 3. collect push provider/device evidence through the existing matrix;
 4. keep Stories evidence-only unless a defect is reproduced;
@@ -95,6 +103,6 @@ Phase 14 remains closed for ordinary autonomous source work after #682/#254. Run
 
 ## Authorization / execution boundary
 
-The native-health, Labs provider/staging, backend staging deployment/migration, APNs/FCM staging, native/EAS build and physical-device QA gates have been explicitly opened by the user. Evidence must still reflect only actions actually executed with available access, secrets, signing material and devices.
+The native-health, Labs provider/staging, backend staging deployment/migration, APNs/FCM staging, native/EAS build and physical-device QA gates have been explicitly opened by the user. Evidence must still reflect only actions actually executed with available credentials, signing material and devices.
 
 Production credentials, production scheduling, production user-data mutation, destructive cleanup, DNS changes and app-store submission remain deliberate rollout actions with separate evidence/rollback requirements.
