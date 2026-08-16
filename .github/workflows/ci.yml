@@ -48,7 +48,7 @@ jobs:
         run: node scripts/check-changed-file-lines.mjs
 
       - name: TypeScript
-        run: npx tsc --noEmit
+        run: npm run typecheck
 
       - name: Full regression suite
         run: npm test
