@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { uploadLabPhoto } from './labPhotoUpload';
+import { uploadLabDocument, uploadLabPhoto } from './labPhotoUpload';
 
-describe('uploadLabPhoto', () => {
-  it('uploads selected bytes through the signed URL before completing the document', async () => {
+describe('lab document upload', () => {
+  it('uploads selected image bytes through the signed URL before completing the document', async () => {
     const createUpload = vi.fn(async () => ({
       document: { id: 'document-1' },
       upload: {
@@ -48,7 +48,46 @@ describe('uploadLabPhoto', () => {
     expect(completeUpload).toHaveBeenCalledWith('document-1');
   });
 
-  it('rejects unsupported image types before creating an upload', async () => {
+  it('uploads PDF bytes using the existing backend document contract', async () => {
+    const createUpload = vi.fn(async () => ({
+      document: { id: 'document-pdf' },
+      upload: {
+        method: 'PUT' as const,
+        url: 'https://storage.example.test/pdf-upload',
+        headers: {},
+        expiresAt: '2026-08-13T10:00:00.000Z',
+      },
+    }));
+    const completeUpload = vi.fn(async () => ({ id: 'document-pdf' }));
+    const fetchImpl = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      if (String(input).startsWith('file://')) {
+        return new Response(new Blob(['%PDF-test']), { status: 200 });
+      }
+      expect(init?.headers).toMatchObject({ 'content-type': 'application/pdf' });
+      return new Response(null, { status: 200 });
+    }) as unknown as typeof fetch;
+
+    await expect(
+      uploadLabDocument(
+        {
+          uri: 'file:///lab.pdf',
+          fileName: 'panel.pdf',
+          mimeType: 'application/pdf',
+        },
+        { createUpload, completeUpload } as never,
+        fetchImpl,
+      ),
+    ).resolves.toEqual({ documentId: 'document-pdf' });
+
+    expect(createUpload).toHaveBeenCalledWith({
+      fileName: 'panel.pdf',
+      mediaType: 'application/pdf',
+      byteSize: 9,
+    });
+    expect(completeUpload).toHaveBeenCalledWith('document-pdf');
+  });
+
+  it('rejects unsupported document types before creating an upload', async () => {
     const createUpload = vi.fn();
     const completeUpload = vi.fn();
 
@@ -61,7 +100,7 @@ describe('uploadLabPhoto', () => {
         },
         { createUpload, completeUpload } as never,
       ),
-    ).rejects.toThrow('LAB_PHOTO_UNSUPPORTED_TYPE');
+    ).rejects.toThrow('LAB_DOCUMENT_UNSUPPORTED_TYPE');
     expect(createUpload).not.toHaveBeenCalled();
   });
 });
