@@ -88,9 +88,10 @@ export function PushRuntimeProvider({ children, client }: PushRuntimeProviderPro
       const previousState = appStateRef.current;
       appStateRef.current = nextState;
       if (
-        shouldRenewPushRegistrationOnAppStateChange(previousState, nextState) &&
-        authRef.current?.ready &&
-        authRef.current.session
+        shouldRenewPushRegistrationOnAppStateChange(previousState, nextState, {
+          authReady: authRef.current?.ready === true,
+          deviceId: authRef.current?.session?.device.id,
+        })
       ) {
         void runtime.syncCurrentRegistration();
       }
