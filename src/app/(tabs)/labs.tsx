@@ -1,3 +1,4 @@
+import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
@@ -24,6 +25,13 @@ import { useAppTheme } from '@/theme/AppThemeProvider';
 const DOCUMENT_PREVIEW_LIMIT = 12;
 const ATTENTION_PREVIEW_LIMIT = 6;
 const BIOMARKER_PREVIEW_LIMIT = 20;
+
+type UploadAsset = {
+  uri: string;
+  fileName?: string | null;
+  fileSize?: number;
+  mimeType?: string | null;
+};
 
 export default function LabsScreen() {
   const router = useRouter();
@@ -83,6 +91,14 @@ export default function LabsScreen() {
       params: { markerId },
     });
 
+  const uploadAsset = async (asset: UploadAsset) => {
+    try {
+      await uploadPhoto(asset);
+    } catch {
+      setUploadError(true);
+    }
+  };
+
   const choosePhoto = async () => {
     if (!capabilities.importAvailable) return;
     setUploadError(false);
@@ -95,16 +111,31 @@ export default function LabsScreen() {
     if (result.canceled || !result.assets[0]) return;
 
     const asset = result.assets[0];
-    try {
-      await uploadPhoto({
-        uri: asset.uri,
-        fileName: asset.fileName,
-        fileSize: asset.fileSize,
-        mimeType: asset.mimeType,
-      });
-    } catch {
-      setUploadError(true);
-    }
+    await uploadAsset({
+      uri: asset.uri,
+      fileName: asset.fileName,
+      fileSize: asset.fileSize,
+      mimeType: asset.mimeType,
+    });
+  };
+
+  const choosePdf = async () => {
+    if (!capabilities.importAvailable) return;
+    setUploadError(false);
+    const result = await DocumentPicker.getDocumentAsync({
+      type: 'application/pdf',
+      multiple: false,
+      copyToCacheDirectory: true,
+    });
+    if (result.canceled || !result.assets[0]) return;
+
+    const asset = result.assets[0];
+    await uploadAsset({
+      uri: asset.uri,
+      fileName: asset.name,
+      fileSize: asset.size,
+      mimeType: asset.mimeType ?? 'application/pdf',
+    });
   };
 
   return (
@@ -142,6 +173,12 @@ export default function LabsScreen() {
                 disabled={uploading || !capabilities.importAvailable}
                 label={uploading ? copy.uploadInProgress : copy.addPhoto}
                 onPress={() => void choosePhoto()}
+              />
+              <AppButton
+                disabled={uploading || !capabilities.importAvailable}
+                label={uploading ? copy.uploadInProgress : copy.addPdf}
+                onPress={() => void choosePdf()}
+                variant="secondary"
               />
               <Text style={styles.caption}>
                 {capabilities.importAvailable ? copy.unsupportedPhoto : importUnavailableText}
