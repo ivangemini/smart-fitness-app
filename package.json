@@ -55,6 +55,7 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
+    "typecheck": "node scripts/clear-generated-route-types.mjs && expo customize tsconfig.json && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
   },
