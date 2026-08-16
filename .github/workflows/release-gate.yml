@@ -396,7 +396,7 @@ jobs:
         env:
           REF_RESULT: ${{ needs.validate-refs.result }}
           MOBILE_RESULT: ${{ needs.mobile.result }}
-          BACKEND_RESULT: ${{ needs.backend.outputs.sha }}
+          BACKEND_RESULT: ${{ needs.backend.result }}
           MOBILE_SHA: ${{ needs.mobile.outputs.sha }}
           BACKEND_SHA: ${{ needs.backend.outputs.sha }}
           ROLLBACK_MOBILE_SHA: ${{ needs.mobile.outputs.rollback_sha }}
