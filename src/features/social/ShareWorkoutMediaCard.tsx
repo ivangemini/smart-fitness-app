@@ -23,6 +23,7 @@ type ShareWorkoutMediaCardProps = {
   capability: CapabilityGate;
   controller: SocialWorkoutPostMediaController;
   copy: ReturnType<typeof getShareWorkoutCopy>;
+  disabled?: boolean;
   styles: ShareWorkoutStyles;
 };
 
@@ -30,9 +31,11 @@ export function ShareWorkoutMediaCard({
   capability,
   controller,
   copy,
+  disabled = false,
   styles,
 }: ShareWorkoutMediaCardProps) {
   const busy = isSocialWorkoutPostMediaBusy(controller.operation);
+  const controlsDisabled = busy || disabled;
   const operationLabel = getSocialWorkoutPostMediaOperationLabel(
     controller.operation,
     copy,
@@ -88,20 +91,20 @@ export function ShareWorkoutMediaCard({
             <InlineError message={controller.errorMessage} />
 
             <PrimaryButton
-              disabled={busy}
+              disabled={controlsDisabled}
               label={previewUri ? copy.replaceImage : copy.chooseImage}
               onPress={() => void controller.chooseImage()}
             />
             {canRefresh ? (
               <SecondaryButton
-                disabled={busy}
+                disabled={controlsDisabled}
                 label={copy.refreshImage}
                 onPress={() => void controller.refresh()}
               />
             ) : null}
             {controller.hasImageDraft ? (
               <SecondaryButton
-                disabled={busy}
+                disabled={controlsDisabled}
                 label={copy.removeImage}
                 onPress={() => void controller.remove()}
               />
