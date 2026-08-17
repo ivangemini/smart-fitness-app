@@ -91,6 +91,10 @@ export default function SocialStoryAuthorScreen() {
           paddingVertical: Spacing.two,
           textAlignVertical: 'top',
         },
+        captionInputDisabled: {
+          backgroundColor: glass.disabledFill,
+          borderColor: glass.disabledBorder,
+        },
         captionLabel: {
           color: colors.textPrimary,
           fontSize: Typography.bodyEmphasized.fontSize,
@@ -262,7 +266,7 @@ export default function SocialStoryAuthorScreen() {
                   onChangeText={authoring.setCaption}
                   placeholder={copy.captionPlaceholder}
                   placeholderTextColor={colors.textSecondary}
-                  style={styles.captionInput}
+                  style={[styles.captionInput, busy ? styles.captionInputDisabled : null]}
                   value={authoring.caption}
                 />
               </View>
