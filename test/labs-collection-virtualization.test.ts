@@ -1,8 +1,18 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-const readSource = (path: string) => readFileSync(resolve(process.cwd(), path), 'utf8');
+declare const __dirname: string;
+declare const require: any;
+
+const { readFileSync } = require('fs') as {
+  readFileSync: (path: string, encoding: string) => string;
+};
+const { resolve } = require('path') as {
+  resolve: (...parts: string[]) => string;
+};
+
+const projectRoot = resolve(__dirname, '..');
+const readSource = (relativePath: string) =>
+  readFileSync(resolve(projectRoot, relativePath), 'utf8');
 
 describe('Labs collection virtualization', () => {
   it('keeps trend marker selection on one FlatList boundary', () => {
