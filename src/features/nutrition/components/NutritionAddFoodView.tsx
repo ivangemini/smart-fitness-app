@@ -219,7 +219,7 @@ export function NutritionAddFoodView(props: NutritionAddFoodViewProps) {
               accessibilityLabel={copy.cancel}
               hitSlop={10}
               onPress={onBack}
-              style={styles.backButton}>
+              style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}>
               <Text style={styles.backButtonText}>{copy.cancel}</Text>
             </Pressable>
             <View style={styles.headerCopy}>
@@ -336,7 +336,10 @@ export function NutritionAddFoodView(props: NutritionAddFoodViewProps) {
               accessibilityLabel={copy.createFood}
               hitSlop={10}
               onPress={onToggleCreateFood}
-              style={styles.quietActionButton}>
+              style={({ pressed }) => [
+                styles.quietActionButton,
+                pressed && styles.quietActionButtonPressed,
+              ]}>
               <Text style={styles.quietActionText}>
                 {createFoodOpen ? copy.hideCreateFood : copy.createFood}
               </Text>
@@ -345,7 +348,10 @@ export function NutritionAddFoodView(props: NutritionAddFoodViewProps) {
               accessibilityLabel={copy.goToMeals}
               hitSlop={10}
               onPress={() => onModeChange('meals')}
-              style={styles.quietActionButton}>
+              style={({ pressed }) => [
+                styles.quietActionButton,
+                pressed && styles.quietActionButtonPressed,
+              ]}>
               <Text style={styles.quietActionText}>{copy.createMeal}</Text>
             </Pressable>
           </View>

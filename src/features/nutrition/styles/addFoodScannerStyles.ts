@@ -30,10 +30,15 @@ export const createAddFoodScannerStyles = (
     },
     scannerCloseButton: {
       alignItems: 'flex-start',
+      borderCurve: 'continuous',
+      borderRadius: Radii.medium,
       justifyContent: 'center',
       minHeight: 44,
       paddingHorizontal: Spacing.one,
       width: 72,
+    },
+    scannerClosePressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     scannerCloseText: {
       color: colors.accent,
@@ -65,8 +70,13 @@ export const createAddFoodScannerStyles = (
     },
     scannerManualButton: {
       alignItems: 'center',
+      borderCurve: 'continuous',
+      borderRadius: Radii.medium,
       justifyContent: 'center',
       minHeight: 44,
+    },
+    scannerManualPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     scannerManualForm: {
       backgroundColor: glass.cardFill,

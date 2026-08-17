@@ -10,10 +10,15 @@ export const createAddFoodBaseStyles = (
   StyleSheet.create({
     backButton: {
       alignItems: 'flex-start',
+      borderCurve: 'continuous',
+      borderRadius: Radii.medium,
       minHeight: 44,
       justifyContent: 'center',
       paddingHorizontal: Spacing.one,
       width: 72,
+    },
+    backButtonPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     backButtonText: {
       color: colors.accent,
@@ -22,9 +27,14 @@ export const createAddFoodBaseStyles = (
     },
     clearButton: {
       alignItems: 'center',
+      borderCurve: 'continuous',
+      borderRadius: Radii.medium,
       justifyContent: 'center',
       minHeight: 44,
       width: 44,
+    },
+    clearButtonPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     container: {
       gap: Spacing.three,
@@ -98,6 +108,9 @@ export const createAddFoodBaseStyles = (
       justifyContent: 'center',
       paddingHorizontal: Spacing.three,
     },
+    quietActionButtonPressed: {
+      backgroundColor: glass.controlPressedFill,
+    },
     quietActionRow: {
       flexDirection: 'row',
       flexWrap: 'wrap',
@@ -124,6 +137,9 @@ export const createAddFoodBaseStyles = (
       height: 44,
       justifyContent: 'center',
       width: 44,
+    },
+    iconButtonPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     input: {
       backgroundColor: glass.controlFill,
@@ -171,6 +187,9 @@ export const createAddFoodBaseStyles = (
       justifyContent: 'center',
       minHeight: 44,
       paddingHorizontal: Spacing.two,
+    },
+    scanButtonPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     scanButtonText: {
       color: colors.textPrimary,
@@ -268,6 +287,9 @@ export const createAddFoodBaseStyles = (
       justifyContent: 'center',
       paddingHorizontal: Spacing.two,
       paddingVertical: Spacing.one,
+    },
+    suggestionChipPressed: {
+      backgroundColor: glass.controlPressedFill,
     },
     suggestionList: {
       flexDirection: 'row',

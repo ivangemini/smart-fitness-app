@@ -33,6 +33,9 @@ export const createAddFoodSheetStyles = (
       justifyContent: 'center',
       width: 44,
     },
+    sheetClosePressed: {
+      backgroundColor: glass.controlPressedFill,
+    },
     sheetField: {
       gap: Spacing.one,
     },
