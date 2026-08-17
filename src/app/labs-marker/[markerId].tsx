@@ -14,23 +14,40 @@ import {
   filterLabHistoryWindow,
   type LabHistoryWindow,
 } from '@/features/labs/labHistoryWindow';
+import { getLabMarkerCopy } from '@/features/labs/labMarkerCopy';
 import { getLabsCopy } from '@/features/labs/labsCopy';
 import { useLabs } from '@/features/labs/LabsContext';
 import { LabTrendChart } from '@/features/labs/LabTrendChart';
 import type { LabResultDto } from '@/features/labs/types';
-import { useLocalization } from '@/localization';
+import {
+  formatLocalizedNumber,
+  useLocalization,
+  type SupportedLocale,
+} from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 
 const HISTORY_PREVIEW_LIMIT = 30;
+const LAB_NUMBER_MAX_FRACTION_DIGITS = 20;
 
-const formatReference = (result: LabResultDto, fallback: string): string => {
+const formatLabNumber = (value: number, locale: SupportedLocale): string =>
+  formatLocalizedNumber(value, locale, LAB_NUMBER_MAX_FRACTION_DIGITS);
+
+const formatReference = (
+  result: LabResultDto,
+  fallback: string,
+  locale: SupportedLocale,
+): string => {
   const interval = result.referenceInterval;
   if (!interval) return fallback;
   if (interval.low !== null && interval.high !== null) {
-    return `${interval.low}–${interval.high} ${interval.unit}`;
+    return `${formatLabNumber(interval.low, locale)}–${formatLabNumber(interval.high, locale)} ${interval.unit}`;
   }
-  if (interval.low !== null) return `≥ ${interval.low} ${interval.unit}`;
-  if (interval.high !== null) return `≤ ${interval.high} ${interval.unit}`;
+  if (interval.low !== null) {
+    return `≥ ${formatLabNumber(interval.low, locale)} ${interval.unit}`;
+  }
+  if (interval.high !== null) {
+    return `≤ ${formatLabNumber(interval.high, locale)} ${interval.unit}`;
+  }
   return fallback;
 };
 
@@ -43,18 +60,13 @@ export default function LabMarkerScreen() {
   const insets = useSafeAreaInsets();
   const { getMarkerHistory } = useLabs();
   const copy = useMemo(() => getLabsCopy(locale), [locale]);
+  const markerCopy = useMemo(() => getLabMarkerCopy(locale), [locale]);
   const styles = useMemo(() => createStyles(colors), [colors]);
   const [history, setHistory] = useState<LabResultDto[]>([]);
   const [historyWindow, setHistoryWindow] = useState<LabHistoryWindow>('all');
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
-  const historyWindowLabels = useMemo(
-    () =>
-      locale.toLowerCase().startsWith('ru')
-        ? ({ '3m': '3 мес', '6m': '6 мес', '1y': '1 год', all: 'Все' } as const)
-        : ({ '3m': '3M', '6m': '6M', '1y': '1Y', all: 'All' } as const),
-    [locale],
-  );
+  const historyWindowLabels = markerCopy.historyWindowLabels;
 
   const load = useCallback(async () => {
     if (!markerId) {
@@ -87,9 +99,11 @@ export default function LabMarkerScreen() {
     [filteredHistory],
   );
   const name = getBiomarkerDisplayName(markerId, locale);
-  const chartAccessibilityLabel = locale.toLowerCase().startsWith('ru')
-    ? `График ${name}. Подтверждённых точек: ${filteredHistory.length}. Период: ${historyWindowLabels[historyWindow]}.`
-    : `${name} trend chart. Confirmed points: ${filteredHistory.length}. Window: ${historyWindowLabels[historyWindow]}.`;
+  const chartAccessibilityLabel = markerCopy.chartAccessibilityLabel({
+    name,
+    pointCount: filteredHistory.length,
+    windowLabel: historyWindowLabels[historyWindow],
+  });
 
   return (
     <ScrollView
@@ -132,7 +146,7 @@ export default function LabMarkerScreen() {
               <AppCard style={styles.metricCard}>
                 <Text style={styles.metricLabel}>{copy.currentTitle}</Text>
                 <Text style={styles.metricValue}>
-                  {latest.value} {latest.unit}
+                  {formatLabNumber(latest.value, locale)} {latest.unit}
                 </Text>
                 <Text style={styles.meta}>
                   {formatDate(new Date(latest.collectedAt), { dateStyle: 'medium' })}
@@ -140,7 +154,9 @@ export default function LabMarkerScreen() {
               </AppCard>
               <AppCard style={styles.metricCard}>
                 <Text style={styles.metricLabel}>{copy.referenceTitle}</Text>
-                <Text style={styles.metricValue}>{formatReference(latest, copy.noReference)}</Text>
+                <Text style={styles.metricValue}>
+                  {formatReference(latest, copy.noReference, locale)}
+                </Text>
               </AppCard>
             </View>
 
@@ -164,7 +180,7 @@ export default function LabMarkerScreen() {
                   <AppCard key={result.id} style={styles.historyRow}>
                     <View style={styles.historyCopy}>
                       <Text style={styles.historyValue}>
-                        {result.value} {result.unit}
+                        {formatLabNumber(result.value, locale)} {result.unit}
                       </Text>
                       <Text style={styles.meta}>
                         {formatDate(new Date(result.collectedAt), { dateStyle: 'medium' })}
