@@ -34,6 +34,7 @@ describe('social-first Home', () => {
 
   it('uses the explicit active-program authority and does not fabricate steps or Story data', () => {
     const home = readSource('src/app/(tabs)/index.tsx');
+    const stepsHook = readSource('src/features/home/useHomeDailySteps.ts');
     const storyHook = readSource('src/features/social/useSocialStories.ts');
 
     expect(home).toContain('resolveActiveTrainingProgram({');
@@ -41,8 +42,14 @@ describe('social-first Home', () => {
     expect(home).toContain('getWorkoutProgramSchedule(currentProgram)');
     expect(home).toContain('programSchedule.isRestDayToday');
     expect(home).not.toContain('getWorkoutPrograms(workouts)[0]');
-    expect(home).toContain('stepsValue="—"');
+    expect(home).toContain('useHomeDailySteps');
+    expect(home).toContain('stepsValue={steps.value}');
+    expect(stepsHook).toContain("availability.status !== 'available'");
+    expect(stepsHook).toContain('readDailySteps');
+    expect(stepsHook).not.toContain('requestReadPermission');
     expect(home).not.toMatch(/stepsValue="\d/);
+    expect(home).not.toContain('mockSteps');
+    expect(home).not.toContain('demoSteps');
     expect(home).toContain('stories.stories');
     expect(storyHook).toContain('socialApi.listStories({ limit: PAGE_SIZE })');
     expect(storyHook).toContain('getDefaultSocialStoryCacheStore()');
