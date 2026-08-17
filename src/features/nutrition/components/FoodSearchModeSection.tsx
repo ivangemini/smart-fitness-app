@@ -88,7 +88,7 @@ export function FoodSearchModeSection({
             accessibilityRole="button"
             hitSlop={10}
             onPress={onClearQuery}
-            style={styles.clearButton}>
+            style={({ pressed }) => [styles.clearButton, pressed && styles.clearButtonPressed]}>
             <X color={colors.textSecondary} size={20} strokeWidth={2.2} />
           </Pressable>
         ) : null}
@@ -96,7 +96,7 @@ export function FoodSearchModeSection({
           accessibilityLabel={copy.scanBarcode}
           hitSlop={10}
           onPress={onOpenScanner}
-          style={styles.scanButton}>
+          style={({ pressed }) => [styles.scanButton, pressed && styles.scanButtonPressed]}>
           <Text style={styles.scanButtonText}>{copy.scan}</Text>
         </Pressable>
       </View>
@@ -109,7 +109,10 @@ export function FoodSearchModeSection({
               hitSlop={6}
               key={suggestion}
               onPress={() => onSelectSuggestion(suggestion)}
-              style={styles.suggestionChip}>
+              style={({ pressed }) => [
+                styles.suggestionChip,
+                pressed && styles.suggestionChipPressed,
+              ]}>
               <Text style={styles.suggestionText}>{suggestion}</Text>
             </Pressable>
           ))}
@@ -150,7 +153,7 @@ export function FoodSearchModeSection({
                     accessibilityRole="button"
                     hitSlop={10}
                     onPress={() => onToggleProviderFavorite(food)}
-                    style={styles.iconButton}>
+                    style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}>
                     <Star
                       color={favorite ? colors.accent : colors.textSecondary}
                       fill={favorite ? colors.accent : 'none'}
@@ -163,7 +166,7 @@ export function FoodSearchModeSection({
                     accessibilityRole="button"
                     hitSlop={10}
                     onPress={() => onQuickAddFoodItem(food)}
-                    style={styles.iconButton}>
+                    style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}>
                     <Plus color={colors.textPrimary} size={20} strokeWidth={2.2} />
                   </Pressable>
                 </View>
@@ -195,7 +198,7 @@ export function FoodSearchModeSection({
                     accessibilityRole="button"
                     hitSlop={10}
                     onPress={() => onToggleFavorite(food.id)}
-                    style={styles.iconButton}>
+                    style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}>
                     <Star
                       color={favorite ? colors.accent : colors.textSecondary}
                       fill={favorite ? colors.accent : 'none'}
@@ -208,7 +211,7 @@ export function FoodSearchModeSection({
                     accessibilityRole="button"
                     hitSlop={10}
                     onPress={() => onQuickAddCatalogFood(food)}
-                    style={styles.iconButton}>
+                    style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}>
                     <Plus color={colors.textPrimary} size={20} strokeWidth={2.2} />
                   </Pressable>
                 </View>
