@@ -219,7 +219,9 @@ const styles = StyleSheet.create({
   },
   label: {
     flex: 1,
+    flexShrink: 1,
     fontSize: Typography.caption.fontSize,
+    minWidth: 0,
   },
   notice: {
     fontSize: Typography.caption.fontSize,
@@ -246,7 +248,9 @@ const styles = StyleSheet.create({
   },
   value: {
     flex: 1,
+    flexShrink: 1,
     fontSize: Typography.caption.fontSize,
+    minWidth: 0,
     textAlign: 'right',
   },
 });
