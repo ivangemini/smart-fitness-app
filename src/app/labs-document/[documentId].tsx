@@ -26,6 +26,10 @@ import { useLabs } from '@/features/labs/LabsContext';
 import type { LabResultDraftDto } from '@/features/labs/types';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 const toDateInput = (value: string): string => {
   const date = new Date(value);
@@ -43,7 +47,11 @@ export default function LabDocumentReviewScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ documentId?: string }>();
   const documentId = typeof params.documentId === 'string' ? params.documentId : '';
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const { locale, t } = useLocalization();
   const insets = useSafeAreaInsets();
   const {
@@ -59,7 +67,7 @@ export default function LabDocumentReviewScreen() {
     reviewDraft,
   } = useLabs();
   const copy = useMemo(() => getLabsCopy(locale), [locale]);
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const document = getDocument(documentId);
   const [results, setResults] = useState<LabResultDraftDto[]>([]);
   const [loading, setLoading] = useState(false);
@@ -298,7 +306,7 @@ export default function LabDocumentReviewScreen() {
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     body: {
       color: colors.textSecondary,
@@ -317,9 +325,11 @@ const createStyles = (colors: typeof Colors.light) =>
     header: { alignItems: 'flex-start', flexDirection: 'row', gap: Spacing.three },
     headerCopy: { flex: 1, gap: Spacing.one, minWidth: 0 },
     input: {
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 12,
+      borderWidth: StyleSheet.hairlineWidth,
       color: colors.textPrimary,
       fontSize: Typography.body.fontSize,
       minHeight: 44,

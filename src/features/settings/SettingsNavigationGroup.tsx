@@ -1,10 +1,12 @@
 import type { LucideIcon } from 'lucide-react-native';
 import { ChevronRight } from 'lucide-react-native';
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
 type SettingsNavigationRow = {
   Icon: LucideIcon;
@@ -20,7 +22,11 @@ type SettingsNavigationGroupProps = {
 };
 
 export function SettingsNavigationGroup({ rows, title }: SettingsNavigationGroupProps) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
 
   return (
     <View style={styles.section}>
@@ -28,19 +34,27 @@ export function SettingsNavigationGroup({ rows, title }: SettingsNavigationGroup
       <LiquidGlassSurface style={styles.group}>
         {rows.map(({ Icon, key, label, onPress, value }, index) => (
           <View key={key}>
-            {index > 0 ? <View style={[styles.divider, { backgroundColor: colors.border }]} /> : null}
+            {index > 0 ? (
+              <View style={[styles.divider, { backgroundColor: glass.controlBorder }]} />
+            ) : null}
             <Pressable
               accessibilityLabel={value ? `${label}, ${value}` : label}
               accessibilityRole="button"
               onPress={onPress}
               style={({ pressed }) => [
                 styles.row,
-                pressed && { backgroundColor: colors.backgroundSelected },
+                pressed ? { backgroundColor: glass.controlPressedFill } : null,
               ]}>
               <View
                 accessibilityElementsHidden
                 importantForAccessibility="no-hide-descendants"
-                style={[styles.iconWrap, { backgroundColor: colors.surfaceSecondary }]}>
+                style={[
+                  styles.iconWrap,
+                  {
+                    backgroundColor: glass.controlFill,
+                    borderColor: glass.controlBorder,
+                  },
+                ]}>
                 <Icon color={colors.textSecondary} size={18} strokeWidth={2} />
               </View>
               <Text style={[styles.label, { color: colors.textPrimary }]}>{label}</Text>
@@ -71,6 +85,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderCurve: 'continuous',
     borderRadius: 9,
+    borderWidth: StyleSheet.hairlineWidth,
     height: 32,
     justifyContent: 'center',
     width: 32,

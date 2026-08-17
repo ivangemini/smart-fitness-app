@@ -5,6 +5,7 @@ import { StyleSheet, Text, View, type LayoutChangeEvent } from 'react-native';
 import { Spacing, Typography } from '@/constants/theme';
 import { formatLocalizedNumber, useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
 import type { LabMultiTrendMode, LabTrendPoint } from './labMultiTrend';
 
@@ -30,8 +31,12 @@ export function LabMultiTrendChart({
   series,
   absoluteUnit,
 }: LabMultiTrendChartProps) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { locale } = useLocalization();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const [size, setSize] = useState({ width: 0, height: 0 });
   const palette = [colors.chartPrimary, colors.chartSecondary, colors.warning];
 
@@ -111,7 +116,10 @@ export function LabMultiTrendChart({
         accessibilityRole="image"
         accessible={Boolean(accessibilityLabel)}
         onLayout={handleLayout}
-        style={[styles.chart, { backgroundColor: colors.surfaceSecondary }]}>
+        style={[
+          styles.chart,
+          { backgroundColor: glass.controlFill, borderColor: glass.controlBorder },
+        ]}>
         {geometry ? (
           <Canvas style={StyleSheet.absoluteFill}>
             {geometry.referencePaths.map((path, index) => (
@@ -179,6 +187,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1.65,
     borderCurve: 'continuous',
     borderRadius: 18,
+    borderWidth: StyleSheet.hairlineWidth,
     overflow: 'hidden',
     width: '100%',
   },
