@@ -220,8 +220,8 @@ export const createWorkoutExerciseLibraryCardStyles = (
       fontWeight: '900',
     },
     input: {
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 10,
       borderWidth: StyleSheet.hairlineWidth,
