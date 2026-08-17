@@ -58,6 +58,7 @@ export default function SocialStoryActivityScreen() {
         },
         controls: {
           flexDirection: 'row',
+          flexWrap: 'wrap',
           gap: Spacing.two,
           marginBottom: Spacing.three,
         },

@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { createSocialApi } from '@/api/social';
@@ -67,8 +67,10 @@ export default function SocialStorySettingsScreen() {
         switchText: {
           color: colors.textPrimary,
           flex: 1,
+          flexShrink: 1,
           fontSize: Typography.body.fontSize,
           lineHeight: Typography.body.lineHeight,
+          minWidth: 0,
         },
         title: {
           color: colors.textPrimary,
@@ -179,6 +181,8 @@ export default function SocialStorySettingsScreen() {
                 <Switch
                   disabled={busy || !pushPreference}
                   onValueChange={togglePushPreference}
+                  thumbColor={Platform.OS === 'android' ? colors.surfacePrimary : undefined}
+                  trackColor={{ false: colors.borderStrong, true: colors.accent }}
                   value={pushPreference?.requestedEnabled ?? false}
                 />
               </View>
