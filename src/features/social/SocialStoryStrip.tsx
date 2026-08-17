@@ -54,6 +54,9 @@ export function SocialStoryStrip({
           justifyContent: 'center',
           width: AVATAR_SIZE + 6,
         },
+        addRingPressed: {
+          backgroundColor: glass.controlPressedFill,
+        },
         avatar: {
           borderRadius: Radii.pill,
           height: AVATAR_SIZE,
@@ -79,13 +82,15 @@ export function SocialStoryStrip({
           width: STORY_ITEM_WIDTH,
         },
         listContent: { gap: Spacing.two, paddingRight: Spacing.two },
-        pressed: { opacity: 0.72 },
         ring: {
           alignItems: 'center',
           borderRadius: Radii.pill,
           borderWidth: 2,
           justifyContent: 'center',
           padding: 2,
+        },
+        ringPressed: {
+          backgroundColor: glass.controlPressedFill,
         },
         title: {
           color: colors.textPrimary,
@@ -102,7 +107,12 @@ export function SocialStoryStrip({
         },
         wrapper: { gap: Spacing.two },
       }),
-    [colors, glass.controlBorder, glass.controlFill],
+    [
+      colors,
+      glass.controlBorder,
+      glass.controlFill,
+      glass.controlPressedFill,
+    ],
   );
 
   const addStory = (
@@ -110,15 +120,19 @@ export function SocialStoryStrip({
       accessibilityLabel={copy.addStory}
       accessibilityRole="button"
       onPress={onAdd}
-      style={({ pressed }) => [styles.item, pressed && styles.pressed]}
+      style={styles.item}
       testID="home-story-add"
     >
-      <View style={styles.addRing}>
-        <Plus color={colors.accent} size={24} strokeWidth={2.2} />
-      </View>
-      <Text numberOfLines={1} style={styles.username}>
-        {copy.yourStory}
-      </Text>
+      {({ pressed }) => (
+        <>
+          <View style={[styles.addRing, pressed ? styles.addRingPressed : null]}>
+            <Plus color={colors.accent} size={24} strokeWidth={2.2} />
+          </View>
+          <Text numberOfLines={1} style={styles.username}>
+            {copy.yourStory}
+          </Text>
+        </>
+      )}
     </Pressable>
   );
 
@@ -145,33 +159,38 @@ export function SocialStoryStrip({
               accessibilityLabel={`${copy.openStory}: ${item.author.displayName}`}
               accessibilityRole="button"
               onPress={() => onOpen(item.id)}
-              style={({ pressed }) => [styles.item, pressed && styles.pressed]}
+              style={styles.item}
             >
-              <View
-                style={[
-                  styles.ring,
-                  {
-                    borderColor: item.viewed
-                      ? glass.controlBorder
-                      : colors.accent,
-                  },
-                ]}
-              >
-                {imageUrl ? (
-                  <Image
-                    resizeMode="cover"
-                    source={{ uri: imageUrl }}
-                    style={styles.avatar}
-                  />
-                ) : (
-                  <View style={styles.avatarFallback}>
-                    <Text style={styles.avatarFallbackText}>{fallback}</Text>
+              {({ pressed }) => (
+                <>
+                  <View
+                    style={[
+                      styles.ring,
+                      {
+                        borderColor: item.viewed
+                          ? glass.controlBorder
+                          : colors.accent,
+                      },
+                      pressed ? styles.ringPressed : null,
+                    ]}
+                  >
+                    {imageUrl ? (
+                      <Image
+                        resizeMode="cover"
+                        source={{ uri: imageUrl }}
+                        style={styles.avatar}
+                      />
+                    ) : (
+                      <View style={styles.avatarFallback}>
+                        <Text style={styles.avatarFallbackText}>{fallback}</Text>
+                      </View>
+                    )}
                   </View>
-                )}
-              </View>
-              <Text numberOfLines={1} style={styles.username}>
-                @{item.author.username}
-              </Text>
+                  <Text numberOfLines={1} style={styles.username}>
+                    @{item.author.username}
+                  </Text>
+                </>
+              )}
             </Pressable>
           );
         }}
