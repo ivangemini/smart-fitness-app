@@ -66,12 +66,14 @@ export function AppMutationFailureNotice({
             {pendingCount > 0 ? copy.waiting : retryLabel}
           </Text>
         </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          onPress={onDismiss}
-          style={({ pressed }) => [styles.dismissAction, pressed && styles.pressed]}>
-          <Text style={styles.dismissLabel}>{t('common.dismiss')}</Text>
-        </Pressable>
+        {isOutboxFailure ? (
+          <Pressable
+            accessibilityRole="button"
+            onPress={onDismiss}
+            style={({ pressed }) => [styles.dismissAction, pressed && styles.pressed]}>
+            <Text style={styles.dismissLabel}>{t('common.dismiss')}</Text>
+          </Pressable>
+        ) : null}
       </View>
     </View>
   );
