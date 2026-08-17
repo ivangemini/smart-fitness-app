@@ -20,4 +20,15 @@ describe('DestructiveButton Liquid Glass contract', () => {
     expect(source).not.toContain('borderColor: colors.borderSubtle');
     expect(source).not.toContain('opacity: 0.86');
   });
+
+  it('defines destructive materials in both Liquid Glass palettes', () => {
+    const palette = readSource('src/theme/liquidGlass.ts');
+
+    expect(palette).toContain('destructiveBorder: string;');
+    expect(palette).toContain('destructiveFill: string;');
+    expect(palette).toContain('destructivePressedFill: string;');
+    expect(palette.match(/destructiveBorder: 'rgba\(/g)?.length).toBe(2);
+    expect(palette.match(/destructiveFill: 'rgba\(/g)?.length).toBe(2);
+    expect(palette.match(/destructivePressedFill: 'rgba\(/g)?.length).toBe(2);
+  });
 });
