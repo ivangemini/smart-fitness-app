@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { Spacing, Typography } from '@/constants/theme';
 import type { LabResultDto } from '@/features/labs/types';
+import { formatLocalizedNumber, useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
@@ -15,18 +16,26 @@ type LabBiomarkerCardProps = {
   onPress: () => void;
 };
 
+const LAB_NUMBER_MAX_FRACTION_DIGITS = 20;
+
 export function LabBiomarkerCard({ name, onPress, result, statusLabel }: LabBiomarkerCardProps) {
   const { colors, resolvedAppearance } = useAppTheme();
+  const { locale } = useLocalization();
   const glass = useMemo(
     () => resolveLiquidGlassPalette(resolvedAppearance),
     [resolvedAppearance],
   );
   const attention =
     result.semanticState !== 'unknown' && result.semanticState !== 'in_range';
+  const valueLabel = `${formatLocalizedNumber(
+    result.value,
+    locale,
+    LAB_NUMBER_MAX_FRACTION_DIGITS,
+  )} ${result.unit}`;
 
   return (
     <Pressable
-      accessibilityLabel={`${name}, ${result.value} ${result.unit}, ${statusLabel}`}
+      accessibilityLabel={`${name}, ${valueLabel}, ${statusLabel}`}
       accessibilityRole="button"
       onPress={onPress}
       style={styles.pressable}>
@@ -38,9 +47,7 @@ export function LabBiomarkerCard({ name, onPress, result, statusLabel }: LabBiom
           ]}>
           <View style={styles.copy}>
             <Text style={[styles.name, { color: colors.textPrimary }]}>{name}</Text>
-            <Text style={[styles.value, { color: colors.textPrimary }]}>
-              {result.value} {result.unit}
-            </Text>
+            <Text style={[styles.value, { color: colors.textPrimary }]}>{valueLabel}</Text>
             <Text
               style={[
                 styles.status,
