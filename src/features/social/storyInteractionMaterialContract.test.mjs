@@ -26,4 +26,15 @@ describe('Story interaction material source contract', () => {
     expect(source).toContain('pressed && !disabled ? styles.choicePressed : null');
     expect(source).not.toContain('choiceDisabled: { opacity:');
   });
+
+  it('overlay editor distinguishes neutral, selected, pressed, and disabled materials', () => {
+    const source = read('src/features/social/SocialStoryOverlayEditor.tsx');
+
+    expect(source).toContain('backgroundColor: glass.controlPressedFill');
+    expect(source).toContain('backgroundColor: glass.accentPressedFill');
+    expect(source).toContain('backgroundColor: glass.disabledFill');
+    expect(source).toContain('borderColor: glass.disabledBorder');
+    expect(source).toContain('style={[styles.input, disabled ? styles.inputDisabled : null]}');
+    expect(source).not.toContain('placementButtonPressed: { opacity:');
+  });
 });
