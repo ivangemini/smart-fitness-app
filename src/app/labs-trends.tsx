@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppButton } from '@/components/ui/AppButton';
@@ -111,110 +111,121 @@ export default function LabsTrendsScreen() {
         mode === 'absolute' ? copy.absolute : copy.relative
       }.`;
 
+  const listHeader = (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <LiquidGlassIconButton
+          accessibilityLabel={t('common.back')}
+          Icon={ChevronLeft}
+          onPress={() => router.back()}
+        />
+        <View style={styles.headerCopy}>
+          <Text style={styles.title}>{copy.title}</Text>
+          <Text style={styles.body}>{copy.subtitle}</Text>
+        </View>
+      </View>
+
+      <AppCard>
+        <View accessibilityRole="radiogroup" style={styles.modeRow}>
+          <AppButton
+            label={copy.absolute}
+            onPress={() => setTrendMode('absolute')}
+            selected={mode === 'absolute'}
+            variant={mode === 'absolute' ? 'primary' : 'secondary'}
+          />
+          <AppButton
+            label={copy.relative}
+            onPress={() => setTrendMode('relative_reference')}
+            selected={mode === 'relative_reference'}
+            variant={mode === 'relative_reference' ? 'primary' : 'secondary'}
+          />
+        </View>
+        <Text style={styles.body}>{copy.selectionHint}</Text>
+      </AppCard>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{copy.choose}</Text>
+      </View>
+    </View>
+  );
+
+  const listFooter = (
+    <View style={[styles.container, styles.footer]}>
+      <AppButton
+        disabled={selectedIds.length < 2 || loading}
+        label={copy.show}
+        loading={loading}
+        onPress={() => void buildChart()}
+      />
+
+      {loading ? (
+        <AppCard style={styles.centerCard}>
+          <ActivityIndicator color={colors.textPrimary} />
+          <Text style={styles.body}>{copy.loading}</Text>
+        </AppCard>
+      ) : failed ? (
+        <AppCard>
+          <Text accessibilityRole="alert" style={styles.body}>
+            {copy.failed}
+          </Text>
+        </AppCard>
+      ) : series.length > 0 ? (
+        <AppCard>
+          {hasRenderablePoints ? (
+            <LabMultiTrendChart
+              absoluteUnit={absoluteUnit}
+              accessibilityLabel={chartAccessibilityLabel}
+              mode={mode}
+              series={series}
+            />
+          ) : (
+            <Text style={styles.body}>{copy.noPoints}</Text>
+          )}
+          {mode === 'relative_reference' ? (
+            <Text style={styles.meta}>{copy.relativeAxis}</Text>
+          ) : null}
+        </AppCard>
+      ) : null}
+    </View>
+  );
+
   return (
-    <ScrollView
+    <FlatList
       contentContainerStyle={[
         styles.content,
         { paddingBottom: insets.bottom + Spacing.eight, paddingTop: insets.top + Spacing.four },
       ]}
+      data={markers}
+      ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
+      keyExtractor={(marker) => marker.markerId}
+      ListFooterComponent={listFooter}
+      ListHeaderComponent={listHeader}
+      renderItem={({ item: marker }) => {
+        const selected = selectedIds.includes(marker.markerId);
+        const compatible =
+          selected ||
+          isMarkerCompatibleWithSelection({
+            candidate: marker,
+            selected: selectedMarkers,
+            mode,
+          });
+        return (
+          <View style={styles.listItem}>
+            <AppButton
+              disabled={!selected && (!compatible || selectedIds.length >= MAX_SELECTED)}
+              label={`${getBiomarkerDisplayName(marker.markerId, locale)} · ${
+                selected ? copy.selected : compatible ? marker.unit : copy.incompatible
+              }`}
+              onPress={() => toggleMarker(marker)}
+              selected={selected}
+              variant="secondary"
+            />
+          </View>
+        );
+      }}
       showsVerticalScrollIndicator={false}
-      style={styles.screen}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <LiquidGlassIconButton
-            accessibilityLabel={t('common.back')}
-            Icon={ChevronLeft}
-            onPress={() => router.back()}
-          />
-          <View style={styles.headerCopy}>
-            <Text style={styles.title}>{copy.title}</Text>
-            <Text style={styles.body}>{copy.subtitle}</Text>
-          </View>
-        </View>
-
-        <AppCard>
-          <View accessibilityRole="radiogroup" style={styles.modeRow}>
-            <AppButton
-              label={copy.absolute}
-              onPress={() => setTrendMode('absolute')}
-              selected={mode === 'absolute'}
-              variant={mode === 'absolute' ? 'primary' : 'secondary'}
-            />
-            <AppButton
-              label={copy.relative}
-              onPress={() => setTrendMode('relative_reference')}
-              selected={mode === 'relative_reference'}
-              variant={mode === 'relative_reference' ? 'primary' : 'secondary'}
-            />
-          </View>
-          <Text style={styles.body}>{copy.selectionHint}</Text>
-        </AppCard>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{copy.choose}</Text>
-          <View style={styles.stack}>
-            {markers.map((marker) => {
-              const selected = selectedIds.includes(marker.markerId);
-              const compatible =
-                selected ||
-                isMarkerCompatibleWithSelection({
-                  candidate: marker,
-                  selected: selectedMarkers,
-                  mode,
-                });
-              return (
-                <AppButton
-                  disabled={!selected && (!compatible || selectedIds.length >= MAX_SELECTED)}
-                  key={marker.markerId}
-                  label={`${getBiomarkerDisplayName(marker.markerId, locale)} · ${
-                    selected ? copy.selected : compatible ? marker.unit : copy.incompatible
-                  }`}
-                  onPress={() => toggleMarker(marker)}
-                  selected={selected}
-                  variant="secondary"
-                />
-              );
-            })}
-          </View>
-        </View>
-
-        <AppButton
-          disabled={selectedIds.length < 2 || loading}
-          label={copy.show}
-          loading={loading}
-          onPress={() => void buildChart()}
-        />
-
-        {loading ? (
-          <AppCard style={styles.centerCard}>
-            <ActivityIndicator color={colors.textPrimary} />
-            <Text style={styles.body}>{copy.loading}</Text>
-          </AppCard>
-        ) : failed ? (
-          <AppCard>
-            <Text accessibilityRole="alert" style={styles.body}>
-              {copy.failed}
-            </Text>
-          </AppCard>
-        ) : series.length > 0 ? (
-          <AppCard>
-            {hasRenderablePoints ? (
-              <LabMultiTrendChart
-                absoluteUnit={absoluteUnit}
-                accessibilityLabel={chartAccessibilityLabel}
-                mode={mode}
-                series={series}
-              />
-            ) : (
-              <Text style={styles.body}>{copy.noPoints}</Text>
-            )}
-            {mode === 'relative_reference' ? (
-              <Text style={styles.meta}>{copy.relativeAxis}</Text>
-            ) : null}
-          </AppCard>
-        ) : null}
-      </View>
-    </ScrollView>
+      style={styles.screen}
+    />
   );
 }
 
@@ -228,8 +239,11 @@ const createStyles = (colors: typeof Colors.light) =>
     centerCard: { alignItems: 'center' },
     container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
     content: { alignItems: 'center', flexGrow: 1, paddingHorizontal: Spacing.three },
+    footer: { marginTop: Spacing.three },
     header: { alignItems: 'flex-start', flexDirection: 'row', gap: Spacing.three },
     headerCopy: { flex: 1, gap: Spacing.one, minWidth: 0 },
+    itemSeparator: { height: Spacing.one },
+    listItem: { maxWidth: MaxContentWidth, width: '100%' },
     meta: {
       color: colors.textMuted,
       fontSize: Typography.caption.fontSize,
@@ -245,7 +259,6 @@ const createStyles = (colors: typeof Colors.light) =>
       letterSpacing: Typography.sectionTitle.letterSpacing,
       textTransform: Typography.sectionTitle.textTransform,
     },
-    stack: { gap: Spacing.one },
     title: {
       color: colors.textPrimary,
       fontSize: Typography.screenTitle.fontSize,
