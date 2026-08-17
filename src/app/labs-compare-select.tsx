@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppButton } from '@/components/ui/AppButton';
@@ -47,78 +47,89 @@ export default function LabsCompareSelectScreen() {
     previous.id !== current.id &&
     new Date(previous.collectedAt!).getTime() < new Date(current.collectedAt!).getTime();
 
+  const listHeader = (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <LiquidGlassIconButton
+          accessibilityLabel={t('common.back')}
+          Icon={ChevronLeft}
+          onPress={() => router.back()}
+        />
+        <View style={styles.headerCopy}>
+          <Text style={styles.title}>{copy.selectTitle}</Text>
+          <Text style={styles.body}>{copy.selectSubtitle}</Text>
+        </View>
+      </View>
+    </View>
+  );
+
+  const listFooter = (
+    <View style={[styles.container, styles.footer]}>
+      <AppCard>
+        {!canCompare ? <Text style={styles.body}>{copy.invalidSelection}</Text> : null}
+        <AppButton
+          disabled={!canCompare}
+          label={copy.compareSelected}
+          onPress={() => {
+            if (!previous || !current || !canCompare) return;
+            router.push({
+              pathname: '/labs-compare',
+              params: {
+                previousDocumentId: previous.id,
+                currentDocumentId: current.id,
+              },
+            });
+          }}
+        />
+      </AppCard>
+    </View>
+  );
+
   return (
-    <ScrollView
+    <FlatList
       contentContainerStyle={[
         styles.content,
         { paddingBottom: insets.bottom + Spacing.eight, paddingTop: insets.top + Spacing.four },
       ]}
-      showsVerticalScrollIndicator={false}
-      style={styles.screen}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <LiquidGlassIconButton
-            accessibilityLabel={t('common.back')}
-            Icon={ChevronLeft}
-            onPress={() => router.back()}
-          />
-          <View style={styles.headerCopy}>
-            <Text style={styles.title}>{copy.selectTitle}</Text>
-            <Text style={styles.body}>{copy.selectSubtitle}</Text>
+      data={panels}
+      ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
+      keyExtractor={(panel) => panel.id}
+      ListFooterComponent={listFooter}
+      ListHeaderComponent={listHeader}
+      renderItem={({ item: panel }) => {
+        const isPrevious = panel.id === previousId;
+        const isCurrent = panel.id === currentId;
+        const panelDate = formatDate(new Date(panel.collectedAt!), { dateStyle: 'medium' });
+        return (
+          <View style={styles.listItem}>
+            <AppCard>
+              <Text style={styles.cardTitle}>{panel.fileName}</Text>
+              <Text style={styles.meta}>{panelDate}</Text>
+              <View style={styles.actions}>
+                <AppButton
+                  accessibilityLabel={`${copy.selectPrevious}: ${panel.fileName}, ${panelDate}`}
+                  disabled={isCurrent}
+                  label={isPrevious ? copy.selectedPrevious : copy.selectPrevious}
+                  onPress={() => setPreviousId(isPrevious ? null : panel.id)}
+                  selected={isPrevious}
+                  variant="secondary"
+                />
+                <AppButton
+                  accessibilityLabel={`${copy.selectCurrent}: ${panel.fileName}, ${panelDate}`}
+                  disabled={isPrevious}
+                  label={isCurrent ? copy.selectedCurrent : copy.selectCurrent}
+                  onPress={() => setCurrentId(isCurrent ? null : panel.id)}
+                  selected={isCurrent}
+                  variant="secondary"
+                />
+              </View>
+            </AppCard>
           </View>
-        </View>
-
-        <View style={styles.stack}>
-          {panels.map((panel) => {
-            const isPrevious = panel.id === previousId;
-            const isCurrent = panel.id === currentId;
-            const panelDate = formatDate(new Date(panel.collectedAt!), { dateStyle: 'medium' });
-            return (
-              <AppCard key={panel.id}>
-                <Text style={styles.cardTitle}>{panel.fileName}</Text>
-                <Text style={styles.meta}>{panelDate}</Text>
-                <View style={styles.actions}>
-                  <AppButton
-                    accessibilityLabel={`${copy.selectPrevious}: ${panel.fileName}, ${panelDate}`}
-                    disabled={isCurrent}
-                    label={isPrevious ? copy.selectedPrevious : copy.selectPrevious}
-                    onPress={() => setPreviousId(isPrevious ? null : panel.id)}
-                    selected={isPrevious}
-                    variant="secondary"
-                  />
-                  <AppButton
-                    accessibilityLabel={`${copy.selectCurrent}: ${panel.fileName}, ${panelDate}`}
-                    disabled={isPrevious}
-                    label={isCurrent ? copy.selectedCurrent : copy.selectCurrent}
-                    onPress={() => setCurrentId(isCurrent ? null : panel.id)}
-                    selected={isCurrent}
-                    variant="secondary"
-                  />
-                </View>
-              </AppCard>
-            );
-          })}
-        </View>
-
-        <AppCard>
-          {!canCompare ? <Text style={styles.body}>{copy.invalidSelection}</Text> : null}
-          <AppButton
-            disabled={!canCompare}
-            label={copy.compareSelected}
-            onPress={() => {
-              if (!previous || !current || !canCompare) return;
-              router.push({
-                pathname: '/labs-compare',
-                params: {
-                  previousDocumentId: previous.id,
-                  currentDocumentId: current.id,
-                },
-              });
-            }}
-          />
-        </AppCard>
-      </View>
-    </ScrollView>
+        );
+      }}
+      showsVerticalScrollIndicator={false}
+      style={styles.screen}
+    />
   );
 }
 
@@ -138,15 +149,17 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
     content: { alignItems: 'center', flexGrow: 1, paddingHorizontal: Spacing.three },
+    footer: { marginTop: Spacing.three },
     header: { alignItems: 'flex-start', flexDirection: 'row', gap: Spacing.three },
     headerCopy: { flex: 1, gap: Spacing.one, minWidth: 0 },
+    itemSeparator: { height: Spacing.two },
+    listItem: { maxWidth: MaxContentWidth, width: '100%' },
     meta: {
       color: colors.textMuted,
       fontSize: Typography.caption.fontSize,
       lineHeight: Typography.caption.lineHeight,
     },
     screen: { backgroundColor: colors.background, flex: 1 },
-    stack: { gap: Spacing.two },
     title: {
       color: colors.textPrimary,
       fontSize: Typography.screenTitle.fontSize,

@@ -3,8 +3,8 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import {
   ActivityIndicator,
+  FlatList,
   Platform,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -171,120 +171,130 @@ export default function LabDocumentReviewScreen() {
     }
   };
 
+  const reviewResults = document?.status === 'review_required' && !loading ? results : [];
+  const listHeader = (
+    <View style={[styles.container, styles.listHeader]}>
+      <View style={styles.header}>
+        <LiquidGlassIconButton
+          accessibilityLabel={t('common.back')}
+          Icon={ChevronLeft}
+          onPress={() => router.back()}
+        />
+        <View style={styles.headerCopy}>
+          <Text style={styles.title}>{copy.reviewTitle}</Text>
+          <Text style={styles.body}>{copy.reviewSubtitle}</Text>
+        </View>
+      </View>
+
+      {!document ? (
+        <AppCard>
+          <Text accessibilityRole="alert" style={styles.body}>
+            {copy.reviewFailed}
+          </Text>
+          <AppButton label={copy.retry} onPress={() => void refresh()} variant="secondary" />
+        </AppCard>
+      ) : document.status === 'confirmed' ? (
+        <>
+          <AppCard>
+            <Text style={styles.cardTitle}>{document.fileName}</Text>
+            <Text style={styles.body}>{copy.status.confirmed}</Text>
+          </AppCard>
+          <LabInterpretationCard
+            documentId={document.id}
+            interpretationDocumentId={interpretationDocumentId}
+            locale={locale}
+            onInterpret={interpretDocument}
+            state={interpretationState}
+          />
+        </>
+      ) : document.status !== 'review_required' ? (
+        <AppCard>
+          <Text style={styles.cardTitle}>{document.fileName}</Text>
+          <Text style={styles.body}>{copy.status[document.status]}</Text>
+          <Text style={styles.body}>{copy.documentNotReady}</Text>
+          {document.status === 'failed' && capabilities.processingAvailable ? (
+            <AppButton
+              disabled={retrying}
+              label={retrying ? copy.loading : copy.retry}
+              onPress={() => void handleRetry()}
+              variant="secondary"
+            />
+          ) : null}
+          {error ? (
+            <Text accessibilityRole="alert" style={styles.warning}>
+              {copy.reviewFailed}
+            </Text>
+          ) : null}
+        </AppCard>
+      ) : loading ? (
+        <AppCard style={styles.centerCard}>
+          <ActivityIndicator color={colors.textPrimary} />
+          <Text style={styles.body}>{copy.reviewLoading}</Text>
+        </AppCard>
+      ) : error ? (
+        <AppCard>
+          <Text accessibilityRole="alert" style={styles.warning}>
+            {copy.reviewFailed}
+          </Text>
+        </AppCard>
+      ) : null}
+    </View>
+  );
+
+  const listFooter =
+    document?.status === 'review_required' && !loading ? (
+      <View style={[styles.container, styles.listFooter]}>
+        <AppCard>
+          <Text style={styles.cardTitle}>{copy.collectionDate}</Text>
+          <TextInput
+            accessibilityLabel={copy.collectionDate}
+            autoCapitalize="none"
+            autoCorrect={false}
+            onChangeText={setCollectionDate}
+            placeholder={copy.collectionDateHint}
+            placeholderTextColor={colors.textMuted}
+            style={styles.input}
+            value={collectionDate}
+          />
+          {!canConfirm ? <Text style={styles.body}>{copy.confirmBlocked}</Text> : null}
+          <AppButton
+            disabled={!canConfirm || confirming}
+            label={copy.confirm}
+            onPress={() => void handleConfirm()}
+          />
+        </AppCard>
+      </View>
+    ) : null;
+
   return (
-    <ScrollView
+    <FlatList
       automaticallyAdjustKeyboardInsets
       contentContainerStyle={[
         styles.content,
         { paddingBottom: insets.bottom + Spacing.eight, paddingTop: insets.top + Spacing.four },
       ]}
+      data={reviewResults}
+      ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
       keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
       keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
-      style={styles.screen}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <LiquidGlassIconButton
-            accessibilityLabel={t('common.back')}
-            Icon={ChevronLeft}
-            onPress={() => router.back()}
+      keyExtractor={(result) => result.id}
+      ListFooterComponent={listFooter}
+      ListHeaderComponent={listHeader}
+      renderItem={({ item: result }) => (
+        <View style={styles.listItem}>
+          <LabReviewResultCard
+            busy={busyDraftId === result.id}
+            copy={copy}
+            onAccept={() => performReview(result.id, 'accept')}
+            onCorrect={(correction) => performReview(result.id, { correction })}
+            onExclude={() => performReview(result.id, 'exclude')}
+            result={result}
           />
-          <View style={styles.headerCopy}>
-            <Text style={styles.title}>{copy.reviewTitle}</Text>
-            <Text style={styles.body}>{copy.reviewSubtitle}</Text>
-          </View>
         </View>
-
-        {!document ? (
-          <AppCard>
-            <Text accessibilityRole="alert" style={styles.body}>
-              {copy.reviewFailed}
-            </Text>
-            <AppButton label={copy.retry} onPress={() => void refresh()} variant="secondary" />
-          </AppCard>
-        ) : document.status === 'confirmed' ? (
-          <>
-            <AppCard>
-              <Text style={styles.cardTitle}>{document.fileName}</Text>
-              <Text style={styles.body}>{copy.status.confirmed}</Text>
-            </AppCard>
-            <LabInterpretationCard
-              documentId={document.id}
-              interpretationDocumentId={interpretationDocumentId}
-              locale={locale}
-              onInterpret={interpretDocument}
-              state={interpretationState}
-            />
-          </>
-        ) : document.status !== 'review_required' ? (
-          <AppCard>
-            <Text style={styles.cardTitle}>{document.fileName}</Text>
-            <Text style={styles.body}>{copy.status[document.status]}</Text>
-            <Text style={styles.body}>{copy.documentNotReady}</Text>
-            {document.status === 'failed' && capabilities.processingAvailable ? (
-              <AppButton
-                disabled={retrying}
-                label={retrying ? copy.loading : copy.retry}
-                onPress={() => void handleRetry()}
-                variant="secondary"
-              />
-            ) : null}
-            {error ? (
-              <Text accessibilityRole="alert" style={styles.warning}>
-                {copy.reviewFailed}
-              </Text>
-            ) : null}
-          </AppCard>
-        ) : loading ? (
-          <AppCard style={styles.centerCard}>
-            <ActivityIndicator color={colors.textPrimary} />
-            <Text style={styles.body}>{copy.reviewLoading}</Text>
-          </AppCard>
-        ) : (
-          <>
-            {error ? (
-              <AppCard>
-                <Text accessibilityRole="alert" style={styles.warning}>
-                  {copy.reviewFailed}
-                </Text>
-              </AppCard>
-            ) : null}
-            <View style={styles.stack}>
-              {results.map((result) => (
-                <LabReviewResultCard
-                  busy={busyDraftId === result.id}
-                  copy={copy}
-                  key={result.id}
-                  onAccept={() => performReview(result.id, 'accept')}
-                  onCorrect={(correction) => performReview(result.id, { correction })}
-                  onExclude={() => performReview(result.id, 'exclude')}
-                  result={result}
-                />
-              ))}
-            </View>
-            <AppCard>
-              <Text style={styles.cardTitle}>{copy.collectionDate}</Text>
-              <TextInput
-                accessibilityLabel={copy.collectionDate}
-                autoCapitalize="none"
-                autoCorrect={false}
-                onChangeText={setCollectionDate}
-                placeholder={copy.collectionDateHint}
-                placeholderTextColor={colors.textMuted}
-                style={styles.input}
-                value={collectionDate}
-              />
-              {!canConfirm ? <Text style={styles.body}>{copy.confirmBlocked}</Text> : null}
-              <AppButton
-                disabled={!canConfirm || confirming}
-                label={copy.confirm}
-                onPress={() => void handleConfirm()}
-              />
-            </AppCard>
-          </>
-        )}
-      </View>
-    </ScrollView>
+      )}
+      showsVerticalScrollIndicator={false}
+      style={styles.screen}
+    />
   );
 }
 
@@ -316,8 +326,11 @@ const createStyles = (colors: typeof Colors.light) =>
       paddingHorizontal: Spacing.three,
       paddingVertical: Spacing.two,
     },
+    itemSeparator: { height: Spacing.two },
+    listFooter: { marginTop: Spacing.three },
+    listHeader: { marginBottom: Spacing.two },
+    listItem: { maxWidth: MaxContentWidth, width: '100%' },
     screen: { backgroundColor: colors.background, flex: 1 },
-    stack: { gap: Spacing.two },
     title: {
       color: colors.textPrimary,
       fontSize: Typography.screenTitle.fontSize,
