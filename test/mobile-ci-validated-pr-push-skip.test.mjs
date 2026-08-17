@@ -19,15 +19,23 @@ const guardedHeavySteps = [
 ];
 
 describe('Mobile CI merged-PR push deduplication', () => {
-  it('uses the GitHub commit-to-pulls association and fails open to validation', () => {
+  it('resolves a squash-merged PR from the commit title and fails open to validation', () => {
     expect(workflow).toContain('Detect already-validated PR merge push');
-    expect(workflow).toContain('/commits/${GITHUB_SHA}/pulls?per_page=10');
+    expect(workflow).toContain('COMMIT_MESSAGE: ${{ github.event.head_commit.message }}');
+    expect(workflow).toContain("sed -nE '1s/.*\\(#([0-9]+)\\)$/\\1/p'");
+    expect(workflow).toContain('/pulls/${pr_number}');
+    expect(workflow).not.toContain('/commits/${GITHUB_SHA}/pulls?per_page=10');
     expect(workflow).toContain('merge_commit_sha');
-    expect(workflow).toContain('[[:space:]]*:[[:space:]]*');
     expect(workflow).toContain('"merged_at"[[:space:]]*:[[:space:]]*"[^\"]+"');
     expect(workflow).toContain('"base"[[:space:]]*:[[:space:]]*\\{[^}]*"ref"[[:space:]]*:[[:space:]]*"main"');
     expect(workflow).toContain("echo 'skip=false' >> \"$GITHUB_OUTPUT\"");
     expect(workflow).toContain('2>/dev/null || true');
+  });
+
+  it('requires exact merge-sha, merged-at and main-base evidence before skipping', () => {
+    expect(workflow).toContain('\\"merge_commit_sha\\"[[:space:]]*:[[:space:]]*\\"${GITHUB_SHA}\\"');
+    expect(workflow).toContain('"merged_at"[[:space:]]*:[[:space:]]*"[^\"]+"');
+    expect(workflow).toContain('"base"[[:space:]]*:[[:space:]]*\\{[^}]*"ref"[[:space:]]*:[[:space:]]*"main"');
   });
 
   it('guards every heavyweight validation step with the association result', () => {
