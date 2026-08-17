@@ -48,9 +48,9 @@ jobs:
             exit 0
           fi
 
-          if printf '%s' "$response" | grep -Fq "\"merge_commit_sha\":\"${GITHUB_SHA}\"" \
-            && printf '%s' "$response" | grep -Eq '"merged_at":"[^"]+"' \
-            && printf '%s' "$response" | grep -Fq '"base":{"ref":"main"'; then
+          if printf '%s' "$response" | grep -Eq "\"merge_commit_sha\"[[:space:]]*:[[:space:]]*\"${GITHUB_SHA}\"" \
+            && printf '%s' "$response" | grep -Eq '"merged_at"[[:space:]]*:[[:space:]]*"[^"]+"' \
+            && printf '%s' "$response" | grep -Eq '"base"[[:space:]]*:[[:space:]]*\{[^}]*"ref"[[:space:]]*:[[:space:]]*"main"'; then
             echo 'skip=true' >> "$GITHUB_OUTPUT"
             echo 'Skipping duplicate push validation for an already validated merged PR.'
           fi
