@@ -26,8 +26,8 @@ export const createShareWorkoutStyles = (
       padding: Spacing.two,
     },
     captionInputDisabled: {
-      backgroundColor: glass.controlDisabledFill,
-      borderColor: glass.controlDisabledBorder,
+      backgroundColor: glass.disabledFill,
+      borderColor: glass.disabledBorder,
       color: colors.textMuted,
     },
     cardTitle: {
