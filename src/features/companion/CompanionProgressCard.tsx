@@ -1,4 +1,5 @@
 import { Sparkles } from 'lucide-react-native';
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { AppCard } from '@/components/ui/AppCard';
@@ -6,6 +7,8 @@ import { Colors, Spacing, Typography } from '@/constants/theme';
 import type { CompanionProgress } from '@/features/companion/companionProgression';
 import { companionCopy } from '@/features/companion/companionCopy';
 import type { SupportedLocale } from '@/localization/messages';
+import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
 type Props = {
   colors: typeof Colors.light;
@@ -14,8 +17,13 @@ type Props = {
 };
 
 export function CompanionProgressCard({ colors, locale, progress }: Props) {
+  const { resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const copy = companionCopy[locale];
-  const styles = createStyles(colors);
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const percent = Math.round((progress.xpIntoLevel / 500) * 100);
 
   return (
@@ -54,12 +62,15 @@ export function CompanionProgressCard({ colors, locale, progress }: Props) {
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (
+  colors: typeof Colors.light,
+  glass: ReturnType<typeof resolveLiquidGlassPalette>,
+) =>
   StyleSheet.create({
     avatar: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderRadius: 36,
       borderWidth: StyleSheet.hairlineWidth,
       height: 72,
@@ -81,8 +92,10 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     progressFill: { backgroundColor: colors.accent, borderRadius: 999, height: '100%' },
     progressTrack: {
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderRadius: 999,
+      borderWidth: StyleSheet.hairlineWidth,
       height: 8,
       marginTop: Spacing.three,
       overflow: 'hidden',
