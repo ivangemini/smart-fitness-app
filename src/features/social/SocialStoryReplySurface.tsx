@@ -47,6 +47,10 @@ export function SocialStoryReplySurface({ api, copy, owner, storyId }: Props) {
           paddingHorizontal: Spacing.two,
           paddingVertical: Spacing.two,
         },
+        fieldDisabled: {
+          backgroundColor: glass.disabledFill,
+          borderColor: glass.disabledBorder,
+        },
         meta: {
           color: colors.textSecondary,
           fontSize: Typography.caption.fontSize,
@@ -133,7 +137,7 @@ export function SocialStoryReplySurface({ api, copy, owner, storyId }: Props) {
         onChangeText={setBody}
         placeholder={copy.replyPlaceholder}
         placeholderTextColor={colors.textSecondary}
-        style={styles.field}
+        style={[styles.field, sending ? styles.fieldDisabled : null]}
         value={body}
       />
       <PrimaryButton
