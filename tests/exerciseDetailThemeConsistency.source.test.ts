@@ -36,7 +36,10 @@ describe('Exercise detail theme consistency', () => {
   });
 
   it('keeps exercise secondary visualizations theme adaptive', () => {
-    expect(muscleMapSource).toContain('createStyles(colors)');
+    expect(muscleMapSource).toContain('useAppTheme');
+    expect(muscleMapSource).toContain('resolvedAppearance');
+    expect(muscleMapSource).toContain('resolveLiquidGlassPalette(resolvedAppearance)');
+    expect(muscleMapSource).toContain('createStyles(colors, glass)');
     expect(muscleMapSource).not.toContain('Colors.dark.');
     expect(statChipSource).toContain('useAppTheme');
     expect(statChipSource).toContain('createStyles(colors)');
