@@ -21,6 +21,10 @@ import { useProfileState } from '@/context/ProfileStateContext';
 import type { ProfileActivityLevel } from '@/features/profile/profilePlan';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 import type { ProfileGoalType } from '@/types';
 import {
   displayWeightInputToKg,
@@ -41,10 +45,14 @@ export default function OnboardingClientScreen() {
   const { isRestoringState, mutationFailure, pendingMutationCount } = useAppInfrastructure();
   const { onboardingCompleted, profile } = useProfileState();
   const { t } = useLocalization();
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const { weight: weightUnit } = useUnitPreferences();
   const insets = useSafeAreaInsets();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const [ageInput, setAgeInput] = useState('');
   const [currentWeightInput, setCurrentWeightInput] = useState('');
   const [activityLevel, setActivityLevel] = useState<ProfileActivityLevel | null>(null);
@@ -182,7 +190,8 @@ export default function OnboardingClientScreen() {
                       style={({ pressed }) => [
                         styles.choice,
                         selected && styles.choiceSelected,
-                        pressed && styles.pressed,
+                        pressed && !selected && styles.choicePressed,
+                        pressed && selected && styles.choiceSelectedPressed,
                       ]}>
                       <Text style={[styles.choiceLabel, selected && styles.choiceLabelSelected]}>
                         {t(`profile.activity.${level === 'very_high' ? 'veryHigh' : level}`)}
@@ -258,8 +267,12 @@ function Field({
   placeholder: string;
   value: string;
 }) {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   return (
     <View style={styles.field}>
@@ -270,6 +283,7 @@ function Field({
         onChangeText={onChangeText}
         placeholder={placeholder}
         placeholderTextColor={colors.textMuted}
+        selectionColor={colors.accent}
         style={styles.input}
         value={value}
       />
@@ -277,7 +291,7 @@ function Field({
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     activityExplanation: {
       color: colors.textSecondary,
@@ -286,8 +300,9 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     choice: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
+      borderCurve: 'continuous',
       borderRadius: Radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
       flexBasis: 140,
@@ -307,11 +322,13 @@ const createStyles = (colors: typeof Colors.light) =>
       fontWeight: Typography.label.fontWeight,
       textAlign: 'center',
     },
-    choiceLabelSelected: { color: colors.textPrimary },
+    choiceLabelSelected: { color: glass.accentText },
+    choicePressed: { backgroundColor: glass.controlPressedFill },
     choiceSelected: {
-      backgroundColor: colors.backgroundSelected,
-      borderColor: colors.accent,
+      backgroundColor: glass.accentFill,
+      borderColor: glass.accentBorder,
     },
+    choiceSelectedPressed: { backgroundColor: glass.accentPressedFill },
     container: { gap: Spacing.four, maxWidth: MaxContentWidth, width: '100%' },
     content: {
       alignItems: 'center',
@@ -338,8 +355,9 @@ const createStyles = (colors: typeof Colors.light) =>
       lineHeight: Typography.caption.lineHeight,
     },
     input: {
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
+      borderCurve: 'continuous',
       borderRadius: 12,
       borderWidth: StyleSheet.hairlineWidth,
       color: colors.textPrimary,
@@ -352,7 +370,6 @@ const createStyles = (colors: typeof Colors.light) =>
       fontSize: Typography.body.fontSize,
       fontWeight: '700',
     },
-    pressed: { opacity: 0.72 },
     screen: { backgroundColor: colors.background, flex: 1 },
     subtitle: {
       color: colors.textSecondary,
