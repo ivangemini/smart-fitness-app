@@ -17,7 +17,7 @@ const read = (path) => readFileSync(resolve(process.cwd(), path), 'utf8');
 describe('Labs responsive source contract', () => {
   it.each(screens)('%s uses a scrolling flex-grow content surface', (path) => {
     const source = read(path);
-    expect(source).toContain('ScrollView');
+    expect(source).toMatch(/\b(?:ScrollView|FlatList)\b/u);
     expect(source).toMatch(/flexGrow:\s*1/u);
   });
 
