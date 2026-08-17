@@ -24,6 +24,10 @@ import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { localizeAccountDeletionMessage } from '@/localization/authCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 type DeleteAccountModalProps = {
   visible: boolean;
@@ -39,8 +43,12 @@ export function DeleteAccountModal({
   onDeleted,
 }: DeleteAccountModalProps) {
   const { t } = useLocalization();
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const insets = useSafeAreaInsets();
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -127,6 +135,7 @@ export function DeleteAccountModal({
               <Text style={styles.label}>{t('deleteAccount.currentPassword')}</Text>
               <TextInput
                 accessibilityLabel={t('deleteAccount.currentPasswordAccessibility')}
+                accessibilityState={{ disabled: busy }}
                 autoCapitalize="none"
                 autoComplete="current-password"
                 autoCorrect={false}
@@ -140,7 +149,7 @@ export function DeleteAccountModal({
                 placeholderTextColor={colors.textMuted}
                 returnKeyType="done"
                 secureTextEntry
-                style={styles.input}
+                style={[styles.input, busy && styles.inputDisabled]}
                 value={password}
               />
             </View>
@@ -162,7 +171,7 @@ export function DeleteAccountModal({
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     screen: {
       flex: 1,
@@ -177,12 +186,17 @@ const createStyles = (colors: typeof Colors.light) =>
       top: 0,
     },
     sheet: {
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.border,
+      backgroundColor: glass.elevatedFill,
+      borderColor: glass.cardBorder,
+      borderTopColor: glass.cardHighlight,
       borderTopLeftRadius: Radii.xlarge,
       borderTopRightRadius: Radii.xlarge,
       borderWidth: StyleSheet.hairlineWidth,
       maxHeight: '92%',
+      shadowColor: glass.shadowColor,
+      shadowOffset: { width: 0, height: -8 },
+      shadowOpacity: glass.shadowOpacity,
+      shadowRadius: 24,
     },
     sheetContent: {
       flexGrow: 1,
@@ -197,7 +211,7 @@ const createStyles = (colors: typeof Colors.light) =>
       letterSpacing: 0.8,
     },
     title: {
-      color: colors.text,
+      color: colors.textPrimary,
       fontSize: 25,
       fontWeight: '800',
       lineHeight: 31,
@@ -210,6 +224,7 @@ const createStyles = (colors: typeof Colors.light) =>
     warningBox: {
       backgroundColor: colors.errorSoft,
       borderColor: colors.error,
+      borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
       gap: Spacing.one,
@@ -234,14 +249,20 @@ const createStyles = (colors: typeof Colors.light) =>
       fontWeight: '700',
     },
     input: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.border,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
+      borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
-      color: colors.text,
+      color: colors.textPrimary,
       fontSize: Typography.body.fontSize,
       minHeight: 50,
       paddingHorizontal: Spacing.three,
       paddingVertical: Spacing.two,
+    },
+    inputDisabled: {
+      backgroundColor: glass.disabledFill,
+      borderColor: glass.disabledBorder,
+      color: colors.textMuted,
     },
   });

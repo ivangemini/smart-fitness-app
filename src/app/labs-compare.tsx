@@ -12,8 +12,10 @@ import { getBiomarkerDisplayName } from '@/features/labs/biomarkerNames';
 import { getLabComparisonCopy } from '@/features/labs/labComparisonCopy';
 import { useLabs } from '@/features/labs/LabsContext';
 import type { LabPanelComparisonDto } from '@/features/labs/types';
-import { useLocalization } from '@/localization';
+import { formatLocalizedNumber, useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+
+const LAB_NUMBER_MAX_FRACTION_DIGITS = 20;
 
 export default function LabsCompareScreen() {
   const router = useRouter();
@@ -34,6 +36,9 @@ export default function LabsCompareScreen() {
   const [comparison, setComparison] = useState<LabPanelComparisonDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
+
+  const formatLabValue = (value: number, unit: string) =>
+    `${formatLocalizedNumber(value, locale, LAB_NUMBER_MAX_FRACTION_DIGITS)} ${unit}`;
 
   const load = useCallback(async () => {
     if (!previousDocumentId || !currentDocumentId) {
@@ -132,14 +137,14 @@ export default function LabsCompareScreen() {
                 <Text style={styles.meta}>{copy.previous}</Text>
                 <Text style={styles.value}>
                   {item.previous
-                    ? `${item.previous.value} ${item.previous.unit}`
+                    ? formatLabValue(item.previous.value, item.previous.unit)
                     : copy.previousMissing}
                 </Text>
               </View>
               <View style={styles.valueColumn}>
                 <Text style={styles.meta}>{copy.current}</Text>
                 <Text style={styles.value}>
-                  {item.current.value} {item.current.unit}
+                  {formatLabValue(item.current.value, item.current.unit)}
                 </Text>
               </View>
             </View>

@@ -84,11 +84,13 @@ const styles = StyleSheet.create({
   },
   label: {
     flex: 1,
+    flexShrink: 1,
     fontSize: Typography.caption.fontSize,
     lineHeight: Typography.caption.lineHeight,
+    minWidth: 0,
   },
   row: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
     borderTopWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
     gap: Spacing.two,
@@ -105,6 +107,8 @@ const styles = StyleSheet.create({
     fontSize: Typography.caption.fontSize,
     fontWeight: Typography.label.fontWeight,
     lineHeight: Typography.caption.lineHeight,
+    maxWidth: '58%',
+    minWidth: 0,
     textAlign: 'right',
   },
 });

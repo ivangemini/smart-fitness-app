@@ -41,7 +41,7 @@ describe('LG-3A Settings secondary Liquid Glass controls', () => {
     expect(source).toContain('color: glass.accentText');
     expect(source).toContain('accessibilityRole="tablist"');
     expect(source).toContain('accessibilityRole="tab"');
-    expect(source).toContain('accessibilityState={{ selected }}');
+    expect(source).toContain('accessibilityState={{ selected, disabled }}');
     expect(source).toContain('minHeight: 44');
     expect(source).not.toContain('colors.surfaceSecondary');
     expect(source).not.toContain('colors.surfacePrimary');

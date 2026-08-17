@@ -73,14 +73,20 @@ export function SavedMealsModeSection({
           accessibilityLabel={copy.createMeal}
           hitSlop={10}
           onPress={onToggleCreateMeal}
-          style={styles.quietActionButton}>
+          style={({ pressed }) => [
+            styles.quietActionButton,
+            pressed && styles.quietActionButtonPressed,
+          ]}>
           <Text style={styles.quietActionText}>{copy.createMeal}</Text>
         </Pressable>
         <Pressable
           accessibilityLabel={copy.manageMeals}
           hitSlop={10}
           onPress={onToggleManageMeals}
-          style={styles.quietActionButton}>
+          style={({ pressed }) => [
+            styles.quietActionButton,
+            pressed && styles.quietActionButtonPressed,
+          ]}>
           <Text style={styles.quietActionText}>
             {manageMealsOpen ? copy.doneManaging : copy.manageMeals}
           </Text>
@@ -127,7 +133,7 @@ export function SavedMealsModeSection({
                         accessibilityRole="button"
                         hitSlop={10}
                         onPress={() => onQuickAddMealTemplate(template)}
-                        style={styles.iconButton}>
+                        style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}>
                         <Plus color={colors.textPrimary} size={20} strokeWidth={2.2} />
                       </Pressable>
                       {manageMealsOpen ? (
@@ -136,7 +142,7 @@ export function SavedMealsModeSection({
                           accessibilityRole="button"
                           hitSlop={10}
                           onPress={() => onDeleteMealTemplate(template.id)}
-                          style={styles.iconButton}>
+                          style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}>
                           <Trash2 color={colors.error} size={19} strokeWidth={2} />
                         </Pressable>
                       ) : null}

@@ -23,6 +23,16 @@ export function getLabMultiTrendCopy(locale: string) {
         noPoints: 'Для выбранного режима недостаточно совместимых исторических точек.',
         relativeAxis:
           '0% — нижняя граница референса, 100% — верхняя. Значения вне диапазона могут быть ниже 0% или выше 100%.',
+        chartAccessibilityLabel: ({
+          seriesCount,
+          pointCount,
+          modeLabel,
+        }: {
+          seriesCount: number;
+          pointCount: number;
+          modeLabel: string;
+        }) =>
+          `График нескольких показателей. Серий: ${seriesCount}. Точек: ${pointCount}. Режим: ${modeLabel}.`,
       }
     : {
         entryTitle: 'Compare biomarker trends',
@@ -46,5 +56,15 @@ export function getLabMultiTrendCopy(locale: string) {
         noPoints: 'There are not enough compatible historical points for this mode.',
         relativeAxis:
           '0% is the lower reference bound and 100% is the upper bound. Values outside the range may fall below 0% or above 100%.',
+        chartAccessibilityLabel: ({
+          seriesCount,
+          pointCount,
+          modeLabel,
+        }: {
+          seriesCount: number;
+          pointCount: number;
+          modeLabel: string;
+        }) =>
+          `Multi-biomarker trend chart. Series: ${seriesCount}. Points: ${pointCount}. Mode: ${modeLabel}.`,
       };
 }

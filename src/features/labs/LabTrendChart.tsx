@@ -6,6 +6,7 @@ import { Spacing, Typography } from '@/constants/theme';
 import type { LabResultDto } from '@/features/labs/types';
 import { formatLocalizedNumber, useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
 type LabTrendChartProps = {
   accessibilityLabel?: string;
@@ -16,8 +17,12 @@ const CHART_PADDING_X = 16;
 const CHART_PADDING_Y = 18;
 
 export function LabTrendChart({ accessibilityLabel, results }: LabTrendChartProps) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { locale } = useLocalization();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const [size, setSize] = useState({ width: 0, height: 0 });
   const ordered = useMemo(
     () => [...results].sort((a, b) => a.collectedAt.localeCompare(b.collectedAt)),
@@ -106,7 +111,10 @@ export function LabTrendChart({ accessibilityLabel, results }: LabTrendChartProp
         accessibilityRole="image"
         accessible={Boolean(accessibilityLabel)}
         onLayout={handleLayout}
-        style={[styles.chart, { backgroundColor: colors.surfaceSecondary }]}>
+        style={[
+          styles.chart,
+          { backgroundColor: glass.controlFill, borderColor: glass.controlBorder },
+        ]}>
         {geometry ? (
           <Canvas style={StyleSheet.absoluteFill}>
             {geometry.referencePaths.map((path, index) => (
@@ -157,6 +165,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1.8,
     borderCurve: 'continuous',
     borderRadius: 18,
+    borderWidth: StyleSheet.hairlineWidth,
     overflow: 'hidden',
     width: '100%',
   },

@@ -5,6 +5,7 @@ import { AppButton } from '@/components/ui/AppButton';
 import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import type { LabResultDraftDto } from '@/features/labs/types';
+import { formatLocalizedNumber, useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
@@ -47,6 +48,8 @@ type LabReviewResultCardProps = {
   onExclude(): Promise<void>;
 };
 
+const LAB_NUMBER_MAX_FRACTION_DIGITS = 20;
+
 const optionalNumber = (value: string): number | undefined => {
   const trimmed = value.trim();
   if (!trimmed) return undefined;
@@ -63,6 +66,7 @@ export function LabReviewResultCard({
   result,
 }: LabReviewResultCardProps) {
   const { colors } = useAppTheme();
+  const { locale } = useLocalization();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const [editing, setEditing] = useState(false);
   const [label, setLabel] = useState(result.sourceLabel);
@@ -83,6 +87,18 @@ export function LabReviewResultCard({
   const confidence = Math.round(
     Math.min(result.confidence.marker, result.confidence.value, result.confidence.unit) * 100,
   );
+  const sourceValueLabel = `${formatLocalizedNumber(
+    result.sourceValue,
+    locale,
+    LAB_NUMBER_MAX_FRACTION_DIGITS,
+  )} ${result.sourceUnit}`;
+  const normalizedValueLabel = result.normalized
+    ? `${formatLocalizedNumber(
+        result.normalized.value,
+        locale,
+        LAB_NUMBER_MAX_FRACTION_DIGITS,
+      )} ${result.normalized.unit}`
+    : null;
   const reviewLabel =
     result.reviewState === 'accepted'
       ? copy.accepted
@@ -125,17 +141,15 @@ export function LabReviewResultCard({
       <View style={styles.header}>
         <View style={styles.headerCopy}>
           <Text style={styles.title}>{result.sourceLabel}</Text>
-          <Text style={styles.valueText}>
-            {result.sourceValue} {result.sourceUnit}
-          </Text>
+          <Text style={styles.valueText}>{sourceValueLabel}</Text>
         </View>
         <Text style={styles.reviewState}>{reviewLabel}</Text>
       </View>
 
       <Text style={styles.meta}>{`${copy.confidence}: ${confidence}%`}</Text>
-      {result.normalized ? (
+      {result.normalized && normalizedValueLabel ? (
         <Text style={styles.meta}>
-          {result.normalized.markerId} · {result.normalized.value} {result.normalized.unit}
+          {result.normalized.markerId} · {normalizedValueLabel}
         </Text>
       ) : (
         <Text style={styles.warning}>{copy.unresolved}</Text>
