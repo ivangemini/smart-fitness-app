@@ -33,6 +33,7 @@ import { useAppTheme } from "@/theme/AppThemeProvider";
 
 import { SocialManagedAvatarCard } from "../SocialManagedAvatarCard";
 import { getSocialManagedAvatarCopy } from "../socialManagedAvatarCopy";
+import { isSocialManagedAvatarBusy } from "../socialManagedAvatarModel";
 import { getSocialProfileCopy } from "../socialProfileCopy";
 import {
   buildSocialProfileInput,
@@ -88,6 +89,8 @@ export default function SocialProfileEditorScreen() {
     enabled: avatarCapability.canUse,
     profileExists,
   });
+  const avatarBusy = isSocialManagedAvatarBusy(managedAvatar.operation);
+  const editingDisabled = saving || avatarBusy;
 
   const requestErrorCopy = useCallback(
     (error: unknown): string => {
@@ -178,7 +181,7 @@ export default function SocialProfileEditorScreen() {
   ) => setValues((current) => ({ ...current, [key]: value }));
 
   const save = async () => {
-    if (saving) return;
+    if (editingDisabled) return;
     setSubmitted(true);
     setRequestError(null);
     if (hasErrors) return;
@@ -261,6 +264,7 @@ export default function SocialProfileEditorScreen() {
             <FormField
               autoCapitalize="none"
               autoCorrect={false}
+              editable={!editingDisabled}
               errorMessage={getFieldError("username")}
               helperText={copy.usernameHelp}
               label={copy.username}
@@ -272,6 +276,7 @@ export default function SocialProfileEditorScreen() {
             />
             <FormField
               autoCapitalize="words"
+              editable={!editingDisabled}
               errorMessage={getFieldError("displayName")}
               label={copy.displayName}
               maxLength={80}
@@ -280,6 +285,7 @@ export default function SocialProfileEditorScreen() {
               value={values.displayName}
             />
             <FormField
+              editable={!editingDisabled}
               errorMessage={getFieldError("bio")}
               helperText={copy.bioHelp}
               label={copy.bio}
@@ -295,12 +301,14 @@ export default function SocialProfileEditorScreen() {
               capability={avatarCapability}
               controller={managedAvatar}
               copy={avatarCopy}
+              disabled={saving}
             />
             <View style={styles.visibilityGroup}>
               <Text style={styles.label}>{copy.visibility}</Text>
               <Text style={styles.help}>{copy.visibilityHelp}</Text>
               <SegmentedControl
                 accessibilityLabel={copy.visibility}
+                disabled={editingDisabled}
                 onChange={(value) => updateValue("visibility", value)}
                 options={visibilityOptions}
                 value={values.visibility}
@@ -309,7 +317,7 @@ export default function SocialProfileEditorScreen() {
             <Text style={styles.privacyNote}>{copy.privacyNote}</Text>
             <InlineError message={requestError} />
             <PrimaryButton
-              disabled={saving}
+              disabled={editingDisabled}
               label={saving ? copy.saving : copy.save}
               loading={saving}
               onPress={save}
