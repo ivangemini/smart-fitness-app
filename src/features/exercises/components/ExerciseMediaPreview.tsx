@@ -5,6 +5,11 @@ import { ActivityIndicator, StyleSheet, Text, View, type ImageResizeMode, type S
 import { Colors, Radii, Spacing } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { getExerciseMediaCopy } from '@/localization/exerciseMediaCopy';
+import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 import type { Exercise } from '../types';
 import { getExerciseMediaUri } from '../media';
@@ -41,11 +46,16 @@ export function ExerciseMediaPreview({
   style,
 }: ExerciseMediaPreviewProps) {
   const { locale } = useLocalization();
+  const { resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const copy = useMemo(() => getExerciseMediaCopy(locale), [locale]);
   const [loading, setLoading] = useState(Boolean(getExerciseMediaUri(exercise, { playing })));
   const [mediaFailed, setMediaFailed] = useState(false);
   const mediaUri = !mediaFailed ? getExerciseMediaUri(exercise, { playing }) : undefined;
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const resolvedContentFit = contentFit ?? (resizeMode === 'contain' || resizeMode === 'center' ? 'contain' : 'cover');
 
   useEffect(() => {
@@ -98,11 +108,11 @@ export function ExerciseMediaPreview({
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     frame: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
@@ -115,7 +125,7 @@ const createStyles = (colors: typeof Colors.light) =>
     overlay: {
       ...StyleSheet.absoluteFill,
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: glass.elevatedFill,
       justifyContent: 'center',
     },
     placeholder: {
