@@ -50,7 +50,6 @@ export const createExerciseDetailStyles = (colors: typeof Colors.light) =>
     list: { gap: Spacing.two, marginBottom: Spacing.three },
     media: {
       aspectRatio: 1.35,
-      backgroundColor: colors.surfaceSecondary,
       borderRadius: Radii.medium,
       width: '100%',
     },
