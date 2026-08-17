@@ -4,6 +4,10 @@ import type { TextInputProps } from 'react-native';
 
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 import { InlineError } from './InlineError';
 
 type FormFieldProps = TextInputProps & {
@@ -14,12 +18,27 @@ type FormFieldProps = TextInputProps & {
 };
 
 export const FormField = forwardRef<TextInput, FormFieldProps>(function FormField(
-  { errorMessage, helperText, label, onBlur, onFocus, style, value, ...inputProps },
+  {
+    accessibilityState,
+    errorMessage,
+    helperText,
+    label,
+    onBlur,
+    onFocus,
+    style,
+    value,
+    ...inputProps
+  },
   ref,
 ) {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const [focused, setFocused] = useState(false);
+  const disabled = inputProps.editable === false;
 
   return (
     <View style={styles.container}>
@@ -27,6 +46,7 @@ export const FormField = forwardRef<TextInput, FormFieldProps>(function FormFiel
       <TextInput
         ref={ref}
         accessibilityLabel={inputProps.accessibilityLabel ?? label}
+        accessibilityState={{ ...accessibilityState, disabled }}
         placeholderTextColor={colors.textMuted}
         onBlur={(event) => {
           setFocused(false);
@@ -38,8 +58,9 @@ export const FormField = forwardRef<TextInput, FormFieldProps>(function FormFiel
         }}
         style={[
           styles.input,
-          focused && styles.inputFocused,
-          errorMessage && styles.inputError,
+          focused && !disabled && styles.inputFocused,
+          errorMessage && !disabled && styles.inputError,
+          disabled && styles.inputDisabled,
           style,
         ]}
         value={value}
@@ -51,7 +72,7 @@ export const FormField = forwardRef<TextInput, FormFieldProps>(function FormFiel
   );
 });
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     container: {
       gap: Spacing.one,
@@ -62,8 +83,8 @@ const createStyles = (colors: typeof Colors.light) =>
       lineHeight: Typography.caption.lineHeight,
     },
     input: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
@@ -74,11 +95,16 @@ const createStyles = (colors: typeof Colors.light) =>
       paddingHorizontal: Spacing.four,
       paddingVertical: Spacing.two,
     },
+    inputDisabled: {
+      backgroundColor: glass.disabledFill,
+      borderColor: glass.disabledBorder,
+      color: colors.textMuted,
+    },
     inputError: {
       borderColor: colors.error,
     },
     inputFocused: {
-      backgroundColor: colors.surfacePrimary,
+      backgroundColor: glass.controlPressedFill,
       borderColor: colors.accent,
     },
     label: {
