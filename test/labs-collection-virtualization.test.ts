@@ -24,4 +24,26 @@ describe('Labs collection virtualization', () => {
     expect(source).not.toContain('panels.map((panel)');
     expect(source).not.toContain('<ScrollView');
   });
+
+  it('keeps panel comparison results on one FlatList boundary', () => {
+    const source = readSource('src/app/labs-compare.tsx');
+
+    expect(source).toContain('FlatList');
+    expect(source).toContain('data={items}');
+    expect(source).toContain('keyExtractor={(item) => item.markerId}');
+    expect(source).not.toContain('comparison.items.map((item)');
+    expect(source).not.toContain('<ScrollView');
+  });
+
+  it('keeps document review drafts on one keyboard-aware FlatList boundary', () => {
+    const source = readSource('src/app/labs-document/[documentId].tsx');
+
+    expect(source).toContain('FlatList');
+    expect(source).toContain('data={reviewResults}');
+    expect(source).toContain('keyExtractor={(result) => result.id}');
+    expect(source).toContain('automaticallyAdjustKeyboardInsets');
+    expect(source).toContain('keyboardShouldPersistTaps="handled"');
+    expect(source).not.toContain('results.map((result) => (');
+    expect(source).not.toContain('<ScrollView');
+  });
 });
