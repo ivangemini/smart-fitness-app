@@ -10,15 +10,30 @@ Exact code, tests, migrations and current Git history override this checkpoint i
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Latest runtime/source merge remains `f87b3ea07588e255f6773b1fcac7b4ec8c9f4238` (#682). Validation hardening #684 (`267c6cb75c05b015ac21062a536ce0b36112df1c`) restored reproducible Expo typed-route validation on persistent Hermes checkouts. Applicable exact-head Mobile CI passed.
+Current verified `main`: `3b99382f1b189b07fa7efaf897499269adc10a83` (#726).
 
-Recent Phase 14 source includes authenticated native push foundations, generic Labs PDF/JPEG/PNG/HEIC signed-upload support, read-only iOS HealthKit and Android Health Connect daily-step adapters, Android `READ_STEPS`, native dependencies/lockfile and native PDF document picking.
+Recent verified sequence:
+
+- #711 — shared Liquid Glass primitive convergence;
+- #713 — live Home daily-step consumption;
+- #716 — Expo SDK 56 patch alignment;
+- #718 — self-hosted Hermes Mobile CI resilience;
+- #719 — local-persistence retry integrity;
+- #723 — strict merged-PR push CI deduplication using PR API evidence plus structural JSON parsing;
+- #724 — post-foundation Liquid Glass rollup across Settings, Progress, Companion, Labs, Social profile controls, account modals, Notifications, Nutrition add-food surfaces and Workouts secondary surfaces;
+- #726 — Auth/Register training-experience and Onboarding input/choice controls migrated from direct legacy surfaces/generic opacity feedback to the active Liquid Glass palette.
+
+#724 exact-head Mobile CI passed all required steps, including 1945 regression tests, expanded-model smoke, Expo export and Expo Doctor. Its real merge-push acceptance then proved the dedup path: detector succeeded and heavyweight steps were skipped; the EAS update workflow was skipped and no OTA publish occurred.
+
+#726 exact-head Mobile CI also passed all required steps. Its merge-push acceptance again produced detector-only Mobile CI with Checkout through Expo Doctor skipped; the EAS update workflow completed as `skipped`, with no OTA publish.
+
+The repository-wide reachable-surface Liquid Glass audit remains active. It is not yet valid to claim complete repository-wide visual convergence.
 
 ### Backend repository
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Latest runtime/operations merge: `bd98b1184e0153b3c7b9dfda7a47f3365b6e208f` (#261). Latest Phase 14 evidence/docs checkpoint: `8638604fb98a1ee84a0a225087a7e64ffd8f2c4e` (#263).
+Latest runtime/operations merge recorded by the Phase 14 checkpoint: `bd98b1184e0153b3c7b9dfda7a47f3365b6e208f` (#261). Latest Phase 14 evidence/docs checkpoint: `8638604fb98a1ee84a0a225087a7e64ffd8f2c4e` (#263).
 
 Relevant sequence:
 
@@ -55,17 +70,17 @@ Push probe #260:
 env_file=true apns_fields=false fcm_fields=false provider_flags=false master_enabled=false
 ```
 
-These privacy-safe probes establish that the remaining configured-provider Labs and Push gates are blocked on missing staging-only external material rather than missing source/runtime plumbing.
+These probes establish that the remaining configured-provider Labs and Push gates are blocked on missing staging-only external material rather than missing source/runtime plumbing.
 
 ### Stories runtime result
 
-After backend #261 merged the permanent evidence command, temporary evidence-only #262 ran against isolated loopback staging and closed without merge with:
+After backend #261 merged the permanent evidence command, evidence-only #262 ran against isolated loopback staging and closed without merge with:
 
 ```text
 registered=true profileReady=true authenticatedListReady=true freshAccountIsolated=true unauthenticatedFailClosed=true accountDeleted=true deletedSessionRejected=true ready=true
 ```
 
-One synthetic account was created, its Social profile initialized, an empty authenticated Stories list verified, unauthenticated access rejected, the account deleted, and its deleted session rejected. No media/provider call, scheduler, persistent fixture or production surface was used. The same Backend CI run passed lint, formatting, build, configuration/isolation checks and the full non-PostgreSQL suite.
+One synthetic account was created, its Social profile initialized, an empty authenticated Stories list verified, unauthenticated access rejected, the account deleted, and its deleted session rejected. No media/provider call, scheduler, persistent fixture or production surface was used.
 
 ## Phase 14 status
 
@@ -89,16 +104,24 @@ Source/CI plus basic isolated backend staging route/auth/account-lifecycle evide
 
 Native HealthKit/Health Connect source/CI is complete. Remaining evidence is signed native-build/physical-device behavior: permission flow, unsupported/no-data states, real aggregate reads, local-day/DST behavior and Home presentation.
 
-## Current remaining roadmap
+## Active autonomous work
 
-1. When staging-only HTTPS private storage + Gemini material exists, run the already-prepared bounded Labs configured-provider evidence.
-2. When staging-only APNs/FCM material exists, run the already-prepared push readiness/provider evidence.
-3. When suitable signed builds/devices are available, collect Push, Steps, Labs and remaining Stories physical-device/mobile evidence.
-4. Until an external gate becomes actionable, do not manufacture additional Phase 14 source work; only fix reproduced defects or implement newly reviewed contracts.
-5. After Phase 14 is fully completed under the canonical implementation plan, the next explicitly prioritized broad work is the repository-wide Liquid Glass coverage audit/remediation before unrelated Phase 15 expansion.
+Repository-wide reachable-surface Liquid Glass audit/remediation is the active autonomous priority while the external Phase 14 gates remain unavailable.
+
+Already merged convergence evidence includes #724 and #726. Continue by inventorying reachable primary/secondary screens, modals, sheets, pickers, empty/error/loading states and persistent action/navigation surfaces; migrate only demonstrated partial/legacy implementations, preserve business/persistence contracts, and add focused regression/source contracts for every migrated cluster.
+
+Do not begin unrelated Phase 15 feature expansion until this convergence priority is closed.
+
+## Current execution order
+
+1. Continue the reachable-surface Liquid Glass audit and remediate demonstrated gaps in coherent batches.
+2. As soon as staging-only HTTPS private storage + Gemini material exists, run the already-prepared bounded Labs configured-provider evidence.
+3. As soon as staging-only APNs/FCM material exists, run the already-prepared push readiness/provider evidence.
+4. As soon as suitable signed builds/physical devices are available, collect Push, Steps, Labs and remaining Stories native/mobile evidence.
+5. Do not manufacture provider/device evidence or unrelated Phase 14 refactors while those external gates remain unavailable.
 
 ## Activation boundaries
 
-HealthKit/Health Connect, Labs provider/staging runtime, backend staging deployment/migrations, APNs/FCM staging, native/EAS builds and physical-device QA are explicitly authorized. Execution still requires the relevant credentials/signing material and/or physical device.
+HealthKit/Health Connect, Labs provider/staging runtime, backend staging deployment/migrations, APNs/FCM staging, native/EAS builds and physical-device QA remain gated by the relevant credentials/signing material/device access and by explicit execution boundaries.
 
-Production credential rotation, production worker scheduling, production user-data mutation, destructive cleanup, DNS changes and app-store submission remain deliberate rollout actions with their own evidence and rollback controls.
+Production credential rotation, production worker scheduling, production user-data mutation, destructive cleanup, DNS changes, OTA/EAS publish, native build/install and app-store submission remain deliberate actions and are not implied by source merges or this checkpoint.
