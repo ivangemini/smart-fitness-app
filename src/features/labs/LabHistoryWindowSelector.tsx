@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Typography } from '@/constants/theme';
+import { Radii, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
 import type { LabHistoryWindow } from './labHistoryWindow';
 
@@ -17,7 +18,11 @@ export function LabHistoryWindowSelector({
   onChange(value: LabHistoryWindow): void;
   value: LabHistoryWindow;
 }) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const styles = useMemo(
     () =>
       StyleSheet.create({
@@ -32,19 +37,33 @@ export function LabHistoryWindowSelector({
           lineHeight: Typography.caption.lineHeight,
         },
         option: {
-          borderColor: colors.borderSubtle,
+          alignItems: 'center',
+          backgroundColor: glass.controlFill,
+          borderColor: glass.controlBorder,
           borderCurve: 'continuous',
-          borderRadius: 999,
+          borderRadius: Radii.pill,
           borderWidth: StyleSheet.hairlineWidth,
+          justifyContent: 'center',
           minHeight: 36,
           minWidth: 52,
           paddingHorizontal: Spacing.two,
           paddingVertical: Spacing.one,
-          alignItems: 'center',
-          justifyContent: 'center',
+        },
+        optionPressed: {
+          backgroundColor: glass.controlPressedFill,
+        },
+        optionSelected: {
+          backgroundColor: glass.semanticAccentFill,
+          borderColor: glass.accentBorder,
         },
       }),
-    [colors.borderSubtle],
+    [
+      glass.accentBorder,
+      glass.controlBorder,
+      glass.controlFill,
+      glass.controlPressedFill,
+      glass.semanticAccentFill,
+    ],
   );
 
   return (
@@ -57,9 +76,10 @@ export function LabHistoryWindowSelector({
             accessibilityState={{ checked: selected }}
             key={window}
             onPress={() => onChange(window)}
-            style={[
+            style={({ pressed }) => [
               styles.option,
-              { backgroundColor: selected ? colors.surfaceSecondary : colors.surfacePrimary },
+              selected ? styles.optionSelected : null,
+              pressed ? styles.optionPressed : null,
             ]}>
             <Text
               style={[

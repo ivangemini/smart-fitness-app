@@ -6,6 +6,7 @@ import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import type { LabResultDraftDto } from '@/features/labs/types';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
 export type LabCorrectionInput = {
   sourceLabel: string;
@@ -142,24 +143,27 @@ export function LabReviewResultCard({
 
       {editing ? (
         <View style={styles.form}>
-          <LabeledInput label={copy.marker} onChangeText={setLabel} value={label} />
+          <LabeledInput disabled={busy} label={copy.marker} onChangeText={setLabel} value={label} />
           <View style={styles.inlineFields}>
             <LabeledInput
+              disabled={busy}
               keyboardType="decimal-pad"
               label={copy.value}
               onChangeText={setValue}
               value={value}
             />
-            <LabeledInput label={copy.unit} onChangeText={setUnit} value={unit} />
+            <LabeledInput disabled={busy} label={copy.unit} onChangeText={setUnit} value={unit} />
           </View>
           <View style={styles.inlineFields}>
             <LabeledInput
+              disabled={busy}
               keyboardType="decimal-pad"
               label={copy.referenceLow}
               onChangeText={setReferenceLow}
               value={referenceLow}
             />
             <LabeledInput
+              disabled={busy}
               keyboardType="decimal-pad"
               label={copy.referenceHigh}
               onChangeText={setReferenceHigh}
@@ -167,6 +171,7 @@ export function LabReviewResultCard({
             />
           </View>
           <LabeledInput
+            disabled={busy}
             label={copy.referenceUnit}
             onChangeText={setReferenceUnit}
             value={referenceUnit}
@@ -212,24 +217,41 @@ export function LabReviewResultCard({
 }
 
 type LabeledInputProps = {
+  disabled?: boolean;
   label: string;
   value: string;
   onChangeText(value: string): void;
   keyboardType?: 'default' | 'decimal-pad';
 };
 
-function LabeledInput({ keyboardType = 'default', label, onChangeText, value }: LabeledInputProps) {
-  const { colors } = useAppTheme();
+function LabeledInput({
+  disabled = false,
+  keyboardType = 'default',
+  label,
+  onChangeText,
+  value,
+}: LabeledInputProps) {
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   return (
     <View style={stylesStatic.field}>
       <Text style={[stylesStatic.fieldLabel, { color: colors.textSecondary }]}>{label}</Text>
       <TextInput
         accessibilityLabel={label}
+        accessibilityState={{ disabled }}
+        editable={!disabled}
         keyboardType={keyboardType}
         onChangeText={onChangeText}
         style={[
           stylesStatic.input,
-          { backgroundColor: colors.surfaceSecondary, color: colors.textPrimary },
+          {
+            backgroundColor: disabled ? glass.disabledFill : glass.controlFill,
+            borderColor: disabled ? glass.disabledBorder : glass.controlBorder,
+            color: disabled ? colors.textMuted : colors.textPrimary,
+          },
         ]}
         value={value}
       />
@@ -246,6 +268,7 @@ const stylesStatic = StyleSheet.create({
   input: {
     borderCurve: 'continuous',
     borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
     fontSize: Typography.body.fontSize,
     minHeight: 44,
     paddingHorizontal: Spacing.three,
