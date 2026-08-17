@@ -42,7 +42,9 @@ describe('Exercise detail theme consistency', () => {
     expect(muscleMapSource).toContain('createStyles(colors, glass)');
     expect(muscleMapSource).not.toContain('Colors.dark.');
     expect(statChipSource).toContain('useAppTheme');
-    expect(statChipSource).toContain('createStyles(colors)');
+    expect(statChipSource).toContain('resolvedAppearance');
+    expect(statChipSource).toContain('resolveLiquidGlassPalette(resolvedAppearance)');
+    expect(statChipSource).toContain('createStyles(colors, glass)');
     expect(statChipSource).not.toContain('Colors.dark.');
   });
 
