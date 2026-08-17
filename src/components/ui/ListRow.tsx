@@ -65,7 +65,8 @@ export function ListRow({ accessibilityHint, accessibilityLabel, badge, detail, 
 const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     badge: {
-      backgroundColor: colors.accentSoft,
+      backgroundColor: glass.semanticAccentFill,
+      borderCurve: 'continuous',
       borderRadius: Radii.pill,
       color: colors.accent,
       flexShrink: 1,
