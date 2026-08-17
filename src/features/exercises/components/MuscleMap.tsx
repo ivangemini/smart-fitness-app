@@ -3,6 +3,10 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 import {
   CANONICAL_MUSCLES,
@@ -48,10 +52,11 @@ const createSvgUri = (
   side: MuscleSide,
   highlights: MuscleHighlightMap,
   colors: typeof Colors.light,
+  glass: LiquidGlassPalette,
 ) => {
   const shapes = side === 'front' ? FRONT_SHAPES : BACK_SHAPES;
-  const baseFill = colors.surfaceElevated;
-  const stroke = colors.borderSubtle;
+  const baseFill = glass.elevatedFill;
+  const stroke = glass.cardBorder;
   const primaryFill = colors.accent;
   const secondaryFill = colors.warning;
 
@@ -71,7 +76,7 @@ const createSvgUri = (
 
   return encodeSvg(`
     <svg xmlns="http://www.w3.org/2000/svg" width="200" height="400" viewBox="0 0 200 400">
-      <rect width="200" height="400" rx="20" fill="${colors.surfaceSecondary}"/>
+      <rect width="200" height="400" rx="20" fill="${glass.controlFill}"/>
       <circle cx="100" cy="44" r="24" fill="${baseFill}" stroke="${stroke}" stroke-width="2"/>
       <rect x="76" y="68" width="48" height="144" rx="22" fill="${baseFill}" stroke="${stroke}" stroke-width="2"/>
       <rect x="65" y="198" width="70" height="44" rx="18" fill="${baseFill}" stroke="${stroke}" stroke-width="2"/>
@@ -85,11 +90,15 @@ const createSvgUri = (
 };
 
 export const MuscleMap = memo(function MuscleMap({ highlights, side }: MuscleMapProps) {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const svgUri = useMemo(
-    () => createSvgUri(side, highlights, colors),
-    [colors, highlights, side],
+    () => createSvgUri(side, highlights, colors, glass),
+    [colors, glass, highlights, side],
   );
   const highlightedLabels = CANONICAL_MUSCLES
     .filter((muscle) => muscle.side === side && highlights[muscle.id])
@@ -109,12 +118,13 @@ export const MuscleMap = memo(function MuscleMap({ highlights, side }: MuscleMap
   );
 });
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     container: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.cardFill,
+      borderColor: glass.cardBorder,
+      borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
       flex: 1,
