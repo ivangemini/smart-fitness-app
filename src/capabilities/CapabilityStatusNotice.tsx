@@ -1,8 +1,13 @@
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 import type { CapabilityGate } from './useCapabilityGate';
 
@@ -13,8 +18,12 @@ type CapabilityStatusNoticeProps = {
 export function CapabilityStatusNotice({
   gate,
 }: CapabilityStatusNoticeProps) {
-  const { colors } = useAppTheme();
-  const styles = createStyles(colors);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   if (gate.canUse) return null;
 
@@ -32,7 +41,7 @@ export function CapabilityStatusNotice({
   );
 }
 
-const createStyles = (colors: typeof Colors.dark) =>
+const createStyles = (colors: typeof Colors.dark, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     body: {
       color: colors.textSecondary,
@@ -40,8 +49,9 @@ const createStyles = (colors: typeof Colors.dark) =>
       lineHeight: Typography.caption.lineHeight,
     },
     container: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.cardFill,
+      borderColor: glass.cardBorder,
+      borderCurve: 'continuous',
       borderRadius: Radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
       gap: Spacing.two,
