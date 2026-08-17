@@ -26,6 +26,23 @@ Read before changing code:
 
 Exact code, migrations, tests and current Git history override stale prose. Update canonical status/handoff/roadmap documentation when a change materially alters architecture, supported product scope, blockers or continuation state.
 
+## Autonomous execution policy
+
+Default to parallel-first autonomous execution and maximize useful completed roadmap work per pass.
+
+- Partition approved work into independent workstreams and execute non-overlapping workstreams in parallel whenever safe.
+- Prefer large coherent batches over micro-PRs or repeated tiny inspect/edit/test cycles. A batch may include multiple closely related demonstrated fixes when they share one contract and can be validated together.
+- CI, review latency, or an external blocker on one PR blocks only that PR. Continue other independent approved work instead of ending the pass.
+- Multiple simultaneous PRs are allowed when their changed files, migrations, contracts, and generated artifacts do not overlap or depend on unmerged behavior.
+- Do not stop merely to report progress while another safe, approved, autonomous roadmap task is executable. Continue until available work is exhausted or a genuine authorization, product-decision, dependency, conflict, or environment blocker is reached.
+- After a dependency merges, rebase or rebuild dependent work from exact current `main` before merge and revalidate the exact resulting head.
+- Run validation at meaningful batch boundaries rather than after every microscopic edit, while preserving all required authoritative gates before merge.
+- Mobile and backend work may proceed concurrently when their contracts are independent. Coordinated API/schema changes remain one dependency-aware workstream.
+- Read-only audits and preparation may continue while CI is queued or running, including identifying and scoping subsequent non-overlapping demonstrated defects.
+- Never manufacture refactors solely to keep busy. Work must remain roadmap-backed, source-demonstrated, or necessary to unblock an approved package.
+
+Parallel execution does not weaken safety or merge quality. Exact-head required CI must pass before source completion/merge where policy requires it, and operational actions that require explicit authorization remain prohibited.
+
 ## Current product boundaries
 
 Approved product scope includes:
@@ -148,7 +165,7 @@ Use shared API configuration from `src/api/config.ts`.
 
 ## Coding and UI rules
 
-Prefer minimal, bounded diffs. Preserve routes, IDs, persistence/sync contracts, calculations, auth/session semantics, workout/program lifecycle, completed-history immutability, Social privacy, Labs ownership and backend API contracts unless the task explicitly changes them.
+Prefer bounded coherent diffs. Preserve routes, IDs, persistence/sync contracts, calculations, auth/session semantics, workout/program lifecycle, completed-history immutability, Social privacy, Labs ownership and backend API contracts unless the task explicitly changes them.
 
 Do:
 
@@ -194,11 +211,11 @@ Before changes:
 2. inspect open PRs;
 3. read the source-of-truth docs;
 4. read `DEBUGGING_SKILL.md` for failures/regressions;
-5. inspect only relevant files;
-6. branch from exact current `main`;
-7. avoid overlapping active PRs.
+5. inspect relevant files for each workstream;
+6. branch each independent workstream from exact current `main`;
+7. avoid overlapping changed files/contracts across active PRs unless dependency coordination is explicit.
 
-For approved changes: implement bounded scope, validate exact head, inspect review threads and merge only the validated head.
+For approved changes: implement coherent scope, validate exact head, inspect review threads and merge only the validated head. Queued/running CI on one head is not a reason to stop unrelated work.
 
 Use `[ota]` only for OTA-safe JS/TS/TSX/assets.
 
@@ -211,7 +228,8 @@ Mutable priorities belong in `docs/current-status.md`, `docs/implementation-plan
 Default order:
 
 1. keep architecture/status/handoff docs synchronized with code;
-2. continue only the explicitly approved roadmap package;
+2. continue the explicitly approved roadmap package across as many independent safe workstreams as practical;
 3. keep provider-backed capabilities fail closed until blockers and approvals are resolved;
 4. require separately authorized physical/device/release evidence;
-5. fix demonstrated bounded regressions without manufacturing broad refactor work.
+5. fix demonstrated bounded regressions without manufacturing broad refactor work;
+6. while one workstream is blocked by CI/review/external dependency, continue another independent approved workstream instead of ending the pass.
