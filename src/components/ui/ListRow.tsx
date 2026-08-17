@@ -100,7 +100,6 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
     },
     pressed: {
       backgroundColor: glass.controlPressedFill,
-      borderColor: glass.controlPressedBorder,
     },
     row: {
       backgroundColor: glass.controlFill,
