@@ -7,6 +7,7 @@ import {
   type UserLimitationsCopy,
 } from '@/localization/userLimitationsCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import type {
   UserLimitation,
   UserLimitationBodyRegion,
@@ -104,7 +105,8 @@ export function ChoiceGrid<Value extends string>({
   options: readonly Option<Value>[];
   value: Value | null;
 }) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = resolveLiquidGlassPalette(resolvedAppearance);
   return (
     <View style={styles.fieldGroup}>
       <Text style={[styles.fieldLabel, { color: colors.textPrimary }]}>{label}</Text>
@@ -122,8 +124,8 @@ export function ChoiceGrid<Value extends string>({
                 styles.choice,
                 { flexBasis: `${100 / columns - 2}%` },
                 {
-                  backgroundColor: selected ? colors.accentSoft : colors.surfaceElevated,
-                  borderColor: selected ? colors.accent : colors.borderSubtle,
+                  backgroundColor: selected ? glass.semanticAccentFill : glass.controlFill,
+                  borderColor: selected ? glass.accentBorder : glass.controlBorder,
                 },
                 pressed && styles.pressed,
               ]}>
@@ -149,7 +151,8 @@ export function MovementGrid({
   onToggle(value: UserLimitationMovementPattern): void;
   values: UserLimitationMovementPattern[];
 }) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = resolveLiquidGlassPalette(resolvedAppearance);
   const { locale } = useLocalization();
   const copy = getUserLimitationsCopy(locale);
   const selected = new Set(values);
@@ -176,8 +179,8 @@ export function MovementGrid({
               style={({ pressed }) => [
                 styles.movementChoice,
                 {
-                  backgroundColor: active ? colors.accentSoft : colors.surfaceElevated,
-                  borderColor: active ? colors.accent : colors.borderSubtle,
+                  backgroundColor: active ? glass.semanticAccentFill : glass.controlFill,
+                  borderColor: active ? glass.accentBorder : glass.controlBorder,
                 },
                 pressed && styles.pressed,
               ]}>
@@ -207,14 +210,15 @@ export function LimitationRow({
   onDelete(): void;
   onStatusChange(): void;
 }) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = resolveLiquidGlassPalette(resolvedAppearance);
   const { formatDate, locale } = useLocalization();
   const copy = getUserLimitationsCopy(locale);
   const formatDateOnly = (value: string) =>
     formatDate(`${value}T12:00:00`, { day: 'numeric', month: 'short', year: 'numeric' });
 
   return (
-    <View style={[styles.limitationRow, { borderColor: colors.borderSubtle }]}>
+    <View style={[styles.limitationRow, { borderColor: glass.cardBorder }]}>
       <View style={styles.rowHeader}>
         <View style={styles.rowCopy}>
           <Text style={[styles.rowTitle, { color: colors.textPrimary }]}>
@@ -230,7 +234,9 @@ export function LimitationRow({
             styles.statusBadge,
             {
               backgroundColor:
-                limitation.status === 'active' ? colors.warningSoft : colors.successSoft,
+                limitation.status === 'active'
+                  ? glass.semanticWarningFill
+                  : glass.semanticPositiveFill,
               color: limitation.status === 'active' ? colors.warning : colors.success,
             },
           ]}>
