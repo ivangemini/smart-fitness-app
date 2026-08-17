@@ -1,9 +1,11 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Radii, Spacing, Typography } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { getRecoveryCheckInCopy } from '@/localization/recoveryCheckInCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
 export function RecoveryScorePicker<T extends number>({
   helperText,
@@ -18,7 +20,11 @@ export function RecoveryScorePicker<T extends number>({
   options: readonly T[];
   value: T | null;
 }) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const { locale } = useLocalization();
   const copy = getRecoveryCheckInCopy(locale);
 
@@ -61,8 +67,8 @@ export function RecoveryScorePicker<T extends number>({
               style={({ pressed }) => [
                 styles.scoreButton,
                 {
-                  backgroundColor: selected ? colors.accentSoft : colors.surfaceElevated,
-                  borderColor: selected ? colors.accent : colors.borderSubtle,
+                  backgroundColor: selected ? glass.semanticAccentFill : glass.controlFill,
+                  borderColor: selected ? glass.accentBorder : glass.controlBorder,
                 },
                 pressed && styles.pressed,
               ]}>
@@ -119,6 +125,7 @@ const styles = StyleSheet.create({
   },
   scoreButton: {
     alignItems: 'center',
+    borderCurve: 'continuous',
     borderRadius: Radii.medium,
     borderWidth: StyleSheet.hairlineWidth,
     flex: 1,
