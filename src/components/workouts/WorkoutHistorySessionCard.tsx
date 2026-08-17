@@ -8,6 +8,10 @@ import { WorkoutSession } from '@/context/AppContext';
 import { getWorkoutHistoryCopy } from '@/localization/workoutHistoryCopy';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 import { useUnitPreferences } from '@/units';
 
 type WorkoutHistorySessionCardProps = {
@@ -58,10 +62,14 @@ export const WorkoutHistorySessionCard = memo(function WorkoutHistorySessionCard
   visibleSets,
 }: WorkoutHistorySessionCardProps) {
   const { locale, formatNumber } = useLocalization();
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const { weight, formatWeightValue } = useUnitPreferences();
   const copy = getWorkoutHistoryCopy(locale);
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const formattedSetCount = formatNumber(session.sets.length, {
     maximumFractionDigits: 0,
   });
@@ -205,7 +213,7 @@ export const WorkoutHistorySessionCard = memo(function WorkoutHistorySessionCard
   );
 });
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     cardHeader: {
       flexDirection: 'row',
@@ -231,8 +239,8 @@ const createStyles = (colors: typeof Colors.light) =>
     exercise: { color: colors.textPrimary, fontSize: 15 },
     exerciseList: { gap: Spacing.one },
     input: {
-      backgroundColor: colors.backgroundSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 8,
       borderWidth: StyleSheet.hairlineWidth,
