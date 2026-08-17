@@ -1,39 +1,40 @@
-import assert from "node:assert/strict";
-import fs from "node:fs";
-import test from "node:test";
+import { readFileSync } from "node:fs";
 
-const screen = fs.readFileSync(
+import { describe, expect, it } from "vitest";
+
+const screen = readFileSync(
   new URL("./screens/ShareWorkoutScreen.tsx", import.meta.url),
   "utf8",
 );
-const styles = fs.readFileSync(
+const styles = readFileSync(
   new URL("./screens/ShareWorkoutScreen.styles.ts", import.meta.url),
   "utf8",
 );
-const mediaCard = fs.readFileSync(
+const mediaCard = readFileSync(
   new URL("./ShareWorkoutMediaCard.tsx", import.meta.url),
   "utf8",
 );
 
-test("share workout freezes editable controls while publishing or media is busy", () => {
-  assert.match(
-    screen,
-    /const editingDisabled = publishState === "publishing" \|\| mediaBusy;/,
-  );
-  assert.match(screen, /editable=!\{?editingDisabled\}?/);
-  assert.match(screen, /disabled=\{editingDisabled\}/);
-  assert.match(screen, /disabled=\{publishState === "publishing"\}/);
-});
+describe("Share Workout busy controls source contract", () => {
+  it("freezes editable controls while publishing or media is busy", () => {
+    expect(screen).toContain(
+      'const editingDisabled = publishState === "publishing" || mediaBusy;',
+    );
+    expect(screen).toContain("editable={!editingDisabled}");
+    expect(screen).toContain("disabled={editingDisabled}");
+    expect(screen).toContain('disabled={publishState === "publishing"}');
+  });
 
-test("share workout caption uses an explicit disabled Liquid Glass material", () => {
-  assert.match(screen, /editingDisabled && styles\.captionInputDisabled/);
-  assert.match(styles, /captionInputDisabled:/);
-  assert.match(styles, /backgroundColor: glass\.disabledFill/);
-  assert.match(styles, /borderColor: glass\.disabledBorder/);
-});
+  it("uses an explicit disabled Liquid Glass material for the caption", () => {
+    expect(screen).toContain("editingDisabled && styles.captionInputDisabled");
+    expect(styles).toContain("captionInputDisabled:");
+    expect(styles).toContain("backgroundColor: glass.disabledFill");
+    expect(styles).toContain("borderColor: glass.disabledBorder");
+  });
 
-test("share workout media actions honor the parent publishing lock", () => {
-  assert.match(mediaCard, /disabled\?: boolean/);
-  assert.match(mediaCard, /const controlsDisabled = busy \|\| disabled;/);
-  assert.match(mediaCard, /disabled=\{controlsDisabled\}/);
+  it("makes media actions honor the parent publishing lock", () => {
+    expect(mediaCard).toContain("disabled?: boolean");
+    expect(mediaCard).toContain("const controlsDisabled = busy || disabled;");
+    expect(mediaCard).toContain("disabled={controlsDisabled}");
+  });
 });
