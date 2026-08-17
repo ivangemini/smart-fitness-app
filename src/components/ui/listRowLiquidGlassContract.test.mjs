@@ -17,4 +17,9 @@ describe('ListRow Liquid Glass source contract', () => {
     expect(source).not.toContain('backgroundColor: colors.surfacePrimary');
     expect(source).not.toContain('backgroundColor: colors.backgroundSelected');
   });
+
+  it('keeps optional badge on semantic accent glass material', () => {
+    expect(source).toContain('backgroundColor: glass.semanticAccentFill');
+    expect(source).not.toContain('colors.accentSoft');
+  });
 });
