@@ -16,6 +16,9 @@ export type LiquidGlassPalette = {
   controlBorder: string;
   controlFill: string;
   controlPressedFill: string;
+  destructiveBorder: string;
+  destructiveFill: string;
+  destructivePressedFill: string;
   disabledBorder: string;
   disabledFill: string;
   elevatedFill: string;
@@ -55,6 +58,9 @@ const darkGlass: LiquidGlassPalette = {
   controlBorder: 'rgba(255, 255, 255, 0.16)',
   controlFill: 'rgba(255, 255, 255, 0.08)',
   controlPressedFill: 'rgba(255, 255, 255, 0.14)',
+  destructiveBorder: 'rgba(255, 69, 58, 0.38)',
+  destructiveFill: 'rgba(255, 69, 58, 0.16)',
+  destructivePressedFill: 'rgba(255, 69, 58, 0.24)',
   disabledBorder: 'rgba(255, 255, 255, 0.08)',
   disabledFill: 'rgba(255, 255, 255, 0.04)',
   elevatedFill: 'rgba(28, 28, 34, 0.72)',
@@ -94,6 +100,9 @@ const lightGlass: LiquidGlassPalette = {
   controlBorder: 'rgba(17, 24, 39, 0.11)',
   controlFill: 'rgba(255, 255, 255, 0.52)',
   controlPressedFill: 'rgba(255, 255, 255, 0.78)',
+  destructiveBorder: 'rgba(201, 75, 92, 0.30)',
+  destructiveFill: 'rgba(201, 75, 92, 0.13)',
+  destructivePressedFill: 'rgba(201, 75, 92, 0.20)',
   disabledBorder: 'rgba(17, 24, 39, 0.07)',
   disabledFill: 'rgba(255, 255, 255, 0.34)',
   elevatedFill: 'rgba(255, 255, 255, 0.78)',
