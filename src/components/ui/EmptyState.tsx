@@ -4,6 +4,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 type EmptyStateProps = {
   actionLabel?: string;
@@ -37,8 +41,12 @@ function EmptyStateContent({
 }
 
 export function EmptyState(props: EmptyStateProps) {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   if (props.compact) {
     return <EmptyStateContent {...props} styles={styles} />;
@@ -51,11 +59,11 @@ export function EmptyState(props: EmptyStateProps) {
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     card: {
-      backgroundColor: colors.surfaceAccent,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.cardFill,
+      borderColor: glass.cardBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
