@@ -8,6 +8,10 @@ import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 type ProfileActionsCardProps = {
   onResetOnboarding: () => void;
@@ -15,8 +19,12 @@ type ProfileActionsCardProps = {
 
 export function ProfileActionsCard({ onResetOnboarding }: ProfileActionsCardProps) {
   const router = useRouter();
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const { t } = useLocalization();
 
   return (
@@ -47,10 +55,10 @@ export function ProfileActionsCard({ onResetOnboarding }: ProfileActionsCardProp
   );
 }
 
-const createStyles = (colors: typeof Colors.light) => ({
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) => ({
   badge: {
     alignSelf: 'flex-start' as const,
-    backgroundColor: colors.backgroundSelected,
+    backgroundColor: glass.semanticAccentFill,
     borderRadius: 999,
     color: colors.textSecondary,
     fontSize: Typography.caption.fontSize,
