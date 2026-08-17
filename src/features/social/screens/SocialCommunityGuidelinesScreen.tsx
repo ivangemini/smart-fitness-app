@@ -9,16 +9,24 @@ import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { Colors, MaxContentWidth, Radii, Spacing, Typography } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 import { getSocialCommunityGuidelinesCopy } from '../socialCommunityGuidelinesCopy';
 
 export default function SocialCommunityGuidelinesScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const { locale, t } = useLocalization();
   const copy = getSocialCommunityGuidelinesCopy(locale);
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   return (
     <ScrollView
@@ -71,7 +79,7 @@ export default function SocialCommunityGuidelinesScreen() {
   );
 }
 
-const createStyles = (colors: typeof Colors.dark) =>
+const createStyles = (colors: typeof Colors.dark, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     body: {
       color: colors.textSecondary,
@@ -99,8 +107,11 @@ const createStyles = (colors: typeof Colors.dark) =>
     headerCopy: { flex: 1, gap: Spacing.one, minWidth: 0 },
     headerRow: { alignItems: 'flex-start', flexDirection: 'row', gap: Spacing.three },
     note: {
-      backgroundColor: colors.warningSoft,
+      backgroundColor: glass.semanticWarningFill,
+      borderColor: glass.semanticWarningBorder,
+      borderCurve: 'continuous',
       borderRadius: Radii.medium,
+      borderWidth: StyleSheet.hairlineWidth,
       padding: Spacing.three,
     },
     noteText: {
