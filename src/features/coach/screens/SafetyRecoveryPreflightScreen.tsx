@@ -16,13 +16,21 @@ import { useAuthSession } from '@/hooks/useAuthSession';
 import { useLocalization } from '@/localization';
 import { getSafetyRecoveryPreflightCopy } from '@/localization/safetyRecoveryPreflightCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 import { buildSafetyRecoveryLocalSummary } from '../safetyRecoveryLocalSummary';
 
 export default function SafetyRecoveryPreflightScreen() {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const { formatDate, formatNumber, locale } = useLocalization();
   const copy = getSafetyRecoveryPreflightCopy(locale);
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const insets = useSafeAreaInsets();
   const { ready, session } = useAuthSession();
   const { isRestoringState } = useAppInfrastructure();
@@ -224,7 +232,7 @@ export default function SafetyRecoveryPreflightScreen() {
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     bodyText: {
       color: colors.textSecondary,
@@ -278,7 +286,7 @@ const createStyles = (colors: typeof Colors.light) =>
       textAlign: 'right',
     },
     inputBadge: {
-      backgroundColor: colors.warningSoft,
+      backgroundColor: glass.semanticWarningFill,
       color: colors.warning,
     },
     metaText: {
@@ -310,7 +318,7 @@ const createStyles = (colors: typeof Colors.light) =>
       paddingVertical: Spacing.one,
     },
     readyBadge: {
-      backgroundColor: colors.successSoft,
+      backgroundColor: glass.semanticPositiveFill,
       color: colors.success,
     },
     screen: {
