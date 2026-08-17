@@ -28,15 +28,51 @@ jobs:
     timeout-minutes: 35
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+          if [ ! -d .git ]; then
+            git init .
+          fi
+          if git remote get-url origin >/dev/null 2>&1; then
+            git remote set-url origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          else
+            git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          fi
+
+          git clean -ffdx
+          git reset --hard HEAD >/dev/null 2>&1 || true
+
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            PR_NUMBER='${{ github.event.pull_request.number }}'
+            git fetch --prune --no-tags origin \
+              '+refs/heads/*:refs/remotes/origin/*' \
+              "+refs/pull/${PR_NUMBER}/merge:refs/remotes/pull/${PR_NUMBER}/merge"
+            git checkout --detach "refs/remotes/pull/${PR_NUMBER}/merge"
+          else
+            git fetch --prune --no-tags origin \
+              '+refs/heads/*:refs/remotes/origin/*' \
+              "+${GITHUB_SHA}:refs/remotes/ci/target"
+            git checkout --detach refs/remotes/ci/target
+          fi
+
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
+        shell: bash
+        run: |
+          set -euo pipefail
+          TOOL_CACHE="${RUNNER_TOOL_CACHE:?RUNNER_TOOL_CACHE is required on Hermes}"
+          NODE_BIN="$(find "$TOOL_CACHE/node" -type f -path '*/22.*/x64/bin/node' -print | sort -V | tail -n 1)"
+          test -n "$NODE_BIN"
+          NODE_DIR="$(dirname "$NODE_BIN")"
+          test "$("$NODE_BIN" -p 'process.versions.node.split(".")[0]')" = '22'
+          export PATH="$NODE_DIR:$PATH"
+          echo "$NODE_DIR" >> "$GITHUB_PATH"
+          node --version
+          npm --version
 
       - name: Install dependencies
         run: npm ci
