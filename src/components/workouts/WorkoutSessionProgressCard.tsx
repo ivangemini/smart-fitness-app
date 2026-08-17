@@ -4,6 +4,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import { AppCard } from '@/components/ui/AppCard';
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 type WorkoutSessionProgressCardProps = {
   nextExerciseName?: string;
@@ -13,8 +17,12 @@ type WorkoutSessionProgressCardProps = {
 };
 
 export function WorkoutSessionProgressCard({ nextExerciseName, progressLabel, progressPercent, selectedExerciseName }: WorkoutSessionProgressCardProps) {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const clampedProgress = Math.max(0, Math.min(100, progressPercent));
   const nextLabel = nextExerciseName ? `Next: ${nextExerciseName}` : null;
 
@@ -43,7 +51,7 @@ export function WorkoutSessionProgressCard({ nextExerciseName, progressLabel, pr
   );
 }
 
-const createStyles = (colors: typeof Colors.dark) =>
+const createStyles = (colors: typeof Colors.dark, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     card: {
       gap: Spacing.two,
@@ -64,7 +72,7 @@ const createStyles = (colors: typeof Colors.dark) =>
       height: 6,
     },
     progressTrack: {
-      backgroundColor: colors.backgroundSelected,
+      backgroundColor: glass.controlFill,
       borderCurve: 'continuous',
       borderRadius: Radii.pill,
       height: 8,
