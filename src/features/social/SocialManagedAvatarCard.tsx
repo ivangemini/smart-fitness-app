@@ -31,12 +31,14 @@ type SocialManagedAvatarCardProps = {
   capability: CapabilityGate;
   controller: SocialManagedAvatarController;
   copy: SocialManagedAvatarCopy;
+  disabled?: boolean;
 };
 
 export function SocialManagedAvatarCard({
   capability,
   controller,
   copy,
+  disabled = false,
 }: SocialManagedAvatarCardProps) {
   const { colors, resolvedAppearance } = useAppTheme();
   const glass = resolveLiquidGlassPalette(resolvedAppearance);
@@ -51,9 +53,10 @@ export function SocialManagedAvatarCard({
     copy,
   );
   const busy = isSocialManagedAvatarBusy(controller.operation);
+  const controlsDisabled = busy || disabled;
   const hasCandidate = Boolean(controller.candidateAsset);
   const canRemove = Boolean(
-    (controller.candidateAsset ?? controller.currentAsset) && !busy,
+    (controller.candidateAsset ?? controller.currentAsset) && !controlsDisabled,
   );
 
   const confirmRemove = () => {
@@ -158,7 +161,7 @@ export function SocialManagedAvatarCard({
       <InlineError message={controller.errorMessage} />
 
       <PrimaryButton
-        disabled={!controller.profileExists || busy}
+        disabled={!controller.profileExists || controlsDisabled}
         label={
           controller.previewUri || controller.currentAsset
             ? copy.change
@@ -169,7 +172,7 @@ export function SocialManagedAvatarCard({
       />
       {canRefreshSocialManagedAvatar(controller.candidateAsset) ? (
         <SecondaryButton
-          disabled={busy}
+          disabled={controlsDisabled}
           label={copy.refresh}
           onPress={() => void controller.refresh()}
         />
@@ -177,14 +180,14 @@ export function SocialManagedAvatarCard({
       {controller.errorMessage ||
       canRetrySocialManagedAvatar(controller.candidateAsset) ? (
         <SecondaryButton
-          disabled={!controller.profileExists || busy}
+          disabled={!controller.profileExists || controlsDisabled}
           label={copy.retry}
           onPress={() => void controller.chooseImage()}
         />
       ) : null}
       {canRemove ? (
         <DestructiveButton
-          disabled={busy}
+          disabled={controlsDisabled}
           label={copy.remove}
           loading={controller.operation === "deleting"}
           onPress={confirmRemove}

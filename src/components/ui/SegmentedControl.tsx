@@ -15,12 +15,19 @@ type SegmentedOption<Value extends string> = {
 
 type SegmentedControlProps<Value extends string> = {
   accessibilityLabel: string;
+  disabled?: boolean;
   onChange: (value: Value) => void;
   options: readonly SegmentedOption<Value>[];
   value: Value;
 };
 
-export function SegmentedControl<Value extends string>({ accessibilityLabel, onChange, options, value }: SegmentedControlProps<Value>) {
+export function SegmentedControl<Value extends string>({
+  accessibilityLabel,
+  disabled = false,
+  onChange,
+  options,
+  value,
+}: SegmentedControlProps<Value>) {
   const { colors, resolvedAppearance } = useAppTheme();
   const glass = useMemo(
     () => resolveLiquidGlassPalette(resolvedAppearance),
@@ -29,7 +36,11 @@ export function SegmentedControl<Value extends string>({ accessibilityLabel, onC
   const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   return (
-    <View accessibilityLabel={accessibilityLabel} accessibilityRole="tablist" style={styles.container}>
+    <View
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole="tablist"
+      accessibilityState={{ disabled }}
+      style={[styles.container, disabled && styles.containerDisabled]}>
       {options.map((option) => {
         const selected = option.value === value;
 
@@ -37,14 +48,22 @@ export function SegmentedControl<Value extends string>({ accessibilityLabel, onC
           <Pressable
             key={option.value}
             accessibilityRole="tab"
-            accessibilityState={{ selected }}
+            accessibilityState={{ selected, disabled }}
+            disabled={disabled}
             onPress={() => onChange(option.value)}
             style={({ pressed }) => [
               styles.segment,
               selected && styles.segmentSelected,
-              pressed && (selected ? styles.segmentSelectedPressed : styles.segmentPressed),
+              pressed && !disabled && (selected ? styles.segmentSelectedPressed : styles.segmentPressed),
             ]}>
-            <Text style={[styles.label, selected && styles.labelSelected]}>{option.label}</Text>
+            <Text
+              style={[
+                styles.label,
+                selected && styles.labelSelected,
+                disabled && styles.labelDisabled,
+              ]}>
+              {option.label}
+            </Text>
           </Pressable>
         );
       })}
@@ -65,6 +84,10 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
       minWidth: 0,
       padding: Spacing.one,
     },
+    containerDisabled: {
+      backgroundColor: glass.disabledFill,
+      borderColor: glass.disabledBorder,
+    },
     label: {
       color: colors.textSecondary,
       flexShrink: 1,
@@ -74,6 +97,7 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
       minWidth: 0,
       textAlign: 'center',
     },
+    labelDisabled: { color: colors.textMuted },
     labelSelected: {
       color: glass.accentText,
     },
