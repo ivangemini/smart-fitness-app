@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 
 import { ProfileCoachCard } from '@/components/profile/ProfileCoachCard';
 import { ProfileGoalsCard } from '@/components/profile/ProfileGoalsCard';
-import { Colors, Radii, Spacing } from '@/constants/theme';
+import { Radii, Spacing } from '@/constants/theme';
 import { useAppActions } from '@/context/AppContext';
 import { useProfileState } from '@/context/ProfileStateContext';
 import {
@@ -13,6 +13,11 @@ import {
 } from '@/features/profile/coachProfileForm';
 import { getGoalTypeLabel } from '@/features/progress/progressLocalization';
 import { useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 import type { ProfileTrainingExperience } from '@/types';
 import {
   displayLengthInputToCm,
@@ -40,6 +45,12 @@ const normalizeCoachActivity = (value: string): CoachActivityLevel | null => {
 };
 
 export function ProgressPlanningSections() {
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const { profile } = useProfileState();
   const { updateCoachProfile, updateProfileGoals } = useAppActions();
   const { t } = useLocalization();
@@ -135,6 +146,7 @@ export function ProgressPlanningSections() {
       <CollapsibleSection
         expanded={goalsExpanded}
         onToggle={() => setGoalsExpanded((current) => !current)}
+        styles={styles}
         subtitle={t('goals.sectionSubtitle', {
           goal: getGoalTypeLabel(t, profile.goalType),
           weight: formatWeightValue(profile.targetWeight, weightUnit),
@@ -159,6 +171,7 @@ export function ProgressPlanningSections() {
       <CollapsibleSection
         expanded={coachExpanded}
         onToggle={() => setCoachExpanded((current) => !current)}
+        styles={styles}
         subtitle={t('coach.sectionSubtitle')}
         title={t('coach.sectionTitle')}>
         <ProfileCoachCard
@@ -180,16 +193,20 @@ export function ProgressPlanningSections() {
   );
 }
 
+type ProgressPlanningStyles = ReturnType<typeof createStyles>;
+
 function CollapsibleSection({
   children,
   expanded,
   onToggle,
+  styles,
   subtitle,
   title,
 }: {
   children: React.ReactNode;
   expanded: boolean;
   onToggle(): void;
+  styles: ProgressPlanningStyles;
   subtitle: string;
   title: string;
 }) {
@@ -199,7 +216,7 @@ function CollapsibleSection({
         accessibilityRole="button"
         accessibilityState={{ expanded }}
         onPress={onToggle}
-        style={({ pressed }) => [styles.disclosure, pressed && styles.disclosurePressed]}>
+        style={({ pressed }) => [styles.disclosure, pressed ? styles.disclosurePressed : null]}>
         <View style={styles.copy}>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.subtitle}>{subtitle}</Text>
@@ -211,24 +228,29 @@ function CollapsibleSection({
   );
 }
 
-const styles = StyleSheet.create({
-  chevron: { color: Colors.dark.textPrimary, fontSize: 24, fontWeight: '600', lineHeight: 26 },
-  copy: { flex: 1, gap: 4 },
-  disclosure: {
-    alignItems: 'center',
-    backgroundColor: Colors.dark.surfacePrimary,
-    borderColor: Colors.dark.borderSubtle,
-    borderRadius: Radii.large,
-    borderWidth: StyleSheet.hairlineWidth,
-    flexDirection: 'row',
-    gap: Spacing.two,
-    justifyContent: 'space-between',
-    minHeight: 68,
-    padding: Spacing.three,
-  },
-  disclosurePressed: { opacity: 0.78 },
-  section: { gap: Spacing.two },
-  stack: { gap: Spacing.three },
-  subtitle: { color: Colors.dark.textSecondary, fontSize: 13, lineHeight: 18 },
-  title: { color: Colors.dark.textPrimary, fontSize: 18, fontWeight: '800' },
-});
+const createStyles = (
+  colors: ReturnType<typeof useAppTheme>['colors'],
+  glass: LiquidGlassPalette,
+) =>
+  StyleSheet.create({
+    chevron: { color: colors.textPrimary, fontSize: 24, fontWeight: '600', lineHeight: 26 },
+    copy: { flex: 1, gap: 4, minWidth: 0 },
+    disclosure: {
+      alignItems: 'center',
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
+      borderCurve: 'continuous',
+      borderRadius: Radii.large,
+      borderWidth: StyleSheet.hairlineWidth,
+      flexDirection: 'row',
+      gap: Spacing.two,
+      justifyContent: 'space-between',
+      minHeight: 68,
+      padding: Spacing.three,
+    },
+    disclosurePressed: { backgroundColor: glass.controlPressedFill },
+    section: { gap: Spacing.two },
+    stack: { gap: Spacing.three },
+    subtitle: { color: colors.textSecondary, flexShrink: 1, fontSize: 13, lineHeight: 18 },
+    title: { color: colors.textPrimary, flexShrink: 1, fontSize: 18, fontWeight: '800' },
+  });
