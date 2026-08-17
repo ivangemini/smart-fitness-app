@@ -66,7 +66,7 @@ export function SocialStoryOverlayEditor({
         onChangeText={onTextChange}
         placeholder={copy.placeholder}
         placeholderTextColor={colors.textSecondary}
-        style={styles.input}
+        style={[styles.input, disabled ? styles.inputDisabled : null]}
         value={value}
       />
       <View style={styles.placementSection}>
@@ -84,8 +84,13 @@ export function SocialStoryOverlayEditor({
                 onPress={() => onPlacementChange(item)}
                 style={({ pressed }) => [
                   styles.placementButton,
-                  selected && styles.placementButtonSelected,
-                  pressed && styles.placementButtonPressed,
+                  selected ? styles.placementButtonSelected : null,
+                  disabled ? styles.placementButtonDisabled : null,
+                  pressed && !disabled
+                    ? selected
+                      ? styles.placementButtonSelectedPressed
+                      : styles.placementButtonPressed
+                    : null,
                 ]}
               >
                 <Text
@@ -133,6 +138,10 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
       paddingVertical: Spacing.two,
       textAlignVertical: 'top',
     },
+    inputDisabled: {
+      backgroundColor: glass.disabledFill,
+      borderColor: glass.disabledBorder,
+    },
     label: {
       color: colors.textPrimary,
       fontSize: Typography.bodyEmphasized.fontSize,
@@ -151,11 +160,16 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
       paddingHorizontal: Spacing.two,
       paddingVertical: Spacing.two,
     },
-    placementButtonPressed: { opacity: 0.72 },
+    placementButtonDisabled: {
+      backgroundColor: glass.disabledFill,
+      borderColor: glass.disabledBorder,
+    },
+    placementButtonPressed: { backgroundColor: glass.controlPressedFill },
     placementButtonSelected: {
       backgroundColor: glass.accentFill,
       borderColor: glass.accentBorder,
     },
+    placementButtonSelectedPressed: { backgroundColor: glass.accentPressedFill },
     placementLabel: {
       color: colors.textSecondary,
       fontSize: Typography.caption.fontSize,

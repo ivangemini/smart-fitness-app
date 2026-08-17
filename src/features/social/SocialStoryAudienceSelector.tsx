@@ -48,11 +48,16 @@ export function SocialStoryAudienceSelector({
           minHeight: 44,
           paddingHorizontal: Spacing.two,
         },
+        optionDisabled: {
+          backgroundColor: glass.disabledFill,
+          borderColor: glass.disabledBorder,
+        },
+        optionPressed: { backgroundColor: glass.controlPressedFill },
         optionSelected: {
+          backgroundColor: glass.semanticAccentFill,
           borderColor: colors.textPrimary,
           borderWidth: 1,
         },
-        optionDisabled: { opacity: 0.5 },
         text: {
           color: colors.textSecondary,
           fontSize: Typography.callout.fontSize,
@@ -86,7 +91,7 @@ export function SocialStoryAudienceSelector({
                 styles.option,
                 selected ? styles.optionSelected : null,
                 disabled ? styles.optionDisabled : null,
-                pressed && !disabled ? { opacity: 0.72 } : null,
+                pressed && !disabled ? styles.optionPressed : null,
               ]}
               testID={`story-audience-${option.value}`}
             >

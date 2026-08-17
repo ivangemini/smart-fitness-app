@@ -56,9 +56,16 @@ export function SocialStoryReactionSurface({ api, locale, mode, storyId }: Props
           minWidth: 52,
           paddingHorizontal: Spacing.two,
         },
-        choiceDisabled: { opacity: 0.5 },
-        choicePressed: { transform: [{ scale: 0.96 }] },
+        choiceDisabled: {
+          backgroundColor: glass.disabledFill,
+          borderColor: glass.disabledBorder,
+        },
+        choicePressed: {
+          backgroundColor: glass.controlPressedFill,
+          transform: [{ scale: 0.96 }],
+        },
         choiceSelected: {
+          backgroundColor: glass.semanticAccentFill,
           borderColor: colors.textPrimary,
           borderWidth: 2,
         },
@@ -172,7 +179,7 @@ export function SocialStoryReactionSurface({ api, locale, mode, storyId }: Props
                   styles.choice,
                   selected ? styles.choiceSelected : null,
                   disabled ? styles.choiceDisabled : null,
-                  pressed ? styles.choicePressed : null,
+                  pressed && !disabled ? styles.choicePressed : null,
                 ]}
                 testID={`story-reaction-${reaction}`}
               >
