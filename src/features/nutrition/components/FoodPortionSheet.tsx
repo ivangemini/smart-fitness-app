@@ -114,7 +114,7 @@ export function FoodPortionSheet({
                 accessibilityRole="button"
                 hitSlop={10}
                 onPress={onClose}
-                style={styles.sheetClose}>
+                style={({ pressed }) => [styles.sheetClose, pressed && styles.sheetClosePressed]}>
                 <X color={colors.textPrimary} size={20} strokeWidth={2.2} />
               </Pressable>
             </View>

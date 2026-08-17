@@ -175,7 +175,10 @@ export function BarcodeScannerModal({
             accessibilityLabel={copy.scanner.closeScanner}
             hitSlop={10}
             onPress={onClose}
-            style={styles.scannerCloseButton}>
+            style={({ pressed }) => [
+              styles.scannerCloseButton,
+              pressed && styles.scannerClosePressed,
+            ]}>
             <Text style={styles.scannerCloseText}>{copy.scanner.close}</Text>
           </Pressable>
           <Text selectable style={styles.scannerTitle}>{copy.scanner.title}</Text>
@@ -229,7 +232,10 @@ export function BarcodeScannerModal({
               accessibilityLabel={copy.scanner.returnManualSearch}
               hitSlop={10}
               onPress={onClose}
-              style={styles.scannerManualButton}>
+              style={({ pressed }) => [
+                styles.scannerManualButton,
+                pressed && styles.scannerManualPressed,
+              ]}>
               <Text style={styles.scannerManualText}>{copy.scanner.manualSearch}</Text>
             </Pressable>
           </View>
