@@ -23,7 +23,6 @@ import {
   useWorkoutState,
 } from '@/context/AppContext';
 import { getWorkoutsHubWorkoutTitle } from '@/features/workouts/workoutsHubLocalization';
-import { useWorkoutTheme } from '@/features/workouts/workoutTheme';
 import {
   getWorkoutTemplateById,
   hydrateActiveWorkoutSessionDraft,
@@ -34,6 +33,11 @@ import {
 } from '@/lib/workouts';
 import { useLocalization } from '@/localization';
 import { getWorkoutTemplateDetailCopy } from '@/localization/workoutTemplateDetailCopy';
+import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 export default function WorkoutTemplateDetailScreen() {
   const params = useLocalSearchParams<{ workoutId?: string }>();
@@ -41,12 +45,16 @@ export default function WorkoutTemplateDetailScreen() {
   const { deleteWorkoutTemplate } = useAppActions();
   const { isRestoringState } = useAppInfrastructure();
   const { workouts } = useWorkoutState();
-  const { colors } = useWorkoutTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { formatNumber, locale, t } = useLocalization();
   const copy = getWorkoutTemplateDetailCopy(locale);
   const insets = useSafeAreaInsets();
   const { height: viewportHeight } = useWindowDimensions();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const [footerHeight, setFooterHeight] = useState(0);
 
   useEffect(() => {
@@ -235,7 +243,7 @@ export default function WorkoutTemplateDetailScreen() {
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     backToWorkoutsAction: {
       marginTop: Spacing.two,
@@ -299,7 +307,11 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     exerciseThumb: {
       alignItems: 'center',
-      backgroundColor: colors.backgroundSecondary,
+      backgroundColor: glass.cardFill,
+      borderColor: glass.cardBorder,
+      borderCurve: 'continuous',
+      borderRadius: 16,
+      borderWidth: StyleSheet.hairlineWidth,
       height: 76,
       justifyContent: 'center',
       width: 76,
@@ -317,8 +329,8 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     footer: {
       alignItems: 'center',
-      backgroundColor: colors.background,
-      borderTopColor: colors.divider,
+      backgroundColor: glass.elevatedFill,
+      borderTopColor: glass.cardBorder,
       borderTopWidth: StyleSheet.hairlineWidth,
       bottom: 0,
       left: 0,
@@ -329,8 +341,8 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     header: {
       alignItems: 'center',
-      backgroundColor: colors.background,
-      borderBottomColor: colors.divider,
+      backgroundColor: glass.elevatedFill,
+      borderBottomColor: glass.cardBorder,
       borderBottomWidth: StyleSheet.hairlineWidth,
       flexDirection: 'row',
       gap: Spacing.two,
