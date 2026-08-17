@@ -27,6 +27,10 @@ import { Colors, MaxContentWidth, Radii, Spacing, Typography } from '@/constants
 import { localizeAuthSubmission, localizeAuthValidation } from '@/localization/authCopy';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 import type { ProfileTrainingExperience } from '@/types';
 import { displayLengthInputToCm, useUnitPreferences } from '@/units';
 
@@ -50,9 +54,13 @@ const EXPERIENCE_VALUES: ProfileTrainingExperience[] = [
 export function AuthFormScreen({ mode, onBack, onSubmit, onSwitchMode }: AuthFormScreenProps) {
   const safeAreaInsets = useSafeAreaInsets();
   const { t } = useLocalization();
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const { length: lengthUnit } = useUnitPreferences();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const copy =
     mode === 'login'
       ? {
@@ -256,7 +264,8 @@ export function AuthFormScreen({ mode, onBack, onSubmit, onSwitchMode }: AuthFor
                           style={({ pressed }) => [
                             styles.experienceChoice,
                             selected && styles.experienceChoiceSelected,
-                            pressed && styles.pressed,
+                            pressed && !selected && styles.experienceChoicePressed,
+                            pressed && selected && styles.experienceChoiceSelectedPressed,
                           ]}>
                           <Text
                             style={[
@@ -290,7 +299,7 @@ export function AuthFormScreen({ mode, onBack, onSubmit, onSwitchMode }: AuthFor
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     container: {
       maxWidth: MaxContentWidth,
@@ -298,8 +307,9 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     experienceChoice: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
+      borderCurve: 'continuous',
       borderRadius: Radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
       flexBasis: 120,
@@ -310,9 +320,15 @@ const createStyles = (colors: typeof Colors.light) =>
       paddingHorizontal: Spacing.two,
       paddingVertical: Spacing.one,
     },
+    experienceChoicePressed: {
+      backgroundColor: glass.controlPressedFill,
+    },
     experienceChoiceSelected: {
-      backgroundColor: colors.backgroundSelected,
-      borderColor: colors.accent,
+      backgroundColor: glass.accentFill,
+      borderColor: glass.accentBorder,
+    },
+    experienceChoiceSelectedPressed: {
+      backgroundColor: glass.accentPressedFill,
     },
     experienceField: { gap: Spacing.one },
     experienceLabel: {
@@ -322,7 +338,7 @@ const createStyles = (colors: typeof Colors.light) =>
       fontWeight: Typography.label.fontWeight,
       textAlign: 'center',
     },
-    experienceLabelSelected: { color: colors.textPrimary },
+    experienceLabelSelected: { color: glass.accentText },
     experienceRow: {
       flexDirection: 'row',
       flexWrap: 'wrap',
@@ -336,7 +352,6 @@ const createStyles = (colors: typeof Colors.light) =>
     keyboardRoot: {
       flex: 1,
     },
-    pressed: { opacity: 0.72 },
     screen: {
       backgroundColor: colors.background,
       flex: 1,
