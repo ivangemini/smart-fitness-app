@@ -33,7 +33,7 @@ describe('Mobile CI merged-PR push deduplication', () => {
   });
 
   it('requires exact merge-sha, merged-at and main-base evidence before skipping', () => {
-    expect(workflow).toContain('"merge_commit_sha"[[:space:]]*:[[:space:]]*"${GITHUB_SHA}"');
+    expect(workflow).toContain('\\"merge_commit_sha\\"[[:space:]]*:[[:space:]]*\\"${GITHUB_SHA}\\"');
     expect(workflow).toContain('"merged_at"[[:space:]]*:[[:space:]]*"[^\"]+"');
     expect(workflow).toContain('"base"[[:space:]]*:[[:space:]]*\\{[^}]*"ref"[[:space:]]*:[[:space:]]*"main"');
   });
