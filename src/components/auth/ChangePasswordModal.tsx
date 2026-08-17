@@ -24,6 +24,10 @@ import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { localizeChangePasswordMessage } from '@/localization/authCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 type ChangePasswordModalProps = {
   visible: boolean;
@@ -41,8 +45,12 @@ export function ChangePasswordModal({
   onChanged,
 }: ChangePasswordModalProps) {
   const { t } = useLocalization();
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const insets = useSafeAreaInsets();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -139,6 +147,7 @@ export function ChangePasswordModal({
             </Text>
 
             <PasswordField
+              disabled={busy}
               error={localizeChangePasswordMessage(errors.currentPassword, t)}
               label={t('changePassword.current')}
               onChangeText={(value) => updateField('currentPassword', value)}
@@ -147,6 +156,7 @@ export function ChangePasswordModal({
               value={currentPassword}
             />
             <PasswordField
+              disabled={busy}
               error={localizeChangePasswordMessage(errors.newPassword, t)}
               label={t('changePassword.new')}
               onChangeText={(value) => updateField('newPassword', value)}
@@ -155,6 +165,7 @@ export function ChangePasswordModal({
               value={newPassword}
             />
             <PasswordField
+              disabled={busy}
               error={localizeChangePasswordMessage(errors.confirmPassword, t)}
               label={t('changePassword.confirm')}
               onChangeText={(value) => updateField('confirmPassword', value)}
@@ -185,6 +196,7 @@ export function ChangePasswordModal({
 type PasswordFieldProps = {
   label: string;
   value: string;
+  disabled?: boolean;
   error?: string;
   onChangeText(value: string): void;
   onSubmitEditing?(): void;
@@ -195,6 +207,7 @@ type PasswordFieldProps = {
 function PasswordField({
   label,
   value,
+  disabled = false,
   error,
   onChangeText,
   onSubmitEditing,
@@ -206,16 +219,22 @@ function PasswordField({
       <Text style={styles.label}>{label}</Text>
       <TextInput
         accessibilityLabel={label}
+        accessibilityState={{ disabled }}
         autoCapitalize="none"
         autoComplete="current-password"
         autoCorrect={false}
+        editable={!disabled}
         onChangeText={onChangeText}
         onSubmitEditing={onSubmitEditing}
         placeholder={label}
         placeholderTextColor={placeholderTextColor}
         returnKeyType={onSubmitEditing ? 'done' : 'next'}
         secureTextEntry
-        style={[styles.input, error ? styles.inputError : null]}
+        style={[
+          styles.input,
+          disabled && styles.inputDisabled,
+          error ? styles.inputError : null,
+        ]}
         value={value}
       />
       {error ? <Text style={styles.fieldError}>{error}</Text> : null}
@@ -223,7 +242,7 @@ function PasswordField({
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     body: {
       color: colors.textSecondary,
@@ -251,15 +270,21 @@ const createStyles = (colors: typeof Colors.light) =>
       gap: Spacing.one,
     },
     input: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.border,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
+      borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
-      color: colors.text,
+      color: colors.textPrimary,
       fontSize: Typography.body.fontSize,
       minHeight: 50,
       paddingHorizontal: Spacing.three,
       paddingVertical: Spacing.two,
+    },
+    inputDisabled: {
+      backgroundColor: glass.disabledFill,
+      borderColor: glass.disabledBorder,
+      color: colors.textMuted,
     },
     inputError: {
       borderColor: colors.error,
@@ -278,15 +303,20 @@ const createStyles = (colors: typeof Colors.light) =>
       backgroundColor: 'rgba(0, 0, 0, 0.72)',
     },
     sheet: {
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.border,
+      backgroundColor: glass.elevatedFill,
+      borderColor: glass.cardBorder,
+      borderTopColor: glass.cardHighlight,
       borderTopLeftRadius: Radii.xlarge,
       borderTopRightRadius: Radii.xlarge,
       borderWidth: StyleSheet.hairlineWidth,
       maxHeight: '92%',
+      shadowColor: glass.shadowColor,
+      shadowOffset: { width: 0, height: -8 },
+      shadowOpacity: glass.shadowOpacity,
+      shadowRadius: 24,
     },
     title: {
-      color: colors.text,
+      color: colors.textPrimary,
       fontSize: 25,
       fontWeight: '800',
       lineHeight: 31,
