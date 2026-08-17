@@ -25,6 +25,11 @@ export const createShareWorkoutStyles = (
       minHeight: 96,
       padding: Spacing.two,
     },
+    captionInputDisabled: {
+      backgroundColor: glass.controlDisabledFill,
+      borderColor: glass.controlDisabledBorder,
+      color: colors.textMuted,
+    },
     cardTitle: {
       color: colors.textPrimary,
       flexShrink: 1,
