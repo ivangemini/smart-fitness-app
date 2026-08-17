@@ -33,4 +33,32 @@ describe('Labs localization ownership contract', () => {
     expect(screen).not.toContain('График нескольких показателей');
     expect(screen).not.toContain('Multi-biomarker trend chart');
   });
+
+  it('keeps marker window and chart copy outside the route component', () => {
+    const copy = read('src/features/labs/labMarkerCopy.ts');
+    const screen = read('src/app/labs-marker/[markerId].tsx');
+
+    expect(copy).toContain('historyWindowLabels');
+    expect(copy).toContain('chartAccessibilityLabel:');
+    expect(screen).toContain('getLabMarkerCopy(locale)');
+    expect(screen).not.toContain("locale.toLowerCase().startsWith('ru')");
+    expect(screen).not.toContain("'3 мес'");
+    expect(screen).not.toContain('Confirmed points:');
+  });
+
+  it('formats visible lab result numbers through the locale formatter', () => {
+    const marker = read('src/app/labs-marker/[markerId].tsx');
+    const compare = read('src/app/labs-compare.tsx');
+    const biomarkerCard = read('src/features/labs/LabBiomarkerCard.tsx');
+
+    expect(marker).toContain('formatLocalizedNumber');
+    expect(marker).toContain('formatLabNumber(latest.value, locale)');
+    expect(marker).toContain('formatLabNumber(result.value, locale)');
+    expect(compare).toContain('formatLocalizedNumber');
+    expect(compare).toContain('formatLabValue(item.previous.value, item.previous.unit)');
+    expect(compare).toContain('formatLabValue(item.current.value, item.current.unit)');
+    expect(biomarkerCard).toContain('formatLocalizedNumber(');
+    expect(biomarkerCard).toContain('const valueLabel =');
+    expect(biomarkerCard).toContain('accessibilityLabel={`${name}, ${valueLabel}, ${statusLabel}`}');
+  });
 });
