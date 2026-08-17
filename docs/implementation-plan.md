@@ -12,15 +12,28 @@ Reviewed local-state storage decision: `docs/architecture/local-state-performanc
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current `main` baseline before this convergence rollup: `e5fafed6918932e1f6289d2a88f62993f2d94fa3` (#723). The merged baseline includes #711 shared Liquid Glass primitive convergence, #713 live Home daily-step consumption, #716 Expo SDK 56 patch alignment, #718 self-hosted Hermes CI resilience, #719 local-persistence retry integrity and #723 validated merged-PR push CI deduplication. The active post-foundation UI rollup is based exactly on that main checkpoint and retains no CI/deploy diff.
+Current verified `main`: `3b99382f1b189b07fa7efaf897499269adc10a83` (#726).
 
-The rollup consolidates the superseded #712/#714/#715/#717 workstreams plus the already prepared Nutrition, Workouts and Notifications convergence packages. Exact-head Mobile CI remains required before the rollup can be treated as merged source/CI evidence.
+Relevant merged sequence:
+
+- #711 — shared Liquid Glass primitive convergence;
+- #713 — live Home daily-step consumption;
+- #716 — Expo SDK 56 patch alignment;
+- #718 — self-hosted Hermes Mobile CI resilience;
+- #719 — local-persistence retry integrity;
+- #723 — strict merged-PR push CI deduplication using PR API evidence;
+- #724 — broad post-foundation Liquid Glass convergence across Settings, Progress, Companion, Labs, Social profile controls, account modals, Notifications, Nutrition add-food surfaces and Workouts secondary surfaces;
+- #726 — Auth/Register training-experience plus Onboarding input/choice controls migrated to the active Liquid Glass palette.
+
+#724 and #726 both passed required exact-head Mobile CI before merge. Their real merge pushes then exercised the accepted dedup path: detector success with heavyweight validation skipped. Corresponding EAS update runs completed as `skipped`; no OTA publish occurred.
+
+The repository-wide reachable-surface Liquid Glass audit remains active. Complete repository-wide visual convergence is not yet claimed.
 
 ### Backend
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Latest runtime/operations merge: `bd98b1184e0153b3c7b9dfda7a47f3365b6e208f` (#261). Latest Phase 14 evidence/docs checkpoint: `8638604fb98a1ee84a0a225087a7e64ffd8f2c4e` (#263).
+Latest runtime/operations merge retained from the Phase 14 checkpoint: `bd98b1184e0153b3c7b9dfda7a47f3365b6e208f` (#261). Latest Phase 14 evidence/docs checkpoint: `8638604fb98a1ee84a0a225087a7e64ffd8f2c4e` (#263).
 
 #254 merged fail-closed Labs private processing. #255 added isolated Hermes staging. #256 made bounded staging bootstrap permanent. #257 added `staging:labs-evidence`. #261 added permanent bounded `staging:stories-evidence`.
 
@@ -65,9 +78,9 @@ The Stories pass used one synthetic account, verified an empty authenticated Sto
 - Phase 12 Labs + Settings: provider-neutral source composition, native PDF import, private-processing runtime, isolated staging and bounded evidence tooling complete; configured-provider/device evidence remains.
 - Phase 13 Companion v1: retained; richer progression/cosmetics deferred.
 - Phase 14: ordinary autonomous source/runtime-preparation work is exhausted for currently authorized contracts. Remaining work is external provider material, signed native/physical-device evidence, deliberate rollout or bounded repair of a reproduced defect.
-- Priority Liquid Glass convergence: active autonomous workstream while the external Phase 14 gates remain unavailable. The current rollup covers Settings, Progress, Companion, Labs, Social profile mutation controls, account modals, Notifications, Nutrition add-food surfaces and Workouts secondary surfaces plus focused regression/source contracts.
+- Priority Liquid Glass convergence: active autonomous workstream while external Phase 14 gates remain unavailable. #724 and #726 are merged evidence; the reachable-surface audit continues for demonstrated gaps only.
 
-This is not a claim that configured-provider or physical-device Phase 14 evidence is complete, nor that repository-wide Liquid Glass coverage is complete before the active rollup passes exact-head CI and the remaining reachable-surface audit closes.
+This is not a claim that configured-provider or physical-device Phase 14 evidence is complete.
 
 ## P14-A — Push
 
@@ -135,27 +148,22 @@ Do not manufacture source refactors, fake provider evidence or inferred device e
 
 ## Priority UI convergence — complete Liquid Glass coverage
 
-Because ordinary autonomous Phase 14 source work is exhausted while its remaining gates depend on external material/devices, the repository-wide Liquid Glass audit/remediation is now the active highest-priority autonomous workstream. It proceeds without claiming that the external Phase 14 evidence is complete.
+Because ordinary autonomous Phase 14 source work is exhausted while its remaining gates depend on external material/devices, the repository-wide Liquid Glass audit/remediation is the active highest-priority autonomous workstream.
 
-Current active rollup inventory:
+### Merged convergence evidence
 
-1. Settings navigation plus compact/Dynamic-Type-safe diagnostics and sync-conflict rows;
-2. Progress planning disclosures and Companion progress secondary materials;
-3. Labs chart/document-review materials, canonical RU/EN copy ownership and locale-aware result presentation;
-4. Social profile save/avatar mutation locking plus disabled SegmentedControl semantics;
-5. Change Password/Delete Account modal materials and in-flight input locking;
-6. Notifications settings copy/material convergence;
-7. Nutrition add-food/search/recent/favorites/saved-meals/scanner/sheet pressed-material convergence;
-8. Workouts history/exercise-library secondary-material convergence;
-9. focused source-contract/regression coverage for every migrated cluster.
+1. #711 shared reviewed Liquid Glass primitives and navigation material foundation;
+2. #724 Settings navigation/diagnostics, Progress planning disclosures, Companion secondary materials, Labs chart/review materials and localization ownership, Social profile mutation controls, account modals, Notifications, Nutrition add-food surfaces and Workouts secondary surfaces;
+3. #726 Auth/Register training-experience selector and Onboarding input/choice materials, with dedicated source contracts;
+4. existing focused regression/source contracts across primary Home, Workouts, Nutrition, Progress, Labs, Social, Coach, Settings and shared UI primitives.
 
-Required remaining scope:
+### Required remaining scope
 
-1. inventory every reachable tab, primary screen, secondary screen, modal, sheet, picker, empty/error/loading state and persistent navigation/action surface not already demonstrated by the active/merged convergence packages;
+1. inventory every reachable tab, primary screen, secondary screen, modal, sheet, picker, empty/error/loading state and persistent navigation/action surface not already demonstrated by merged convergence packages;
 2. classify each surface as fully converged, partially converged or legacy/non-Liquid-Glass using the established shared material/navigation primitives rather than visual guesswork alone;
-3. migrate every remaining partial or legacy surface to the same established Liquid Glass design language, including hierarchy, materials, typography, spacing, controls, navigation, safe-area behavior and interaction states;
+3. migrate every demonstrated partial or legacy surface to the established Liquid Glass design language, including hierarchy, materials, typography, spacing, controls, navigation, safe-area behavior and interaction states;
 4. remove obsolete one-off styling/material implementations when a reviewed shared primitive already exists, without changing unrelated business logic or persistence contracts;
-5. validate small-screen/responsive layout, Dynamic Island/notch/Home Indicator safe areas, scrolling, keyboard interaction, accessibility/reduced-transparency behavior and dark appearance across the migrated surfaces;
+5. validate small-screen/responsive layout, Dynamic Island/notch/Home Indicator safe areas, scrolling, keyboard interaction, accessibility/reduced-transparency behavior and dark appearance across migrated surfaces;
 6. add or update regression/source-contract coverage so newly converged screens cannot silently fall back to legacy styling;
 7. close this priority only when the reachable in-scope inventory contains no unresolved partial/legacy surface.
 
@@ -163,19 +171,18 @@ Do not begin unrelated Phase 15 feature expansion before this convergence audit 
 
 ## Current execution order
 
-1. Keep Phase 14 provider/device gates ready; execute them as soon as the required external staging material, signing or physical-device access exists.
-2. Complete and exact-head validate the active Liquid Glass rollup on the current main baseline.
-3. Continue the repository-wide reachable-surface Liquid Glass audit and remediate any remaining demonstrated gaps in coherent batches rather than isolated one-line PRs.
-4. As soon as staging-only HTTPS storage + Gemini material becomes available, run bounded Labs configured-provider evidence.
-5. As soon as staging-only APNs/FCM material becomes available, run push readiness/provider evidence.
-6. As soon as signed builds/physical devices are available, collect Steps, Push, Labs and remaining Stories native/mobile evidence.
-7. Do not begin unrelated Phase 15 feature expansion before the Liquid Glass convergence priority is complete.
+1. Continue the repository-wide reachable-surface Liquid Glass audit and remediate demonstrated gaps in coherent batches rather than isolated one-line PRs.
+2. Require exact-head Mobile CI for every runtime/source convergence PR and verify post-merge dedup plus EAS `skipped` acceptance.
+3. As soon as staging-only HTTPS storage + Gemini material becomes available, run bounded Labs configured-provider evidence.
+4. As soon as staging-only APNs/FCM material becomes available, run push readiness/provider evidence.
+5. As soon as signed builds/physical devices are available, collect Steps, Push, Labs and remaining Stories native/mobile evidence.
+6. Do not begin unrelated Phase 15 feature expansion before the Liquid Glass convergence priority is complete.
 
 ## Validation policy
 
 Mobile runtime/code PRs require exact-head Mobile CI: repository/changed-file audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
 
-Merged-PR push deduplication is accepted only when the merge push detector proves exact PR merge SHA, merged state and `main` base from the GitHub PR API; any missing parser/API evidence fails open to the full validation pipeline. The #723 post-merge acceptance demonstrated the intended path: detector success with all heavyweight validation steps skipped after an already-green exact-head PR.
+Merged-PR push deduplication is accepted only when the merge push detector proves exact PR merge SHA, merged state and `main` base from the GitHub PR API; any missing parser/API evidence fails open to the full validation pipeline. #723 established the strict implementation, and #724/#726 demonstrated real post-merge detector-only acceptance with heavyweight steps skipped.
 
 Backend source/operations PRs require applicable exact-head Backend CI and PostgreSQL CI, plus account-deletion validation when schema/privacy/account-lifecycle surfaces change.
 
@@ -183,6 +190,6 @@ Documentation-only synchronization must not claim configured-provider, physical-
 
 ## Activation boundary
 
-HealthKit/Health Connect, Labs provider/staging runtime, backend staging deployment/migrations, APNs/FCM staging, native/EAS builds and physical-device QA are explicitly authorized. Execution still requires actual access, credentials/signing material and devices.
+HealthKit/Health Connect, Labs provider/staging runtime, backend staging deployment/migrations, APNs/FCM staging, native/EAS builds and physical-device QA remain gated by actual credentials/signing material/device access and explicit execution boundaries.
 
-Production credential rotation, production scheduling, production user-data mutation, destructive cleanup, DNS changes and app-store submission remain deliberate rollout actions with separate evidence and rollback requirements.
+Production credential rotation, production scheduling, production user-data mutation, destructive cleanup, DNS changes, OTA/EAS publish, native build/install and app-store submission remain deliberate actions and are not implied by source merges or this roadmap.
