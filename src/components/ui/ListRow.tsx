@@ -3,6 +3,10 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Colors, Layout, Radii, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 type ListRowProps = {
   accessibilityHint?: string;
@@ -17,8 +21,12 @@ type ListRowProps = {
 };
 
 export function ListRow({ accessibilityHint, accessibilityLabel, badge, detail, leading, onPress, title, trailing, value }: ListRowProps) {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   const content = (
     <View style={styles.rowContent}>
@@ -54,7 +62,7 @@ export function ListRow({ accessibilityHint, accessibilityLabel, badge, detail, 
   return <View style={styles.row}>{content}</View>;
 }
 
-const createStyles = (colors: typeof Colors.dark) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     badge: {
       backgroundColor: colors.accentSoft,
@@ -91,11 +99,11 @@ const createStyles = (colors: typeof Colors.dark) =>
       marginRight: Spacing.two,
     },
     pressed: {
-      backgroundColor: colors.backgroundSelected,
+      backgroundColor: glass.controlPressedFill,
     },
     row: {
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,

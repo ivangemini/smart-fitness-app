@@ -21,12 +21,14 @@ describe('Weight Entry shared form contract', () => {
     expect(source).not.toContain('backgroundColor: colors.surfacePrimary');
   });
 
-  it('inherits a programmatic accessibility label and shared focus/error states', () => {
+  it('inherits a programmatic accessibility label and shared focus/error/disabled states', () => {
     const source = readSource(formFieldPath);
 
     expect(source).toContain('accessibilityLabel={inputProps.accessibilityLabel ?? label}');
-    expect(source).toContain('focused && styles.inputFocused');
-    expect(source).toContain('errorMessage && styles.inputError');
+    expect(source).toContain('accessibilityState={{ ...accessibilityState, disabled }}');
+    expect(source).toContain('focused && !disabled && styles.inputFocused');
+    expect(source).toContain('errorMessage && !disabled && styles.inputError');
+    expect(source).toContain('disabled && styles.inputDisabled');
     expect(source).toContain('<InlineError message={errorMessage} />');
   });
 
