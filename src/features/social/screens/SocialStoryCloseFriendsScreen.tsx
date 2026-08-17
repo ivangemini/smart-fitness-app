@@ -85,8 +85,10 @@ export default function SocialStoryCloseFriendsScreen() {
         username: {
           color: colors.textPrimary,
           flex: 1,
+          flexShrink: 1,
           fontSize: Typography.body.fontSize,
           lineHeight: Typography.body.lineHeight,
+          minWidth: 0,
         },
       }),
     [colors, glass],
