@@ -9,6 +9,7 @@ const view = read('src/features/nutrition/components/NutritionAddFoodView.tsx');
 const search = read('src/features/nutrition/components/FoodSearchModeSection.tsx');
 const recent = read('src/features/nutrition/components/RecentFoodsModeSection.tsx');
 const favorites = read('src/features/nutrition/components/FavoriteFoodsModeSection.tsx');
+const savedMeals = read('src/features/nutrition/components/SavedMealsModeSection.tsx');
 const styles = read('src/features/nutrition/styles/addFoodBaseStyles.ts');
 
 describe('Nutrition Add Food pressed-state contract', () => {
@@ -22,7 +23,7 @@ describe('Nutrition Add Food pressed-state contract', () => {
     expect(styles).toContain('backgroundColor: glass.controlPressedFill');
   });
 
-  it('binds pressed feedback across shell, search, recent and favorite modes', () => {
+  it('binds pressed feedback across shell, search, recent, favorite and saved-meal modes', () => {
     expect(view).toContain('pressed && styles.backButtonPressed');
     expect(view).toContain('pressed && styles.quietActionButtonPressed');
     expect(search).toContain('pressed && styles.clearButtonPressed');
@@ -31,5 +32,7 @@ describe('Nutrition Add Food pressed-state contract', () => {
     expect(search).toContain('pressed && styles.iconButtonPressed');
     expect(recent).toContain('pressed && styles.iconButtonPressed');
     expect(favorites).toContain('pressed && styles.iconButtonPressed');
+    expect(savedMeals).toContain('pressed && styles.quietActionButtonPressed');
+    expect(savedMeals).toContain('pressed && styles.iconButtonPressed');
   });
 });
