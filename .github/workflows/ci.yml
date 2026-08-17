@@ -69,9 +69,10 @@ jobs:
           test -n "$NODE_BIN"
           NODE_DIR="$(dirname "$NODE_BIN")"
           test "$("$NODE_BIN" -p 'process.versions.node.split(".")[0]')" = '22'
+          export PATH="$NODE_DIR:$PATH"
           echo "$NODE_DIR" >> "$GITHUB_PATH"
-          "$NODE_BIN" --version
-          "$NODE_DIR/npm" --version
+          node --version
+          npm --version
 
       - name: Install dependencies
         run: npm ci
