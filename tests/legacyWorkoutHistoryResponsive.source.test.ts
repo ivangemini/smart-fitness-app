@@ -31,11 +31,14 @@ describe('editable workout history responsive contract', () => {
     expect(route).not.toContain('groupedSessions.map');
   });
 
-  it('uses the active semantic theme across the route and editable card', () => {
+  it('uses the active semantic theme and Liquid Glass palette across the route and editable card', () => {
     expect(route).toContain('useAppTheme');
     expect(route).toContain('createStyles(colors)');
     expect(card).toContain('useAppTheme');
-    expect(card).toContain('createStyles(colors)');
+    expect(card).toContain('resolveLiquidGlassPalette(resolvedAppearance)');
+    expect(card).toContain('createStyles(colors, glass)');
+    expect(card).toContain('glass.controlFill');
+    expect(card).toContain('glass.controlBorder');
     expect(route).not.toContain('Colors.dark');
     expect(card).not.toContain('Colors.dark');
     expect(card).toContain('placeholderTextColor={colors.textSecondary}');
