@@ -32,16 +32,17 @@ describe('LG-5 live Workouts Exercise Library theme/material contract', () => {
 
     expect(styles).toContain('colors.textPrimary');
     expect(styles).toContain('colors.textSecondary');
-    expect(styles).toContain('colors.surfacePrimary');
     expect(styles).toContain('colors.overlay');
     expect(styles).toContain('glass.cardFill');
     expect(styles).toContain('glass.cardBorder');
     expect(styles).toContain('glass.controlFill');
+    expect(styles).toContain('glass.controlBorder');
     expect(styles).toContain('glass.controlPressedFill');
     expect(styles).toContain('glass.accentFill');
     expect(styles).toContain('glass.accentPressedFill');
     expect(styles).toContain('glass.semanticWarningFill');
     expect(styles).toContain('glass.elevatedFill');
+    expect(styles).not.toContain('colors.surfacePrimary');
     expect(styles).not.toContain('Colors.dark');
     expect(styles).not.toContain('opacity: 0.78');
   });
