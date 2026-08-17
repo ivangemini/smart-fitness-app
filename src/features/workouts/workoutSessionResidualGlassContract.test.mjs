@@ -9,6 +9,7 @@ const notes = read('src/features/workouts/components/finish/FinishWorkoutNotes.t
 const navigator = read('src/components/workouts/WorkoutSessionExerciseNavigator.tsx');
 const header = read('src/components/workouts/WorkoutSessionHeader.tsx');
 const progress = read('src/components/workouts/WorkoutSessionProgressCard.tsx');
+const setRow = read('src/features/workouts/components/session/SessionSetRow.tsx');
 
 describe('Workout session residual Liquid Glass materials', () => {
   it('keeps finish notes on control glass material', () => {
@@ -32,5 +33,12 @@ describe('Workout session residual Liquid Glass materials', () => {
       expect(source).toContain('backgroundColor: glass.controlFill');
       expect(source).not.toContain('colors.backgroundSelected');
     }
+  });
+
+  it('keeps set inputs and incomplete completion control on control glass', () => {
+    expect(setRow).toContain('backgroundColor: glass.controlFill');
+    expect(setRow).toContain('borderColor: glass.controlBorder');
+    expect(setRow).not.toContain('colors.surfaceElevated');
+    expect(setRow).not.toContain('colors.borderSubtle');
   });
 });
