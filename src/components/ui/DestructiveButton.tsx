@@ -3,6 +3,10 @@ import { Pressable, StyleProp, StyleSheet, Text, ViewStyle } from 'react-native'
 
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 import { resolveButtonState } from './button-state';
 
 type DestructiveButtonProps = {
@@ -24,8 +28,12 @@ export function DestructiveButton({
   onPress,
   style,
 }: DestructiveButtonProps) {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const state = resolveButtonState({ disabled, loading });
   const visuallyDisabled = Boolean(disabled) && !state.loading;
 
@@ -50,13 +58,13 @@ export function DestructiveButton({
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     button: {
       alignItems: 'center',
       alignSelf: 'stretch',
-      backgroundColor: colors.errorSoft,
-      borderColor: colors.error,
+      backgroundColor: glass.destructiveFill,
+      borderColor: glass.destructiveBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
@@ -66,8 +74,8 @@ const createStyles = (colors: typeof Colors.light) =>
       paddingVertical: Spacing.two,
     },
     disabled: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.disabledFill,
+      borderColor: glass.disabledBorder,
     },
     disabledLabel: {
       color: colors.textMuted,
@@ -82,7 +90,6 @@ const createStyles = (colors: typeof Colors.light) =>
       textAlign: 'center',
     },
     pressed: {
-      backgroundColor: colors.errorSoft,
-      opacity: 0.86,
+      backgroundColor: glass.destructivePressedFill,
     },
   });
