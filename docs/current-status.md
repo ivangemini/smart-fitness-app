@@ -10,9 +10,11 @@ Exact code, tests, migrations and current Git history override this checkpoint i
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Latest runtime/source merge remains `f87b3ea07588e255f6773b1fcac7b4ec8c9f4238` (#682). Validation hardening #684 (`267c6cb75c05b015ac21062a536ce0b36112df1c`) restored reproducible Expo typed-route validation on persistent Hermes checkouts. Applicable exact-head Mobile CI passed.
+Latest mobile merge: `a874947f81443af335c38a88800d7a16b07a740d` (#724), the post-foundation Liquid Glass convergence rollup. Its exact-head Mobile CI passed repository/changed-file audits, TypeScript, the full regression suite (446 test files / 1945 tests), expanded-model smoke, Expo export and Expo Doctor. The post-merge push was then accepted by the validated-PR dedup detector with heavyweight validation skipped, and the EAS update workflow was skipped; no OTA publish ran.
 
-Recent Phase 14 source includes authenticated native push foundations, generic Labs PDF/JPEG/PNG/HEIC signed-upload support, read-only iOS HealthKit and Android Health Connect daily-step adapters, Android `READ_STEPS`, native dependencies/lockfile and native PDF document picking.
+The preceding CI hardening merge #723 (`e5fafed6918932e1f6289d2a88f62993f2d94fa3`) replaced fragile merged-PR evidence parsing with structural JSON validation and proved the push-dedup path end-to-end on Hermes.
+
+Recent Phase 14 source includes authenticated native push foundations, generic Labs PDF/JPEG/PNG/HEIC signed-upload support, read-only iOS HealthKit and Android Health Connect daily-step adapters, Android `READ_STEPS`, native dependencies/lockfile and native PDF document picking. Post-foundation mobile work has also continued independently through reachable-surface Liquid Glass, localization, responsive-layout and interaction-state convergence without activating external providers or production rollout surfaces.
 
 ### Backend repository
 
@@ -91,14 +93,14 @@ Native HealthKit/Health Connect source/CI is complete. Remaining evidence is sig
 
 ## Current remaining roadmap
 
-1. When staging-only HTTPS private storage + Gemini material exists, run the already-prepared bounded Labs configured-provider evidence.
-2. When staging-only APNs/FCM material exists, run the already-prepared push readiness/provider evidence.
-3. When suitable signed builds/devices are available, collect Push, Steps, Labs and remaining Stories physical-device/mobile evidence.
-4. Until an external gate becomes actionable, do not manufacture additional Phase 14 source work; only fix reproduced defects or implement newly reviewed contracts.
-5. After Phase 14 is fully completed under the canonical implementation plan, the next explicitly prioritized broad work is the repository-wide Liquid Glass coverage audit/remediation before unrelated Phase 15 expansion.
+1. Continue the reachable-surface Liquid Glass / responsive / localization / interaction-state convergence workstream autonomously where concrete source gaps remain; keep changes scoped to presentation integrity and preserve existing business logic/persistence contracts.
+2. When staging-only HTTPS private storage + Gemini material exists, run the already-prepared bounded Labs configured-provider evidence.
+3. When staging-only APNs/FCM material exists, run the already-prepared push readiness/provider evidence.
+4. When suitable signed builds/devices are available, collect Push, Steps, Labs and remaining Stories physical-device/mobile evidence.
+5. Until an external gate becomes actionable, do not manufacture additional Phase 14 provider/runtime source work; only fix reproduced defects or implement newly reviewed contracts. Broad unrelated Phase 15 expansion remains behind the current convergence workstream.
 
 ## Activation boundaries
 
-HealthKit/Health Connect, Labs provider/staging runtime, backend staging deployment/migrations, APNs/FCM staging, native/EAS builds and physical-device QA are explicitly authorized. Execution still requires the relevant credentials/signing material and/or physical device.
+HealthKit/Health Connect, Labs provider/staging runtime, backend staging deployment/migrations, APNs/FCM staging, native/EAS builds and physical-device QA require deliberate execution with the relevant credentials/signing material and/or physical device; they are not implied by ordinary autonomous source work.
 
-Production credential rotation, production worker scheduling, production user-data mutation, destructive cleanup, DNS changes and app-store submission remain deliberate rollout actions with their own evidence and rollback controls.
+Production credential rotation, production worker scheduling, production user-data mutation, destructive cleanup, DNS changes, OTA/EAS publish and app-store submission remain deliberate rollout actions with their own evidence and rollback controls.
