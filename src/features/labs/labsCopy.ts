@@ -16,6 +16,8 @@ export function getLabsCopy(locale: string) {
         uploadInProgress: 'Загружаем документ…',
         uploadFailed: 'Не удалось загрузить документ анализа.',
         unsupportedPhoto: 'Поддерживаются PDF, JPEG, PNG и HEIC до 25 МБ.',
+        importUnavailable:
+          'Импорт пока выключен: приватное хранилище и processing worker должны быть доступны одновременно.',
         documentsTitle: 'Документы',
         noDocuments: 'Загруженных документов пока нет.',
         loading: 'Загружаем анализы…',
@@ -89,6 +91,8 @@ export function getLabsCopy(locale: string) {
         uploadInProgress: 'Uploading document…',
         uploadFailed: 'Unable to upload the lab document.',
         unsupportedPhoto: 'PDF, JPEG, PNG, and HEIC up to 25 MB are supported.',
+        importUnavailable:
+          'Import is currently disabled: private storage and the processing worker must both be available.',
         documentsTitle: 'Documents',
         noDocuments: 'No uploaded documents yet.',
         loading: 'Loading lab documents…',
