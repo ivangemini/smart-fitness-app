@@ -50,6 +50,7 @@ describe('Labs localization ownership contract', () => {
     const marker = read('src/app/labs-marker/[markerId].tsx');
     const compare = read('src/app/labs-compare.tsx');
     const biomarkerCard = read('src/features/labs/LabBiomarkerCard.tsx');
+    const reviewCard = read('src/features/labs/LabReviewResultCard.tsx');
 
     expect(marker).toContain('formatLocalizedNumber');
     expect(marker).toContain('formatLabNumber(latest.value, locale)');
@@ -60,5 +61,9 @@ describe('Labs localization ownership contract', () => {
     expect(biomarkerCard).toContain('formatLocalizedNumber(');
     expect(biomarkerCard).toContain('const valueLabel =');
     expect(biomarkerCard).toContain('accessibilityLabel={`${name}, ${valueLabel}, ${statusLabel}`}');
+    expect(reviewCard).toContain('formatLocalizedNumber(');
+    expect(reviewCard).toContain('const sourceValueLabel =');
+    expect(reviewCard).toContain('const normalizedValueLabel =');
+    expect(reviewCard).toContain('<Text style={styles.valueText}>{sourceValueLabel}</Text>');
   });
 });
