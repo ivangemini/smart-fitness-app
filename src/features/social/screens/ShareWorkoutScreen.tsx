@@ -119,6 +119,7 @@ export default function ShareWorkoutScreen() {
   });
   const mediaBusy = isSocialWorkoutPostMediaBusy(media.operation);
   const mediaWaiting = media.hasImageDraft && !media.attachment;
+  const editingDisabled = publishState === "publishing" || mediaBusy;
 
   const errorMessage = useMemo(() => {
     if (rateLimitError) return rateLimitError;
@@ -354,6 +355,7 @@ export default function ShareWorkoutScreen() {
                 <ShareFieldRows
                   controls={controls}
                   copy={copy}
+                  disabled={editingDisabled}
                   onChange={(key, value) => {
                     setControls((current) =>
                       updateSocialWorkoutShareControl(current, key, value),
@@ -369,6 +371,7 @@ export default function ShareWorkoutScreen() {
               capability={imageCapability}
               controller={media}
               copy={copy}
+              disabled={publishState === "publishing"}
               styles={styles}
             />
 
@@ -376,6 +379,7 @@ export default function ShareWorkoutScreen() {
               <View style={styles.section}>
                 <Text style={styles.label}>{copy.caption}</Text>
                 <TextInput
+                  editable={!editingDisabled}
                   maxLength={1000}
                   multiline
                   onChangeText={(value) => {
@@ -384,7 +388,10 @@ export default function ShareWorkoutScreen() {
                   }}
                   placeholder={copy.captionPlaceholder}
                   placeholderTextColor={colors.textMuted}
-                  style={styles.captionInput}
+                  style={[
+                    styles.captionInput,
+                    editingDisabled && styles.captionInputDisabled,
+                  ]}
                   textAlignVertical="top"
                   value={caption}
                 />
@@ -416,11 +423,13 @@ export default function ShareWorkoutScreen() {
 function ShareFieldRows({
   controls,
   copy,
+  disabled,
   onChange,
   styles,
 }: {
   controls: SocialWorkoutShareControls;
   copy: ReturnType<typeof getShareWorkoutCopy>;
+  disabled: boolean;
   onChange: (key: keyof SocialWorkoutShareControls, value: boolean) => void;
   styles: ReturnType<typeof createShareWorkoutStyles>;
 }) {
@@ -456,7 +465,7 @@ function ShareFieldRows({
     <View key={row.key} style={styles.fieldRow}>
       <Text style={styles.fieldLabel}>{row.label}</Text>
       <Switch
-        disabled={row.disabled}
+        disabled={disabled || row.disabled}
         onValueChange={(value) => onChange(row.key, value)}
         style={styles.switchControl}
         thumbColor={Platform.OS === "android" ? colors.surfacePrimary : undefined}
