@@ -4,6 +4,10 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Radii, Spacing, Typography } from '@/constants/theme';
 import type { PlannedExercise } from '@/lib/workouts/workout-session';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 type WorkoutSessionExerciseNavigatorProps = {
   completedExerciseIds: Set<string>;
@@ -13,8 +17,12 @@ type WorkoutSessionExerciseNavigatorProps = {
 };
 
 export function WorkoutSessionExerciseNavigator({ completedExerciseIds, onSelectExercise, selectedExerciseId, workoutExercises }: WorkoutSessionExerciseNavigatorProps) {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   return (
     <View style={styles.container}>
@@ -57,12 +65,15 @@ export function WorkoutSessionExerciseNavigator({ completedExerciseIds, onSelect
   );
 }
 
-const createStyles = (colors: typeof import('@/constants/theme').Colors.dark) =>
+const createStyles = (
+  colors: typeof import('@/constants/theme').Colors.dark,
+  glass: LiquidGlassPalette,
+) =>
   StyleSheet.create({
     chip: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.pill,
       borderWidth: StyleSheet.hairlineWidth,
@@ -75,8 +86,8 @@ const createStyles = (colors: typeof import('@/constants/theme').Colors.dark) =>
       paddingVertical: Spacing.two,
     },
     chipCompleted: {
-      backgroundColor: colors.accentSoft,
-      borderColor: colors.accentSoft,
+      backgroundColor: glass.semanticAccentFill,
+      borderColor: glass.accentBorder,
     },
     chipContent: {
       alignItems: 'center',
@@ -95,14 +106,14 @@ const createStyles = (colors: typeof import('@/constants/theme').Colors.dark) =>
       color: colors.textPrimary,
     },
     chipLabelSelected: {
-      color: colors.textOnAccent,
+      color: glass.accentText,
     },
     chipPressed: {
       opacity: 0.88,
     },
     chipSelected: {
-      backgroundColor: colors.accent,
-      borderColor: colors.accent,
+      backgroundColor: glass.accentFill,
+      borderColor: glass.accentBorder,
     },
     container: {
       gap: Spacing.two,
@@ -126,7 +137,7 @@ const createStyles = (colors: typeof import('@/constants/theme').Colors.dark) =>
       width: 12,
     },
     statusMarkSelected: {
-      color: colors.textOnAccent,
+      color: glass.accentText,
     },
     statusSpacer: {
       width: 12,
