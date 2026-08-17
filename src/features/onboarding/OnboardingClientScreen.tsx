@@ -21,6 +21,10 @@ import { useProfileState } from '@/context/ProfileStateContext';
 import type { ProfileActivityLevel } from '@/features/profile/profilePlan';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 import type { ProfileGoalType } from '@/types';
 import {
   displayWeightInputToKg,
@@ -41,10 +45,14 @@ export default function OnboardingClientScreen() {
   const { isRestoringState, mutationFailure, pendingMutationCount } = useAppInfrastructure();
   const { onboardingCompleted, profile } = useProfileState();
   const { t } = useLocalization();
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const { weight: weightUnit } = useUnitPreferences();
   const insets = useSafeAreaInsets();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const [ageInput, setAgeInput] = useState('');
   const [currentWeightInput, setCurrentWeightInput] = useState('');
   const [activityLevel, setActivityLevel] = useState<ProfileActivityLevel | null>(null);
@@ -146,6 +154,7 @@ export default function OnboardingClientScreen() {
 
           <AppCard>
             <Field
+              disabled={completionRequested}
               keyboardType="number-pad"
               label={t('onboarding.age')}
               onChangeText={setAgeInput}
@@ -153,12 +162,14 @@ export default function OnboardingClientScreen() {
               value={ageInput}
             />
             <Field
+              disabled={completionRequested}
               label={t('onboarding.currentWeight', { unit: weightUnit })}
               onChangeText={setCurrentWeightInput}
               placeholder={weightUnit === 'lb' ? '182.3' : '82.7'}
               value={currentWeightInput}
             />
             <Field
+              disabled={completionRequested}
               keyboardType="number-pad"
               label={t('onboarding.trainingDays')}
               onChangeText={setTrainingDaysInput}
@@ -176,15 +187,22 @@ export default function OnboardingClientScreen() {
                     <Pressable
                       key={level}
                       accessibilityRole="radio"
-                      accessibilityState={{ checked: selected }}
+                      accessibilityState={{ checked: selected, disabled: completionRequested }}
                       disabled={completionRequested}
                       onPress={() => setActivityLevel(level)}
                       style={({ pressed }) => [
                         styles.choice,
                         selected && styles.choiceSelected,
-                        pressed && styles.pressed,
+                        completionRequested && styles.choiceDisabled,
+                        pressed && !completionRequested &&
+                          (selected ? styles.choiceSelectedPressed : styles.controlPressed),
                       ]}>
-                      <Text style={[styles.choiceLabel, selected && styles.choiceLabelSelected]}>
+                      <Text
+                        style={[
+                          styles.choiceLabel,
+                          selected && styles.choiceLabelSelected,
+                          completionRequested && styles.choiceLabelDisabled,
+                        ]}>
                         {t(`profile.activity.${level === 'very_high' ? 'veryHigh' : level}`)}
                       </Text>
                     </Pressable>
@@ -246,38 +264,46 @@ export default function OnboardingClientScreen() {
 }
 
 function Field({
+  disabled = false,
   keyboardType = 'decimal-pad',
   label,
   onChangeText,
   placeholder,
   value,
 }: {
+  disabled?: boolean;
   keyboardType?: 'decimal-pad' | 'number-pad';
   label: string;
   onChangeText(value: string): void;
   placeholder: string;
   value: string;
 }) {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
         accessibilityLabel={label}
+        accessibilityState={{ disabled }}
+        editable={!disabled}
         keyboardType={keyboardType}
         onChangeText={onChangeText}
         placeholder={placeholder}
         placeholderTextColor={colors.textMuted}
-        style={styles.input}
+        style={[styles.input, disabled && styles.inputDisabled]}
         value={value}
       />
     </View>
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     activityExplanation: {
       color: colors.textSecondary,
@@ -286,8 +312,9 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     choice: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
+      borderCurve: 'continuous',
       borderRadius: Radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
       flexBasis: 140,
@@ -299,6 +326,10 @@ const createStyles = (colors: typeof Colors.light) =>
       paddingVertical: Spacing.one,
     },
     choiceBlock: { gap: Spacing.two, marginBottom: Spacing.three },
+    choiceDisabled: {
+      backgroundColor: glass.disabledFill,
+      borderColor: glass.disabledBorder,
+    },
     choiceGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.one },
     choiceLabel: {
       color: colors.textSecondary,
@@ -307,17 +338,20 @@ const createStyles = (colors: typeof Colors.light) =>
       fontWeight: Typography.label.fontWeight,
       textAlign: 'center',
     },
-    choiceLabelSelected: { color: colors.textPrimary },
+    choiceLabelDisabled: { color: colors.textMuted },
+    choiceLabelSelected: { color: glass.accentText },
     choiceSelected: {
-      backgroundColor: colors.backgroundSelected,
-      borderColor: colors.accent,
+      backgroundColor: glass.accentFill,
+      borderColor: glass.accentBorder,
     },
+    choiceSelectedPressed: { backgroundColor: glass.accentPressedFill },
     container: { gap: Spacing.four, maxWidth: MaxContentWidth, width: '100%' },
     content: {
       alignItems: 'center',
       flexGrow: 1,
       paddingHorizontal: Spacing.three,
     },
+    controlPressed: { backgroundColor: glass.controlPressedFill },
     eyebrow: {
       color: colors.accent,
       fontSize: Typography.caption.fontSize,
@@ -338,21 +372,26 @@ const createStyles = (colors: typeof Colors.light) =>
       lineHeight: Typography.caption.lineHeight,
     },
     input: {
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.borderSubtle,
-      borderRadius: 12,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
+      borderCurve: 'continuous',
+      borderRadius: Radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
       color: colors.textPrimary,
       fontSize: Typography.body.fontSize,
       minHeight: 52,
       paddingHorizontal: Spacing.three,
     },
+    inputDisabled: {
+      backgroundColor: glass.disabledFill,
+      borderColor: glass.disabledBorder,
+      color: colors.textMuted,
+    },
     label: {
       color: colors.textSecondary,
       fontSize: Typography.body.fontSize,
       fontWeight: '700',
     },
-    pressed: { opacity: 0.72 },
     screen: { backgroundColor: colors.background, flex: 1 },
     subtitle: {
       color: colors.textSecondary,
