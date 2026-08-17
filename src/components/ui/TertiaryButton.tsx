@@ -4,6 +4,10 @@ import type { StyleProp, ViewStyle } from 'react-native';
 
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 import { resolveButtonState } from './button-state';
 
 type TertiaryButtonProps = {
@@ -25,9 +29,14 @@ export function TertiaryButton({
   onPress,
   style,
 }: TertiaryButtonProps) {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const state = resolveButtonState({ disabled, loading });
+  const visuallyDisabled = Boolean(disabled) && !state.loading;
 
   return (
     <Pressable
@@ -40,15 +49,16 @@ export function TertiaryButton({
       style={({ pressed }) => [
         styles.button,
         pressed && !state.disabled && styles.pressed,
-        state.disabled && styles.disabled,
         style,
       ]}>
-      <Text style={styles.label}>{loading ? `${label}…` : label}</Text>
+      <Text style={[styles.label, visuallyDisabled && styles.disabledLabel]}>
+        {loading ? `${label}…` : label}
+      </Text>
     </Pressable>
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     button: {
       alignItems: 'center',
@@ -62,8 +72,8 @@ const createStyles = (colors: typeof Colors.light) =>
       paddingHorizontal: Spacing.two,
       paddingVertical: Spacing.one,
     },
-    disabled: {
-      opacity: 0.5,
+    disabledLabel: {
+      color: colors.textMuted,
     },
     label: {
       color: colors.accent,
@@ -75,6 +85,6 @@ const createStyles = (colors: typeof Colors.light) =>
       textAlign: 'center',
     },
     pressed: {
-      backgroundColor: colors.accentSoft,
+      backgroundColor: glass.semanticAccentFill,
     },
   });
