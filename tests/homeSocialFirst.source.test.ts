@@ -43,8 +43,8 @@ describe('social-first Home', () => {
     expect(home).toContain('programSchedule.isRestDayToday');
     expect(home).not.toContain('getWorkoutPrograms(workouts)[0]');
     expect(home).toContain('useHomeDailySteps');
-    expect(home).toContain('stepsValue={steps.value}');
-    expect(stepsHook).toContain("availability.status !== 'available'");
+    expect(home).toContain('stepsValue={stepsValue}');
+    expect(stepsHook).toContain("availability !== 'available'");
     expect(stepsHook).toContain('readDailySteps');
     expect(stepsHook).not.toContain('requestReadPermission');
     expect(home).not.toMatch(/stepsValue="\d/);
