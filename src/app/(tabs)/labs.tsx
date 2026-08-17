@@ -54,9 +54,6 @@ export default function LabsScreen() {
   const comparisonCopy = useMemo(() => getLabComparisonCopy(locale), [locale]);
   const trendCopy = useMemo(() => getLabMultiTrendCopy(locale), [locale]);
   const styles = useMemo(() => createStyles(colors), [colors]);
-  const importUnavailableText = locale.toLowerCase().startsWith('ru')
-    ? 'Импорт пока выключен: приватное хранилище и processing worker должны быть доступны одновременно.'
-    : 'Import is currently disabled: private storage and the processing worker must both be available.';
   const attentionMarkers = useMemo(
     () =>
       markers
@@ -181,7 +178,7 @@ export default function LabsScreen() {
                 variant="secondary"
               />
               <Text style={styles.caption}>
-                {capabilities.importAvailable ? copy.unsupportedPhoto : importUnavailableText}
+                {capabilities.importAvailable ? copy.unsupportedPhoto : copy.importUnavailable}
               </Text>
               {uploadError ? (
                 <Text accessibilityRole="alert" style={styles.errorText}>{copy.uploadFailed}</Text>
