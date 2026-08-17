@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import type { SyncConflictResolutionReviewItem } from '@/context/useSyncConflictConflictResolution';
+import type { SyncConflictResolutionReviewItem } from '@/context/useSyncConflictResolution';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
 import { Radii, Spacing, Typography } from '@/constants/theme';
