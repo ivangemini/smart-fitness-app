@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import type { SyncConflictResolutionReviewItem } from '@/context/useSyncConflictResolution';
+import type { SyncConflictResolutionReviewItem } from '@/context/useSyncConflictConflictResolution';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
 import { Radii, Spacing, Typography } from '@/constants/theme';
@@ -274,11 +274,13 @@ const styles = StyleSheet.create({
   },
   versionLabel: {
     flex: 1,
+    flexShrink: 1,
     fontSize: Typography.caption.fontSize,
     lineHeight: Typography.caption.lineHeight,
+    minWidth: 0,
   },
   versionRow: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
     borderTopWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
     gap: Spacing.two,
@@ -287,9 +289,12 @@ const styles = StyleSheet.create({
   },
   versions: { gap: Spacing.one, marginTop: Spacing.one },
   versionValue: {
+    flexShrink: 1,
     fontSize: Typography.label.fontSize,
     fontWeight: Typography.label.fontWeight,
     lineHeight: Typography.label.lineHeight,
+    maxWidth: '58%',
+    minWidth: 0,
     textAlign: 'right',
   },
 });
