@@ -63,7 +63,7 @@ export function RecentFoodsModeSection({
                   accessibilityRole="button"
                   hitSlop={10}
                   onPress={() => onQuickAdd(item)}
-                  style={styles.iconButton}>
+                  style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}>
                   <Plus color={colors.textPrimary} size={20} strokeWidth={2.2} />
                 </Pressable>
               }
