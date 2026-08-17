@@ -28,8 +28,8 @@ test("share workout freezes editable controls while publishing or media is busy"
 test("share workout caption uses an explicit disabled Liquid Glass material", () => {
   assert.match(screen, /editingDisabled && styles\.captionInputDisabled/);
   assert.match(styles, /captionInputDisabled:/);
-  assert.match(styles, /backgroundColor: glass\.controlDisabledFill/);
-  assert.match(styles, /borderColor: glass\.controlDisabledBorder/);
+  assert.match(styles, /backgroundColor: glass\.disabledFill/);
+  assert.match(styles, /borderColor: glass\.disabledBorder/);
 });
 
 test("share workout media actions honor the parent publishing lock", () => {
