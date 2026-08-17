@@ -200,18 +200,22 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
     },
     iconCell: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceElevated,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 999,
+      borderWidth: StyleSheet.hairlineWidth,
       height: 30,
       justifyContent: 'center',
       width: 30,
     },
     iconCellCompletedDark: {
       backgroundColor: colors.success,
+      borderColor: colors.success,
     },
     iconCellCompletedLight: {
       backgroundColor: '#2DBA20',
+      borderColor: '#2DBA20',
     },
     iconCellCompletedPressed: {
       backgroundColor: glass.semanticPositiveFill,
@@ -222,8 +226,8 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
       backgroundColor: glass.controlPressedFill,
     },
     inputCell: {
-      backgroundColor: colors.background,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 3,
       borderWidth: StyleSheet.hairlineWidth,
