@@ -24,6 +24,7 @@ import { useProfileState } from '@/context/ProfileStateContext';
 import { useProgressState } from '@/context/ProgressStateContext';
 import { getHomeRecoveryStatusLabel } from '@/features/home/homeLocalization';
 import { getHomeSocialCopy } from '@/features/home/homeSocialCopy';
+import { useHomeDailySteps } from '@/features/home/useHomeDailySteps';
 import { getSocialFollowingFeedCopy } from '@/features/social/socialFollowingFeedCopy';
 import { SocialStoryStrip } from '@/features/social/SocialStoryStrip';
 import { getSocialStoryCopy } from '@/features/social/socialStoryCopy';
@@ -84,6 +85,7 @@ export default function HomeScreen() {
   const feed = useSocialFollowingFeed();
   const stories = useSocialStories();
   const todayKey = formatLocalDate(new Date());
+  const { refresh: refreshSteps, steps } = useHomeDailySteps(todayKey);
   const [activeDraftReady, setActiveDraftReady] = useState(false);
 
   useEffect(() => {
@@ -186,6 +188,7 @@ export default function HomeScreen() {
         other: t('home.streak.other'),
       })
     : '—';
+  const stepsValue = steps === null ? '—' : formatNumber(steps);
   const caloriesCurrent = formatEnergyValue(todaysNutrition.calories, energyUnit);
   const caloriesTarget = formatEnergyValue(nutritionTargets.calories, energyUnit);
   const macroMetrics = [
@@ -254,7 +257,7 @@ export default function HomeScreen() {
         onLogWeight={() => router.push('/weight-entry')}
         onWorkoutPress={() => router.push(primaryWorkoutRoute)}
         recoveryLabel={recoveryLabel}
-        stepsValue="—"
+        stepsValue={stepsValue}
         streakLabel={streakLabel}
         weightLabel={currentWeightLabel}
         workoutActionLabel={primaryWorkoutLabel}
@@ -374,6 +377,7 @@ export default function HomeScreen() {
                 void Promise.all([
                   feed.loadFirstPage(true),
                   stories.loadFirstPage(true),
+                  refreshSteps(),
                 ])
               }
               refreshing={feed.refreshing || stories.refreshing}
