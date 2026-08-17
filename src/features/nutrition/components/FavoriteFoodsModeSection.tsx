@@ -67,7 +67,7 @@ export function FavoriteFoodsModeSection({
                     accessibilityRole="button"
                     hitSlop={10}
                     onPress={() => onRemoveLibraryFood(food.libraryId)}
-                    style={styles.iconButton}>
+                    style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}>
                     <Star
                       color={colors.accent}
                       fill={colors.accent}
@@ -80,7 +80,7 @@ export function FavoriteFoodsModeSection({
                     accessibilityRole="button"
                     hitSlop={10}
                     onPress={() => onQuickAddLibraryFood(food)}
-                    style={styles.iconButton}>
+                    style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}>
                     <Plus color={colors.textPrimary} size={20} strokeWidth={2.2} />
                   </Pressable>
                 </View>
@@ -103,7 +103,7 @@ export function FavoriteFoodsModeSection({
                     accessibilityRole="button"
                     hitSlop={10}
                     onPress={() => onToggleFavorite(food.id)}
-                    style={styles.iconButton}>
+                    style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}>
                     <Star
                       color={colors.accent}
                       fill={colors.accent}
@@ -116,7 +116,7 @@ export function FavoriteFoodsModeSection({
                     accessibilityRole="button"
                     hitSlop={10}
                     onPress={() => onQuickAdd(food)}
-                    style={styles.iconButton}>
+                    style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}>
                     <Plus color={colors.textPrimary} size={20} strokeWidth={2.2} />
                   </Pressable>
                 </View>
