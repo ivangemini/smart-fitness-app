@@ -35,4 +35,14 @@ describe('Social secondary Liquid Glass states', () => {
     expect(source).toMatch(/username:\s*\{[\s\S]*?flexShrink: 1,[\s\S]*?minWidth: 0,/u);
     expect(source).toMatch(/visibility:\s*\{[\s\S]*?flexShrink: 1,[\s\S]*?minWidth: 0,/u);
   });
+
+  it('does not describe share-workout hydration as an active publication', () => {
+    const screen = readSource('src/features/social/screens/ShareWorkoutScreen.tsx');
+    const copy = readSource('src/features/social/shareWorkoutCopy.ts');
+
+    expect(screen).toContain('<LoadingState label={copy.loading} />');
+    expect(screen).not.toContain('<LoadingState label={copy.publishing} />');
+    expect(copy).toContain('loading: "Загрузка тренировки…"');
+    expect(copy).toContain('loading: "Loading workout…"');
+  });
 });
