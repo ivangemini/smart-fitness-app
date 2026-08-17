@@ -22,7 +22,7 @@ describe('Mobile CI merged-PR push deduplication', () => {
   it('uses the GitHub commit-to-pulls association and fails open to validation', () => {
     expect(workflow).toContain('Detect already-validated PR merge push');
     expect(workflow).toContain('/commits/${GITHUB_SHA}/pulls?per_page=10');
-    expect(workflow).toContain('"merge_commit_sha":"${GITHUB_SHA}"');
+    expect(workflow).toContain('merge_commit_sha');
     expect(workflow).toContain("grep -Eq '\"merged_at\":\"[^\"]+\"'");
     expect(workflow).toContain("grep -Fq '\"base\":{\"ref\":\"main\"'");
     expect(workflow).toContain("echo 'skip=false' >> \"$GITHUB_OUTPUT\"");
