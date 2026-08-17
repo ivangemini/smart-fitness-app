@@ -103,13 +103,11 @@ export default function LabsTrendsScreen() {
   const absoluteUnit = mode === 'absolute' ? selectedMarkers[0]?.unit : undefined;
   const hasRenderablePoints = series.filter((entry) => entry.points.length > 0).length >= 2;
   const renderedPointCount = series.reduce((total, entry) => total + entry.points.length, 0);
-  const chartAccessibilityLabel = locale.toLowerCase().startsWith('ru')
-    ? `График нескольких показателей. Серий: ${series.length}. Точек: ${renderedPointCount}. Режим: ${
-        mode === 'absolute' ? copy.absolute : copy.relative
-      }.`
-    : `Multi-biomarker trend chart. Series: ${series.length}. Points: ${renderedPointCount}. Mode: ${
-        mode === 'absolute' ? copy.absolute : copy.relative
-      }.`;
+  const chartAccessibilityLabel = copy.chartAccessibilityLabel({
+    seriesCount: series.length,
+    pointCount: renderedPointCount,
+    modeLabel: mode === 'absolute' ? copy.absolute : copy.relative,
+  });
 
   const listHeader = (
     <View style={styles.container}>
