@@ -222,8 +222,8 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
       lineHeight: Typography.body.lineHeight,
     },
     warningBox: {
-      backgroundColor: colors.errorSoft,
-      borderColor: colors.error,
+      backgroundColor: glass.destructiveFill,
+      borderColor: glass.destructiveBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
