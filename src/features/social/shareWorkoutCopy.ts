@@ -5,6 +5,7 @@ export const getShareWorkoutCopy = (locale: SupportedLocale) =>
     ? {
         title: "Поделиться тренировкой",
         subtitle: "Выберите только те данные, которые хотите опубликовать.",
+        loading: "Загрузка тренировки…",
         caption: "Подпись",
         captionPlaceholder: "Что хотите рассказать об этой тренировке?",
         preview: "Предпросмотр",
@@ -92,6 +93,7 @@ export const getShareWorkoutCopy = (locale: SupportedLocale) =>
     : {
         title: "Share workout",
         subtitle: "Choose only the details you want to make public.",
+        loading: "Loading workout…",
         caption: "Caption",
         captionPlaceholder: "What would you like to say about this workout?",
         preview: "Preview",
