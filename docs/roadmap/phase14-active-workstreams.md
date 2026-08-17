@@ -2,7 +2,7 @@
 
 Updated: 2026-08-17
 
-Status: **source/CI completion plus initial isolated Hermes staging evidence are complete for the explicitly opened native-health, native PDF import and Labs private-processing packages.** Remaining work is configured-provider and physical-device evidence rather than another broad source implementation pass.
+Status: **ordinary autonomous source/runtime-preparation work is exhausted for the explicitly opened Phase 14 contracts.** Remaining work depends on staging-only provider material, signed native/physical-device evidence, deliberate rollout, or a reproduced defect.
 
 Exact code, tests, migrations and Git history remain authoritative.
 
@@ -16,9 +16,9 @@ Latest runtime/source merge: `f87b3ea07588e255f6773b1fcac7b4ec8c9f4238` (#682).
 
 ### Backend
 
-Latest runtime/operations merge: `e67e446c7819ae531da35f8a9a00c6c17eb50bad` (#256).
+Latest runtime/operations merge: `bd98b1184e0153b3c7b9dfda7a47f3365b6e208f` (#261). Latest Phase 14 evidence/docs checkpoint: `8638604fb98a1ee84a0a225087a7e64ffd8f2c4e` (#263).
 
-#254 merged the fail-closed Labs private-processing runtime. #255 added the isolated `smart-fitness-staging` topology. #256 made the bounded staging bootstrap permanent, strengthened env isolation and recorded real Hermes staging evidence. Exact-head Backend CI, PostgreSQL CI and Account Deletion Receipt CI passed before merge.
+#254 merged fail-closed Labs private processing. #255 added the isolated `smart-fitness-staging` topology. #256 made the bounded staging bootstrap permanent. #257 added the bounded configured-Labs evidence gate. #261 added the permanent bounded Stories evidence command. Exact-head CI passed for the applicable runtime PRs.
 
 ## P14-A — Real push delivery
 
@@ -26,17 +26,28 @@ Latest runtime/operations merge: `e67e446c7819ae531da35f8a9a00c6c17eb50bad` (#25
 
 Canonical checklist: `docs/qa/push-runtime-evidence-matrix.md`.
 
+Hermes prerequisite probe #260 retained:
+
+```text
+env_file=true apns_fields=false fcm_fields=false provider_flags=false master_enabled=false
+```
+
+This confirms the staging env exists but neither complete APNs nor complete FCM material is configured; provider flags and master delivery remain disabled. No provider call or push worker invocation occurred.
+
 Remaining evidence:
 
-1. configured APNs/FCM staging sends including success/transient/permanent/timeout/restart/redaction behavior;
-2. physical-device permission/token/foreground/background/terminated-app/deep-link behavior;
-3. second-device/account isolation and handoff evidence;
-4. offline/reconnect ordering evidence;
-5. production rollout only after reviewed staging evidence and rollback readiness.
+1. supply staging-only APNs and/or FCM material and pass privacy-safe readiness with master delivery still disabled;
+2. configured staging sends including success/transient/permanent/timeout/restart/redaction behavior;
+3. physical-device permission/token/foreground/background/terminated-app/deep-link behavior;
+4. second-device/account isolation and handoff evidence;
+5. offline/reconnect ordering evidence;
+6. production rollout only after reviewed staging evidence and rollback readiness.
+
+No additional autonomous push source package is currently identified to cross this boundary.
 
 ## P14-B — Labs / Analyses
 
-**Status: native import, private-processing source/CI and initial isolated-staging boot/health evidence complete. Configured-provider/device evidence remains.**
+**Status: native import, private-processing source/CI, isolated-staging boot/health and bounded evidence tooling are complete. Configured-provider/device evidence remains.**
 
 Merged source/runtime provides:
 
@@ -46,22 +57,21 @@ Merged source/runtime provides:
 - draft-only rows pending explicit confirmation;
 - fail-closed private storage + extraction composition and privacy-safe readiness;
 - bounded one-shot processing worker;
-- isolated `smart-fitness-staging` topology and permanent `npm run staging:bootstrap` entrypoint.
+- isolated `smart-fitness-staging` topology, permanent `npm run staging:bootstrap`, and permanent `npm run staging:labs-evidence` entrypoints.
 
-Verified Hermes staging evidence:
+Hermes prerequisite probe #258 retained:
 
-- backend only on `127.0.0.1:3100`;
-- staging PostgreSQL has no host port and retains dedicated staging state/networking;
-- separate runner-owned `0600` staging environment;
-- loopback `/health` succeeds;
-- readiness is `enabled=false`, `storageReady=false`, `extractionReady=false`, `interpretationEnabled=false`, `ready=false`;
-- no production Compose/credentials/user data and no Labs worker/scheduler were used.
+```text
+env_file=true provider_fields=false activation_flags=false
+```
+
+Verified staging remains loopback-only with separate PostgreSQL state/networking, runner-owned `0600` environment and fail-closed readiness. The missing boundary is external staging-only storage/Gemini configuration, not source plumbing.
 
 Remaining evidence:
 
 1. configure staging-only **HTTPS** S3-compatible private storage/namespace and credentials;
 2. configure staging-only Gemini credentials/model;
-3. require `labs:processing-readiness` to return `ready=true` before processing;
+3. require `labs:processing-readiness` to return exact `ready=true` while interpretation remains disabled;
 4. process one synthetic document with exactly one bounded worker pass;
 5. record privacy-safe provider/output/redaction/error/lifecycle evidence;
 6. collect native PDF/photo picker and accessibility evidence;
@@ -71,7 +81,17 @@ The existing S3 transport is HTTPS-only. Do not weaken TLS validation or add pla
 
 ## P14-C — Stories
 
-Source-complete; evidence/runtime only unless a defect is reproduced.
+**Status: source/CI plus isolated backend staging route/auth/account-lifecycle evidence complete; remaining mobile/device/runtime evidence only unless a defect is reproduced.**
+
+Backend #261 merged `npm run staging:stories-evidence`. Temporary evidence-only #262 ran it on `hermes-backend-ci-01` and closed without merge with:
+
+```text
+registered=true profileReady=true authenticatedListReady=true freshAccountIsolated=true unauthenticatedFailClosed=true accountDeleted=true deletedSessionRejected=true ready=true
+```
+
+The bounded pass used one synthetic account, observed an empty authenticated Stories list, required unauthenticated access to fail closed, deleted the account and verified the deleted session was rejected. No media/provider call, scheduler, persistent fixture or production surface was used.
+
+Remaining evidence is limited to mobile/physical-device behavior or other runtime paths not exercised by that server probe. Source work reopens only for a concrete reproduced defect or reviewed contract change.
 
 ## P14-D — Steps / native health activity
 
@@ -83,23 +103,27 @@ Important iOS privacy constraint: HealthKit does not provide an authoritative re
 
 Remaining evidence:
 
-1. create/install authorized native builds;
+1. create/install authorized signed native builds;
 2. exercise user-initiated permission flows on supported devices;
 3. verify real daily aggregate reads and unsupported/no-data states;
 4. validate Home presentation against real data;
 5. capture platform-specific evidence rather than inferring it from source tests.
 
+No additional autonomous Steps source package is currently identified without real-device evidence.
+
 ## Completion interpretation
 
-Phase 14 remains closed for ordinary autonomous source work. Runtime evidence can reopen only a bounded defect fix or reviewed contract change.
+Phase 14 is closed for ordinary autonomous source work. The remaining gates are external/provider/native/device/deliberate-rollout gates. Runtime evidence may reopen only a bounded defect fix or reviewed contract change.
+
+This is **not** a claim that configured-provider or physical-device Phase 14 evidence is complete.
 
 ## Next execution order
 
-1. configure Labs staging-only HTTPS private storage + Gemini prerequisites and run bounded synthetic processing evidence;
-2. collect HealthKit/Health Connect physical-device evidence for #682;
-3. collect push provider/device evidence through the existing matrix;
-4. keep Stories evidence-only unless a defect is reproduced;
-5. explicitly define the next ordinary product phase before beginning broad autonomous source work.
+1. execute Labs configured-provider evidence when staging-only HTTPS storage + Gemini material becomes available;
+2. execute push configured-provider/device evidence when staging-only APNs/FCM material becomes available;
+3. execute HealthKit/Health Connect, Push, Labs and remaining Stories device evidence when signed builds/devices are available;
+4. otherwise do not invent further Phase 14 implementation work;
+5. after Phase 14 is fully completed under the canonical implementation plan, begin the explicitly prioritized repository-wide Liquid Glass convergence audit before unrelated Phase 15 expansion.
 
 ## Authorization / execution boundary
 
