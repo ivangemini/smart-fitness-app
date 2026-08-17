@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppCard } from '@/components/ui/AppCard';
 import { FormField } from '@/components/ui/FormField';
 import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
+import { LoadingState } from '@/components/ui/LoadingState';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme';
 import { useAuthSession } from '@/hooks/useAuthSession';
@@ -72,6 +73,12 @@ export default function SocialProfileLookupScreen() {
             <Text style={styles.subtitle}>{copy.findSubtitle}</Text>
           </View>
         </View>
+
+        {!ready ? (
+          <AppCard>
+            <LoadingState label={copy.loading} />
+          </AppCard>
+        ) : null}
 
         {ready && !isAuthenticated ? (
           <AppCard>

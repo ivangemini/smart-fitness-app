@@ -40,9 +40,11 @@ export const createSocialRelationshipListsStyles = (
     },
     displayName: {
       color: colors.textPrimary,
+      flexShrink: 1,
       fontSize: Typography.cardTitle.fontSize,
       fontWeight: Typography.cardTitle.fontWeight,
       lineHeight: Typography.cardTitle.lineHeight,
+      minWidth: 0,
     },
     eyebrow: {
       color: colors.accent,
@@ -52,7 +54,7 @@ export const createSocialRelationshipListsStyles = (
     },
     headerCopy: { flex: 1, gap: Spacing.one, minWidth: 0 },
     headerRow: { alignItems: 'flex-start', flexDirection: 'row', gap: Spacing.three },
-    identityCopy: { flex: 1, gap: Spacing.one },
+    identityCopy: { flex: 1, gap: Spacing.one, minWidth: 0 },
     identityRow: { alignItems: 'center', flexDirection: 'row', gap: Spacing.three },
     itemCard: { gap: Spacing.three },
     listFooter: {
@@ -113,14 +115,18 @@ export const createSocialRelationshipListsStyles = (
     },
     username: {
       color: colors.textSecondary,
+      flexShrink: 1,
       fontSize: Typography.body.fontSize,
       lineHeight: Typography.body.lineHeight,
+      minWidth: 0,
     },
     visibility: {
       color: colors.accent,
+      flexShrink: 1,
       fontSize: Typography.caption.fontSize,
       fontWeight: '800',
       letterSpacing: 0.6,
+      minWidth: 0,
     },
   });
 

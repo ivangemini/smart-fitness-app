@@ -215,7 +215,7 @@ export default function ShareWorkoutScreen() {
           },
         ]}
       >
-        <LoadingState label={copy.publishing} />
+        <LoadingState label={copy.loading} />
       </View>
     );
   }
@@ -459,8 +459,8 @@ function ShareFieldRows({
         disabled={row.disabled}
         onValueChange={(value) => onChange(row.key, value)}
         style={styles.switchControl}
-        thumbColor={colors.textOnAccent}
-        trackColor={{ false: colors.surfaceSecondary, true: colors.accent }}
+        thumbColor={Platform.OS === "android" ? colors.surfacePrimary : undefined}
+        trackColor={{ false: colors.borderStrong, true: colors.accent }}
         value={controls[row.key]}
       />
     </View>
