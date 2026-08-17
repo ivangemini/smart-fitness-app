@@ -24,21 +24,22 @@ describe('Mobile CI merged-PR push deduplication', () => {
     expect(workflow).toContain('COMMIT_MESSAGE: ${{ github.event.head_commit.message }}');
     expect(workflow).toContain("sed -nE '1s/.*\\(#([0-9]+)\\)$/\\1/p'");
     expect(workflow).toContain('/pulls/${pr_number}');
-    expect(workflow).not.toContain('/commits/${GITHUB_SHA}/pulls?per_page=10');
-    expect(workflow).toContain('merge_commit_sha');
-    expect(workflow).toContain('"merged_at"[[:space:]]*:[[:space:]]*"[^\"]+"');
-    expect(workflow).toContain('"base"[[:space:]]*:[[:space:]]*\\{[^}]*"ref"[[:space:]]*:[[:space:]]*"main"');
+    expect(workflow).toContain('command -v python3');
     expect(workflow).toContain("echo 'skip=false' >> \"$GITHUB_OUTPUT\"");
-    expect(workflow).toContain('2>/dev/null || true');
+    expect(workflow).not.toContain('/commits/${GITHUB_SHA}/pulls?per_page=10');
+    expect(workflow).not.toContain('grep -Eq');
   });
 
-  it('requires exact merge-sha, merged-at and main-base evidence before skipping', () => {
-    expect(workflow).toContain('\\"merge_commit_sha\\"[[:space:]]*:[[:space:]]*\\"${GITHUB_SHA}\\"');
-    expect(workflow).toContain('"merged_at"[[:space:]]*:[[:space:]]*"[^\"]+"');
-    expect(workflow).toContain('"base"[[:space:]]*:[[:space:]]*\\{[^}]*"ref"[[:space:]]*:[[:space:]]*"main"');
+  it('parses API evidence structurally and requires exact merge-sha, merged-at and main-base', () => {
+    expect(workflow).toContain('pull = json.load(handle)');
+    expect(workflow).toContain("pull.get('merge_commit_sha') == expected_sha");
+    expect(workflow).toContain("bool(pull.get('merged_at'))");
+    expect(workflow).toContain("isinstance(pull.get('base'), dict)");
+    expect(workflow).toContain("pull['base'].get('ref') == 'main'");
+    expect(workflow).toContain('raise SystemExit(0 if valid else 1)');
   });
 
-  it('guards every heavyweight validation step with the association result', () => {
+  it('guards every heavyweight validation step with the detector result', () => {
     for (const step of guardedHeavySteps) {
       const marker = `- name: ${step}`;
       const start = workflow.indexOf(marker);
