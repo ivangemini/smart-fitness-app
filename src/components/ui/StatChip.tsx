@@ -3,6 +3,10 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 type StatChipProps = {
   detail?: string;
@@ -12,8 +16,12 @@ type StatChipProps = {
 };
 
 export function StatChip({ detail, label, tone = 'neutral', value }: StatChipProps) {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   return (
     <View
@@ -37,11 +45,11 @@ export function StatChip({ detail, label, tone = 'neutral', value }: StatChipPro
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     chip: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.cardFill,
+      borderColor: glass.cardBorder,
       borderCurve: 'continuous',
       borderRadius: 16,
       borderWidth: StyleSheet.hairlineWidth,
@@ -52,12 +60,12 @@ const createStyles = (colors: typeof Colors.light) =>
       paddingVertical: Spacing.three,
     },
     chipPositive: {
-      backgroundColor: colors.successSoft,
-      borderColor: colors.success,
+      backgroundColor: glass.semanticPositiveFill,
+      borderColor: glass.semanticPositiveBorder,
     },
     chipWarning: {
-      backgroundColor: colors.warningSoft,
-      borderColor: colors.warning,
+      backgroundColor: glass.semanticWarningFill,
+      borderColor: glass.semanticWarningBorder,
     },
     detail: {
       color: colors.textSecondary,
