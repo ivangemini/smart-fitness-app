@@ -270,7 +270,7 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
     },
     macroDetails: { gap: Spacing.two },
     macroStrip: { flexDirection: 'row', gap: Spacing.three },
-    pressed: { opacity: 0.78 },
+    pressed: { backgroundColor: glass.controlPressedFill },
     progressBlock: { gap: Spacing.one },
     progressFill: {
       backgroundColor: colors.accent,
