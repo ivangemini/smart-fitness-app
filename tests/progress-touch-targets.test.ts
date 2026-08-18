@@ -22,15 +22,20 @@ const styleBlock = (source: string, name: string) => {
 };
 
 describe('Progress compact touch targets', () => {
-  it('keeps the weight range tabs at a 44 pt minimum touch height', () => {
+  it('keeps first-level Progress actions on the shared AppButton boundary instead of restoring range tabs', () => {
     const source = readSource('src/app/(tabs)/progress.tsx');
 
-    expect(source).toContain('accessibilityRole="tablist"');
-    expect(source).toContain('accessibilityRole="tab"');
-    expect(styleBlock(source, 'rangeTab')).toContain('minHeight: 44');
+    expect(source).toContain("import { AppButton } from '@/components/ui/AppButton';");
+    expect(source).toContain("label={t('progress.weightDetails')}");
+    expect(source).toContain("label={t('progress.addWeight')}");
+    expect(source).toContain('label={measurementEditorOpen ? copy.hideMeasurementEditor : copy.addMeasurement}');
+    expect(source).toContain('label={copy.openWorkoutHistory}');
+    expect(source).not.toContain('accessibilityRole="tablist"');
+    expect(source).not.toContain('accessibilityRole="tab"');
+    expect(source).not.toContain('rangeTab:');
   });
 
-  it('keeps Safety period and history chips at a 44 pt minimum touch height', () => {
+  it('keeps Safety period and history chips at a 44 pt minimum touch height on detail surfaces', () => {
     const progressStyles = readSource(
       'src/components/progress/SafetyRecoveryProgressCard.styles.ts',
     );
