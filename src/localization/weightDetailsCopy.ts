@@ -5,23 +5,29 @@ export const getWeightDetailsCopy = (locale: SupportedLocale) => ({
   subtitle: locale === 'ru' ? 'Подробный анализ изменений веса.' : 'Detailed trend view.',
   currentWeight: locale === 'ru' ? 'Текущий вес' : 'Current weight',
   trend: locale === 'ru' ? 'Динамика' : 'Trend',
-  trend30Days: (delta: string, unit: string) =>
+  period: locale === 'ru' ? 'Период' : 'Period',
+  periodAccessibility:
+    locale === 'ru' ? 'Период динамики веса' : 'Weight trend period',
+  trendForDays: (delta: string, unit: string, days: number) =>
     locale === 'ru'
-      ? `${delta} ${unit} за 30 дней`
-      : `${delta} ${unit} over 30 days`,
-  noComparison:
-    locale === 'ru' ? 'Сравнение за 30 дней пока недоступно' : 'No 30-day comparison yet',
+      ? `${delta} ${unit} за выбранные ${days} дней`
+      : `${delta} ${unit} over the selected ${days} days`,
+  noComparisonForDays: (days: number) =>
+    locale === 'ru'
+      ? `Для сравнения за ${days} дней пока недостаточно данных`
+      : `Not enough data for a ${days}-day comparison yet`,
   chartEmpty:
     locale === 'ru'
       ? 'Добавьте несколько записей веса, чтобы увидеть динамику.'
       : 'Add a few weigh-ins to see the trend.',
   addAnother:
     locale === 'ru'
-      ? 'Добавьте ещё одну запись веса, чтобы построить график.'
-      : 'Add another weigh-in to reveal the chart.',
+      ? 'В выбранном периоде нужна ещё одна запись веса, чтобы построить график.'
+      : 'Add another weigh-in in the selected period to reveal the chart.',
   recentWeighIns: locale === 'ru' ? 'Последние записи веса' : 'Recent weigh-ins',
   noWeighIns:
     locale === 'ru' ? 'Записей веса пока нет.' : 'No weigh-ins recorded yet.',
+  logWeight: locale === 'ru' ? 'Записать вес' : 'Log weight',
   trainingHistory: locale === 'ru' ? 'История тренировок' : 'Training history',
   trainingHistoryBody:
     locale === 'ru'
