@@ -22,13 +22,13 @@ describe('Safety Recovery weekly history drilldown', () => {
     expect(card).toContain('getEndExclusive');
   });
 
-  it('passes the selected range and optional status through the Progress route', () => {
-    const progress = readSource('src/app/(tabs)/progress.tsx');
+  it('keeps the selected range and optional status in the reusable history target contract', () => {
+    const card = readSource('src/components/progress/SafetyRecoveryWeeklyTrendCard.tsx');
 
-    expect(progress).toContain("pathname: '/workout-history'");
-    expect(progress).toContain('from: startAt');
-    expect(progress).toContain('to: endAt');
-    expect(progress).toContain('...(safety ? { safety } : {})');
+    expect(card).toContain('onOpenHistory({');
+    expect(card).toContain('startAt: selectedPoint.startAt');
+    expect(card).toContain('endAt: getEndExclusive(selectedPoint, selectedPointIndex, trend.points.length)');
+    expect(card).toContain('...(safety ? { safety } : {})');
   });
 
   it('hydrates workout history filters from route params', () => {
