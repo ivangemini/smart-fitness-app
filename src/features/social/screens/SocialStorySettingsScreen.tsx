@@ -181,8 +181,8 @@ export default function SocialStorySettingsScreen() {
                 <Switch
                   disabled={busy || !pushPreference}
                   onValueChange={togglePushPreference}
-                  thumbColor={Platform.OS === 'android' ? colors.surfacePrimary : undefined}
-                  trackColor={{ false: colors.borderStrong, true: colors.accent }}
+                  thumbColor={Platform.OS === 'android' ? colors.textOnAccent : undefined}
+                  trackColor={{ false: glass.controlFill, true: glass.accentFill }}
                   value={pushPreference?.requestedEnabled ?? false}
                 />
               </View>

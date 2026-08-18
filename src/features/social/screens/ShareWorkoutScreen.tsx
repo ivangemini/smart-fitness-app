@@ -433,7 +433,11 @@ function ShareFieldRows({
   onChange: (key: keyof SocialWorkoutShareControls, value: boolean) => void;
   styles: ReturnType<typeof createShareWorkoutStyles>;
 }) {
-  const { colors } = useAppTheme();
+  const { resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const rows: Array<{
     key: keyof SocialWorkoutShareControls;
     label: string;
@@ -468,8 +472,8 @@ function ShareFieldRows({
         disabled={disabled || row.disabled}
         onValueChange={(value) => onChange(row.key, value)}
         style={styles.switchControl}
-        thumbColor={Platform.OS === "android" ? colors.surfacePrimary : undefined}
-        trackColor={{ false: colors.borderStrong, true: colors.accent }}
+        thumbColor={Platform.OS === "android" ? glass.cardHighlight : undefined}
+        trackColor={{ false: glass.controlFill, true: glass.accentFill }}
         value={controls[row.key]}
       />
     </View>
