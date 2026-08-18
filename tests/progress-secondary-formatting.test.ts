@@ -65,7 +65,7 @@ describe('secondary Progress formatting boundaries', () => {
     expect(chart).toContain('((point.value - axisMinimum) / axisRange)');
   });
 
-  it('preserves measurement persistence and existing navigation contracts', () => {
+  it('preserves measurement persistence and focused drill-down navigation contracts', () => {
     const progress = readSource('src/app/(tabs)/progress.tsx');
     const weightDetails = readSource('src/app/weight-details.tsx');
 
@@ -76,6 +76,9 @@ describe('secondary Progress formatting boundaries', () => {
     expect(progress).toContain("router.push('/weight-details')");
     expect(progress).toContain("router.push('/workout-history')");
     expect(weightDetails).toContain("router.push('/workout-history')");
-    expect(weightDetails).toContain('analytics.weight.recentEntries');
+    expect(weightDetails).toContain("router.push('/weight-entry')");
+    expect(weightDetails).toContain('getWeightAnalytics(weightHistory)');
+    expect(weightDetails).toContain('getWeightTrendEntries(weightHistory, rangeDays)');
+    expect(weightDetails).toContain('[...analytics.recentEntries].reverse().slice(0, 10)');
   });
 });
