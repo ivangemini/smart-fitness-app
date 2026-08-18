@@ -1,458 +1,312 @@
 import { router } from 'expo-router';
-import { memo, useEffect, useMemo, useState } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useMemo } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getFloatingTabBarBottomClearance } from '@/components/navigation/floatingTabBarLayout';
-import { AddBodyMeasurementCard } from '@/components/progress/AddBodyMeasurementCard';
-import {
-  ProgressTrendChart,
-  type ProgressTrendPoint,
-} from '@/components/progress/ProgressTrendChart';
-import { SafetyRecoveryProgressCard } from '@/components/progress/SafetyRecoveryProgressCard';
-import { SafetyRecoveryWeeklyTrendCard } from '@/components/progress/SafetyRecoveryWeeklyTrendCard';
-import { WeeklyWorkoutVolumeCard } from '@/components/progress/WeeklyWorkoutVolumeCard';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
-import { useAppActions, useWorkoutState } from '@/context/AppContext';
+import { useWorkoutState } from '@/context/AppContext';
 import { useProgressState } from '@/context/ProgressStateContext';
+import { useDailySteps } from '@/features/health/useDailySteps';
+import { getBodyMeasurementDisplayLabel } from '@/features/progress/progressLocalization';
 import {
-  buildBodyMeasurement,
-  createBodyMeasurementDraft,
-  getDefaultBodyMeasurementUnit,
-} from '@/features/progress/bodyMeasurementModel';
+  countImprovingExercises,
+  getRecentTrainingHighlights,
+} from '@/features/progress/progressSummaryModel';
 import {
-  getBodyMeasurementDisplayLabel,
-  getBodyMeasurementError,
-} from '@/features/progress/progressLocalization';
-import { createUuid } from '@/lib/ids';
-import {
-  getProgressAnalytics,
-  getWeightTrendEntries,
-  type WeightTrendRange,
+  buildTrainingProgressAnalytics,
+  getMeasurementInsights,
+  getWeightAnalytics,
 } from '@/lib/progress';
+import { getProgressOverviewCopy } from '@/localization/progressOverviewCopy';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
-import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
-import type { BodyMeasurementMetric, BodyMeasurementUnit } from '@/types';
 import { weightFromKg, useUnitPreferences } from '@/units';
 
-const weightTrendRanges: WeightTrendRange[] = [7, 30, 90];
+const TRAINING_PERIOD_DAYS = 28;
 
-type GlassPalette = ReturnType<typeof resolveLiquidGlassPalette>;
 type ProgressStyles = ReturnType<typeof createStyles>;
 
-const SectionRow = memo(function SectionRow({
-  detail,
-  label,
-  styles,
-  value,
-}: {
-  detail?: string;
-  label: string;
-  styles: ProgressStyles;
-  value: string;
-}) {
+function DomainHeader({ period, styles, title }: { period: string; styles: ProgressStyles; title: string }) {
   return (
-    <View style={styles.sectionRow}>
-      <View style={styles.sectionRowCopy}>
-        <Text selectable style={styles.rowLabel}>{label}</Text>
-        <Text selectable style={styles.rowValue}>{value}</Text>
-      </View>
-      {detail ? <Text selectable style={styles.rowDetail}>{detail}</Text> : null}
+    <View style={styles.domainHeader}>
+      <Text selectable style={styles.domainTitle}>{title}</Text>
+      <Text selectable style={styles.period}>{period}</Text>
     </View>
   );
-});
+}
+
+function MetricRow({ label, styles, value }: { label: string; styles: ProgressStyles; value: string }) {
+  return (
+    <View style={styles.metricRow}>
+      <Text selectable style={styles.metricLabel}>{label}</Text>
+      <Text selectable style={styles.metricValue}>{value}</Text>
+    </View>
+  );
+}
 
 export default function ProgressScreen() {
-  const { colors, resolvedAppearance } = useAppTheme();
-  const { addBodyMeasurement } = useAppActions();
+  const { colors } = useAppTheme();
   const { bodyMeasurements, weightHistory } = useProgressState();
-  const { exercises, workoutSessions } = useWorkoutState();
-  const { formatDate, formatNumber, t } = useLocalization();
+  const { workoutSessions } = useWorkoutState();
+  const { formatDate, formatNumber, locale, t } = useLocalization();
   const {
     formatLengthValue,
     formatWeightValue,
     length: lengthUnit,
     weight: weightUnit,
   } = useUnitPreferences();
-  const glass = useMemo(
-    () => resolveLiquidGlassPalette(resolvedAppearance),
-    [resolvedAppearance],
-  );
-  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
+  const copy = getProgressOverviewCopy(locale);
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const safeAreaInsets = useSafeAreaInsets();
-  const [measurementDraft, setMeasurementDraft] = useState(() =>
-    createBodyMeasurementDraft(lengthUnit),
+  const analyticsEndAt = useMemo(() => new Date().toISOString(), []);
+  const dailySteps = useDailySteps();
+
+  const weight = useMemo(() => getWeightAnalytics(weightHistory), [weightHistory]);
+  const measurements = useMemo(
+    () => getMeasurementInsights(bodyMeasurements),
+    [bodyMeasurements],
   );
-  const [measurementError, setMeasurementError] = useState<string | null>(null);
-  const [weightTrendRange, setWeightTrendRange] = useState<WeightTrendRange>(30);
-
-  const toDateLabel = (value: string) =>
-    formatDate(value, { day: 'numeric', month: 'short' });
-
-  useEffect(() => {
-    setMeasurementDraft((current) => {
-      if (current.value.trim().length > 0 || current.unit === 'percent') return current;
-      return { ...current, unit: lengthUnit };
-    });
-  }, [lengthUnit]);
-
-  const analytics = useMemo(
+  const training = useMemo(
     () =>
-      getProgressAnalytics({
-        bodyMeasurements,
-        exercises,
-        weightHistory,
-        workoutSessions,
+      buildTrainingProgressAnalytics(workoutSessions, {
+        endAt: analyticsEndAt,
+        periodDays: TRAINING_PERIOD_DAYS,
       }),
-    [bodyMeasurements, exercises, weightHistory, workoutSessions],
+    [analyticsEndAt, workoutSessions],
   );
-  const selectedWeightEntries = useMemo(
-    () => getWeightTrendEntries(weightHistory, weightTrendRange),
-    [weightHistory, weightTrendRange],
-  );
-  const weightTrendPoints = useMemo<ProgressTrendPoint[]>(
-    () =>
-      selectedWeightEntries.map((entry) => ({
-        key: entry.id,
-        label: formatDate(entry.createdAt, { day: 'numeric', month: 'short' }),
-        value: weightFromKg(entry.weight, weightUnit),
-        displayValue: `${formatWeightValue(entry.weight)} ${weightUnit}`,
-      })),
-    [formatDate, formatWeightValue, selectedWeightEntries, weightUnit],
-  );
+  const highlights = useMemo(() => getRecentTrainingHighlights(training), [training]);
+  const improvingExerciseCount = useMemo(() => countImprovingExercises(training), [training]);
 
-  const latestWeight = analytics.weight.currentWeight;
-  const weightChange7d = analytics.weight.delta7Days;
-  const hasWeightChart = selectedWeightEntries.length >= 2;
-  const weightSummaryLabel =
-    latestWeight !== null ? `${formatWeightValue(latestWeight)} ${weightUnit}` : '—';
+  const latestMeasurement = measurements[0] ?? null;
+  const weightValue =
+    weight.currentWeight === null
+      ? null
+      : `${formatWeightValue(weight.currentWeight)} ${weightUnit}`;
   const convertedWeightDelta =
-    weightChange7d !== null ? weightFromKg(weightChange7d, weightUnit) : null;
-  const weightTrendLabel =
-    convertedWeightDelta !== null
-      ? t('progress.weightTrendWeek', {
+    weight.delta7Days === null ? null : weightFromKg(weight.delta7Days, weightUnit);
+  const weightTrend =
+    convertedWeightDelta === null
+      ? t('progress.noRecentTrend')
+      : t('progress.weightTrendWeek', {
           delta: `${convertedWeightDelta > 0 ? '+' : ''}${formatNumber(convertedWeightDelta, {
             maximumFractionDigits: 1,
             minimumFractionDigits: 1,
           })}`,
           unit: weightUnit,
-        })
-      : t('progress.noRecentTrend');
-  const weightDetailLabel = analytics.weight.currentWeightEntry
-    ? t('progress.latestCheckIn', {
-        date: toDateLabel(analytics.weight.currentWeightEntry.createdAt),
-      })
-    : t('progress.addWeightPrompt');
-  const isMeasurementDisabled =
-    measurementDraft.value.trim().length === 0 ||
-    (measurementDraft.metric === 'custom' && measurementDraft.customLabel.trim().length === 0);
-
-  const changeMeasurementMetric = (metric: BodyMeasurementMetric) => {
-    setMeasurementDraft((current) => ({
-      ...current,
-      metric,
-      unit: getDefaultBodyMeasurementUnit(metric, lengthUnit),
-    }));
-    setMeasurementError(null);
-  };
-
-  const changeMeasurementUnit = (unit: BodyMeasurementUnit) => {
-    setMeasurementDraft((current) => ({ ...current, unit }));
-    setMeasurementError(null);
-  };
-
-  const saveMeasurement = () => {
-    const result = buildBodyMeasurement({
-      draft: measurementDraft,
-      id: createUuid(),
-      now: new Date().toISOString(),
-    });
-    if (!result.ok) {
-      setMeasurementError(getBodyMeasurementError(t, result.message));
-      return;
+        });
+  const latestMeasurementValue = (() => {
+    if (!latestMeasurement) return copy.bodyNoMeasurements;
+    if (
+      latestMeasurement.canonicalUnit === 'cm' &&
+      latestMeasurement.canonicalNumericValue !== null
+    ) {
+      return `${formatLengthValue(latestMeasurement.canonicalNumericValue)} ${lengthUnit}`;
     }
-    addBodyMeasurement(result.measurement);
-    setMeasurementDraft(createBodyMeasurementDraft(lengthUnit));
-    setMeasurementError(null);
-  };
-
-  const bodyMeasurementPreview = analytics.measurements.slice(0, 3);
-  const formatMeasurementValue = (
-    measurement: (typeof bodyMeasurementPreview)[number],
-  ) => {
-    if (measurement.canonicalUnit === 'cm' && measurement.canonicalNumericValue !== null) {
-      return `${formatLengthValue(measurement.canonicalNumericValue)} ${lengthUnit}`;
+    if (
+      latestMeasurement.latestUnit === 'percent' &&
+      latestMeasurement.latestNumericValue !== null
+    ) {
+      return `${formatNumber(latestMeasurement.latestNumericValue, { maximumFractionDigits: 1 })}%`;
     }
-    if (measurement.latestUnit === 'percent' && measurement.latestNumericValue !== null) {
-      return `${formatNumber(measurement.latestNumericValue, { maximumFractionDigits: 1 })}%`;
-    }
-    return measurement.latestValue;
-  };
+    return latestMeasurement.latestValue;
+  })();
+  const latestMeasurementLabel = latestMeasurement
+    ? getBodyMeasurementDisplayLabel(t, latestMeasurement.metric, latestMeasurement.label)
+    : copy.bodyLatestMeasurement;
+  const firstHighlight = highlights[0] ?? null;
 
   return (
     <ScrollView
-      automaticallyAdjustKeyboardInsets
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={[
         styles.content,
         { paddingBottom: getFloatingTabBarBottomClearance(safeAreaInsets.bottom) },
       ]}
-      keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
-      keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
       style={styles.screen}>
       <View style={styles.container}>
         <SectionHeader title={t('tabs.progress')} subtitle={t('progress.subtitle')} />
+
         <AppCard>
-          <View style={styles.sectionHeader}>
-            <Text selectable style={styles.sectionTitle}>{t('progress.weight')}</Text>
-            <Text selectable style={styles.sectionSubtitle}>{weightTrendLabel}</Text>
+          <DomainHeader period={copy.bodyPeriod} styles={styles} title={copy.body} />
+          {weightValue ? (
+            <>
+              <Text selectable style={styles.heroValue}>{weightValue}</Text>
+              <Text selectable style={styles.primaryDetail}>{weightTrend}</Text>
+            </>
+          ) : (
+            <Text selectable style={styles.primaryDetail}>{copy.bodyNoWeight}</Text>
+          )}
+          <View style={styles.metrics}>
+            <MetricRow
+              label={latestMeasurementLabel}
+              styles={styles}
+              value={latestMeasurementValue}
+            />
           </View>
-          <View style={styles.weightHero}>
-            <View style={styles.weightHeroCopy}>
-              <Text selectable style={styles.weightHeroLabel}>{t('progress.currentWeight')}</Text>
-              <Text selectable style={styles.weightHeroValue}>{weightSummaryLabel}</Text>
-              <Text selectable style={styles.weightHeroDetail}>{weightDetailLabel}</Text>
-            </View>
+          <View style={styles.actions}>
+            {weightValue ? (
+              <AppButton
+                label={copy.weightDetails}
+                onPress={() => router.push('/weight-details')}
+                variant="secondary"
+              />
+            ) : null}
+            <AppButton label={copy.logWeight} onPress={() => router.push('/weight-entry')} />
             <AppButton
-              label={t('progress.weightDetails')}
-              onPress={() => router.push('/weight-details')}
+              label={copy.measurementsDetails}
+              onPress={() => router.push('/body-measurements')}
               variant="secondary"
             />
           </View>
-          <View accessibilityRole="tablist">
-            <LiquidGlassSurface radius={12} style={styles.rangeTabs} variant="control">
-              {weightTrendRanges.map((range) => {
-                const selected = weightTrendRange === range;
-                return (
-                  <Pressable
-                    key={range}
-                    accessibilityRole="tab"
-                    accessibilityState={{ selected }}
-                    onPress={() => setWeightTrendRange(range)}
-                    style={({ pressed }) => [
-                      styles.rangeTab,
-                      selected && styles.rangeTabSelected,
-                      pressed && styles.rangeTabPressed,
-                    ]}>
-                    <Text style={[styles.rangeTabLabel, selected && styles.rangeTabLabelSelected]}>
-                      {range}D
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </LiquidGlassSurface>
-          </View>
-          {hasWeightChart ? (
-            <View style={styles.chartWrap}>
-              <ProgressTrendChart
-                emptyLabel={t('progress.weightChartEmpty')}
-                maxLabel={`${formatNumber(Math.max(...weightTrendPoints.map((point) => point.value)), {
-                  maximumFractionDigits: 1,
-                  minimumFractionDigits: 1,
-                })} ${weightUnit}`}
-                minLabel={`${formatNumber(Math.min(...weightTrendPoints.map((point) => point.value)), {
-                  maximumFractionDigits: 1,
-                  minimumFractionDigits: 1,
-                })} ${weightUnit}`}
-                points={weightTrendPoints}
-              />
-            </View>
+        </AppCard>
+
+        <AppCard>
+          <DomainHeader period={copy.trainingPeriod} styles={styles} title={copy.training} />
+          {training.evidence.sessionCount > 0 ? (
+            <>
+              <Text selectable style={styles.heroValue}>
+                {formatNumber(training.frequency.sessionCount)}
+              </Text>
+              <Text selectable style={styles.primaryDetail}>{copy.workouts}</Text>
+              <View style={styles.metrics}>
+                <MetricRow
+                  label={copy.workoutsPerWeek}
+                  styles={styles}
+                  value={formatNumber(training.frequency.workoutsPerWeek, {
+                    maximumFractionDigits: 1,
+                  })}
+                />
+                <MetricRow
+                  label={copy.improvingExercises}
+                  styles={styles}
+                  value={formatNumber(improvingExerciseCount)}
+                />
+              </View>
+            </>
           ) : (
-            <EmptyState
-              compact
-              description={t('progress.weightBaselineDescription')}
-              message={t('progress.weightBaselineMessage')}
-              title={t('progress.weightBaselineTitle')}
-            />
+            <Text selectable style={styles.primaryDetail}>{copy.trainingNoData}</Text>
           )}
-          <View style={styles.weightActions}>
-            <AppButton label={t('progress.addWeight')} onPress={() => router.push('/weight-entry')} />
+          <View style={styles.actions}>
+            <AppButton
+              label={copy.openWorkoutHistory}
+              onPress={() => router.push('/workout-history')}
+              variant="secondary"
+            />
           </View>
         </AppCard>
+
         <AppCard>
-          <View style={styles.sectionHeader}>
-            <Text selectable style={styles.sectionTitle}>{t('progress.bodyMeasurements')}</Text>
-          </View>
-          {bodyMeasurementPreview.length > 0 ? (
-            <View style={styles.stack}>
-              {bodyMeasurementPreview.map((measurement) => (
-                <SectionRow
-                  key={measurement.id}
-                  detail={toDateLabel(measurement.createdAt)}
-                  label={getBodyMeasurementDisplayLabel(
-                    t,
-                    measurement.metric,
-                    measurement.label,
-                  )}
-                  styles={styles}
-                  value={formatMeasurementValue(measurement)}
-                />
+          <DomainHeader period={copy.activityPeriod} styles={styles} title={copy.activity} />
+          {dailySteps.availability === 'available' && dailySteps.aggregate ? (
+            <>
+              <Text selectable style={styles.heroValue}>
+                {formatNumber(dailySteps.aggregate.steps)}
+              </Text>
+              <Text selectable style={styles.primaryDetail}>{copy.steps}</Text>
+            </>
+          ) : dailySteps.loading ? (
+            <Text selectable style={styles.primaryDetail}>—</Text>
+          ) : (
+            <Text selectable style={styles.primaryDetail}>{copy.activityUnavailable}</Text>
+          )}
+        </AppCard>
+
+        <AppCard>
+          <DomainHeader period={copy.highlightsPeriod} styles={styles} title={copy.highlights} />
+          {highlights.length > 0 ? (
+            <View style={styles.highlightList}>
+              {highlights.map((highlight) => (
+                <View key={`${highlight.exerciseId}:${highlight.recordedAt}`} style={styles.highlightRow}>
+                  <Text selectable style={styles.highlightText}>
+                    {copy.estimatedOneRepMaxPr(
+                      highlight.exerciseName,
+                      `${formatWeightValue(highlight.estimatedOneRepMax)} ${weightUnit}`,
+                    )}
+                  </Text>
+                  <Text selectable style={styles.highlightDate}>
+                    {formatDate(highlight.recordedAt, { day: 'numeric', month: 'short' })}
+                  </Text>
+                </View>
               ))}
             </View>
           ) : (
-            <EmptyState
-              compact
-              description={t('progress.measurementsEmptyDescription')}
-              message={t('progress.measurementsEmptyMessage')}
-              title={t('progress.measurementsEmptyTitle')}
-            />
+            <Text selectable style={styles.primaryDetail}>{copy.highlightsEmpty}</Text>
           )}
-          <AddBodyMeasurementCard
-            draft={measurementDraft}
-            error={measurementError}
-            isDisabled={isMeasurementDisabled}
-            onChangeCustomLabel={(customLabel) =>
-              setMeasurementDraft((current) => ({ ...current, customLabel }))
-            }
-            onChangeMetric={changeMeasurementMetric}
-            onChangeUnit={changeMeasurementUnit}
-            onChangeValue={(value) =>
-              setMeasurementDraft((current) => ({ ...current, value }))
-            }
-            onSave={saveMeasurement}
-          />
+          {firstHighlight?.exerciseId ? (
+            <View style={styles.actions}>
+              <AppButton
+                label={copy.openExercise}
+                onPress={() =>
+                  router.push({
+                    pathname: '/exercises/[exerciseId]',
+                    params: { exerciseId: firstHighlight.exerciseId },
+                  })
+                }
+                variant="secondary"
+              />
+            </View>
+          ) : null}
         </AppCard>
-        <WeeklyWorkoutVolumeCard sessions={workoutSessions} />
-        <SafetyRecoveryProgressCard
-          onOpenHistory={() => router.push('/workout-history')}
-          sessions={workoutSessions}
-        />
-        <SafetyRecoveryWeeklyTrendCard
-          onOpenHistory={({ endAt, safety, startAt }) =>
-            router.push({
-              pathname: '/workout-history',
-              params: {
-                from: startAt,
-                to: endAt,
-                ...(safety ? { safety } : {}),
-              },
-            })
-          }
-          sessions={workoutSessions}
-        />
       </View>
     </ScrollView>
   );
 }
 
-const createStyles = (colors: typeof Colors.light, glass: GlassPalette) =>
+const createStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
-    chartWrap: { marginBottom: Spacing.three },
+    actions: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: Spacing.two,
+      marginTop: Spacing.three,
+    },
     container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
     content: { alignItems: 'center', flexGrow: 1, padding: Spacing.three },
-    rangeTab: {
-      alignItems: 'center',
-      borderColor: 'transparent',
-      borderRadius: 10,
-      borderWidth: StyleSheet.hairlineWidth,
-      flex: 1,
-      justifyContent: 'center',
-      minHeight: 44,
-      paddingHorizontal: Spacing.two,
-      paddingVertical: 8,
-    },
-    rangeTabLabel: {
-      color: colors.textSecondary,
-      flexShrink: 1,
-      fontSize: 13,
-      fontWeight: '800',
-    },
-    rangeTabLabelSelected: { color: colors.accent },
-    rangeTabPressed: { backgroundColor: glass.controlPressedFill },
-    rangeTabs: {
-      flexDirection: 'row',
-      gap: 4,
-      marginBottom: Spacing.three,
-      padding: 3,
-    },
-    rangeTabSelected: {
-      backgroundColor: glass.semanticAccentFill,
-      borderColor: glass.accentBorder,
-    },
-    rowDetail: {
-      color: colors.textSecondary,
-      flexShrink: 1,
-      fontSize: 12,
-      lineHeight: 18,
-    },
-    rowLabel: {
-      color: colors.textSecondary,
-      flex: 1,
-      flexShrink: 1,
-      fontSize: 13,
-      fontWeight: '700',
-      minWidth: 0,
-    },
-    rowValue: {
+    domainHeader: { gap: 2, marginBottom: Spacing.two },
+    domainTitle: { color: colors.textPrimary, fontSize: 18, fontWeight: '800' },
+    heroValue: {
       color: colors.textPrimary,
-      flexShrink: 1,
-      fontSize: 15,
-      fontWeight: '800',
-      maxWidth: '48%',
-      textAlign: 'right',
+      fontSize: 32,
+      fontVariant: ['tabular-nums'],
+      fontWeight: '900',
+      lineHeight: 38,
     },
-    screen: { backgroundColor: colors.background, flex: 1 },
-    sectionHeader: { gap: 2, marginBottom: Spacing.two },
-    sectionRow: {
-      borderColor: colors.divider,
+    highlightDate: { color: colors.textSecondary, fontSize: 12, lineHeight: 18 },
+    highlightList: { gap: Spacing.two },
+    highlightRow: {
+      borderTopColor: colors.divider,
       borderTopWidth: StyleSheet.hairlineWidth,
       gap: 2,
       paddingTop: Spacing.two,
     },
-    sectionRowCopy: {
-      alignItems: 'flex-start',
+    highlightText: { color: colors.textPrimary, fontSize: 14, fontWeight: '700', lineHeight: 20 },
+    metricLabel: { color: colors.textSecondary, flex: 1, fontSize: 13, minWidth: 0 },
+    metricRow: {
+      alignItems: 'center',
+      borderTopColor: colors.divider,
+      borderTopWidth: StyleSheet.hairlineWidth,
       flexDirection: 'row',
       gap: Spacing.two,
       justifyContent: 'space-between',
-      minWidth: 0,
+      minHeight: 44,
+      paddingTop: Spacing.two,
     },
-    sectionSubtitle: {
-      color: colors.textSecondary,
-      flexShrink: 1,
-      fontSize: 13,
-      lineHeight: 18,
-    },
-    sectionTitle: {
+    metricValue: {
       color: colors.textPrimary,
       flexShrink: 1,
-      fontSize: 18,
+      fontSize: 14,
+      fontVariant: ['tabular-nums'],
       fontWeight: '800',
+      maxWidth: '50%',
+      textAlign: 'right',
     },
-    stack: { gap: Spacing.two },
-    weightActions: { gap: Spacing.two, marginTop: Spacing.two },
-    weightHero: {
-      alignItems: 'flex-start',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: Spacing.two,
-      justifyContent: 'space-between',
-      marginBottom: Spacing.two,
-    },
-    weightHeroCopy: { flex: 1, flexBasis: 180, gap: 2, minWidth: 0 },
-    weightHeroDetail: {
-      color: colors.textSecondary,
-      flexShrink: 1,
-      fontSize: 12,
-      lineHeight: 18,
-    },
-    weightHeroLabel: {
-      color: colors.textSecondary,
-      flexShrink: 1,
-      fontSize: 12,
-      fontWeight: '700',
-    },
-    weightHeroValue: {
-      color: colors.textPrimary,
-      flexShrink: 1,
-      fontSize: 34,
-      fontWeight: '900',
-      lineHeight: 40,
-    },
+    metrics: { marginTop: Spacing.two },
+    period: { color: colors.textSecondary, fontSize: 12, lineHeight: 18 },
+    primaryDetail: { color: colors.textSecondary, fontSize: 13, lineHeight: 19 },
+    screen: { backgroundColor: colors.background, flex: 1 },
   });
