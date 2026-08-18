@@ -36,12 +36,12 @@ export default function CoachScreen() {
   const { formatNumber, locale, t } = useLocalization();
   const { workoutSessions } = useWorkoutState();
   const retrievalSources = useCoachRetrievalSources();
-  const searchParams = useLocalSearchParams<CoachProgressSearchParams>();
+  const searchParams = useLocalSearchParams();
   const safeAreaInsets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const progress = useMemo(() => deriveCompanionProgress(workoutSessions), [workoutSessions]);
   const progressContext = useMemo(
-    () => parseCoachProgressContext(searchParams),
+    () => parseCoachProgressContext(searchParams as CoachProgressSearchParams),
     [searchParams],
   );
   const progressPacket = useMemo(
