@@ -33,6 +33,44 @@ export const getTrainingProgressCopy = (locale: SupportedLocale) => ({
     locale === 'ru'
       ? `Показаны последние точки; всего тренировок с упражнением: ${count}.`
       : `Showing the latest points; total sessions with this exercise: ${count}.`,
+  trainingSignals: locale === 'ru' ? 'Сигналы тренинга' : 'Training signals',
+  progressSignal: locale === 'ru' ? 'Сигнал прогресса' : 'Progress signal',
+  comparableSessions: locale === 'ru' ? 'Сравнимые тренировки' : 'Comparable sessions',
+  evidenceSpan: locale === 'ru' ? 'Период наблюдения' : 'Evidence span',
+  recordedRpe: locale === 'ru' ? 'Записанный RPE' : 'Recorded RPE',
+  rpeCoverage: locale === 'ru' ? 'Покрытие RPE' : 'RPE coverage',
+  rpeTrend: locale === 'ru' ? 'Тренд RPE' : 'RPE trend',
+  daysValue: (days: string) => (locale === 'ru' ? `${days} дн.` : `${days} days`),
+  recordedSetsValue: (recorded: string, working: string) =>
+    locale === 'ru' ? `${recorded} из ${working}` : `${recorded} of ${working}`,
+  progressSignalValue: (signal: 'progressing' | 'plateau' | 'declining' | 'insufficient_data') => {
+    switch (signal) {
+      case 'progressing':
+        return locale === 'ru' ? 'Рост' : 'Progressing';
+      case 'plateau':
+        return locale === 'ru' ? 'Плато' : 'Plateau';
+      case 'declining':
+        return locale === 'ru' ? 'Снижение' : 'Declining';
+      default:
+        return locale === 'ru' ? 'Недостаточно данных' : 'Not enough data';
+    }
+  },
+  rpeTrendValue: (trend: 'higher' | 'lower' | 'stable' | 'insufficient_data') => {
+    switch (trend) {
+      case 'higher':
+        return locale === 'ru' ? 'Выше' : 'Higher';
+      case 'lower':
+        return locale === 'ru' ? 'Ниже' : 'Lower';
+      case 'stable':
+        return locale === 'ru' ? 'Стабильно' : 'Stable';
+      default:
+        return locale === 'ru' ? 'Недостаточно данных' : 'Not enough data';
+    }
+  },
+  signalMethodNote:
+    locale === 'ru'
+      ? 'Плато показывается только при ≥4 сравнимых тренировках минимум за 21 день; незаписанный RPE не восстанавливается.'
+      : 'Plateau is shown only with ≥4 comparable sessions spanning at least 21 days; missing RPE is never inferred.',
   openInCoach: locale === 'ru' ? 'Открыть в Companion' : 'Open in Companion',
   openWorkoutHistory:
     locale === 'ru' ? 'Открыть историю тренировок' : 'Open workout history',
