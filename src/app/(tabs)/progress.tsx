@@ -288,6 +288,13 @@ export default function ProgressScreen() {
         />
 
         <ProgressOverviewCard
+          actions={
+            <AppButton
+              label={copy.activityDetails}
+              onPress={() => router.push('/activity-progress')}
+              variant="secondary"
+            />
+          }
           emptyMessage={copy.noActivityData}
           rows={activityRows}
           title={copy.activity}
