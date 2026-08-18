@@ -223,13 +223,13 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
       justifyContent: 'space-between',
     },
     destructiveAction: {
-      borderColor: colors.error,
+      borderColor: glass.destructiveBorder,
     },
     destructiveActionLabel: {
       color: colors.error,
     },
     destructiveActionPressed: {
-      backgroundColor: colors.errorSoft,
+      backgroundColor: glass.destructivePressedFill,
     },
     exerciseIndex: {
       color: colors.textSecondary,
@@ -266,8 +266,8 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
       fontSize: 12,
     },
     input: {
-      backgroundColor: colors.backgroundSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 8,
       borderWidth: 1,
@@ -331,8 +331,8 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
       paddingVertical: 0,
     },
     notesInput: {
-      backgroundColor: colors.backgroundSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 8,
       borderWidth: 1,
@@ -344,8 +344,8 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
       textAlignVertical: 'top',
     },
     row: {
-      backgroundColor: colors.backgroundElement,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.cardFill,
+      borderColor: glass.cardBorder,
       borderCurve: 'continuous',
       borderRadius: 12,
       borderWidth: 1,

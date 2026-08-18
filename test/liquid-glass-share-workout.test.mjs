@@ -39,10 +39,12 @@ describe('LG-3E Share Workout Liquid Glass material', () => {
     expect(source).toContain('getShareWorkoutError');
     expect(source).toContain('ShareWorkoutMediaCard');
     expect(source).toContain(
-      'thumbColor={Platform.OS === "android" ? colors.surfacePrimary : undefined}',
+      'thumbColor={Platform.OS === "android" ? glass.cardHighlight : undefined}',
     );
     expect(source).toContain(
-      'trackColor={{ false: colors.borderStrong, true: colors.accent }}',
+      'trackColor={{ false: glass.controlFill, true: glass.accentFill }}',
     );
+    expect(source).not.toContain('colors.surfacePrimary');
+    expect(source).not.toContain('colors.borderStrong');
   });
 });

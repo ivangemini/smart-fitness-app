@@ -250,8 +250,8 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
       justifyContent: 'space-between',
     },
     input: {
-      backgroundColor: colors.backgroundSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 8,
       borderWidth: 1,
@@ -269,8 +269,8 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
       fontWeight: '700',
     },
     notesInput: {
-      backgroundColor: colors.backgroundSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 8,
       borderWidth: 1,

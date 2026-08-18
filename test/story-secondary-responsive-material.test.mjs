@@ -12,11 +12,12 @@ describe('Story secondary responsive Liquid Glass states', () => {
     expect(source).toContain("import { Platform, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';");
     expect(source).toMatch(/switchText:\s*\{[\s\S]*?flexShrink:\s*1,[\s\S]*?minWidth:\s*0,/u);
     expect(source).toContain(
-      "thumbColor={Platform.OS === 'android' ? colors.surfacePrimary : undefined}",
+      "thumbColor={Platform.OS === 'android' ? colors.textOnAccent : undefined}",
     );
     expect(source).toContain(
-      'trackColor={{ false: colors.borderStrong, true: colors.accent }}',
+      'trackColor={{ false: glass.controlFill, true: glass.accentFill }}',
     );
+    expect(source).not.toMatch(/colors\.surfacePrimary\b/);
   });
 
   it('keeps close-friend usernames shrinkable beside the remove action', () => {

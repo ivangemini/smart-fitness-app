@@ -436,8 +436,8 @@ function IntegrationRow({
           style={styles.switchControl}
           value={value}
           onValueChange={onValueChange}
-          trackColor={{ false: colors.surfaceSecondary, true: colors.accent }}
-          thumbColor="#FFFFFF"
+          trackColor={{ false: glass.controlFill, true: glass.accentFill }}
+          thumbColor={glass.cardHighlight}
         />
       </View>
     </View>

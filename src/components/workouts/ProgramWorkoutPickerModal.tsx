@@ -264,8 +264,8 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
       fontWeight: '900',
     },
     emptyState: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 18,
       borderWidth: StyleSheet.hairlineWidth,
@@ -355,7 +355,7 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
     },
     rowSelected: {
       backgroundColor: glass.semanticAccentFill,
-      borderColor: colors.accent,
+      borderColor: glass.accentBorder,
       borderWidth: 1,
     },
     rowTitle: {
