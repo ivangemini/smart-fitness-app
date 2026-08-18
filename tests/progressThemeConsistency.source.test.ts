@@ -18,6 +18,7 @@ const themeAwareFiles = [
   'src/app/(tabs)/progress.tsx',
   'src/app/weight-details.tsx',
   'src/app/weight-entry.tsx',
+  'src/app/training-progress.tsx',
   'src/components/progress/AddBodyMeasurementCard.tsx',
   'src/components/progress/ProgressOverviewCard.tsx',
   'src/components/progress/ProgressTrendChart.tsx',
@@ -38,6 +39,7 @@ describe('Progress theme consistency', () => {
     'src/app/(tabs)/progress.tsx',
     'src/app/weight-details.tsx',
     'src/app/weight-entry.tsx',
+    'src/app/training-progress.tsx',
     'src/components/progress/AddBodyMeasurementCard.tsx',
     'src/components/progress/ProgressOverviewCard.tsx',
     'src/components/progress/ProgressTrendChart.tsx',
@@ -55,7 +57,7 @@ describe('Progress theme consistency', () => {
     expect(source).toContain('<ProgressOverviewCard');
     expect(source).toContain("router.push('/weight-details')");
     expect(source).toContain("router.push('/weight-entry')");
-    expect(source).toContain("router.push('/workout-history')");
+    expect(source).toContain("router.push('/training-progress')");
     expect(source).toContain('buildBodyMeasurement');
     expect(source).toContain('addBodyMeasurement(result.measurement)');
   });
