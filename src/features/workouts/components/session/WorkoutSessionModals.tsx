@@ -1,5 +1,5 @@
 import { X } from 'lucide-react-native';
-import type { ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { FlatList, Modal, Pressable, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -8,6 +8,8 @@ import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { Colors, Spacing } from '@/constants/theme';
 import { createStyles } from '@/features/workouts/styles/workoutSessionScreenStyles';
 import { useLocalization } from '@/localization';
+import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 
 type WorkoutSessionStyles = ReturnType<typeof createStyles>;
 
@@ -177,6 +179,11 @@ export function WorkoutOverflowModal({
   visible: boolean;
 }) {
   const { t } = useLocalization();
+  const { resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
 
   return (
     <Modal animationType="fade" transparent visible={visible} onRequestClose={onClose}>
@@ -194,7 +201,7 @@ export function WorkoutOverflowModal({
                   <Switch
                     value={trackRpeEnabled}
                     onValueChange={onTrackRpeChange}
-                    trackColor={{ false: colors.surfaceSecondary, true: colors.accent }}
+                    trackColor={{ false: glass.controlFill, true: glass.accentFill }}
                     thumbColor="#FFFFFF"
                   />
                 }
