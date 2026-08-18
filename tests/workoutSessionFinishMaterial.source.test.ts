@@ -41,6 +41,13 @@ describe('workout finish interaction chrome', () => {
     expect(screen).toContain('<KeyboardAvoidingView');
   });
 
+  it('uses active Liquid Glass materials for integration switches while preserving footer divider semantics', () => {
+    expect(screen).toContain('trackColor={{ false: glass.controlFill, true: glass.accentFill }}');
+    expect(screen).toContain('thumbColor={glass.cardHighlight}');
+    expect(screen).not.toContain('trackColor={{ false: colors.surfaceSecondary, true: colors.accent }}');
+    expect(screen).toContain('borderTopColor: colors.borderSubtle');
+  });
+
   it('preserves completion, save and share lifecycle contracts', () => {
     expect(screen).toContain('buildCompletedWorkoutSessionSnapshotFromDraft');
     expect(screen).toContain('markActiveWorkoutSessionFinishing()');

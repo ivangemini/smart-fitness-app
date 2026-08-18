@@ -33,7 +33,9 @@ describe('program builder Liquid Glass interaction states', () => {
     expect(source).toContain('backgroundColor: glass.controlPressedFill');
     expect(source).toContain('backgroundColor: glass.disabledFill');
     expect(source).toContain('borderColor: glass.disabledBorder');
-    expect(source).toContain('backgroundColor: colors.errorSoft');
+    expect(source).toContain('borderColor: glass.destructiveBorder');
+    expect(source).toContain('backgroundColor: glass.destructivePressedFill');
+    expect(source).not.toContain('backgroundColor: colors.errorSoft');
     expect(source).not.toMatch(/pressed:\s*\{\s*opacity:/);
   });
 
