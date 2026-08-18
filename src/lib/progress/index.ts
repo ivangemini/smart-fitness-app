@@ -3,6 +3,7 @@ import type { BodyMeasurement, WorkoutSession, WeightEntry } from '@/types';
 export * from './activityAnalytics';
 export * from './exerciseProgressSeries';
 export * from './formatting';
+export * from './highlightAnalytics';
 export * from './measurements';
 export * from './muscleAnalytics';
 export * from './personalRecords';

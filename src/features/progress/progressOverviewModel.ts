@@ -3,6 +3,7 @@ import type { BodyMeasurement, WeightEntry, WorkoutSession } from '@/types';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_PERIOD_DAYS = 28;
+const OVERVIEW_MAX_EXERCISES = 50;
 
 export type ProgressOverview = {
   period: {
@@ -71,7 +72,7 @@ export const buildProgressOverview = ({
   const training = buildTrainingProgressAnalytics(workoutSessions, {
     endAt,
     periodDays,
-    maxExercises: 12,
+    maxExercises: OVERVIEW_MAX_EXERCISES,
   });
   const endTimestamp = Date.parse(training.period.endAt);
   const last7DaysStart = endTimestamp - 7 * DAY_MS;
