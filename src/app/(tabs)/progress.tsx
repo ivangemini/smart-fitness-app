@@ -106,67 +106,116 @@ export default function ProgressScreen() {
     value ? formatDate(value, { day: 'numeric', month: 'short' }) : copy.notAvailable;
   const formatTrend = (trend: typeof overview.strengthTraining.volumeTrend) => {
     switch (trend) {
-      case 'up': return copy.up;
-      case 'down': return copy.down;
-      case 'stable': return copy.stable;
-      default: return copy.insufficientData;
+      case 'up':
+        return copy.up;
+      case 'down':
+        return copy.down;
+      case 'stable':
+        return copy.stable;
+      default:
+        return copy.insufficientData;
     }
   };
 
-  const bodyHasData = overview.body.currentWeight !== null || overview.body.measurementCount > 0;
+  const bodyHasData =
+    overview.body.currentWeight !== null || overview.body.measurementCount > 0;
   const bodyRows = bodyHasData
     ? [
         {
           label: copy.currentWeight,
-          value: overview.body.currentWeight === null
-            ? copy.notAvailable
-            : `${formatWeightValue(overview.body.currentWeight)} ${weightUnit}`,
+          value:
+            overview.body.currentWeight === null
+              ? copy.notAvailable
+              : `${formatWeightValue(overview.body.currentWeight)} ${weightUnit}`,
         },
         {
           label: copy.sevenDayChange,
-          value: overview.body.weightDelta7Days === null
-            ? copy.notAvailable
-            : `${formatSigned(weightFromKg(overview.body.weightDelta7Days, weightUnit), formatNumber)} ${weightUnit}`,
+          value:
+            overview.body.weightDelta7Days === null
+              ? copy.notAvailable
+              : `${formatSigned(
+                  weightFromKg(overview.body.weightDelta7Days, weightUnit),
+                  formatNumber,
+                )} ${weightUnit}`,
         },
-        { label: copy.measurements, value: formatNumber(overview.body.measurementCount) },
-        { label: copy.latestMeasurement, value: formatDateLabel(overview.body.latestMeasurementAt) },
+        {
+          label: copy.measurements,
+          value: formatNumber(overview.body.measurementCount),
+        },
+        {
+          label: copy.latestMeasurement,
+          value: formatDateLabel(overview.body.latestMeasurementAt),
+        },
       ]
     : [];
 
   const trainingHasData = overview.strengthTraining.sessionCount > 0;
   const trainingRows = trainingHasData
     ? [
-        { label: copy.sessions28d, value: formatNumber(overview.strengthTraining.sessionCount) },
+        {
+          label: copy.sessions28d,
+          value: formatNumber(overview.strengthTraining.sessionCount),
+        },
         {
           label: copy.workoutsPerWeek,
-          value: formatNumber(overview.strengthTraining.workoutsPerWeek, { maximumFractionDigits: 1 }),
+          value: formatNumber(overview.strengthTraining.workoutsPerWeek, {
+            maximumFractionDigits: 1,
+          }),
         },
-        { label: copy.volumeTrend, value: formatTrend(overview.strengthTraining.volumeTrend) },
+        {
+          label: copy.volumeTrend,
+          value: formatTrend(overview.strengthTraining.volumeTrend),
+        },
         ...(overview.strengthTraining.topExercise
-          ? [{
-              label: copy.topExercise,
-              value: overview.strengthTraining.topExercise.exerciseName,
-              detail: overview.strengthTraining.topExercise.periodBestEstimated1Rm === null
-                ? formatTrend(overview.strengthTraining.topExercise.estimated1RmTrend)
-                : `${formatWeightValue(overview.strengthTraining.topExercise.periodBestEstimated1Rm)} ${weightUnit} e1RM · ${formatTrend(overview.strengthTraining.topExercise.estimated1RmTrend)}`,
-            }]
+          ? [
+              {
+                label: copy.topExercise,
+                value: overview.strengthTraining.topExercise.exerciseName,
+                detail:
+                  overview.strengthTraining.topExercise.periodBestEstimated1Rm === null
+                    ? formatTrend(overview.strengthTraining.topExercise.estimated1RmTrend)
+                    : `${formatWeightValue(
+                        overview.strengthTraining.topExercise.periodBestEstimated1Rm,
+                      )} ${weightUnit} e1RM · ${formatTrend(
+                        overview.strengthTraining.topExercise.estimated1RmTrend,
+                      )}`,
+              },
+            ]
           : []),
       ]
     : [];
 
   const activityRows = overview.activity.latestWorkoutAt
     ? [
-        { label: copy.activeDays28d, value: formatNumber(overview.activity.activeDayCount) },
-        { label: copy.sessions7d, value: formatNumber(overview.activity.sessionsLast7Days) },
-        { label: copy.latestWorkout, value: formatDateLabel(overview.activity.latestWorkoutAt) },
+        {
+          label: copy.activeDays28d,
+          value: formatNumber(overview.activity.activeDayCount),
+        },
+        {
+          label: copy.sessions7d,
+          value: formatNumber(overview.activity.sessionsLast7Days),
+        },
+        {
+          label: copy.latestWorkout,
+          value: formatDateLabel(overview.activity.latestWorkoutAt),
+        },
       ]
     : [];
 
   const highlightRows = overview.highlights.hasTrainingEvidence
     ? [
-        { label: copy.recentRecords, value: formatNumber(overview.highlights.recentEstimated1RmRecordCount) },
-        { label: copy.improvingExercises, value: formatNumber(overview.highlights.improvingExerciseCount) },
-        { label: copy.decliningExercises, value: formatNumber(overview.highlights.decliningExerciseCount) },
+        {
+          label: copy.recentRecords,
+          value: formatNumber(overview.highlights.recentEstimated1RmRecordCount),
+        },
+        {
+          label: copy.improvingExercises,
+          value: formatNumber(overview.highlights.improvingExerciseCount),
+        },
+        {
+          label: copy.decliningExercises,
+          value: formatNumber(overview.highlights.decliningExerciseCount),
+        },
       ]
     : [];
 
@@ -186,7 +235,13 @@ export default function ProgressScreen() {
         <SectionHeader title={t('tabs.progress')} subtitle={t('progress.subtitle')} />
 
         <ProgressOverviewCard
-          actions={<AppButton label={t('progress.weightDetails')} onPress={() => router.push('/weight-details')} variant="secondary" />}
+          actions={
+            <AppButton
+              label={t('progress.weightDetails')}
+              onPress={() => router.push('/weight-details')}
+              variant="secondary"
+            />
+          }
           emptyMessage={copy.noBodyData}
           rows={bodyRows}
           title={copy.body}
@@ -206,32 +261,63 @@ export default function ProgressScreen() {
             draft={measurementDraft}
             error={measurementError}
             isDisabled={isMeasurementDisabled}
-            onChangeCustomLabel={(customLabel) => setMeasurementDraft((current) => ({ ...current, customLabel }))}
+            onChangeCustomLabel={(customLabel) =>
+              setMeasurementDraft((current) => ({ ...current, customLabel }))
+            }
             onChangeMetric={changeMeasurementMetric}
             onChangeUnit={changeMeasurementUnit}
-            onChangeValue={(value) => setMeasurementDraft((current) => ({ ...current, value }))}
+            onChangeValue={(value) =>
+              setMeasurementDraft((current) => ({ ...current, value }))
+            }
             onSave={saveMeasurement}
           />
         ) : null}
 
         <ProgressOverviewCard
-          actions={<AppButton label={copy.strengthTraining} onPress={() => router.push('/training-progress')} variant="secondary" />}
+          actions={
+            <AppButton
+              label={copy.strengthTraining}
+              onPress={() => router.push('/training-progress')}
+              variant="secondary"
+            />
+          }
           emptyMessage={copy.noTrainingData}
           rows={trainingRows}
           subtitle={t('progress.trainingSubtitle')}
           title={copy.strengthTraining}
         />
 
-        <ProgressOverviewCard emptyMessage={copy.noActivityData} rows={activityRows} title={copy.activity} />
-        <ProgressOverviewCard emptyMessage={copy.noTrainingEvidence} rows={highlightRows} title={copy.highlights} />
+        <ProgressOverviewCard
+          emptyMessage={copy.noActivityData}
+          rows={activityRows}
+          title={copy.activity}
+        />
+
+        <ProgressOverviewCard
+          emptyMessage={copy.noTrainingEvidence}
+          rows={highlightRows}
+          title={copy.highlights}
+        />
       </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
-  content: { alignItems: 'center', flexGrow: 1, padding: Spacing.three },
-  inlineActions: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
+  container: {
+    gap: Spacing.three,
+    maxWidth: MaxContentWidth,
+    width: '100%',
+  },
+  content: {
+    alignItems: 'center',
+    flexGrow: 1,
+    padding: Spacing.three,
+  },
+  inlineActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.two,
+  },
   screen: { flex: 1 },
 });
