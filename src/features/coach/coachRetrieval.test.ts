@@ -142,10 +142,14 @@ describe('coachRetrieval', () => {
     });
   });
 
-  it('adds body-weight context to exercise progress only when explicitly requested', () => {
+  it('keeps exercise signals scoped and adds body-weight context only when explicitly requested', () => {
     expect(
-      buildCoachRetrievalPlan({ intent: 'exercise_progress', endAt, exerciseName: 'Bench Press' }).capabilities,
-    ).toEqual(['exercise_history']);
+      buildCoachRetrievalPlan({
+        intent: 'exercise_progress',
+        endAt,
+        exerciseName: 'Bench Press',
+      }).capabilities,
+    ).toEqual(['exercise_history', 'exercise_training_signals']);
     expect(
       buildCoachRetrievalPlan({
         intent: 'exercise_progress',
@@ -153,7 +157,7 @@ describe('coachRetrieval', () => {
         exerciseName: 'Bench Press',
         includeBodyWeightContext: true,
       }).capabilities,
-    ).toEqual(['exercise_history', 'body_metrics']);
+    ).toEqual(['exercise_history', 'exercise_training_signals', 'body_metrics']);
   });
 
   it('builds a training packet with deterministic signals and without unrelated raw state', () => {
@@ -177,6 +181,36 @@ describe('coachRetrieval', () => {
     expect(serialized).not.toContain('private session note');
     expect(serialized).not.toContain('set-private-id');
     expect(serialized).not.toContain('2007-05-01');
+  });
+
+  it('builds an exercise packet with only exercise history and exercise-scoped signals', () => {
+    const result = buildCoachFactPacket({
+      request: {
+        intent: 'exercise_progress',
+        endAt,
+        days: 28,
+        exerciseId: 'bench',
+        exerciseName: 'Bench Press',
+      },
+      sources,
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(Object.keys(result.data.facts)).toEqual([
+      'exerciseHistory',
+      'exerciseTrainingSignals',
+    ]);
+    expect(result.data.facts.exerciseTrainingSignals?.exercises[0]).toMatchObject({
+      exerciseId: 'bench',
+      exerciseName: 'Bench Press',
+      averageActualRpe: 8,
+    });
+    const serialized = JSON.stringify(result.data);
+    expect(serialized).not.toContain('Private food');
+    expect(serialized).not.toContain('Confirmed lab');
+    expect(serialized).not.toContain('private session note');
+    expect(serialized).not.toContain('set-private-id');
   });
 
   it('returns the existing typed exercise-query error instead of broadening retrieval', () => {
@@ -208,7 +242,8 @@ describe('coachRetrieval', () => {
         },
       ],
     });
-    const markerFacts = result.data.facts.labsMarkerHistory?.results.flatMap((entry) => entry.markers) ?? [];
+    const markerFacts =
+      result.data.facts.labsMarkerHistory?.results.flatMap((entry) => entry.markers) ?? [];
     expect(markerFacts.every((marker) => marker.canonicalName === 'ferritin')).toBe(true);
     expect(JSON.stringify(result.data)).not.toContain('Draft lab');
   });
