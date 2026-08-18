@@ -23,7 +23,7 @@ const auditedPresentation = () =>
   ].join('\n');
 
 describe('secondary Progress formatting boundaries', () => {
-  it('uses central locale and selected-unit formatting for charts and measurements', () => {
+  it('uses central locale and selected-unit formatting across overview and drill-down surfaces', () => {
     const progress = readSource('src/app/(tabs)/progress.tsx');
     const chart = readSource('src/components/progress/ProgressTrendChart.tsx');
     const weeklyVolume = readSource(
@@ -32,9 +32,9 @@ describe('secondary Progress formatting boundaries', () => {
     const weightDetails = readSource('src/app/weight-details.tsx');
     const source = auditedPresentation();
 
-    expect(progress).toContain('formatLengthValue,');
     expect(progress).toContain('formatWeightValue,');
-    expect(progress).toContain('formatNumber(measurement.latestNumericValue');
+    expect(progress).toContain('weightFromKg(overview.body.weightDelta7Days, weightUnit)');
+    expect(progress).toContain('formatNumber(overview.body.measurementCount)');
     expect(weeklyVolume).toContain('weightFromKg(week.volume, weightUnit)');
     expect(weeklyVolume).toContain('weightFromKg(volume, weightUnit)');
     expect(chart).toContain('value: formatNumber(midpoint');
@@ -46,16 +46,16 @@ describe('secondary Progress formatting boundaries', () => {
     expect(source).not.toContain('new Intl.');
   });
 
-  it('keeps chart geometry and bounded analytics ordering unchanged', () => {
+  it('keeps chart geometry in drill-down components while first-level analytics use the shared overview model', () => {
     const progress = readSource('src/app/(tabs)/progress.tsx');
     const chart = readSource('src/components/progress/ProgressTrendChart.tsx');
     const weeklyVolume = readSource(
       'src/components/progress/WeeklyWorkoutVolumeCard.tsx',
     );
 
-    expect(progress).toContain('getProgressAnalytics({');
-    expect(progress).toContain('analytics.measurements.slice(0, 3)');
-    expect(progress).toContain('<WeeklyWorkoutVolumeCard sessions={workoutSessions} />');
+    expect(progress).toContain('buildProgressOverview({');
+    expect(progress).toContain('<ProgressOverviewCard');
+    expect(progress).not.toContain('<WeeklyWorkoutVolumeCard sessions={workoutSessions} />');
     expect(weeklyVolume).toContain('getWeeklyWorkoutVolume');
     expect(weeklyVolume).toContain('weeklyVolume.at(-1)');
     expect(weeklyVolume).toContain('weeklyVolume.at(-2)');

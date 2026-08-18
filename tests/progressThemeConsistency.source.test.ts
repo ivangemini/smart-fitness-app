@@ -19,6 +19,7 @@ const themeAwareFiles = [
   'src/app/weight-details.tsx',
   'src/app/weight-entry.tsx',
   'src/components/progress/AddBodyMeasurementCard.tsx',
+  'src/components/progress/ProgressOverviewCard.tsx',
   'src/components/progress/ProgressTrendChart.tsx',
   'src/components/progress/WeeklyWorkoutVolumeCard.tsx',
   'src/components/progress/SafetyRecoveryProgressCard.tsx',
@@ -38,6 +39,7 @@ describe('Progress theme consistency', () => {
     'src/app/weight-details.tsx',
     'src/app/weight-entry.tsx',
     'src/components/progress/AddBodyMeasurementCard.tsx',
+    'src/components/progress/ProgressOverviewCard.tsx',
     'src/components/progress/ProgressTrendChart.tsx',
     'src/components/progress/WeeklyWorkoutVolumeCard.tsx',
     'src/components/progress/SafetyRecoveryProgressCard.tsx',
@@ -47,10 +49,10 @@ describe('Progress theme consistency', () => {
     expect(source).toContain('useAppTheme');
   });
 
-  it('preserves Progress data, routes and body-measurement behavior', () => {
+  it('preserves Progress data, routes and body-measurement behavior on the Phase 15 overview', () => {
     const source = readSource('src/app/(tabs)/progress.tsx');
-    expect(source).toContain('getProgressAnalytics');
-    expect(source).toContain('getWeightTrendEntries');
+    expect(source).toContain('buildProgressOverview({');
+    expect(source).toContain('<ProgressOverviewCard');
     expect(source).toContain("router.push('/weight-details')");
     expect(source).toContain("router.push('/weight-entry')");
     expect(source).toContain("router.push('/workout-history')");
@@ -72,7 +74,7 @@ describe('Progress theme consistency', () => {
     expect(details).toContain('flexGrow: 1');
   });
 
-  it('preserves Safety/Recovery analytics and selected-state interaction semantics', () => {
+  it('preserves Safety/Recovery analytics and selected-state interaction semantics on detail components', () => {
     const progress = readSource(
       'src/components/progress/SafetyRecoveryProgressCard.tsx',
     );
