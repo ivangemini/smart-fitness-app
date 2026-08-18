@@ -301,6 +301,13 @@ export default function ProgressScreen() {
         />
 
         <ProgressOverviewCard
+          actions={
+            <AppButton
+              label={copy.highlightDetails}
+              onPress={() => router.push('/progress-highlights')}
+              variant="secondary"
+            />
+          }
           emptyMessage={copy.noTrainingEvidence}
           rows={highlightRows}
           title={copy.highlights}
