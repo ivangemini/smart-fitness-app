@@ -17,14 +17,15 @@ const readSource = (relativePath: string) =>
 const progress = readSource('src/app/(tabs)/progress.tsx');
 
 describe('Progress keyboard UX', () => {
-  it('keeps the embedded body-measurement form keyboard-aware', () => {
-    expect(progress).toContain("import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';");
+  it('keeps the collapsible body-measurement form keyboard-aware', () => {
+    expect(progress).toContain("import { Platform, ScrollView, StyleSheet, View } from 'react-native';");
     expect(progress).toContain('automaticallyAdjustKeyboardInsets');
     expect(progress).toContain(
       "keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}",
     );
     expect(progress).toContain('keyboardShouldPersistTaps="handled"');
     expect(progress).toContain('<AddBodyMeasurementCard');
+    expect(progress).toContain('measurementEditorOpen ? (');
   });
 
   it('preserves floating-tab clearance and the measurement save boundary', () => {
