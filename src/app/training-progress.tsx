@@ -17,6 +17,7 @@ import {
   buildExerciseProgressSeries,
   buildTrainingProgressAnalytics,
 } from '@/lib/progress';
+import { buildTrainingSignalAnalytics } from '@/lib/progress/trainingSignals';
 import { useLocalization } from '@/localization';
 import { getTrainingProgressCopy } from '@/localization/trainingProgressCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
@@ -47,7 +48,21 @@ export default function TrainingProgressScreen() {
   const [selectedExerciseKey, setSelectedExerciseKey] = useState<string | null>(null);
   const periodDays = PERIOD_DAYS[periodKey];
   const analytics = useMemo(
-    () => buildTrainingProgressAnalytics(workoutSessions, { endAt: anchorAt, maxExercises: 12, periodDays }),
+    () =>
+      buildTrainingProgressAnalytics(workoutSessions, {
+        endAt: anchorAt,
+        maxExercises: 12,
+        periodDays,
+      }),
+    [anchorAt, periodDays, workoutSessions],
+  );
+  const signalAnalytics = useMemo(
+    () =>
+      buildTrainingSignalAnalytics(workoutSessions, {
+        endAt: anchorAt,
+        maxExercises: 30,
+        periodDays,
+      }),
     [anchorAt, periodDays, workoutSessions],
   );
   const exercises = analytics.exercises;
@@ -62,7 +77,12 @@ export default function TrainingProgressScreen() {
     }
   }, [exercises, selectedExerciseKey]);
 
-  const selectedExercise = exercises.find((exercise) => getExerciseKey(exercise) === selectedExerciseKey) ?? null;
+  const selectedExercise =
+    exercises.find((exercise) => getExerciseKey(exercise) === selectedExerciseKey) ?? null;
+  const selectedSignal =
+    signalAnalytics.exercises.find(
+      (exercise) => getExerciseKey(exercise) === selectedExerciseKey,
+    ) ?? null;
   const series = useMemo(() => {
     if (!selectedExercise) return null;
     return buildExerciseProgressSeries({
@@ -95,21 +115,79 @@ export default function TrainingProgressScreen() {
         { label: copy.workingSets, value: formatNumber(selectedExercise.workingSetCount) },
         {
           label: copy.bestWeight,
-          value: selectedExercise.periodBestWeight === null
-            ? copy.unavailable
-            : `${formatWeightValue(selectedExercise.periodBestWeight)} ${weightUnit}`,
+          value:
+            selectedExercise.periodBestWeight === null
+              ? copy.unavailable
+              : `${formatWeightValue(selectedExercise.periodBestWeight)} ${weightUnit}`,
         },
         {
           label: copy.bestEstimated1Rm,
-          value: selectedExercise.periodBestEstimated1Rm === null
-            ? copy.unavailable
-            : `${formatWeightValue(selectedExercise.periodBestEstimated1Rm)} ${weightUnit}`,
+          value:
+            selectedExercise.periodBestEstimated1Rm === null
+              ? copy.unavailable
+              : `${formatWeightValue(selectedExercise.periodBestEstimated1Rm)} ${weightUnit}`,
         },
         {
           label: copy.latestVolume,
-          value: latestPoint === null
-            ? copy.unavailable
-            : `${formatNumber(weightFromKg(latestPoint.totalVolume, weightUnit), { maximumFractionDigits: 0 })} ${weightUnit}·reps`,
+          value:
+            latestPoint === null
+              ? copy.unavailable
+              : `${formatNumber(weightFromKg(latestPoint.totalVolume, weightUnit), {
+                  maximumFractionDigits: 0,
+                })} ${weightUnit}·reps`,
+        },
+      ]
+    : [];
+  const signalRows = selectedExercise
+    ? [
+        {
+          label: copy.progressSignal,
+          value: copy.progressSignalValue(
+            selectedSignal?.progressSignal ?? 'insufficient_data',
+          ),
+        },
+        {
+          label: copy.comparableSessions,
+          value: formatNumber(selectedSignal?.comparableSessionCount ?? 0),
+        },
+        {
+          label: copy.evidenceSpan,
+          value:
+            selectedSignal?.comparableSpanDays === null ||
+            selectedSignal?.comparableSpanDays === undefined
+              ? copy.unavailable
+              : copy.daysValue(
+                  formatNumber(selectedSignal.comparableSpanDays, {
+                    maximumFractionDigits: 1,
+                  }),
+                ),
+        },
+        {
+          label: copy.averageRpe,
+          value:
+            selectedSignal?.averageActualRpe === null ||
+            selectedSignal?.averageActualRpe === undefined
+              ? copy.unavailable
+              : formatNumber(selectedSignal.averageActualRpe, {
+                  maximumFractionDigits: 1,
+                }),
+        },
+        {
+          label: copy.recordedRpe,
+          value: copy.recordedSetsValue(
+            formatNumber(signalAnalytics.rpe.recordedSetCount),
+            formatNumber(signalAnalytics.rpe.workingSetCount),
+          ),
+        },
+        {
+          label: copy.rpeCoverage,
+          value: `${formatNumber(signalAnalytics.rpe.coverage * 100, {
+            maximumFractionDigits: 0,
+          })}%`,
+        },
+        {
+          label: copy.rpeTrend,
+          value: copy.rpeTrendValue(signalAnalytics.rpe.trend),
         },
       ]
     : [];
@@ -117,7 +195,10 @@ export default function TrainingProgressScreen() {
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={[styles.content, { paddingBottom: safeAreaInsets.bottom + Spacing.eight }]}
+      contentContainerStyle={[
+        styles.content,
+        { paddingBottom: safeAreaInsets.bottom + Spacing.eight },
+      ]}
       showsVerticalScrollIndicator={false}
       style={styles.screen}>
       <View style={styles.container}>
@@ -152,7 +233,9 @@ export default function TrainingProgressScreen() {
             </View>
           </AppCard>
         ) : (
-          <AppCard><Text selectable style={styles.detail}>{copy.noExercises}</Text></AppCard>
+          <AppCard>
+            <Text selectable style={styles.detail}>{copy.noExercises}</Text>
+          </AppCard>
         )}
 
         {selectedExercise ? (
@@ -166,7 +249,26 @@ export default function TrainingProgressScreen() {
                 </View>
               ))}
             </View>
-            {series?.pointsTruncated ? <Text selectable style={styles.detail}>{copy.truncated(series.totalMatchingSessions)}</Text> : null}
+            {series?.pointsTruncated ? (
+              <Text selectable style={styles.detail}>
+                {copy.truncated(series.totalMatchingSessions)}
+              </Text>
+            ) : null}
+          </AppCard>
+        ) : null}
+
+        {selectedExercise ? (
+          <AppCard>
+            <Text selectable style={styles.cardTitle}>{copy.trainingSignals}</Text>
+            <View style={styles.summaryList}>
+              {signalRows.map((row) => (
+                <View key={row.label} style={styles.summaryRow}>
+                  <Text selectable style={styles.summaryLabel}>{row.label}</Text>
+                  <Text selectable style={styles.summaryValue}>{row.value}</Text>
+                </View>
+              ))}
+            </View>
+            <Text selectable style={styles.signalNote}>{copy.signalMethodNote}</Text>
           </AppCard>
         ) : null}
 
@@ -176,15 +278,25 @@ export default function TrainingProgressScreen() {
             {comparablePoints.length >= 2 ? (
               <ProgressTrendChart
                 emptyLabel={copy.chartNeedsData}
-                maxLabel={`${formatNumber(Math.max(...chartValues), { maximumFractionDigits: 1 })} ${weightUnit}`}
-                minLabel={`${formatNumber(Math.min(...chartValues), { maximumFractionDigits: 1 })} ${weightUnit}`}
+                maxLabel={`${formatNumber(Math.max(...chartValues), {
+                  maximumFractionDigits: 1,
+                })} ${weightUnit}`}
+                minLabel={`${formatNumber(Math.min(...chartValues), {
+                  maximumFractionDigits: 1,
+                })} ${weightUnit}`}
                 points={comparablePoints}
               />
-            ) : <Text selectable style={styles.detail}>{copy.chartNeedsData}</Text>}
+            ) : (
+              <Text selectable style={styles.detail}>{copy.chartNeedsData}</Text>
+            )}
           </AppCard>
         ) : null}
 
-        {analytics.frequency.sessionCount === 0 ? <AppCard><Text selectable style={styles.detail}>{copy.noTraining}</Text></AppCard> : null}
+        {analytics.frequency.sessionCount === 0 ? (
+          <AppCard>
+            <Text selectable style={styles.detail}>{copy.noTraining}</Text>
+          </AppCard>
+        ) : null}
         {selectedExercise ? (
           <AppButton
             label={copy.openInCoach}
@@ -203,23 +315,52 @@ export default function TrainingProgressScreen() {
             }
           />
         ) : null}
-        <AppButton label={copy.openWorkoutHistory} onPress={() => router.push('/workout-history')} variant="secondary" />
+        <AppButton
+          label={copy.openWorkoutHistory}
+          onPress={() => router.push('/workout-history')}
+          variant="secondary"
+        />
         <AppButton label={copy.back} onPress={() => router.back()} variant="secondary" />
       </View>
     </ScrollView>
   );
 }
 
-const createStyles = (colors: typeof Colors.light) => StyleSheet.create({
-  cardTitle: { color: colors.textPrimary, fontSize: 17, fontWeight: '800', marginBottom: Spacing.two },
-  container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
-  content: { alignItems: 'center', flexGrow: 1, padding: Spacing.three },
-  detail: { color: colors.textSecondary, fontSize: 13, lineHeight: 19 },
-  exerciseButton: { flexBasis: '48%', flexGrow: 1 },
-  exerciseGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
-  screen: { backgroundColor: colors.background, flex: 1 },
-  summaryLabel: { color: colors.textSecondary, flex: 1, fontSize: 13, lineHeight: 18 },
-  summaryList: { gap: Spacing.two },
-  summaryRow: { alignItems: 'center', flexDirection: 'row', gap: Spacing.two, justifyContent: 'space-between', minHeight: 36 },
-  summaryValue: { color: colors.textPrimary, flexShrink: 1, fontSize: 14, fontVariant: ['tabular-nums'], fontWeight: '800', textAlign: 'right' },
-});
+const createStyles = (colors: typeof Colors.light) =>
+  StyleSheet.create({
+    cardTitle: {
+      color: colors.textPrimary,
+      fontSize: 17,
+      fontWeight: '800',
+      marginBottom: Spacing.two,
+    },
+    container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
+    content: { alignItems: 'center', flexGrow: 1, padding: Spacing.three },
+    detail: { color: colors.textSecondary, fontSize: 13, lineHeight: 19 },
+    exerciseButton: { flexBasis: '48%', flexGrow: 1 },
+    exerciseGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
+    screen: { backgroundColor: colors.background, flex: 1 },
+    signalNote: {
+      color: colors.textSecondary,
+      fontSize: 12,
+      lineHeight: 18,
+      marginTop: Spacing.three,
+    },
+    summaryLabel: { color: colors.textSecondary, flex: 1, fontSize: 13, lineHeight: 18 },
+    summaryList: { gap: Spacing.two },
+    summaryRow: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: Spacing.two,
+      justifyContent: 'space-between',
+      minHeight: 36,
+    },
+    summaryValue: {
+      color: colors.textPrimary,
+      flexShrink: 1,
+      fontSize: 14,
+      fontVariant: ['tabular-nums'],
+      fontWeight: '800',
+      textAlign: 'right',
+    },
+  });
