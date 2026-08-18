@@ -1,5 +1,6 @@
 import type { BodyMeasurement, WorkoutSession, WeightEntry } from '@/types';
 
+export * from './activityAnalytics';
 export * from './exerciseProgressSeries';
 export * from './formatting';
 export * from './measurements';
