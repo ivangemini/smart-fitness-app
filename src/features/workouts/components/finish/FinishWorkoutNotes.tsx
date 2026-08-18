@@ -3,6 +3,11 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Colors, Radii, Spacing } from '@/constants/theme';
 import { useWorkoutTheme } from '@/features/workouts/workoutTheme';
+import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 type FinishWorkoutNotesProps = {
   notes: string;
@@ -11,7 +16,12 @@ type FinishWorkoutNotesProps = {
 
 export const FinishWorkoutNotes = memo(function FinishWorkoutNotes({ notes, onChangeNotes }: FinishWorkoutNotesProps) {
   const { colors } = useWorkoutTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   return (
     <View style={styles.block}>
@@ -29,7 +39,7 @@ export const FinishWorkoutNotes = memo(function FinishWorkoutNotes({ notes, onCh
   );
 });
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     block: {
       gap: Spacing.two,
@@ -42,8 +52,8 @@ const createStyles = (colors: typeof Colors.light) =>
       textTransform: 'uppercase',
     },
     notesInput: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: Radii.large,
       borderWidth: StyleSheet.hairlineWidth,
