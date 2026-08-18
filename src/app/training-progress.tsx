@@ -185,6 +185,24 @@ export default function TrainingProgressScreen() {
         ) : null}
 
         {analytics.frequency.sessionCount === 0 ? <AppCard><Text selectable style={styles.detail}>{copy.noTraining}</Text></AppCard> : null}
+        {selectedExercise ? (
+          <AppButton
+            label={copy.openInCoach}
+            onPress={() =>
+              router.push({
+                pathname: '/(tabs)/coach',
+                params: {
+                  contextSource: 'progress',
+                  contextIntent: 'exercise_progress',
+                  exerciseId: selectedExercise.exerciseId,
+                  exerciseName: selectedExercise.exerciseName,
+                  days: String(periodDays),
+                  endAt: anchorAt,
+                },
+              })
+            }
+          />
+        ) : null}
         <AppButton label={copy.openWorkoutHistory} onPress={() => router.push('/workout-history')} variant="secondary" />
         <AppButton label={copy.back} onPress={() => router.back()} variant="secondary" />
       </View>
