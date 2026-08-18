@@ -24,7 +24,9 @@ import {
   type CoachProfileFacts,
 } from './coachCanonicalCapabilities';
 import {
+  readExerciseTrainingSignals,
   readTrainingSignals,
+  type CoachExerciseTrainingSignalData,
   type CoachTrainingSignalData,
 } from './coachTrainingSignalCapability';
 
@@ -41,6 +43,7 @@ export type CoachRetrievalCapability =
   | 'training_summary'
   | 'training_signals'
   | 'exercise_history'
+  | 'exercise_training_signals'
   | 'workout_history'
   | 'current_program'
   | 'profile_facts'
@@ -110,6 +113,7 @@ export type CoachFactPacket = {
     trainingSummary: CoachTrainingSummaryData;
     trainingSignals: CoachTrainingSignalData;
     exerciseHistory: CoachExerciseHistoryData;
+    exerciseTrainingSignals: CoachExerciseTrainingSignalData;
     workoutHistory: CoachWorkoutHistoryData;
     currentProgram: CoachCurrentProgramData;
     profileFacts: CoachProfileFacts;
@@ -130,8 +134,8 @@ export const buildCoachRetrievalPlan = (request: CoachRetrievalRequest): CoachRe
       return {
         intent: request.intent,
         capabilities: request.includeBodyWeightContext
-          ? ['exercise_history', 'body_metrics']
-          : ['exercise_history'],
+          ? ['exercise_history', 'exercise_training_signals', 'body_metrics']
+          : ['exercise_history', 'exercise_training_signals'],
       };
     case 'workout_history':
       return { intent: request.intent, capabilities: ['workout_history'] };
@@ -232,6 +236,18 @@ export const buildCoachFactPacket = ({
         });
         if (!result.ok) return returnCapabilityError(result.error);
         facts.exerciseHistory = result.data;
+        break;
+      }
+      case 'exercise_training_signals': {
+        const result = readExerciseTrainingSignals({
+          sessions: sources.workoutSessions,
+          endAt: request.endAt,
+          days: request.days,
+          exerciseId: request.exerciseId,
+          exerciseName: request.exerciseName,
+        });
+        if (!result.ok) return returnCapabilityError(result.error);
+        facts.exerciseTrainingSignals = result.data;
         break;
       }
       case 'workout_history': {
