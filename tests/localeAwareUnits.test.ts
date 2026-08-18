@@ -24,7 +24,8 @@ describe('locale-aware unit formatting', () => {
 
     expect(screen).toContain('const { formatDate, formatNumber, locale } = useLocalization()');
     expect(screen).toContain('formatWeightValue(entry.weight)');
-    expect(screen).toContain("formatDate(value, { day: 'numeric', month: 'short' })");
+    expect(screen).toContain("formatDate(entry.createdAt, { day: 'numeric', month: 'short' })");
+    expect(screen).toContain('formatNumber(periodDelta');
     expect(screen).not.toContain('.toFixed(1)');
   });
 });

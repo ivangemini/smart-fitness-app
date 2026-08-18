@@ -25,16 +25,21 @@ describe('Weight Details localization', () => {
     expect(copy).toContain('Динамика веса');
     expect(copy).toContain('Weight details');
     expect(copy).toContain('История тренировок');
+    expect(copy).toContain('Период');
+    expect(copy).toContain('Period');
   });
 
-  it('preserves canonical analytics while presenting selected kg/lb values', () => {
+  it('preserves canonical focused analytics while presenting selected kg/lb values', () => {
     const screen = readSource('src/app/weight-details.tsx');
 
-    expect(screen).toContain('getProgressAnalytics');
+    expect(screen).toContain('getWeightAnalytics');
+    expect(screen).toContain('getWeightTrendEntries');
     expect(screen).toContain('weightFromKg');
     expect(screen).toContain('formatWeightValue(entry.weight)');
-    expect(screen).toContain('formatWeightValue(analytics.weight.currentWeight)');
+    expect(screen).toContain('formatWeightValue(analytics.currentWeight)');
     expect(screen).toContain('weight: weightUnit');
+    expect(screen).toContain("type WeightRangeKey = '7' | '30' | '90'");
+    expect(screen).toContain('<SegmentedControl');
     expect(screen).toContain("router.push('/workout-history')");
   });
 

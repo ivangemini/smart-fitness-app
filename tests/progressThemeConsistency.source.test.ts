@@ -60,14 +60,16 @@ describe('Progress theme consistency', () => {
     expect(source).toContain('addBodyMeasurement(result.measurement)');
   });
 
-  it('preserves secondary weight behavior and removes legacy bottom clearance', () => {
+  it('preserves focused secondary weight behavior and removes legacy bottom clearance', () => {
     const entry = readSource('src/app/weight-entry.tsx');
     const details = readSource('src/app/weight-details.tsx');
 
     expect(entry).toContain('displayWeightInputToKg');
     expect(entry).toContain('addWeightEntry({');
     expect(entry).toContain('safeAreaInsets.bottom + Spacing.eight');
-    expect(details).toContain('getProgressAnalytics');
+    expect(details).toContain('getWeightAnalytics(weightHistory)');
+    expect(details).toContain('getWeightTrendEntries(weightHistory, rangeDays)');
+    expect(details).toContain('<SegmentedControl');
     expect(details).toContain("router.push('/workout-history')");
     expect(details).toContain('safeAreaInsets.bottom + Spacing.eight');
     expect(details).not.toContain('safeAreaInsets.bottom + 120');
