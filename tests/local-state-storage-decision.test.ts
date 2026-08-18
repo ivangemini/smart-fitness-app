@@ -31,7 +31,7 @@ describe('local-state storage decision', () => {
       'docs/architecture/local-state-performance-decision.md',
     );
     expect(plan).toContain(
-      'There is no remaining approved autonomous source-refactor phase',
+      'do not reopen that architecture without new measured evidence or explicit reprioritization',
     );
   });
 
