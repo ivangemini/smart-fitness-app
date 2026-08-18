@@ -4,6 +4,7 @@ export * from './formatting';
 export * from './measurements';
 export * from './muscleAnalytics';
 export * from './personalRecords';
+export * from './trainingAnalytics';
 export * from './weight';
 export * from './weightTrend';
 export * from './weeklyWorkoutVolume';
