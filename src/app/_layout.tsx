@@ -17,6 +17,7 @@ import { PushRuntimeProvider } from '@/features/notifications/PushRuntimeContext
 import { LocalizationProvider, useLocalization } from '@/localization';
 import { RootErrorFallback } from '@/observability/RootErrorFallback';
 import { AppThemeProvider, useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import { UnitPreferencesProvider } from '@/units';
 
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
@@ -26,6 +27,10 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
 function RootNavigator() {
   const { colors, resolvedAppearance } = useAppTheme();
   const { t } = useLocalization();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
@@ -45,14 +50,14 @@ function RootNavigator() {
       colors: {
         ...(resolvedAppearance === 'dark' ? DarkTheme.colors : DefaultTheme.colors),
         background: colors.background,
-        card: colors.surfacePrimary,
-        border: colors.borderSubtle,
+        card: glass.cardFill,
+        border: glass.cardBorder,
         primary: colors.accent,
         text: colors.textPrimary,
         notification: colors.error,
       },
     }),
-    [colors, resolvedAppearance],
+    [colors, glass, resolvedAppearance],
   );
 
   return (
@@ -69,7 +74,7 @@ function RootNavigator() {
                       contentStyle: { backgroundColor: colors.background },
                       headerBackTitle: t('common.back'),
                       headerShadowVisible: false,
-                      headerStyle: { backgroundColor: colors.surfacePrimary },
+                      headerStyle: { backgroundColor: glass.cardFill },
                       headerTintColor: colors.textPrimary,
                       headerTitleStyle: { color: colors.textPrimary },
                     }}>

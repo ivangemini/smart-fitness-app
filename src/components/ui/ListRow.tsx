@@ -65,8 +65,10 @@ export function ListRow({ accessibilityHint, accessibilityLabel, badge, detail, 
 const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     badge: {
-      backgroundColor: colors.accentSoft,
+      backgroundColor: glass.semanticAccentFill,
+      borderColor: glass.accentBorder,
       borderRadius: Radii.pill,
+      borderWidth: StyleSheet.hairlineWidth,
       color: colors.accent,
       flexShrink: 1,
       fontSize: Typography.caption.fontSize,
