@@ -33,6 +33,7 @@ export const getTrainingProgressCopy = (locale: SupportedLocale) => ({
     locale === 'ru'
       ? `Показаны последние точки; всего тренировок с упражнением: ${count}.`
       : `Showing the latest points; total sessions with this exercise: ${count}.`,
+  openInCoach: locale === 'ru' ? 'Открыть в Companion' : 'Open in Companion',
   openWorkoutHistory:
     locale === 'ru' ? 'Открыть историю тренировок' : 'Open workout history',
   back: locale === 'ru' ? 'Назад' : 'Back',
