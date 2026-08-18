@@ -28,20 +28,24 @@ Exact code, migrations, tests and current Git history override stale prose. Upda
 
 ## Autonomous execution policy
 
-Default to parallel-first autonomous execution and maximize useful completed roadmap work per pass.
+Default to throughput-first, parallel-first autonomous execution. A work pass is not one PR, one fix, one validation cycle, or one roadmap bullet: it is the largest safe amount of approved roadmap work that can be completed with the available repository, CI, connector, and environment access.
 
-- Partition approved work into independent workstreams and execute non-overlapping workstreams in parallel whenever safe.
-- Prefer large coherent batches over micro-PRs or repeated tiny inspect/edit/test cycles. A batch may include multiple closely related demonstrated fixes when they share one contract and can be validated together.
-- CI, review latency, or an external blocker on one PR blocks only that PR. Continue other independent approved work instead of ending the pass.
-- Multiple simultaneous PRs are allowed when their changed files, migrations, contracts, and generated artifacts do not overlap or depend on unmerged behavior.
-- Do not stop merely to report progress while another safe, approved, autonomous roadmap task is executable. Continue until available work is exhausted or a genuine authorization, product-decision, dependency, conflict, or environment blocker is reached.
-- After a dependency merges, rebase or rebuild dependent work from exact current `main` before merge and revalidate the exact resulting head.
-- Run validation at meaningful batch boundaries rather than after every microscopic edit, while preserving all required authoritative gates before merge.
-- Mobile and backend work may proceed concurrently when their contracts are independent. Coordinated API/schema changes remain one dependency-aware workstream.
-- Read-only audits and preparation may continue while CI is queued or running, including identifying and scoping subsequent non-overlapping demonstrated defects.
-- Never manufacture refactors solely to keep busy. Work must remain roadmap-backed, source-demonstrated, or necessary to unblock an approved package.
+- Partition approved work into independent workstreams immediately and execute non-overlapping workstreams concurrently whenever safe.
+- Keep multiple independent workstreams active when useful. One workstream waiting on CI, review, mergeability, an external service, or a dependency must not idle the rest of the pass.
+- Prefer large coherent batches over micro-PRs or repeated tiny inspect/edit/test cycles. A batch may contain multiple closely related demonstrated fixes when they share a contract, ownership boundary, or validation strategy.
+- Optimize for completed roadmap scope per pass rather than PR count. Do not artificially split a coherent package merely to produce smaller progress increments.
+- Do not stop after opening, updating, validating, or merging a PR while another safe approved roadmap task remains executable.
+- Do not stop merely to report progress. Progress reporting is informational and must not become a synchronization barrier unless user input is genuinely required.
+- Continue until currently executable approved work is exhausted or a genuine product-decision, unavailable dependency, conflicting ownership, missing access, destructive-risk, or environment blocker prevents further safe progress.
+- When a dependency merges, immediately rebase or rebuild dependent work from exact current `main`, then revalidate the exact resulting head before merge.
+- Run validation at meaningful batch boundaries rather than after every microscopic edit. Preserve every authoritative gate required before merge.
+- Mobile, backend, documentation, tests, and preparation may proceed concurrently when their files and contracts are independent. Coordinated API/schema changes remain one dependency-aware workstream.
+- While CI is queued or running, continue read-only audits, next-package preparation, documentation reconciliation, and implementation of non-overlapping workstreams.
+- Inspect and merge validated work opportunistically during the pass; do not defer all merges to the end if merging safely unlocks dependent work.
+- Never manufacture refactors solely to stay busy. Every change must be roadmap-backed, source-demonstrated, required by an approved contract, or necessary to unblock approved work.
+- Prefer resolving routine implementation choices autonomously from source, tests, architecture, and existing product contracts rather than asking the user to choose between technically equivalent options.
 
-Parallel execution does not weaken safety or merge quality. Exact-head required CI must pass before source completion/merge where policy requires it, and operational actions that require explicit authorization remain prohibited.
+Parallel execution and higher throughput do not weaken correctness. Exact-head required CI must pass before source completion/merge where policy requires it.
 
 ## Current product boundaries
 
@@ -228,8 +232,9 @@ Mutable priorities belong in `docs/current-status.md`, `docs/implementation-plan
 Default order:
 
 1. keep architecture/status/handoff docs synchronized with code;
-2. continue the explicitly approved roadmap package across as many independent safe workstreams as practical;
+2. maximize completed approved roadmap scope per pass across as many independent safe workstreams as practical;
 3. keep provider-backed capabilities fail closed until blockers and approvals are resolved;
 4. require separately authorized physical/device/release evidence;
 5. fix demonstrated bounded regressions without manufacturing broad refactor work;
-6. while one workstream is blocked by CI/review/external dependency, continue another independent approved workstream instead of ending the pass.
+6. while one workstream is blocked by CI/review/external dependency, continue another independent approved workstream instead of ending the pass;
+7. end a pass only when executable approved work is exhausted or all remaining work is blocked by genuine dependencies, unavailable access, destructive-risk constraints, or unresolved product decisions.
