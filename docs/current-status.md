@@ -1,6 +1,6 @@
 # Smart Fitness Current Status
 
-Updated: 2026-08-17
+Updated: 2026-08-18
 
 Exact code, tests, migrations and current Git history override this checkpoint if it becomes stale.
 
@@ -10,95 +10,67 @@ Exact code, tests, migrations and current Git history override this checkpoint i
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Latest runtime/source merge remains `f87b3ea07588e255f6773b1fcac7b4ec8c9f4238` (#682). Validation hardening #684 (`267c6cb75c05b015ac21062a536ce0b36112df1c`) restored reproducible Expo typed-route validation on persistent Hermes checkouts. Applicable exact-head Mobile CI passed.
+Current `main` checkpoint is `a890a4b2ac5a7241358a4909f662c4c8eed78a14` (#733).
 
-Recent Phase 14 source includes authenticated native push foundations, generic Labs PDF/JPEG/PNG/HEIC signed-upload support, read-only iOS HealthKit and Android Health Connect daily-step adapters, Android `READ_STEPS`, native dependencies/lockfile and native PDF document picking.
+Recent completed mobile sequence:
+
+- #711 — shared FormField, ListRow, EmptyState, DestructiveButton and TertiaryButton Liquid Glass convergence;
+- #713 — Home reads real daily steps from the already-authorized native health source without prompting from Home;
+- #716 — Expo SDK 56 patch dependency alignment;
+- #718–#723 — Hermes Mobile CI resilience and exact squash-merge push deduplication;
+- #719 — local-persistence recovery keeps Retry available instead of allowing unsafe dismissal;
+- #724 — post-foundation Liquid Glass rollup across Settings, Progress, Companion, Labs, Social, Auth, Notifications, Nutrition and Workouts;
+- #726 — Auth/Register and Onboarding choice/input controls converged on active Liquid Glass materials;
+- #727 — Exercise Detail media preview and MuscleMap material convergence;
+- #728 — shared StatChip material convergence;
+- #730 — remaining demonstrated miscellaneous material owners converged;
+- #731 — RecoveryScorePicker material convergence;
+- #732 — Workouts creation/detail secondary materials rebuilt from exact current main and merged after exact-head validation;
+- #733 — throughput-first autonomous execution and standing operational-authorization policy recorded in `AGENTS.md`.
+
+The active autonomous mobile package is the repository-wide Liquid Glass convergence audit/remediation. Work is source-demonstrated and grouped by material owner; unrelated refactors must not be manufactured.
 
 ### Backend repository
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Latest runtime/operations merge: `bd98b1184e0153b3c7b9dfda7a47f3365b6e208f` (#261). Latest Phase 14 evidence/docs checkpoint: `8638604fb98a1ee84a0a225087a7e64ffd8f2c4e` (#263).
+Current backend `main` is `211d1966bcac01a21c047eaf8f844843a764a186` (#265). No backend PR is currently open.
 
-Relevant sequence:
+Phase 14 source/runtime preparation remains complete for the reviewed contracts. The isolated Hermes staging topology, bounded Labs evidence command and bounded Stories evidence command are retained.
 
-- #254 — fail-closed Labs private-processing runtime, Gemini extraction, private-storage composition, readiness, bounded worker and rollout/rollback plumbing;
-- #255 — isolated Hermes staging topology with dedicated PostgreSQL state/networking, loopback-only backend ingress and separate provider egress;
-- #256 — permanent bounded `staging:bootstrap` plus real Hermes staging evidence and stronger production/repository-env isolation guards;
-- #257 — permanent bounded `staging:labs-evidence` gate for the later configured-provider pass;
-- #261 — permanent bounded `staging:stories-evidence` command;
-- #263 — synchronized backend Phase 14 evidence checkpoint after the successful Stories staging probe.
+## Phase 14 external evidence boundary
 
-## Hermes staging evidence
+The remaining Phase 14 gates are operational/evidence work rather than ordinary source expansion.
 
-The isolated staging environment has actually booted and been revalidated on `hermes-backend-ci-01`:
+### Push
 
-- Compose project `smart-fitness-staging`;
-- backend exposed only on `127.0.0.1:3100`;
-- staging PostgreSQL has no host port and retains dedicated staging state/networking;
-- staging environment lives outside the repository under the runner account with mode `0600`;
-- loopback `/health` succeeds;
-- Labs remains fail-closed before provider configuration: `enabled=false storageReady=false extractionReady=false interpretationEnabled=false ready=false`;
-- production Compose, production credentials and production user data were not used.
+Source/CI complete. Remaining evidence requires usable APNs/FCM staging material and signed physical-device execution: delivery/taps, account/device isolation, offline/reconnect ordering and rollout/scheduling evidence.
 
-### External prerequisite results
+### Labs / Analyses
 
-Labs probe #258:
-
-```text
-env_file=true provider_fields=false activation_flags=false
-```
-
-Push probe #260:
-
-```text
-env_file=true apns_fields=false fcm_fields=false provider_flags=false master_enabled=false
-```
-
-These privacy-safe probes establish that the remaining configured-provider Labs and Push gates are blocked on missing staging-only external material rather than missing source/runtime plumbing.
-
-### Stories runtime result
-
-After backend #261 merged the permanent evidence command, temporary evidence-only #262 ran against isolated loopback staging and closed without merge with:
-
-```text
-registered=true profileReady=true authenticatedListReady=true freshAccountIsolated=true unauthenticatedFailClosed=true accountDeleted=true deletedSessionRejected=true ready=true
-```
-
-One synthetic account was created, its Social profile initialized, an empty authenticated Stories list verified, unauthenticated access rejected, the account deleted, and its deleted session rejected. No media/provider call, scheduler, persistent fixture or production surface was used. The same Backend CI run passed lint, formatting, build, configuration/isolation checks and the full non-PostgreSQL suite.
-
-## Phase 14 status
-
-**Ordinary autonomous Phase 14 source/runtime-preparation work is exhausted for the currently authorized contracts.** This is not a claim that configured-provider or physical-device evidence is complete.
-
-### P14-A — Push
-
-Source/CI complete. Remaining evidence is external: staging-only APNs/FCM material and provider sends, physical-device notification delivery/taps, second-device/account isolation, offline/reconnect ordering and deliberate rollout/scheduling evidence.
-
-### P14-B — Labs / Analyses
-
-Native PDF/photo import, fail-closed private processing, isolated Hermes staging and the bounded configured-provider evidence gate are prepared. Remaining work requires staging-only **HTTPS** S3-compatible private storage plus Gemini credentials/model, then `ready=true`, one synthetic upload/worker pass, privacy-safe lifecycle evidence and physical-device picker/accessibility evidence.
+Source/CI, native document/photo import, fail-closed private processing, isolated staging and bounded evidence tooling are complete. Configured-provider evidence requires staging-only HTTPS S3-compatible private storage plus Gemini material, then an exact `ready=true` pass, one synthetic upload/worker lifecycle and privacy-safe device evidence.
 
 Extracted rows remain drafts until explicit user confirmation; source does not diagnose, prescribe, infer missing values or convert units.
 
-### P14-C — Stories
+### Stories
 
-Source/CI plus basic isolated backend staging route/auth/account-lifecycle evidence are complete. Remaining work is mobile/physical-device/runtime evidence outside that server probe and bounded fixes only if a concrete defect is reproduced.
+Source/CI plus isolated backend staging route/auth/account-lifecycle evidence are complete. Remaining work is bounded mobile/physical-device evidence and fixes only for reproduced defects.
 
-### P14-D — Steps
+### Steps
 
-Native HealthKit/Health Connect source/CI is complete. Remaining evidence is signed native-build/physical-device behavior: permission flow, unsupported/no-data states, real aggregate reads, local-day/DST behavior and Home presentation.
+Read-only HealthKit/Health Connect source/CI and Home consumption are complete. Remaining evidence is signed native/physical-device support detection, permission flow, real aggregate reads, local-day/DST behavior and rendered Home behavior.
 
 ## Current remaining roadmap
 
-1. When staging-only HTTPS private storage + Gemini material exists, run the already-prepared bounded Labs configured-provider evidence.
-2. When staging-only APNs/FCM material exists, run the already-prepared push readiness/provider evidence.
-3. When suitable signed builds/devices are available, collect Push, Steps, Labs and remaining Stories physical-device/mobile evidence.
-4. Until an external gate becomes actionable, do not manufacture additional Phase 14 source work; only fix reproduced defects or implement newly reviewed contracts.
-5. After Phase 14 is fully completed under the canonical implementation plan, the next explicitly prioritized broad work is the repository-wide Liquid Glass coverage audit/remediation before unrelated Phase 15 expansion.
+1. Continue repository-wide Liquid Glass inventory/remediation from exact current `main`, grouping demonstrated owners into coherent non-overlapping batches and validating exact heads before merge.
+2. Keep source-of-truth status/handoff documents synchronized as those batches merge.
+3. Run configured Labs and Push evidence as soon as the required staging-only provider material is actually available.
+4. Run native/physical-device evidence for Steps, Push, Labs and remaining Stories behavior when signing/device access is available.
+5. Do not invent additional Phase 14 source work while its remaining gates are external; reopen source only for a reproduced defect or reviewed contract.
+6. Do not begin unrelated Phase 15 expansion until the explicitly prioritized Liquid Glass convergence package is exhausted or a new product priority is reviewed.
 
-## Activation boundaries
+## Execution boundary
 
-HealthKit/Health Connect, Labs provider/staging runtime, backend staging deployment/migrations, APNs/FCM staging, native/EAS builds and physical-device QA are explicitly authorized. Execution still requires the relevant credentials/signing material and/or physical device.
+`AGENTS.md` now defines a work pass as the largest safe amount of approved roadmap work executable with available access, rather than one PR or one validation cycle. Independent workstreams should continue while another waits on CI/review/dependencies.
 
-Production credential rotation, production worker scheduling, production user-data mutation, destructive cleanup, DNS changes and app-store submission remain deliberate rollout actions with their own evidence and rollback controls.
+Standing operational authorization covers materially necessary OTA/EAS/native/device, backend deployment/migration, provider configuration, worker scheduling, bounded production diagnostics, credential/DNS changes, HealthKit/Health Connect activation and store-submission work, subject to least-privilege, preflight, privacy, evidence, recovery and rollback controls. This authorization does not expand product scope.
