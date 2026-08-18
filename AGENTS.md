@@ -47,6 +47,34 @@ Default to throughput-first, parallel-first autonomous execution. A work pass is
 
 Parallel execution and higher throughput do not weaken correctness. Exact-head required CI must pass before source completion/merge where policy requires it.
 
+## Standing operational authorization
+
+The user has granted standing authorization to perform operational actions when they are materially necessary to complete an approved roadmap item or validate a reproduced defect. This authorization is not permission to perform speculative production changes.
+
+Operationally authorized actions include, when technically required and the relevant access/material exists:
+
+- OTA publication;
+- EAS/native builds and device installation;
+- backend staging or production deployment;
+- staging or production migration execution;
+- provider activation and staging/production provider configuration;
+- credential or DNS changes;
+- HealthKit/Health Connect activation;
+- worker scheduling;
+- production diagnostics/data access necessary for bounded validation;
+- store submission.
+
+For operational actions:
+
+- use the least-privileged and least-destructive path that can satisfy the roadmap/evidence requirement;
+- run applicable preflight validation first and preserve rollback/recovery paths;
+- prefer staging/synthetic evidence before production when both can establish the same fact;
+- do not expose secrets, production user data, provider payloads or internal diagnostics in commits, PRs, logs, screenshots or user-facing UI;
+- production user-data mutation, destructive cleanup, irreversible credential/DNS changes, schema migrations without a tested rollback/recovery path, and store submission still require deliberate evidence that the action is actually necessary for the approved roadmap item;
+- if the required credential, signing material, physical device or environment access is unavailable, treat that as a real blocker and continue other independent work rather than stopping the whole pass.
+
+Standing operational authorization does not expand product scope. Diagnosis, prescribing, medication dosing, unrestricted model access to private health documents, payments, new Social domains, or other unreviewed product behavior still require their own reviewed product contract.
+
 ## Current product boundaries
 
 Approved product scope includes:
@@ -79,14 +107,14 @@ Companion rules:
 - Companion may surface existing Coach/Safety actions but cannot automatically apply a plan;
 - model/provider-backed conversational or autonomous behavior requires a separately reviewed contract before activation.
 
-Still prohibited without an explicit reviewed contract and direct authorization where relevant:
+Still prohibited without an explicit reviewed product contract where relevant:
 
 - diagnosis, emergency triage or clinical urgency inference;
 - prescriptions, medication dosing, pharmacology, hormone or SARM protocols;
 - unrestricted model access to raw Labs documents;
 - payments/subscriptions;
 - new Social domains beyond reviewed contracts;
-- real push/provider activation, HealthKit/Health Connect activation or new native dependencies.
+- other unreviewed product behavior that changes the established privacy, safety or recommendation authority boundaries.
 
 ## Mobile architecture
 
@@ -223,7 +251,7 @@ For approved changes: implement coherent scope, validate exact head, inspect rev
 
 Use `[ota]` only for OTA-safe JS/TS/TSX/assets.
 
-Do **not** perform or claim OTA publication, EAS/native builds, device installation, backend deployment, production migration execution, provider activation, credential/DNS changes, HealthKit/Health Connect activation, worker scheduling, store submission or production data access unless explicitly requested.
+Operational actions covered by the standing authorization above may be executed when they are materially necessary for the approved roadmap and their prerequisites are available. Do not turn operational authorization into speculative deployment activity; preserve preflight, evidence, privacy, recovery and rollback requirements.
 
 ## Priority handling
 
@@ -233,8 +261,8 @@ Default order:
 
 1. keep architecture/status/handoff docs synchronized with code;
 2. maximize completed approved roadmap scope per pass across as many independent safe workstreams as practical;
-3. keep provider-backed capabilities fail closed until blockers and approvals are resolved;
-4. require separately authorized physical/device/release evidence;
+3. keep provider-backed capabilities fail closed until their reviewed activation prerequisites are satisfied;
+4. collect physical/device/release evidence when required access and materials exist under standing authorization;
 5. fix demonstrated bounded regressions without manufacturing broad refactor work;
 6. while one workstream is blocked by CI/review/external dependency, continue another independent approved workstream instead of ending the pass;
 7. end a pass only when executable approved work is exhausted or all remaining work is blocked by genuine dependencies, unavailable access, destructive-risk constraints, or unresolved product decisions.
