@@ -152,7 +152,19 @@ jobs:
 
       - name: Full regression suite
         if: steps.validated-pr-merge.outputs.skip != 'true'
-        run: npm test
+        shell: bash
+        run: |
+          set -o pipefail
+          npm test 2>&1 | tee vitest.log
+
+      - name: Upload regression diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-log-${{ github.run_id }}-${{ github.run_attempt }}
+          path: vitest.log
+          if-no-files-found: ignore
+          retention-days: 1
 
       - name: Smoke expanded model runner
         if: steps.validated-pr-merge.outputs.skip != 'true'
