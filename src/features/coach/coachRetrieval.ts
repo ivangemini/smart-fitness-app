@@ -23,6 +23,10 @@ import {
   type CoachNutritionSummaryData,
   type CoachProfileFacts,
 } from './coachCanonicalCapabilities';
+import {
+  readTrainingSignals,
+  type CoachTrainingSignalData,
+} from './coachTrainingSignalCapability';
 
 export type CoachRetrievalIntent =
   | 'training_overview'
@@ -35,6 +39,7 @@ export type CoachRetrievalIntent =
 
 export type CoachRetrievalCapability =
   | 'training_summary'
+  | 'training_signals'
   | 'exercise_history'
   | 'workout_history'
   | 'current_program'
@@ -103,6 +108,7 @@ export type CoachFactPacket = {
   periodAnchor: string;
   facts: Partial<{
     trainingSummary: CoachTrainingSummaryData;
+    trainingSignals: CoachTrainingSignalData;
     exerciseHistory: CoachExerciseHistoryData;
     workoutHistory: CoachWorkoutHistoryData;
     currentProgram: CoachCurrentProgramData;
@@ -116,7 +122,10 @@ export type CoachFactPacket = {
 export const buildCoachRetrievalPlan = (request: CoachRetrievalRequest): CoachRetrievalPlan => {
   switch (request.intent) {
     case 'training_overview':
-      return { intent: request.intent, capabilities: ['training_summary'] };
+      return {
+        intent: request.intent,
+        capabilities: ['training_summary', 'training_signals'],
+      };
     case 'exercise_progress':
       return {
         intent: request.intent,
@@ -129,7 +138,12 @@ export const buildCoachRetrievalPlan = (request: CoachRetrievalRequest): CoachRe
     case 'current_program_review':
       return {
         intent: request.intent,
-        capabilities: ['current_program', 'training_summary', 'profile_facts'],
+        capabilities: [
+          'current_program',
+          'training_summary',
+          'training_signals',
+          'profile_facts',
+        ],
       };
     case 'body_progress':
       return { intent: request.intent, capabilities: ['body_metrics'] };
@@ -196,6 +210,16 @@ export const buildCoachFactPacket = ({
         });
         if (!result.ok) return returnCapabilityError(result.error);
         facts.trainingSummary = result.data;
+        break;
+      }
+      case 'training_signals': {
+        const result = readTrainingSignals({
+          sessions: sources.workoutSessions,
+          endAt: request.endAt,
+          days: request.days,
+        });
+        if (!result.ok) return returnCapabilityError(result.error);
+        facts.trainingSignals = result.data;
         break;
       }
       case 'exercise_history': {
