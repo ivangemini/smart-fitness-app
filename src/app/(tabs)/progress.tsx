@@ -276,8 +276,8 @@ export default function ProgressScreen() {
         <ProgressOverviewCard
           actions={
             <AppButton
-              label={copy.openWorkoutHistory}
-              onPress={() => router.push('/workout-history')}
+              label={copy.strengthTraining}
+              onPress={() => router.push('/training-progress')}
               variant="secondary"
             />
           }
