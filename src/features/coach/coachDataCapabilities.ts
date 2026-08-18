@@ -1,9 +1,8 @@
-import type { WorkoutSession, WorkoutSet } from '@/types';
-
 import {
   buildTrainingProgressAnalytics,
   type TrainingProgressAnalytics,
-} from '../progress/trainingProgressAnalytics';
+} from '@/lib/progress/trainingAnalytics';
+import type { WorkoutSession, WorkoutSet } from '@/types';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_HISTORY_DAYS = 28;
