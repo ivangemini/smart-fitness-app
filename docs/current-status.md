@@ -10,47 +10,35 @@ Exact code, tests, migrations and current Git history override this checkpoint i
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current `main` checkpoint is `a890a4b2ac5a7241358a4909f662c4c8eed78a14` (#733).
+Current runtime `main`: `cf4af93344b9b7645a839af46ac29866cc7ea218` (#746).
 
-Recent completed mobile sequence:
+The August 18 Liquid Glass closure sequence is complete for the current reviewed source scope. The sequence included shared primitives and broad product waves, mutation-failure and active-workout-session convergence, shared shell, Coach history and semantic/status materials, and the final workout-builder/Social/workout-finish residual rollup.
 
-- #711 — shared FormField, ListRow, EmptyState, DestructiveButton and TertiaryButton Liquid Glass convergence;
-- #713 — Home reads real daily steps from the already-authorized native health source without prompting from Home;
-- #716 — Expo SDK 56 patch dependency alignment;
-- #718–#723 — Hermes Mobile CI resilience and exact squash-merge push deduplication;
-- #719 — local-persistence recovery keeps Retry available instead of allowing unsafe dismissal;
-- #724 — post-foundation Liquid Glass rollup across Settings, Progress, Companion, Labs, Social, Auth, Notifications, Nutrition and Workouts;
-- #726 — Auth/Register and Onboarding choice/input controls converged on active Liquid Glass materials;
-- #727 — Exercise Detail media preview and MuscleMap material convergence;
-- #728 — shared StatChip material convergence;
-- #730 — remaining demonstrated miscellaneous material owners converged;
-- #731 — RecoveryScorePicker material convergence;
-- #732 — Workouts creation/detail secondary materials rebuilt from exact current main and merged after exact-head validation;
-- #733 — throughput-first autonomous execution and standing operational-authorization policy recorded in `AGENTS.md`.
+#746 passed exact-head Mobile CI after a stale Share Workout source-contract was corrected to require the active glass switch materials. The successful head passed repository and changed-file line audits, TypeScript, the full regression suite, expanded-model smoke, Expo export and Expo Doctor.
 
-The active autonomous mobile package is the repository-wide Liquid Glass convergence audit/remediation. Work is source-demonstrated and grouped by material owner; unrelated refactors must not be manufactured.
+Evidence-only #747 then reran the repository-wide direct legacy-material scanner from exact `main`. It found 21 remaining direct hits, all previously inspected structural dividers. No unmatched card/surface/control/selected/pressed/disabled/semantic material owner remains. #747 was closed unmerged after evidence extraction.
+
+Liquid Glass repository-wide source convergence is therefore closed for the current reviewed scope. Intentional divider tokens remain by design and must not be mechanically rewritten. This checkpoint records source/CI closure only; it does not substitute for the external Phase 14 evidence below.
 
 ### Backend repository
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Current backend `main` is `211d1966bcac01a21c047eaf8f844843a764a186` (#265). No backend PR is currently open.
-
-Phase 14 source/runtime preparation remains complete for the reviewed contracts. The isolated Hermes staging topology, bounded Labs evidence command and bounded Stories evidence command are retained.
+Current known backend `main`: `211d1966bcac01a21c047eaf8f844843a764a186` (#265). Phase 14 source/runtime preparation remains complete for the reviewed contracts; no new backend source work is implied by the mobile UI closure.
 
 ## Phase 14 external evidence boundary
 
-The remaining Phase 14 gates are operational/evidence work rather than ordinary source expansion.
+Remaining Phase 14 gates are operational/evidence work rather than ordinary autonomous source expansion.
 
 ### Push
 
-Source/CI complete. Remaining evidence requires usable APNs/FCM staging material and signed physical-device execution: delivery/taps, account/device isolation, offline/reconnect ordering and rollout/scheduling evidence.
+Source/CI is complete. Remaining evidence requires usable staging-only APNs/FCM material plus signed physical-device execution for delivery/taps, device/account isolation, offline/reconnect ordering and deliberate rollout evidence.
 
 ### Labs / Analyses
 
-Source/CI, native document/photo import, fail-closed private processing, isolated staging and bounded evidence tooling are complete. Configured-provider evidence requires staging-only HTTPS S3-compatible private storage plus Gemini material, then an exact `ready=true` pass, one synthetic upload/worker lifecycle and privacy-safe device evidence.
+Source/CI, native document/photo import, private fail-closed processing, isolated staging and bounded evidence tooling are complete. Configured-provider evidence still requires staging-only HTTPS S3-compatible private storage plus Gemini material, then `ready=true`, one synthetic upload/worker lifecycle and privacy-safe evidence. Physical-device picker/accessibility evidence also remains.
 
-Extracted rows remain drafts until explicit user confirmation; source does not diagnose, prescribe, infer missing values or convert units.
+Extracted rows remain confirmation-gated drafts; the source contract does not diagnose, prescribe, infer missing values or silently convert units.
 
 ### Stories
 
@@ -58,19 +46,16 @@ Source/CI plus isolated backend staging route/auth/account-lifecycle evidence ar
 
 ### Steps
 
-Read-only HealthKit/Health Connect source/CI and Home consumption are complete. Remaining evidence is signed native/physical-device support detection, permission flow, real aggregate reads, local-day/DST behavior and rendered Home behavior.
+Read-only HealthKit/Health Connect source/CI and Home consumption are complete. Remaining evidence is signed native/physical-device support detection, permission flow, real aggregate reads, local-day/DST behavior and rendered Home verification.
 
 ## Current remaining roadmap
 
-1. Continue repository-wide Liquid Glass inventory/remediation from exact current `main`, grouping demonstrated owners into coherent non-overlapping batches and validating exact heads before merge.
-2. Keep source-of-truth status/handoff documents synchronized as those batches merge.
-3. Run configured Labs and Push evidence as soon as the required staging-only provider material is actually available.
-4. Run native/physical-device evidence for Steps, Push, Labs and remaining Stories behavior when signing/device access is available.
-5. Do not invent additional Phase 14 source work while its remaining gates are external; reopen source only for a reproduced defect or reviewed contract.
-6. Do not begin unrelated Phase 15 expansion until the explicitly prioritized Liquid Glass convergence package is exhausted or a new product priority is reviewed.
+1. Execute Phase 14 configured-provider/device evidence when the required external material, signing and device access are available.
+2. Repair reproduced defects if evidence or normal use exposes one.
+3. Keep current-status, handoff and roadmap documentation synchronized with verified Git/runtime evidence.
+4. Do not manufacture further Liquid Glass token churn: the current source scope is closed and the 21 retained hits are intentional dividers.
+5. Do not start unrelated Phase 15 expansion unless a new product priority is explicitly reviewed.
 
 ## Execution boundary
 
-`AGENTS.md` now defines a work pass as the largest safe amount of approved roadmap work executable with available access, rather than one PR or one validation cycle. Independent workstreams should continue while another waits on CI/review/dependencies.
-
-Standing operational authorization covers materially necessary OTA/EAS/native/device, backend deployment/migration, provider configuration, worker scheduling, bounded production diagnostics, credential/DNS changes, HealthKit/Health Connect activation and store-submission work, subject to least-privilege, preflight, privacy, evidence, recovery and rollback controls. This authorization does not expand product scope.
+`AGENTS.md` remains the operational authority for autonomous repository work. Ordinary inspect/edit/test/PR/merge work should be executed in the largest safe coherent pass, while production-sensitive or otherwise explicitly restricted actions remain subject to the repository's current authorization and rollout controls.

@@ -10,73 +10,39 @@ Exact Git history, source, tests and CI override prose if this handoff becomes s
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current `main` checkpoint is `a890a4b2ac5a7241358a4909f662c4c8eed78a14` (#733).
+Current runtime `main`: `cf4af93344b9b7645a839af46ac29866cc7ea218` (#746).
 
-The recent mobile sequence has moved well beyond the older #682 checkpoint. Shared primitives and broad product surfaces have been converged onto the adaptive Liquid Glass material system; Home consumes real daily steps when the already-authorized native health source is available; Expo SDK 56 patch dependencies and Hermes Mobile CI were hardened; local-persistence recovery semantics were repaired; and the latest focused convergence batches cover Auth/Onboarding selectors, Exercise Detail media, StatChip, miscellaneous owners, RecoveryScorePicker and Workouts creation/detail secondary materials.
+The prioritized repository-wide Liquid Glass convergence package is complete for the current reviewed source scope. #746 merged the final disjoint workout-builder, Social and workout-finish residual owners after exact-head Mobile CI passed all required gates. A stale Share Workout source-contract was updated to require the active Liquid Glass native-switch palette; runtime behavior was not reverted.
 
-#733 records the throughput-first autonomous execution policy and standing operational authorization in `AGENTS.md`.
+Evidence-only #747 then reran the same recursive direct legacy-material inventory used by #734 from exact post-#746 `main`. It reported 21 remaining hits. Every hit matches the previously inspected intentional structural-divider set; there are no unmatched card, surface, control, selection, interaction-state or semantic material owners. #747 was closed unmerged after evidence extraction.
+
+Do not continue replacing the retained divider tokens merely to make repository search counts reach zero. Reopen Liquid Glass work only for a demonstrated new owner, a refactor that changes ownership semantics, or a newly reviewed UI contract.
 
 ### Backend
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Current backend `main` is `211d1966bcac01a21c047eaf8f844843a764a186` (#265). No backend PR is currently open.
+Current known backend `main`: `211d1966bcac01a21c047eaf8f844843a764a186` (#265).
 
-Phase 14 reviewed source/runtime preparation remains complete. Isolated Hermes staging, bounded Labs configured-provider evidence tooling and bounded Stories staging evidence are retained.
+Phase 14 reviewed source/runtime preparation remains complete. Isolated Hermes staging and bounded Labs/Stories evidence tooling remain the accepted preparation baseline.
 
-## Phase 14 evidence checkpoint
+## Remaining external gates
 
-### Isolated staging
+- **Labs:** staging-only HTTPS S3-compatible private storage and Gemini material, configured-provider readiness, one bounded synthetic worker lifecycle, then physical-device picker/accessibility evidence.
+- **Push:** staging-only APNs/FCM material plus bounded provider/device evidence and deliberate rollout controls.
+- **Steps:** signed native/physical-device support, permissions, real aggregate reads and local-day/DST/Home evidence.
+- **Stories:** remaining mobile/physical-device runtime evidence.
 
-Previously verified staging properties remain the accepted evidence baseline unless newer exact evidence supersedes them:
-
-- project `smart-fitness-staging`;
-- backend loopback-only at `127.0.0.1:3100`;
-- staging PostgreSQL with no host port and dedicated staging state/networking;
-- external runner-owned `0600` staging env;
-- successful loopback `/health`;
-- Labs fail-closed before provider configuration;
-- no production Compose/credentials/user data used for that evidence.
-
-### External prerequisite boundary
-
-Configured Labs evidence still requires staging-only HTTPS S3-compatible storage plus Gemini material. Configured Push evidence still requires staging-only APNs/FCM material. Signed native/physical-device evidence remains required for Push, Steps, Labs and the remaining Stories behavior.
-
-These are external/operational evidence gates, not justification for speculative additional Phase 14 source work.
-
-## Active autonomous package — repository-wide Liquid Glass convergence
-
-This is the current broad mobile workstream while Phase 14 external gates are unavailable.
-
-Completed focused sequence includes:
-
-- #711 shared UI primitives;
-- #724 broad post-foundation product-surface rollup;
-- #726 Auth/Register + Onboarding selectors;
-- #727 Exercise Detail media + MuscleMap;
-- #728 StatChip;
-- #730 miscellaneous demonstrated material owners;
-- #731 RecoveryScorePicker;
-- #732 Workouts creation/detail secondary materials.
-
-Continue from exact current `main` by refreshing the direct legacy-material inventory and grouping only demonstrated remaining owners into coherent non-overlapping batches. Divider-only or domain-semantic uses must not be mechanically rewritten merely because a legacy token appears. Do not invent refactors to keep the workstream alive.
+These are external/evidence gates. Do not manufacture unrelated Phase 14 source refactors to simulate progress.
 
 ## Next execution order
 
-1. Refresh the repository-wide direct legacy-material inventory from exact current `main` after #732/#733.
-2. Triage remaining hits by actual material ownership and reachability; separate real fills/interaction states from intentional divider/domain semantics.
-3. Implement multiple non-overlapping demonstrated owner clusters in parallel where safe, validate each exact head, merge validated work, then rebuild dependent work from the new `main`.
-4. Keep `docs/current-status.md`, this handoff and the canonical implementation plan synchronized with material progress and blockers.
-5. If staging provider material becomes available, execute the already-prepared bounded Labs/Push evidence without pausing unrelated safe mobile work.
-6. If signed-device access becomes available, execute the required Steps/Push/Labs/Stories physical-device evidence under the standing operational authorization.
-7. Begin unrelated Phase 15 expansion only after this explicitly prioritized convergence package is exhausted or a new reviewed product priority supersedes it.
+1. If any required Phase 14 provider/signing/device prerequisite becomes available, execute the already-prepared bounded evidence path.
+2. Otherwise, repair only reproduced defects or implement a newly reviewed product contract/priority.
+3. Keep canonical status/roadmap documents synchronized with actual Git and evidence.
+4. Do not reopen the completed Liquid Glass source-convergence priority without new evidence of a real material owner.
+5. Do not begin unrelated Phase 15 expansion until a successor product priority is reviewed.
 
-## Execution policy
+## Existing contracts to preserve
 
-A pass is the largest safe amount of approved roadmap work executable with available access; it is not one PR, one fix or one CI cycle. Keep independent workstreams active while others wait on CI/review/dependencies, prefer coherent batches over micro-PRs, and stop only when executable approved work is exhausted or all remaining work is genuinely blocked.
-
-Operational actions materially necessary for approved roadmap/evidence work are standing-authorized subject to least-privilege, preflight, privacy, evidence, recovery and rollback controls. The authorization does not expand product scope.
-
-## Existing architectural contracts to preserve
-
-Do not change workout/program lifecycle, active-session draft persistence, completed-history immutability, private persistence/sync schemas, Social/Stories authority/privacy, Labs privacy/confirmation semantics, Coach auth/API contracts, active-program owner authority, backend revision/idempotency semantics or privacy/export boundaries as incidental follow-up.
+Do not incidentally change workout/program lifecycle, active-session draft persistence, completed-history immutability, private persistence/sync schemas, Social/Stories authority/privacy, Labs confirmation/privacy semantics, Coach auth/API contracts, active-program authority, backend revision/idempotency semantics or privacy/export boundaries.
