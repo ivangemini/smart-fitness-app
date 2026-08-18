@@ -7,6 +7,10 @@ import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { Colors, Spacing } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 import { useUnitPreferences, weightFromKg } from '@/units';
 
 type SessionHeaderProps = {
@@ -31,11 +35,15 @@ export const SessionHeader = memo(function SessionHeader({
   sets,
   volume,
 }: SessionHeaderProps) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { formatNumber, t } = useLocalization();
   const { weight } = useUnitPreferences();
   const insets = useSafeAreaInsets();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const formattedVolume = `${formatNumber(weightFromKg(volume, weight), {
     maximumFractionDigits: 1,
   })} ${weight}`;
@@ -43,7 +51,7 @@ export const SessionHeader = memo(function SessionHeader({
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + Spacing.one }]}>
-      <View style={[styles.topRow, { borderBottomColor: colors.borderSubtle }]}>
+      <View style={styles.topRow}>
         <LiquidGlassIconButton
           accessibilityLabel={t('workouts.session.backAccessibility')}
           Icon={ChevronDown}
@@ -109,8 +117,12 @@ export const SessionHeader = memo(function SessionHeader({
 });
 
 function Stat({ label, value }: { label: string; value: string }) {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
 
   return (
     <View style={styles.stat}>
@@ -124,7 +136,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
   StyleSheet.create({
     container: {
       alignSelf: 'stretch',
@@ -132,9 +144,11 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     finishButton: {
       alignItems: 'center',
-      backgroundColor: colors.accent,
+      backgroundColor: glass.accentFill,
+      borderColor: glass.accentBorder,
       borderCurve: 'continuous',
       borderRadius: 16,
+      borderWidth: StyleSheet.hairlineWidth,
       flexShrink: 1,
       justifyContent: 'center',
       minHeight: 44,
@@ -143,12 +157,11 @@ const createStyles = (colors: typeof Colors.light) =>
       paddingVertical: Spacing.one,
     },
     finishButtonDisabled: {
-      backgroundColor: colors.surfaceSecondary,
-      borderColor: colors.borderSubtle,
-      borderWidth: StyleSheet.hairlineWidth,
+      backgroundColor: glass.disabledFill,
+      borderColor: glass.disabledBorder,
     },
     finishButtonPressed: {
-      backgroundColor: colors.accentPressed,
+      backgroundColor: glass.accentPressedFill,
     },
     finishHint: {
       color: colors.textMuted,
@@ -160,7 +173,7 @@ const createStyles = (colors: typeof Colors.light) =>
       textAlign: 'right',
     },
     finishLabel: {
-      color: colors.textOnAccent,
+      color: glass.accentText,
       flexShrink: 1,
       fontSize: 14,
       fontWeight: '600',
@@ -216,6 +229,7 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     topRow: {
       alignItems: 'center',
+      borderBottomColor: glass.cardBorder,
       borderBottomWidth: StyleSheet.hairlineWidth,
       flexDirection: 'row',
       gap: Spacing.two,
