@@ -38,10 +38,10 @@ describe('weekly workout volume card', () => {
     expect(cardSource).toContain("t('progress.noWorkoutTrend')");
   });
 
-  test('is the single training-progress surface on Progress', () => {
-    expect(progressSource).toContain(
-      '<WeeklyWorkoutVolumeCard sessions={workoutSessions} />',
-    );
+  test('stays available for drill-down without returning to the first-level overview', () => {
+    expect(progressSource).not.toContain('<WeeklyWorkoutVolumeCard');
+    expect(progressSource).toContain('buildProgressOverview({');
+    expect(progressSource).toContain('rows={trainingRows}');
     expect(progressSource).not.toContain('latestVolumePoint');
     expect(progressSource).not.toContain('previousVolumePoint');
     expect(progressSource).not.toContain('formatWorkoutVolume');
