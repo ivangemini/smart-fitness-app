@@ -23,6 +23,10 @@ import {
   type CoachNutritionSummaryData,
   type CoachProfileFacts,
 } from './coachCanonicalCapabilities';
+import {
+  readNutritionAnalytics,
+  type CoachNutritionAnalyticsData,
+} from './coachNutritionAnalyticsCapability';
 
 export type CoachRetrievalIntent =
   | 'training_overview'
@@ -41,6 +45,7 @@ export type CoachRetrievalCapability =
   | 'profile_facts'
   | 'body_metrics'
   | 'nutrition_summary'
+  | 'nutrition_analytics'
   | 'confirmed_labs';
 
 export type CoachRetrievalRequest = {
@@ -109,6 +114,7 @@ export type CoachFactPacket = {
     profileFacts: CoachProfileFacts;
     bodyMetrics: CoachBodyMetricsData;
     nutritionSummary: CoachNutritionSummaryData;
+    nutritionAnalytics: CoachNutritionAnalyticsData;
     labsMarkerHistory: CoachLabsMarkerHistoryFact;
   }>;
 };
@@ -134,7 +140,10 @@ export const buildCoachRetrievalPlan = (request: CoachRetrievalRequest): CoachRe
     case 'body_progress':
       return { intent: request.intent, capabilities: ['body_metrics'] };
     case 'nutrition_overview':
-      return { intent: request.intent, capabilities: ['nutrition_summary'] };
+      return {
+        intent: request.intent,
+        capabilities: ['nutrition_summary', 'nutrition_analytics'],
+      };
     case 'labs_marker_history':
       return { intent: request.intent, capabilities: ['confirmed_labs'] };
   }
@@ -253,6 +262,17 @@ export const buildCoachFactPacket = ({
         });
         if (!result.ok) return returnCapabilityError(result.error);
         facts.nutritionSummary = result.data;
+        break;
+      }
+      case 'nutrition_analytics': {
+        const result = readNutritionAnalytics({
+          foodEntries: sources.foodEntries,
+          nutritionTargets: sources.nutritionTargets,
+          endAt: request.endAt,
+          days: request.days,
+        });
+        if (!result.ok) return returnCapabilityError(result.error);
+        facts.nutritionAnalytics = result.data;
         break;
       }
       case 'confirmed_labs': {
