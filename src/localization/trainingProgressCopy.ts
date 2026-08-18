@@ -38,6 +38,7 @@ export const getTrainingProgressCopy = (locale: SupportedLocale) => ({
   comparableSessions: locale === 'ru' ? 'Сравнимые тренировки' : 'Comparable sessions',
   evidenceSpan: locale === 'ru' ? 'Период наблюдения' : 'Evidence span',
   recordedRpe: locale === 'ru' ? 'Записанный RPE' : 'Recorded RPE',
+  averageRpe: locale === 'ru' ? 'Средний RPE' : 'Average RPE',
   rpeCoverage: locale === 'ru' ? 'Покрытие RPE' : 'RPE coverage',
   rpeTrend: locale === 'ru' ? 'Тренд RPE' : 'RPE trend',
   daysValue: (days: string) => (locale === 'ru' ? `${days} дн.` : `${days} days`),
