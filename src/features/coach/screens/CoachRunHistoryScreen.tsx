@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { createCoachHistoryApi, type CoachRunHistoryItem } from '@/api/coach/history';
 import type { CoachDomain, CoachRunStatus } from '@/api/coach';
+import { createCoachHistoryApi, type CoachRunHistoryItem } from '@/api/coach/history';
 import { AppCard } from '@/components/ui/AppCard';
 import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
@@ -13,6 +13,7 @@ import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme'
 import { useAuthSession } from '@/hooks/useAuthSession';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import { getCoachHistoryCopy } from '../coachHistoryCopy';
 
 const DOMAIN_FILTERS: Array<CoachDomain | 'all'> = [
@@ -174,23 +175,40 @@ function FilterRow<T extends string>({
   onChange(value: T): void;
   value: T;
 }) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
 
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={stylesStatic.filters}>
-      {labels.map((option) => (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{ selected: option.value === value }}
-          key={option.value}
-          onPress={() => onChange(option.value)}
-          style={[
-            stylesStatic.filter,
-            { borderColor: option.value === value ? colors.accent : colors.borderSubtle },
-          ]}>
-          <Text style={[stylesStatic.filterLabel, { color: colors.textPrimary }]}>{option.label}</Text>
-        </Pressable>
-      ))}
+      {labels.map((option) => {
+        const selected = option.value === value;
+        return (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ selected: option.value === value }}
+            key={option.value}
+            onPress={() => onChange(option.value)}
+            style={({ pressed }) => [
+              stylesStatic.filter,
+              {
+                backgroundColor: selected ? glass.semanticAccentFill : glass.controlFill,
+                borderColor: selected ? glass.accentBorder : glass.controlBorder,
+              },
+              pressed && { backgroundColor: glass.controlPressedFill },
+            ]}>
+            <Text
+              style={[
+                stylesStatic.filterLabel,
+                { color: selected ? colors.accent : colors.textPrimary },
+              ]}>
+              {option.label}
+            </Text>
+          </Pressable>
+        );
+      })}
     </ScrollView>
   );
 }

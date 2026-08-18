@@ -11,6 +11,10 @@ import { AppCard } from '@/components/ui/AppCard';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 import { useUnitPreferences } from '@/units';
 import { getCoachHistoryCopy } from '../coachHistoryCopy';
 
@@ -23,8 +27,12 @@ export function CoachAppliedChangeCard({
   changes,
   invalid,
 }: CoachAppliedChangeCardProps) {
-  const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const { formatNumber, locale } = useLocalization();
   const units = useUnitPreferences();
   const copy = getCoachHistoryCopy(locale);
@@ -276,19 +284,19 @@ function PolicyReferences({ values, copy, styles }: { values: string[]; copy: Co
   );
 }
 
-const createStyles = (colors: typeof Colors.light) => StyleSheet.create({
+const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) => StyleSheet.create({
   applicationTitle: { color: colors.textPrimary, fontSize: Typography.body.fontSize, fontWeight: '700' },
   body: { color: colors.textSecondary, fontSize: Typography.caption.fontSize, lineHeight: Typography.caption.lineHeight },
   cardTitle: { color: colors.textPrimary, fontSize: Typography.cardTitle.fontSize, fontWeight: Typography.cardTitle.fontWeight },
   changeBlock: { borderTopColor: colors.borderSubtle, borderTopWidth: StyleSheet.hairlineWidth, gap: Spacing.two, paddingTop: Spacing.two },
-  combinedRows: { borderColor: colors.borderSubtle, borderRadius: 12, borderWidth: StyleSheet.hairlineWidth, gap: Spacing.one, padding: Spacing.two },
+  combinedRows: { backgroundColor: glass.cardFill, borderColor: glass.cardBorder, borderRadius: 12, borderWidth: StyleSheet.hairlineWidth, gap: Spacing.one, padding: Spacing.two },
   label: { color: colors.textSecondary, flex: 1, fontSize: Typography.caption.fontSize },
   metaBlock: { gap: Spacing.one },
   row: { alignItems: 'flex-start', flexDirection: 'row', gap: Spacing.one, justifyContent: 'space-between' },
   sectionLabel: { color: colors.textPrimary, fontSize: Typography.caption.fontSize, fontWeight: '700' },
   setBlock: { borderTopColor: colors.borderSubtle, borderTopWidth: StyleSheet.hairlineWidth, gap: Spacing.two, paddingTop: Spacing.two },
   setTitle: { color: colors.textPrimary, fontSize: Typography.body.fontSize, fontWeight: '700' },
-  snapshot: { borderColor: colors.borderSubtle, borderRadius: 12, borderWidth: StyleSheet.hairlineWidth, flexBasis: 210, flexGrow: 1, gap: Spacing.one, minWidth: 0, padding: Spacing.two },
+  snapshot: { backgroundColor: glass.cardFill, borderColor: glass.cardBorder, borderRadius: 12, borderWidth: StyleSheet.hairlineWidth, flexBasis: 210, flexGrow: 1, gap: Spacing.one, minWidth: 0, padding: Spacing.two },
   snapshotGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
   snapshotTitle: { color: colors.textPrimary, fontSize: Typography.body.fontSize, fontWeight: '700' },
   value: { color: colors.textPrimary, flex: 1, fontSize: Typography.caption.fontSize, textAlign: 'right' },
