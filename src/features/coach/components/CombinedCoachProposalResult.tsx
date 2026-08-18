@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { AppCard } from '@/components/ui/AppCard';
@@ -7,6 +8,7 @@ import { useLocalization } from '@/localization';
 import { getCombinedProposalCopy } from '@/localization/combinedProposalCopy';
 import { getUserLimitationsCopy } from '@/localization/userLimitationsCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import { formatEnergyValue, useUnitPreferences } from '@/units';
 import type {
   CombinedCoachProposalViewModel,
@@ -34,9 +36,13 @@ export function CombinedCoachProposalResult({
   nutritionBusy: boolean;
   onConfirmNutrition(): void;
 }) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { formatNumber, locale } = useLocalization();
   const { energy, formatWeightValue, weight } = useUnitPreferences();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const copy = getCombinedProposalCopy(locale);
   const limitationCopy = getUserLimitationsCopy(locale);
   const presentation = copy.viewModelCopy(viewModel);
@@ -70,10 +76,10 @@ export function CombinedCoachProposalResult({
   if (viewModel.kind !== 'review') {
     return (
       <AppCard>
-        <Text style={[styles.cardTitle, { color: colors.textPrimary }]}> 
+        <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
           {presentation.title}
         </Text>
-        <Text style={[styles.body, { color: colors.textSecondary }]}> 
+        <Text style={[styles.body, { color: colors.textSecondary }]}>
           {presentation.message}
         </Text>
       </AppCard>
@@ -88,10 +94,10 @@ export function CombinedCoachProposalResult({
     <AppCard>
       <View style={styles.resultHeader}>
         <View style={styles.flexCopy}>
-          <Text style={[styles.cardTitle, { color: colors.textPrimary }]}> 
+          <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
             {presentation.title}
           </Text>
-          <Text style={[styles.body, { color: colors.textSecondary }]}> 
+          <Text style={[styles.body, { color: colors.textSecondary }]}>
             {presentation.message}
           </Text>
         </View>
@@ -100,20 +106,22 @@ export function CombinedCoachProposalResult({
             styles.badge,
             {
               backgroundColor:
-                viewModel.status === 'ready' ? colors.successSoft : colors.warningSoft,
+                viewModel.status === 'ready'
+                  ? glass.semanticPositiveFill
+                  : glass.semanticWarningFill,
               color: viewModel.status === 'ready' ? colors.success : colors.warning,
             },
-          ]}> 
+          ]}>
           {copy.statusLabels[viewModel.status]}
         </Text>
       </View>
 
       <View style={styles.stack}>
-        <View style={[styles.domainCard, { borderColor: colors.borderSubtle }]}> 
+        <View style={[styles.domainCard, { borderColor: glass.cardBorder }]}>
           <Text style={[styles.domainTitle, { color: colors.textPrimary }]}>
             {copy.strengthProposal}
           </Text>
-          <Text style={[styles.body, { color: colors.textSecondary }]}> 
+          <Text style={[styles.body, { color: colors.textSecondary }]}>
             {copy.setsAndTonnage(
               viewModel.strength.sets.length,
               formatNumber(viewModel.strength.sets.length, { maximumFractionDigits: 0 }),
@@ -124,7 +132,7 @@ export function CombinedCoachProposalResult({
             )}
           </Text>
           {viewModel.strength.sets.slice(0, 4).map((set) => (
-            <Text key={set.sourceSetId} style={[styles.meta, { color: colors.textMuted }]}> 
+            <Text key={set.sourceSetId} style={[styles.meta, { color: colors.textMuted }]}>
               {set.exerciseName}: {formatWeightValue(set.weight)} {weight} ×{' '}
               {formatNumber(set.reps, { maximumFractionDigits: 0 })} · RPE{' '}
               {formatNumber(set.targetRpe, { maximumFractionDigits: 1 })}
@@ -133,10 +141,10 @@ export function CombinedCoachProposalResult({
 
           {effective ? (
             <View style={styles.stack}>
-              <Text style={[styles.domainTitle, { color: colors.textPrimary }]}> 
+              <Text style={[styles.domainTitle, { color: colors.textPrimary }]}>
                 {copy.effectivePlan}
               </Text>
-              <Text style={[styles.body, { color: colors.textSecondary }]}> 
+              <Text style={[styles.body, { color: colors.textSecondary }]}>
                 {effective.effectiveTonnage === null
                   ? copy.blocked
                   : copy.effectiveTonnage(
@@ -148,7 +156,7 @@ export function CombinedCoachProposalResult({
                     )}
               </Text>
               {effective.sets.slice(0, 4).map((set) => (
-                <Text key={set.sourceSetId} style={[styles.meta, { color: colors.textMuted }]}> 
+                <Text key={set.sourceSetId} style={[styles.meta, { color: colors.textMuted }]}>
                   {copy.setProposal(
                     set.exerciseName,
                     formatWeightValue(set.proposedWeight),
@@ -159,7 +167,7 @@ export function CombinedCoachProposalResult({
                 </Text>
               ))}
               {effective.unresolvedMovementPatterns.length > 0 ? (
-                <Text style={[styles.body, { color: colors.warning }]}> 
+                <Text style={[styles.body, { color: colors.warning }]}>
                   {copy.restrictedUnresolved}:{' '}
                   {effective.unresolvedMovementPatterns
                     .map((value) =>
@@ -175,11 +183,11 @@ export function CombinedCoachProposalResult({
           ) : null}
 
           {strengthApplication ? (
-            <View style={[styles.application, { borderColor: colors.success }]}> 
-              <Text style={[styles.domainTitle, { color: colors.success }]}> 
+            <View style={[styles.application, { borderColor: glass.semanticPositiveBorder }]}>
+              <Text style={[styles.domainTitle, { color: colors.success }]}>
                 {copy.templateCreated}
               </Text>
-              <Text style={[styles.meta, { color: colors.textMuted }]}> 
+              <Text style={[styles.meta, { color: colors.textMuted }]}>
                 {copy.revision}{' '}
                 {formatNumber(strengthApplication.appliedRevision, {
                   maximumFractionDigits: 0,
@@ -195,25 +203,25 @@ export function CombinedCoachProposalResult({
           ) : null}
         </View>
 
-        <View style={[styles.domainCard, { borderColor: colors.borderSubtle }]}> 
-          <Text style={[styles.domainTitle, { color: colors.textPrimary }]}> 
+        <View style={[styles.domainCard, { borderColor: glass.cardBorder }]}>
+          <Text style={[styles.domainTitle, { color: colors.textPrimary }]}>
             {copy.nutritionTarget}
           </Text>
           <Text style={[styles.meta, { color: colors.textMuted }]}>{copy.current}</Text>
-          <Text style={[styles.body, { color: colors.textSecondary }]}> 
+          <Text style={[styles.body, { color: colors.textSecondary }]}>
             {formatTargets(viewModel.nutrition.currentTargets)}
           </Text>
           <Text style={[styles.meta, { color: colors.textMuted }]}>{copy.proposed}</Text>
-          <Text style={[styles.body, { color: colors.textSecondary }]}> 
+          <Text style={[styles.body, { color: colors.textSecondary }]}>
             {formatTargets(viewModel.nutrition.proposedTargets)}
           </Text>
 
           {nutritionApplication ? (
-            <View style={[styles.application, { borderColor: colors.success }]}> 
-              <Text style={[styles.domainTitle, { color: colors.success }]}> 
+            <View style={[styles.application, { borderColor: glass.semanticPositiveBorder }]}>
+              <Text style={[styles.domainTitle, { color: colors.success }]}>
                 {copy.targetApplied}
               </Text>
-              <Text style={[styles.meta, { color: colors.textMuted }]}> 
+              <Text style={[styles.meta, { color: colors.textMuted }]}>
                 {copy.revision}{' '}
                 {formatNumber(nutritionApplication.appliedRevision, {
                   maximumFractionDigits: 0,
@@ -229,18 +237,18 @@ export function CombinedCoachProposalResult({
           ) : null}
         </View>
 
-        <View style={[styles.domainCard, { borderColor: colors.borderSubtle }]}> 
-          <Text style={[styles.domainTitle, { color: colors.textPrimary }]}> 
+        <View style={[styles.domainCard, { borderColor: glass.cardBorder }]}>
+          <Text style={[styles.domainTitle, { color: colors.textPrimary }]}>
             {copy.safetyCeiling}
           </Text>
-          <Text style={[styles.body, { color: colors.textSecondary }]}> 
+          <Text style={[styles.body, { color: colors.textSecondary }]}>
             {copy.maximumStrengthLoad(
               formatNumber(Math.round(viewModel.maximumStrengthLoadMultiplier * 100), {
                 maximumFractionDigits: 0,
               }),
             )}
           </Text>
-          <Text style={[styles.meta, { color: colors.textMuted }]}> 
+          <Text style={[styles.meta, { color: colors.textMuted }]}>
             {copy.restrictionsAndFindings(
               viewModel.safety.restrictionCount,
               formatNumber(viewModel.safety.restrictionCount, { maximumFractionDigits: 0 }),
@@ -251,7 +259,7 @@ export function CombinedCoachProposalResult({
           {viewModel.safety.restrictions.slice(0, 4).map((restriction) => (
             <Text
               key={restriction.limitationId}
-              style={[styles.meta, { color: colors.textMuted }]}> 
+              style={[styles.meta, { color: colors.textMuted }]}>
               • {formatRestriction(restriction)}
             </Text>
           ))}
@@ -260,11 +268,11 @@ export function CombinedCoachProposalResult({
 
       {viewModel.pendingActions.length > 0 ? (
         <View style={styles.stack}>
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}> 
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
             {copy.pendingActions}
           </Text>
           {viewModel.pendingActions.map((action) => (
-            <Text key={action} style={[styles.body, { color: colors.textSecondary }]}> 
+            <Text key={action} style={[styles.body, { color: colors.textSecondary }]}>
               • {copy.actionLabels[action]}
             </Text>
           ))}
@@ -273,15 +281,15 @@ export function CombinedCoachProposalResult({
 
       {viewModel.issues.length > 0 ? (
         <View style={styles.stack}>
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}> 
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
             {copy.guardrailFindings}
           </Text>
           {viewModel.issues.map((issue, index) => (
             <View key={`${issue.code}:${index}`}>
-              <Text style={[styles.meta, { color: colors.warning }]}> 
+              <Text style={[styles.meta, { color: colors.warning }]}>
                 {copy.issueSummary(issue)}
               </Text>
-              <Text style={[styles.body, { color: colors.textSecondary }]}> 
+              <Text style={[styles.body, { color: colors.textSecondary }]}>
                 {copy.issueMessage}
               </Text>
             </View>
@@ -289,10 +297,8 @@ export function CombinedCoachProposalResult({
         </View>
       ) : null}
 
-      <View style={[styles.boundary, { borderColor: colors.borderSubtle }]}> 
-        <Text style={[styles.meta, { color: colors.textMuted }]}> 
-          {copy.boundary}
-        </Text>
+      <View style={[styles.boundary, { borderColor: glass.cardBorder }]}>
+        <Text style={[styles.meta, { color: colors.textMuted }]}>{copy.boundary}</Text>
       </View>
     </AppCard>
   );
