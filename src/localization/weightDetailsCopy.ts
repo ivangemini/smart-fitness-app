@@ -28,6 +28,7 @@ export const getWeightDetailsCopy = (locale: SupportedLocale) => ({
   noWeighIns:
     locale === 'ru' ? 'Записей веса пока нет.' : 'No weigh-ins recorded yet.',
   logWeight: locale === 'ru' ? 'Записать вес' : 'Log weight',
+  openInCoach: locale === 'ru' ? 'Открыть в Companion' : 'Open in Companion',
   trainingHistory: locale === 'ru' ? 'История тренировок' : 'Training history',
   trainingHistoryBody:
     locale === 'ru'

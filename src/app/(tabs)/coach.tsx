@@ -10,12 +10,15 @@ import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme';
 import { useWorkoutState } from '@/context/AppContext';
+import { parseCoachBodyProgressContext } from '@/features/coach/coachBodyProgressContext';
+import { getCoachBodyProgressContextCopy } from '@/features/coach/coachBodyProgressContextCopy';
 import { buildCoachFactPacket } from '@/features/coach/coachRetrieval';
 import {
   parseCoachProgressContext,
   type CoachProgressSearchParams,
 } from '@/features/coach/coachProgressContext';
 import { getCoachProgressContextCopy } from '@/features/coach/coachProgressContextCopy';
+import { buildCoachWeightProgressFactPacket } from '@/features/coach/coachScopedRetrieval';
 import { useCoachRetrievalSources } from '@/features/coach/useCoachRetrievalSources';
 import { companionCopy } from '@/features/companion/companionCopy';
 import { CompanionProgressCard } from '@/features/companion/CompanionProgressCard';
@@ -44,6 +47,10 @@ export default function CoachScreen() {
     () => parseCoachProgressContext(searchParams as CoachProgressSearchParams),
     [searchParams],
   );
+  const bodyProgressContext = useMemo(
+    () => parseCoachBodyProgressContext(searchParams as CoachProgressSearchParams),
+    [searchParams],
+  );
   const progressPacket = useMemo(
     () =>
       progressContext
@@ -51,10 +58,24 @@ export default function CoachScreen() {
         : null,
     [progressContext, retrievalSources],
   );
+  const bodyProgressPacket = useMemo(
+    () =>
+      bodyProgressContext
+        ? buildCoachWeightProgressFactPacket({
+            request: bodyProgressContext.request,
+            sources: retrievalSources,
+          })
+        : null,
+    [bodyProgressContext, retrievalSources],
+  );
   const copy = companionCopy[locale];
   const contextCopy = getCoachProgressContextCopy(locale);
+  const bodyContextCopy = getCoachBodyProgressContextCopy(locale);
   const exerciseHistory = progressPacket?.ok
     ? progressPacket.data.facts.exerciseHistory ?? null
+    : null;
+  const bodyMetrics = bodyProgressPacket?.ok
+    ? bodyProgressPacket.data.facts.bodyMetrics ?? null
     : null;
   const exerciseName =
     progressContext?.request.exerciseName ?? exerciseHistory?.exercise.exerciseName ?? null;
@@ -112,6 +133,28 @@ export default function CoachScreen() {
             <AppButton
               label={contextCopy.openProgress}
               onPress={() => router.push('/training-progress')}
+              variant="secondary"
+            />
+          </AppCard>
+        ) : null}
+
+        {bodyProgressContext ? (
+          <AppCard>
+            <Text style={styles.title}>{bodyContextCopy.title}</Text>
+            <Text style={styles.body}>{bodyContextCopy.description}</Text>
+            <Text selectable style={styles.contextSummary}>
+              {bodyMetrics
+                ? bodyMetrics.weights.length > 0
+                  ? bodyContextCopy.summary(
+                      formatNumber(bodyMetrics.weights.length),
+                      formatNumber(bodyProgressContext.requestedDays),
+                    )
+                  : bodyContextCopy.noMatchingHistory
+                : bodyContextCopy.unavailable}
+            </Text>
+            <AppButton
+              label={bodyContextCopy.openProgress}
+              onPress={() => router.push('/weight-details')}
               variant="secondary"
             />
           </AppCard>
