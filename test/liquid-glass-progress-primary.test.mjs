@@ -5,13 +5,15 @@ import { describe, expect, it } from 'vitest';
 const readSource = (path) => readFileSync(resolve(process.cwd(), path), 'utf8');
 
 describe('Progress Liquid Glass primary surfaces', () => {
-  it('keeps the weight range selector on the shared Liquid Glass control surface', () => {
+  it('keeps the first-level Progress overview on shared theme-aware surfaces', () => {
     const source = readSource('src/app/(tabs)/progress.tsx');
+    const cardSource = readSource('src/components/progress/ProgressOverviewCard.tsx');
 
-    expect(source).toContain("import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';");
-    expect(source).toContain('resolveLiquidGlassPalette(resolvedAppearance)');
-    expect(source).toContain('<LiquidGlassSurface radius={12} style={styles.rangeTabs} variant="control">');
-    expect(source).toContain('backgroundColor: glass.semanticAccentFill');
+    expect(source).toContain("import { ProgressOverviewCard } from '@/components/progress/ProgressOverviewCard';");
+    expect(source).toContain('<ProgressOverviewCard');
+    expect(cardSource).toContain("import { AppCard } from '@/components/ui/AppCard';");
+    expect(cardSource).toContain('<AppCard');
+    expect(source).not.toContain('styles.rangeTabs');
     expect(source).not.toContain('backgroundColor: colors.surfaceSecondary');
     expect(source).not.toContain('backgroundColor: colors.surfacePrimary');
   });
