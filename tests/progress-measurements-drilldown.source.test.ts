@@ -12,6 +12,12 @@ const readSource = (relativePath: string) =>
   readFileSync(resolve(projectRoot, relativePath), 'utf8');
 
 describe('Progress body measurement drilldown source contract', () => {
+  it('links the first-level Body actions to the dedicated measurement route', () => {
+    const progress = readSource('src/app/(tabs)/progress.tsx');
+    expect(progress).toContain("router.push('/measurement-progress')");
+    expect(progress).toContain('label={copy.measurementDetails}');
+  });
+
   it('uses bounded canonical measurement analytics instead of charting raw values', () => {
     const detail = readSource('src/app/measurement-progress.tsx');
     const analytics = readSource('src/lib/progress/bodyMeasurementSeries.ts');
