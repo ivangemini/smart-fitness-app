@@ -153,8 +153,6 @@ export type CoachProfileFacts = {
   goalType: ProfileState['goalType'];
   weeklyWeightChangeGoalKg: number;
   trainingDaysPerWeek: number;
-  dateOfBirth: string | null;
-  calculationSex: ProfileState['calculationSex'];
   trainingExperience: ProfileState['trainingExperience'];
   activityLevel: string;
   activeLimitations: Array<{
@@ -187,8 +185,6 @@ export const readCoachProfileFacts = ({
   goalType: profile.goalType,
   weeklyWeightChangeGoalKg: profile.weeklyWeightChangeGoal,
   trainingDaysPerWeek: profile.trainingDaysPerWeek,
-  dateOfBirth: profile.dateOfBirth,
-  calculationSex: profile.calculationSex,
   trainingExperience: profile.trainingExperience,
   activityLevel: profile.activityLevel,
   activeLimitations: userLimitations
