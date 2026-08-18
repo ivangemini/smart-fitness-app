@@ -18,7 +18,7 @@ The August 18 Liquid Glass closure sequence is complete for the current reviewed
 
 Evidence-only #747 then reran the repository-wide direct legacy-material scanner from exact `main`. It found 21 remaining direct hits, all previously inspected structural dividers. No unmatched card/surface/control/selected/pressed/disabled/semantic material owner remains. #747 was closed unmerged after evidence extraction.
 
-Liquid Glass repository-wide source convergence is therefore closed for the current reviewed scope. Intentional divider tokens remain by design and must not be mechanically rewritten.
+Liquid Glass repository-wide source convergence is therefore closed for the current reviewed scope. Intentional divider tokens remain by design and must not be mechanically rewritten. This checkpoint records source/CI closure only; it does not substitute for the external Phase 14 evidence below.
 
 ### Backend repository
 
