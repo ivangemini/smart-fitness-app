@@ -6,6 +6,10 @@ import { Radii, Spacing, Typography } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { getWorkoutSessionHeaderCopy } from '@/localization/workoutSessionHeaderCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 
 type WorkoutSessionHeaderProps = {
   completedLabel: string;
@@ -16,10 +20,14 @@ type WorkoutSessionHeaderProps = {
 };
 
 export function WorkoutSessionHeader({ completedLabel, elapsedLabel, nextExerciseName, progressPercent, workoutTitle }: WorkoutSessionHeaderProps) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { formatNumber, locale } = useLocalization();
   const copy = useMemo(() => getWorkoutSessionHeaderCopy(locale), [locale]);
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const clampedProgress = Math.max(0, Math.min(100, progressPercent));
   const progressLabel = formatNumber(clampedProgress, { maximumFractionDigits: 0 });
 
@@ -52,7 +60,10 @@ export function WorkoutSessionHeader({ completedLabel, elapsedLabel, nextExercis
   );
 }
 
-const createStyles = (colors: typeof import('@/constants/theme').Colors.dark) =>
+const createStyles = (
+  colors: typeof import('@/constants/theme').Colors.dark,
+  glass: LiquidGlassPalette,
+) =>
   StyleSheet.create({
     card: {
       gap: Spacing.two,
@@ -84,13 +95,13 @@ const createStyles = (colors: typeof import('@/constants/theme').Colors.dark) =>
       textAlign: 'right',
     },
     progressFill: {
-      backgroundColor: colors.accent,
+      backgroundColor: glass.accentFill,
       borderCurve: 'continuous',
       borderRadius: Radii.pill,
       height: 6,
     },
     progressTrack: {
-      backgroundColor: colors.backgroundSelected,
+      backgroundColor: glass.controlFill,
       borderCurve: 'continuous',
       borderRadius: Radii.pill,
       height: 8,
