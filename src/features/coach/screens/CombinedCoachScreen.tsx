@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
@@ -22,6 +22,7 @@ import { useLocalization } from '@/localization';
 import { getCombinedCoachTrustCopy } from '@/localization/combinedCoachTrustCopy';
 import { getCombinedReviewCopy, type CombinedReviewCopy } from '@/localization/combinedReviewCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import { resolveLiquidGlassPalette } from '@/theme/liquidGlass';
 import type { WorkoutSession } from '@/types';
 import { formatEnergyValue, useUnitPreferences } from '@/units';
 import {
@@ -64,16 +65,23 @@ function DomainCard({
   statusLabel: string;
   children: React.ReactNode;
 }) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   return (
-    <View style={[styles.domainCard, { borderColor: colors.borderSubtle }]}>
+    <View style={[styles.domainCard, { borderColor: glass.cardBorder }]}>
       <View style={styles.domainHeader}>
         <Text style={[styles.domainTitle, { color: colors.textPrimary }]}>{title}</Text>
         <Text
           style={[
             styles.domainBadge,
             {
-              backgroundColor: status === 'ready' ? colors.successSoft : colors.warningSoft,
+              backgroundColor:
+                status === 'ready'
+                  ? glass.semanticPositiveFill
+                  : glass.semanticWarningFill,
               color: status === 'ready' ? colors.success : colors.warning,
             },
           ]}>
@@ -92,9 +100,13 @@ function CombinedResult({
   copy: CombinedReviewCopy;
   viewModel: CombinedCoachViewModel;
 }) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { formatNumber } = useLocalization();
   const { energy, formatWeightValue, weight } = useUnitPreferences();
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
   const presentation = copy.viewModelCopy(viewModel);
   const formatOptional = (value: number | null, fractionDigits = 1): string =>
     value === null
@@ -132,7 +144,9 @@ function CombinedResult({
             styles.resultBadge,
             {
               backgroundColor:
-                viewModel.status === 'ready' ? colors.successSoft : colors.warningSoft,
+                viewModel.status === 'ready'
+                  ? glass.semanticPositiveFill
+                  : glass.semanticWarningFill,
               color: viewModel.status === 'ready' ? colors.success : colors.warning,
             },
           ]}>
@@ -225,7 +239,7 @@ function CombinedResult({
         </View>
       ) : null}
 
-      <View style={[styles.boundaryBox, { borderColor: colors.borderSubtle }]}>
+      <View style={[styles.boundaryBox, { borderColor: glass.cardBorder }]}>
         <Text style={[styles.metaText, { color: colors.textMuted }]}>{copy.boundary}</Text>
       </View>
     </AppCard>
