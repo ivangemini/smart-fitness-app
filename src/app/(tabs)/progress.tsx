@@ -25,7 +25,10 @@ import { useAppTheme } from '@/theme/AppThemeProvider';
 import type { BodyMeasurementMetric, BodyMeasurementUnit } from '@/types';
 import { weightFromKg, useUnitPreferences } from '@/units';
 
-const formatSigned = (value: number, formatNumber: (value: number, options?: Intl.NumberFormatOptions) => string) =>
+const formatSigned = (
+  value: number,
+  formatNumber: (value: number, options?: Intl.NumberFormatOptions) => string,
+) =>
   `${value > 0 ? '+' : ''}${formatNumber(value, {
     maximumFractionDigits: 1,
     minimumFractionDigits: 1,
@@ -275,11 +278,18 @@ export default function ProgressScreen() {
 
         <ProgressOverviewCard
           actions={
-            <AppButton
-              label={copy.openWorkoutHistory}
-              onPress={() => router.push('/workout-history')}
-              variant="secondary"
-            />
+            <View style={styles.inlineActions}>
+              <AppButton
+                label={copy.openStrengthDetails}
+                onPress={() => router.push('/strength-training-details')}
+                variant="secondary"
+              />
+              <AppButton
+                label={copy.openWorkoutHistory}
+                onPress={() => router.push('/workout-history')}
+                variant="secondary"
+              />
+            </View>
           }
           emptyMessage={copy.noTrainingData}
           rows={trainingRows}
