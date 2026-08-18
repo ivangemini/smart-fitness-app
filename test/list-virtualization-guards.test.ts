@@ -150,13 +150,17 @@ describe('list virtualization boundaries', () => {
     expect(comments).not.toContain('FlatList');
   });
 
-  test('bounded secondary nutrition and progress surfaces stay bounded', () => {
+  test('bounded secondary nutrition and Progress overview surfaces stay bounded', () => {
     const addFood = readSource('src/app/nutrition/add-food.tsx');
     const addFoodModel = readSource('src/features/nutrition/addFoodModel.ts');
     const progress = readSource('src/app/(tabs)/progress.tsx');
 
     expect(addFood).toContain('defaultCatalogResults.slice(0, 18)');
     expect(addFoodModel).toContain('return items.slice(0, 20)');
-    expect(progress).toContain('analytics.measurements.slice(0, 3)');
+    expect(progress).toContain('rows={bodyRows}');
+    expect(progress).toContain('rows={trainingRows}');
+    expect(progress).toContain('rows={activityRows}');
+    expect(progress).toContain('rows={highlightRows}');
+    expect(progress).not.toContain('analytics.measurements.map(');
   });
 });
