@@ -72,6 +72,7 @@ export default function WeightDetailsScreen() {
     analytics.currentWeight !== null
       ? `${formatWeightValue(analytics.currentWeight)} ${weightUnit}`
       : '—';
+  const latestSelectedEntry = selectedEntries.at(-1) ?? null;
   const periodDeltaKg =
     selectedEntries.length > 1
       ? selectedEntries[selectedEntries.length - 1].weight - selectedEntries[0].weight
@@ -139,6 +140,24 @@ export default function WeightDetailsScreen() {
             )}
           </View>
         </AppCard>
+
+        {latestSelectedEntry ? (
+          <AppButton
+            label={copy.openInCoach}
+            onPress={() =>
+              router.push({
+                pathname: '/(tabs)/coach',
+                params: {
+                  contextSource: 'progress',
+                  contextIntent: 'body_progress',
+                  metric: 'weight',
+                  days: String(rangeDays),
+                  endAt: latestSelectedEntry.createdAt,
+                },
+              })
+            }
+          />
+        ) : null}
 
         <AppCard>
           <Text selectable style={styles.title}>{copy.recentWeighIns}</Text>
