@@ -6,7 +6,7 @@ import type { WorkoutSession, WorkoutSet } from '@/types';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_HISTORY_DAYS = 28;
-const MAX_HISTORY_DAYS = 90;
+export const COACH_HISTORY_MAX_DAYS = 90;
 const DEFAULT_WORKOUT_LIMIT = 20;
 const MAX_WORKOUT_LIMIT = 30;
 const DEFAULT_EXERCISE_SESSION_LIMIT = 12;
@@ -107,7 +107,7 @@ const resolvePeriod = (endAt: string, days: number | undefined): CoachCapability
     };
   }
 
-  const boundedDays = clampInteger(days, DEFAULT_HISTORY_DAYS, 1, MAX_HISTORY_DAYS);
+  const boundedDays = clampInteger(days, DEFAULT_HISTORY_DAYS, 1, COACH_HISTORY_MAX_DAYS);
   const startTimestamp = endTimestamp - boundedDays * DAY_MS;
 
   return {
@@ -160,8 +160,10 @@ const matchesExercise = (set: WorkoutSet, exerciseId?: string, exerciseName?: st
     return set.exerciseId === normalizedId;
   }
 
-  const normalizedName = exerciseName ? normalizeExerciseName(exerciseName) : '';
-  return normalizedName.length > 0 && normalizeExerciseName(set.exerciseName) === normalizedName;
+  const normalizedName = exerciseName?.trim();
+  return normalizedName
+    ? normalizeExerciseName(set.exerciseName) === normalizeExerciseName(normalizedName)
+    : false;
 };
 
 export const readBoundedWorkoutHistory = ({
@@ -175,27 +177,22 @@ export const readBoundedWorkoutHistory = ({
   days?: number;
   limit?: number;
 }): CoachCapabilityResult<CoachWorkoutHistoryData> => {
-  const periodResult = resolvePeriod(endAt, days);
-  if (!periodResult.ok) {
-    return periodResult;
-  }
+  const period = resolvePeriod(endAt, days);
+  if (!period.ok) return period;
 
-  const period = periodResult.data;
   const boundedLimit = clampInteger(limit, DEFAULT_WORKOUT_LIMIT, 1, MAX_WORKOUT_LIMIT);
-  const matchingSessions = getBoundedSessions(sessions, period);
+  const matchingSessions = getBoundedSessions(sessions, period.data);
   const workouts = matchingSessions.slice(0, boundedLimit).map(({ session }) => {
     const workingSets = session.sets.filter(isWorkingSet);
-    const boundedSets = workingSets.slice(0, MAX_SETS_PER_SESSION);
-
     return {
       sessionId: session.id,
       workoutId: session.workoutId,
       workoutTitle: session.workoutTitle,
       startedAt: session.startedAt,
       finishedAt: session.finishedAt,
-      workingSets: boundedSets.map(toWorkingSetFact),
+      workingSets: workingSets.slice(0, MAX_SETS_PER_SESSION).map(toWorkingSetFact),
       workingSetCount: workingSets.length,
-      setsTruncated: workingSets.length > boundedSets.length,
+      setsTruncated: workingSets.length > MAX_SETS_PER_SESSION,
     };
   });
 
@@ -203,9 +200,9 @@ export const readBoundedWorkoutHistory = ({
     ok: true,
     data: {
       period: {
-        startAt: period.startAt,
-        endAt: period.endAt,
-        days: period.days,
+        startAt: period.data.startAt,
+        endAt: period.data.endAt,
+        days: period.data.days,
       },
       workouts,
       totalMatchingSessions: matchingSessions.length,
@@ -217,19 +214,21 @@ export const readBoundedWorkoutHistory = ({
 export const readExerciseHistory = ({
   sessions,
   endAt,
+  days,
   exerciseId,
   exerciseName,
-  days,
-  limitSessions,
+  limit,
 }: {
   sessions: WorkoutSession[];
   endAt: string;
+  days?: number;
   exerciseId?: string;
   exerciseName?: string;
-  days?: number;
-  limitSessions?: number;
+  limit?: number;
 }): CoachCapabilityResult<CoachExerciseHistoryData> => {
-  if (!exerciseId?.trim() && !exerciseName?.trim()) {
+  const normalizedExerciseId = exerciseId?.trim();
+  const normalizedExerciseName = exerciseName?.trim();
+  if (!normalizedExerciseId && !normalizedExerciseName) {
     return {
       ok: false,
       error: {
@@ -239,52 +238,48 @@ export const readExerciseHistory = ({
     };
   }
 
-  const periodResult = resolvePeriod(endAt, days);
-  if (!periodResult.ok) {
-    return periodResult;
-  }
+  const period = resolvePeriod(endAt, days);
+  if (!period.ok) return period;
 
-  const period = periodResult.data;
-  const boundedLimit = clampInteger(
-    limitSessions,
-    DEFAULT_EXERCISE_SESSION_LIMIT,
-    1,
-    MAX_EXERCISE_SESSION_LIMIT,
-  );
-  const matchingSessions = getBoundedSessions(sessions, period)
-    .map(({ session }) => ({
-      session,
-      sets: session.sets.filter(
-        (set) => isWorkingSet(set) && matchesExercise(set, exerciseId, exerciseName),
-      ),
-    }))
-    .filter(({ sets }) => sets.length > 0);
-  const boundedSessions = matchingSessions.slice(0, boundedLimit);
+  const boundedLimit = clampInteger(limit, DEFAULT_EXERCISE_SESSION_LIMIT, 1, MAX_EXERCISE_SESSION_LIMIT);
+  const matchingSessions = getBoundedSessions(sessions, period.data)
+    .map(({ session }) => {
+      const workingSets = session.sets
+        .filter(isWorkingSet)
+        .filter((set) => matchesExercise(set, normalizedExerciseId, normalizedExerciseName));
+      if (workingSets.length === 0) return null;
+      return {
+        session,
+        workingSets,
+      };
+    })
+    .filter(
+      (entry): entry is { session: WorkoutSession; workingSets: WorkoutSet[] } => entry !== null,
+    );
+
+  const selected = matchingSessions.slice(0, boundedLimit).map(({ session, workingSets }) => ({
+    sessionId: session.id,
+    workoutTitle: session.workoutTitle,
+    finishedAt: session.finishedAt,
+    workingSets: workingSets.slice(0, MAX_SETS_PER_SESSION).map(toWorkingSetFact),
+    setsTruncated: workingSets.length > MAX_SETS_PER_SESSION,
+  }));
 
   return {
     ok: true,
     data: {
       exercise: {
-        exerciseId: exerciseId?.trim() || null,
-        exerciseName: exerciseName?.trim() || null,
+        exerciseId: normalizedExerciseId || null,
+        exerciseName: normalizedExerciseName || null,
       },
       period: {
-        startAt: period.startAt,
-        endAt: period.endAt,
-        days: period.days,
+        startAt: period.data.startAt,
+        endAt: period.data.endAt,
+        days: period.data.days,
       },
-      sessions: boundedSessions.map(({ session, sets }) => {
-        const boundedSets = sets.slice(0, MAX_SETS_PER_SESSION);
-        return {
-          sessionId: session.id,
-          workoutTitle: session.workoutTitle,
-          finishedAt: session.finishedAt,
-          workingSets: boundedSets.map(toWorkingSetFact),
-          setsTruncated: sets.length > boundedSets.length,
-        };
-      }),
+      sessions: selected,
       totalMatchingSessions: matchingSessions.length,
-      resultsTruncated: matchingSessions.length > boundedSessions.length,
+      resultsTruncated: matchingSessions.length > selected.length,
     },
   };
 };
@@ -298,16 +293,14 @@ export const readTrainingSummary = ({
   endAt: string;
   days?: number;
 }): CoachCapabilityResult<CoachTrainingSummaryData> => {
-  const periodResult = resolvePeriod(endAt, days);
-  if (!periodResult.ok) {
-    return periodResult;
-  }
+  const period = resolvePeriod(endAt, days);
+  if (!period.ok) return period;
 
   return {
     ok: true,
     data: buildTrainingProgressAnalytics(sessions, {
-      endAt: periodResult.data.endAt,
-      periodDays: periodResult.data.days,
+      endAt: period.data.endAt,
+      periodDays: period.data.days,
       maxExercises: TRAINING_SUMMARY_MAX_EXERCISES,
     }),
   };
