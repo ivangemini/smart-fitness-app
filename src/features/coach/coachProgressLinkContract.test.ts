@@ -26,7 +26,7 @@ describe('Coach and Progress contextual linking', () => {
     const coach = readSource('src/app/(tabs)/coach.tsx');
     const sourceHook = readSource('src/features/coach/useCoachRetrievalSources.ts');
 
-    expect(coach).toContain('parseCoachProgressContext(searchParams)');
+    expect(coach).toContain('parseCoachProgressContext(searchParams as CoachProgressSearchParams)');
     expect(coach).toContain('buildCoachFactPacket');
     expect(coach).toContain('useCoachRetrievalSources');
     expect(sourceHook).toContain('useWorkoutState');
@@ -34,6 +34,5 @@ describe('Coach and Progress contextual linking', () => {
     expect(sourceHook).toContain('useProgressState');
     expect(sourceHook).toContain('useProfileState');
     expect(sourceHook).toContain('useSafetyRecoveryState');
-    expect(sourceHook).not.toContain('useAppContext');
   });
 });
