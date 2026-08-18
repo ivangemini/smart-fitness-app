@@ -6,6 +6,10 @@ import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import { getDataRecoveryCopy } from '@/features/settings/dataRecoveryCopy';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import {
+  resolveLiquidGlassPalette,
+  type LiquidGlassPalette,
+} from '@/theme/liquidGlass';
 import type { AppMutationFailure } from '@/types';
 
 type AppMutationFailureNoticeProps = {
@@ -21,10 +25,14 @@ export function AppMutationFailureNotice({
   onRetry,
   pendingCount,
 }: AppMutationFailureNoticeProps) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const { locale, t } = useLocalization();
   const insets = useSafeAreaInsets();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const glass = useMemo(
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
+  );
+  const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const copy = getDataRecoveryCopy(locale, t);
 
   if (!failure) return null;
@@ -79,7 +87,10 @@ export function AppMutationFailureNotice({
   );
 }
 
-const createStyles = (colors: typeof Colors.light) =>
+const createStyles = (
+  colors: typeof Colors.light,
+  glass: LiquidGlassPalette,
+) =>
   StyleSheet.create({
     action: {
       alignItems: 'center',
@@ -113,8 +124,8 @@ const createStyles = (colors: typeof Colors.light) =>
       fontWeight: Typography.label.fontWeight,
     },
     localFailureNotice: {
-      backgroundColor: colors.errorSoft,
-      borderColor: colors.error,
+      backgroundColor: glass.destructiveFill,
+      borderColor: glass.destructiveBorder,
     },
     message: {
       color: colors.textSecondary,
@@ -123,6 +134,7 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     notice: {
       alignItems: 'center',
+      borderCurve: 'continuous',
       borderRadius: Radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
       elevation: 6,
@@ -133,9 +145,9 @@ const createStyles = (colors: typeof Colors.light) =>
       paddingVertical: Spacing.two,
       position: 'absolute',
       right: Spacing.three,
-      shadowColor: '#000000',
+      shadowColor: glass.shadowColor,
       shadowOffset: { height: 3, width: 0 },
-      shadowOpacity: 0.22,
+      shadowOpacity: glass.shadowOpacity,
       shadowRadius: 8,
       zIndex: 1000,
     },
@@ -154,8 +166,8 @@ const createStyles = (colors: typeof Colors.light) =>
       backgroundColor: colors.accent,
     },
     syncNotice: {
-      backgroundColor: colors.surfaceElevated,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.elevatedFill,
+      borderColor: glass.cardBorder,
     },
     syncTitle: {
       color: colors.textPrimary,
