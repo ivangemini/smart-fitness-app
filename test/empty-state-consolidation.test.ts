@@ -53,7 +53,6 @@ describe('empty-state consolidation', () => {
   });
 
   test.each([
-    'src/app/(tabs)/progress.tsx',
     'src/components/workouts/WorkoutBuilderCard.tsx',
     'src/components/workouts/WorkoutExerciseLibraryCard.tsx',
     'src/components/workouts/WorkoutHistorySection.tsx',
@@ -63,5 +62,15 @@ describe('empty-state consolidation', () => {
     expect(source).toContain("import { EmptyState } from '@/components/ui/EmptyState'");
     expect(source).toContain('<EmptyState');
     expect(source).toContain('compact');
+  });
+
+  test('Progress delegates first-level empty copy to the shared overview card', () => {
+    const source = readSource('src/app/(tabs)/progress.tsx');
+
+    expect(source).toContain("import { ProgressOverviewCard } from '@/components/progress/ProgressOverviewCard';");
+    expect(source).toContain('emptyMessage={copy.noBodyData}');
+    expect(source).toContain('emptyMessage={copy.noTrainingData}');
+    expect(source).toContain('emptyMessage={copy.noActivityData}');
+    expect(source).toContain('emptyMessage={copy.noTrainingEvidence}');
   });
 });
