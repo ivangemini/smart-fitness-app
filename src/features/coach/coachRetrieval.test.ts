@@ -135,10 +135,10 @@ const sources: CoachRetrievalSources = {
 const endAt = '2026-08-18T12:00:00.000Z';
 
 describe('coachRetrieval', () => {
-  it('plans only the capability required for a training overview', () => {
+  it('plans only bounded training capabilities for a training overview', () => {
     expect(buildCoachRetrievalPlan({ intent: 'training_overview', endAt })).toEqual({
       intent: 'training_overview',
-      capabilities: ['training_summary'],
+      capabilities: ['training_summary', 'training_signals'],
     });
   });
 
@@ -156,7 +156,7 @@ describe('coachRetrieval', () => {
     ).toEqual(['exercise_history', 'body_metrics']);
   });
 
-  it('builds a training packet without unrelated profile, nutrition, Labs, or raw state', () => {
+  it('builds a training packet with deterministic signals and without unrelated raw state', () => {
     const result = buildCoachFactPacket({
       request: { intent: 'training_overview', endAt, days: 28 },
       sources,
@@ -164,12 +164,18 @@ describe('coachRetrieval', () => {
 
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(Object.keys(result.data.facts)).toEqual(['trainingSummary']);
+    expect(Object.keys(result.data.facts)).toEqual(['trainingSummary', 'trainingSignals']);
     expect(result.data.facts.trainingSummary?.frequency.sessionCount).toBe(1);
+    expect(result.data.facts.trainingSignals?.rpe).toMatchObject({
+      recordedSetCount: 1,
+      averageActualRpe: 8,
+      trend: 'insufficient_data',
+    });
     const serialized = JSON.stringify(result.data);
     expect(serialized).not.toContain('Private food');
     expect(serialized).not.toContain('Confirmed lab');
     expect(serialized).not.toContain('private session note');
+    expect(serialized).not.toContain('set-private-id');
     expect(serialized).not.toContain('2007-05-01');
   });
 
@@ -217,7 +223,7 @@ describe('coachRetrieval', () => {
     });
   });
 
-  it('builds a current-program review packet from only the reviewed program context', () => {
+  it('builds a current-program review packet from only reviewed program and execution context', () => {
     const result = buildCoachFactPacket({
       request: { intent: 'current_program_review', endAt, days: 28 },
       sources,
@@ -228,10 +234,13 @@ describe('coachRetrieval', () => {
     expect(Object.keys(result.data.facts)).toEqual([
       'currentProgram',
       'trainingSummary',
+      'trainingSignals',
       'profileFacts',
     ]);
     expect(result.data.facts.currentProgram?.program?.name).toBe('Upper Lower');
+    expect(result.data.facts.trainingSignals?.evidence.recordedRpeSetCount).toBe(1);
     expect(JSON.stringify(result.data)).not.toContain('program-1');
+    expect(JSON.stringify(result.data)).not.toContain('set-private-id');
     expect(JSON.stringify(result.data)).not.toContain('2007-05-01');
   });
 
