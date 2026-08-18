@@ -29,7 +29,7 @@ describe('Progress compact touch targets', () => {
     expect(source).toContain("label={t('progress.weightDetails')}");
     expect(source).toContain("label={t('progress.addWeight')}");
     expect(source).toContain('label={measurementEditorOpen ? copy.hideMeasurementEditor : copy.addMeasurement}');
-    expect(source).toContain('label={copy.openWorkoutHistory}');
+    expect(source).toContain('label={copy.strengthTraining}');
     expect(source).not.toContain('accessibilityRole="tablist"');
     expect(source).not.toContain('accessibilityRole="tab"');
     expect(source).not.toContain('rangeTab:');

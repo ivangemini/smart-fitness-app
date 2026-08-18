@@ -18,6 +18,7 @@ const auditedPresentation = () =>
   [
     readSource('src/app/(tabs)/progress.tsx'),
     readSource('src/app/weight-details.tsx'),
+    readSource('src/app/training-progress.tsx'),
     readSource('src/components/progress/ProgressTrendChart.tsx'),
     readSource('src/components/progress/WeeklyWorkoutVolumeCard.tsx'),
   ].join('\n');
@@ -67,6 +68,7 @@ describe('secondary Progress formatting boundaries', () => {
 
   it('preserves measurement persistence and focused drill-down navigation contracts', () => {
     const progress = readSource('src/app/(tabs)/progress.tsx');
+    const trainingProgress = readSource('src/app/training-progress.tsx');
     const weightDetails = readSource('src/app/weight-details.tsx');
 
     expect(progress).toContain('buildBodyMeasurement({');
@@ -74,7 +76,8 @@ describe('secondary Progress formatting boundaries', () => {
     expect(progress).toContain('createUuid()');
     expect(progress).toContain("router.push('/weight-entry')");
     expect(progress).toContain("router.push('/weight-details')");
-    expect(progress).toContain("router.push('/workout-history')");
+    expect(progress).toContain("router.push('/training-progress')");
+    expect(trainingProgress).toContain("router.push('/workout-history')");
     expect(weightDetails).toContain("router.push('/workout-history')");
     expect(weightDetails).toContain("router.push('/weight-entry')");
     expect(weightDetails).toContain('getWeightAnalytics(weightHistory)');
