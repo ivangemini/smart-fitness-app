@@ -179,8 +179,8 @@ export const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPale
     },
     exerciseThumb: {
       alignItems: 'center',
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.cardFill,
+      borderColor: glass.cardBorder,
       borderCurve: 'continuous',
       borderRadius: 8,
       borderWidth: StyleSheet.hairlineWidth,
@@ -207,7 +207,7 @@ export const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPale
     },
     header: {
       alignItems: 'center',
-      borderBottomColor: colors.borderSubtle,
+      borderBottomColor: glass.cardBorder,
       borderBottomWidth: StyleSheet.hairlineWidth,
       flexDirection: 'row',
       gap: Spacing.two,
@@ -351,8 +351,8 @@ export const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPale
       minWidth: 0,
     },
     planInput: {
-      backgroundColor: colors.surfacePrimary,
-      borderColor: colors.borderSubtle,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
       borderCurve: 'continuous',
       borderRadius: 8,
       borderWidth: StyleSheet.hairlineWidth,

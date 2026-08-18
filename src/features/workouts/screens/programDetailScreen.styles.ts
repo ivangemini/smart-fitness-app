@@ -10,7 +10,11 @@ export const createProgramDetailScreenStyles = (
   StyleSheet.create({
     addRoutineIcon: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: glass.controlFill,
+      borderColor: glass.controlBorder,
+      borderCurve: 'continuous',
+      borderRadius: 14,
+      borderWidth: StyleSheet.hairlineWidth,
       flexShrink: 0,
       height: 62,
       justifyContent: 'center',
@@ -54,9 +58,11 @@ export const createProgramDetailScreenStyles = (
     },
     cover: {
       alignItems: 'center',
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: glass.cardFill,
+      borderColor: glass.cardBorder,
       borderCurve: 'continuous',
       borderRadius: 14,
+      borderWidth: StyleSheet.hairlineWidth,
       height: 210,
       justifyContent: 'center',
       maxWidth: '100%',
@@ -75,7 +81,9 @@ export const createProgramDetailScreenStyles = (
       paddingTop: 4,
     },
     hero: {
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: glass.elevatedFill,
+      borderBottomColor: glass.cardBorder,
+      borderBottomWidth: StyleSheet.hairlineWidth,
       marginHorizontal: -Spacing.three,
       paddingBottom: Spacing.three,
       paddingHorizontal: Spacing.three,
