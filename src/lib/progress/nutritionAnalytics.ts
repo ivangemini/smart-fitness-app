@@ -127,7 +127,7 @@ export const buildNutritionProgressAnalytics = (
       days: periodDays,
     },
     loggedDayCount: loggedDays.length,
-    loggedDayCoverage: round(loggedDays.length / periodDays, 4),
+    loggedDayCoverage: round(Math.min(1, loggedDays.length / periodDays), 4),
     totalEntryCount: loggedDays.reduce((sum, day) => sum + day.entryCount, 0),
     averagesAcrossLoggedDays: averages,
     averageTargetDeltaAcrossLoggedDays: averages
