@@ -59,14 +59,15 @@ const article = () => ({
 describe('Knowledge published response parser', () => {
   it('accepts the exact published article/list projection', () => {
     const fixture = article();
-    const parsed = parsePublishedKnowledgeArticle(fixture);
     const { bodyMarkdown: _body, claims: _claims, quizItems: _quiz, ...summary } =
       fixture;
+    const parsed = parsePublishedKnowledgeArticle(fixture);
 
     expect(parsed.slug).toBe('protein-basics');
     expect(parsed.claims[0]?.sources[0]?.title).toBe('Protein review');
     expect(
-      parsePublishedKnowledgeArticleList({ articles: [summary] }).articles[0]?.slug,
+      parsePublishedKnowledgeArticleList({ articles: [summary] }).articles[0]
+        ?.slug,
     ).toBe('protein-basics');
   });
 
@@ -84,12 +85,22 @@ describe('Knowledge published response parser', () => {
 
   it('rejects sources without a stable locator', () => {
     const fixture = article();
-    fixture.claims[0]!.sources[0] = {
-      ...fixture.claims[0]!.sources[0]!,
-      url: null,
-      doi: null,
+    const withoutLocator = {
+      ...fixture,
+      claims: [
+        {
+          ...fixture.claims[0]!,
+          sources: [
+            {
+              ...fixture.claims[0]!.sources[0]!,
+              url: null,
+              doi: null,
+            },
+          ],
+        },
+      ],
     };
 
-    expect(() => parsePublishedKnowledgeArticle(fixture)).toThrow();
+    expect(() => parsePublishedKnowledgeArticle(withoutLocator)).toThrow();
   });
 });
