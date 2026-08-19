@@ -3,6 +3,11 @@ export type KnowledgeMarkdownBlock =
   | { id: string; kind: 'paragraph'; text: string }
   | { id: string; kind: 'bullet'; text: string };
 
+type KnowledgeMarkdownBlockInput =
+  | { kind: 'heading'; level: 1 | 2 | 3; text: string }
+  | { kind: 'paragraph'; text: string }
+  | { kind: 'bullet'; text: string };
+
 const cleanInlineMarkdown = (value: string): string =>
   value
     .replace(/\*\*([^*]+)\*\*/g, '$1')
@@ -11,16 +16,22 @@ const cleanInlineMarkdown = (value: string): string =>
     .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
     .trim();
 
-export const parseKnowledgeMarkdown = (markdown: string): KnowledgeMarkdownBlock[] => {
+export const parseKnowledgeMarkdown = (
+  markdown: string,
+): KnowledgeMarkdownBlock[] => {
   const blocks: KnowledgeMarkdownBlock[] = [];
   const paragraph: string[] = [];
   let sequence = 0;
 
-  const push = (block: Omit<KnowledgeMarkdownBlock, 'id'>) => {
+  const push = (block: KnowledgeMarkdownBlockInput) => {
     const text = cleanInlineMarkdown(block.text);
     if (!text) return;
     sequence += 1;
-    blocks.push({ ...block, text, id: `knowledge-block-${sequence}` } as KnowledgeMarkdownBlock);
+    blocks.push({
+      ...block,
+      text,
+      id: `knowledge-block-${sequence}`,
+    });
   };
 
   const flushParagraph = () => {
