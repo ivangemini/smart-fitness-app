@@ -10,7 +10,13 @@ import { AppButton } from '@/components/ui/AppButton';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useAppActions, useWorkoutState } from '@/context/AppContext';
+import { useProfileState } from '@/context/ProfileStateContext';
 import { useProgressState } from '@/context/ProgressStateContext';
+import { buildGoalFacts } from '@/features/goals/goalFacts';
+import {
+  getGoalProgressCopy,
+  getGoalTypeCopy,
+} from '@/features/goals/goalProgressCopy';
 import {
   buildBodyMeasurement,
   createBodyMeasurementDraft,
@@ -25,7 +31,10 @@ import { useAppTheme } from '@/theme/AppThemeProvider';
 import type { BodyMeasurementMetric, BodyMeasurementUnit } from '@/types';
 import { weightFromKg, useUnitPreferences } from '@/units';
 
-const formatSigned = (value: number, formatNumber: (value: number, options?: Intl.NumberFormatOptions) => string) =>
+const formatSigned = (
+  value: number,
+  formatNumber: (value: number, options?: Intl.NumberFormatOptions) => string,
+) =>
   `${value > 0 ? '+' : ''}${formatNumber(value, {
     maximumFractionDigits: 1,
     minimumFractionDigits: 1,
@@ -34,6 +43,7 @@ const formatSigned = (value: number, formatNumber: (value: number, options?: Int
 export default function ProgressScreen() {
   const { colors } = useAppTheme();
   const { addBodyMeasurement } = useAppActions();
+  const { profile } = useProfileState();
   const { bodyMeasurements, weightHistory } = useProgressState();
   const { workoutSessions } = useWorkoutState();
   const { formatDate, formatNumber, locale, t } = useLocalization();
@@ -44,6 +54,8 @@ export default function ProgressScreen() {
   } = useUnitPreferences();
   const safeAreaInsets = useSafeAreaInsets();
   const copy = getProgressOverviewCopy(locale);
+  const goalCopy = getGoalProgressCopy(locale);
+  const [anchorAt] = useState(() => new Date().toISOString());
   const [measurementDraft, setMeasurementDraft] = useState(() =>
     createBodyMeasurementDraft(lengthUnit),
   );
@@ -61,11 +73,21 @@ export default function ProgressScreen() {
     () =>
       buildProgressOverview({
         bodyMeasurements,
-        endAt: new Date().toISOString(),
+        endAt: anchorAt,
         weightHistory,
         workoutSessions,
       }),
-    [bodyMeasurements, weightHistory, workoutSessions],
+    [anchorAt, bodyMeasurements, weightHistory, workoutSessions],
+  );
+  const goalFacts = useMemo(
+    () =>
+      buildGoalFacts({
+        endAt: anchorAt,
+        profile,
+        weightHistory,
+        workoutSessions,
+      }),
+    [anchorAt, profile, weightHistory, workoutSessions],
   );
 
   const isMeasurementDisabled =
@@ -116,6 +138,33 @@ export default function ProgressScreen() {
         return copy.insufficientData;
     }
   };
+
+  const goalRows = [
+    {
+      label: goalCopy.goal,
+      value: getGoalTypeCopy(locale, goalFacts.goalType),
+    },
+    {
+      label: goalCopy.targetWeight,
+      value:
+        goalFacts.weight.targetWeightKg > 0
+          ? `${formatWeightValue(goalFacts.weight.targetWeightKg)} ${weightUnit}`
+          : goalCopy.unavailable,
+    },
+    {
+      label: goalCopy.currentWeight,
+      value:
+        goalFacts.weight.currentWeightKg === null
+          ? goalCopy.unavailable
+          : `${formatWeightValue(goalFacts.weight.currentWeightKg)} ${weightUnit}`,
+    },
+    {
+      label: goalCopy.trainingActual,
+      value: `${formatNumber(goalFacts.training.activeDaysLast7Days)} / ${formatNumber(
+        goalFacts.training.targetDaysPerWeek,
+      )}`,
+    },
+  ];
 
   const bodyHasData =
     overview.body.currentWeight !== null || overview.body.measurementCount > 0;
@@ -233,6 +282,19 @@ export default function ProgressScreen() {
       style={[styles.screen, { backgroundColor: colors.background }]}>
       <View style={styles.container}>
         <SectionHeader title={t('tabs.progress')} subtitle={t('progress.subtitle')} />
+
+        <ProgressOverviewCard
+          actions={
+            <AppButton
+              label={goalCopy.openProfile}
+              onPress={() => router.push('/(tabs)/profile')}
+              variant="secondary"
+            />
+          }
+          rows={goalRows}
+          subtitle={goalCopy.subtitle}
+          title={goalCopy.title}
+        />
 
         <ProgressOverviewCard
           actions={
