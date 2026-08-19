@@ -36,4 +36,22 @@ describe('Progress body measurement drilldown source contract', () => {
     expect(analytics).toContain('unresolvedEntryCount += 1');
     expect(analytics).not.toContain('parseFloat(measurement.value)');
   });
+
+  it('hands only bounded selected-metric navigation context to Companion', () => {
+    const detail = readSource('src/app/measurement-progress.tsx');
+    const coach = readSource('src/app/(tabs)/coach.tsx');
+    const retrieval = readSource('src/features/coach/coachScopedRetrieval.ts');
+
+    expect(detail).toContain("contextIntent: 'body_progress'");
+    expect(detail).toContain("metric: 'measurement'");
+    expect(detail).toContain('measurementKey: selectedGroup.key');
+    expect(detail).toContain('days: String(PERIOD_DAYS[periodKey])');
+    expect(detail).toContain('endAt: anchorAt');
+    expect(detail).not.toContain('params: { bodyMeasurements');
+    expect(detail).not.toContain('params: { weightHistory');
+    expect(coach).toContain('buildCoachMeasurementProgressFactPacket');
+    expect(coach).toContain("router.push('/measurement-progress')");
+    expect(retrieval).toContain('weightHistory: []');
+    expect(retrieval).toContain('bodyMeasurements: sources.bodyMeasurements.filter');
+  });
 });

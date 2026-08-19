@@ -221,6 +221,25 @@ export default function MeasurementProgressScreen() {
           </AppCard>
         ) : null}
 
+        {selectedGroup ? (
+          <AppButton
+            label={copy.askCoach}
+            onPress={() =>
+              router.push({
+                pathname: '/(tabs)/coach',
+                params: {
+                  contextSource: 'progress',
+                  contextIntent: 'body_progress',
+                  metric: 'measurement',
+                  measurementKey: selectedGroup.key,
+                  days: String(PERIOD_DAYS[periodKey]),
+                  endAt: anchorAt,
+                },
+              })
+            }
+          />
+        ) : null}
+
         <AppButton label={copy.back} onPress={() => router.back()} variant="secondary" />
       </View>
     </ScrollView>

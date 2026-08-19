@@ -12,13 +12,18 @@ import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme'
 import { useWorkoutState } from '@/context/AppContext';
 import { parseCoachBodyProgressContext } from '@/features/coach/coachBodyProgressContext';
 import { getCoachBodyProgressContextCopy } from '@/features/coach/coachBodyProgressContextCopy';
+import { parseCoachMeasurementProgressContext } from '@/features/coach/coachMeasurementProgressContext';
+import { getCoachMeasurementProgressContextCopy } from '@/features/coach/coachMeasurementProgressContextCopy';
 import { buildCoachFactPacket } from '@/features/coach/coachRetrieval';
 import {
   parseCoachProgressContext,
   type CoachProgressSearchParams,
 } from '@/features/coach/coachProgressContext';
 import { getCoachProgressContextCopy } from '@/features/coach/coachProgressContextCopy';
-import { buildCoachWeightProgressFactPacket } from '@/features/coach/coachScopedRetrieval';
+import {
+  buildCoachMeasurementProgressFactPacket,
+  buildCoachWeightProgressFactPacket,
+} from '@/features/coach/coachScopedRetrieval';
 import { useCoachRetrievalSources } from '@/features/coach/useCoachRetrievalSources';
 import { companionCopy } from '@/features/companion/companionCopy';
 import { CompanionProgressCard } from '@/features/companion/CompanionProgressCard';
@@ -51,6 +56,10 @@ export default function CoachScreen() {
     () => parseCoachBodyProgressContext(searchParams as CoachProgressSearchParams),
     [searchParams],
   );
+  const measurementProgressContext = useMemo(
+    () => parseCoachMeasurementProgressContext(searchParams as CoachProgressSearchParams),
+    [searchParams],
+  );
   const progressPacket = useMemo(
     () =>
       progressContext
@@ -68,17 +77,33 @@ export default function CoachScreen() {
         : null,
     [bodyProgressContext, retrievalSources],
   );
+  const measurementProgressPacket = useMemo(
+    () =>
+      measurementProgressContext
+        ? buildCoachMeasurementProgressFactPacket({
+            request: measurementProgressContext.request,
+            sources: retrievalSources,
+            measurementKey: measurementProgressContext.measurementKey,
+          })
+        : null,
+    [measurementProgressContext, retrievalSources],
+  );
   const copy = companionCopy[locale];
   const contextCopy = getCoachProgressContextCopy(locale);
   const bodyContextCopy = getCoachBodyProgressContextCopy(locale);
+  const measurementContextCopy = getCoachMeasurementProgressContextCopy(locale);
   const exerciseHistory = progressPacket?.ok
     ? progressPacket.data.facts.exerciseHistory ?? null
     : null;
   const bodyMetrics = bodyProgressPacket?.ok
     ? bodyProgressPacket.data.facts.bodyMetrics ?? null
     : null;
+  const measurementMetrics = measurementProgressPacket?.ok
+    ? measurementProgressPacket.data.facts.bodyMetrics ?? null
+    : null;
   const exerciseName =
     progressContext?.request.exerciseName ?? exerciseHistory?.exercise.exerciseName ?? null;
+  const measurementLabel = measurementMetrics?.measurements[0]?.label ?? null;
 
   return (
     <ScrollView
@@ -155,6 +180,37 @@ export default function CoachScreen() {
             <AppButton
               label={bodyContextCopy.openProgress}
               onPress={() => router.push('/weight-details')}
+              variant="secondary"
+            />
+          </AppCard>
+        ) : null}
+
+        {measurementProgressContext ? (
+          <AppCard>
+            <Text style={styles.title}>{measurementContextCopy.title}</Text>
+            <Text style={styles.body}>{measurementContextCopy.description}</Text>
+            <Text selectable style={styles.contextSummary}>
+              {measurementMetrics
+                ? measurementMetrics.measurements.length > 0 && measurementLabel
+                  ? measurementContextCopy.summary(
+                      measurementLabel,
+                      formatNumber(measurementMetrics.measurements.length),
+                      formatNumber(measurementProgressContext.retrievalDays),
+                    )
+                  : measurementContextCopy.noMatchingHistory
+                : measurementContextCopy.unavailable}
+            </Text>
+            {measurementProgressContext.requestedDays > measurementProgressContext.retrievalDays ? (
+              <Text selectable style={styles.contextNote}>
+                {measurementContextCopy.boundedPeriod(
+                  formatNumber(measurementProgressContext.requestedDays),
+                  formatNumber(measurementProgressContext.retrievalDays),
+                )}
+              </Text>
+            ) : null}
+            <AppButton
+              label={measurementContextCopy.openProgress}
+              onPress={() => router.push('/measurement-progress')}
               variant="secondary"
             />
           </AppCard>
