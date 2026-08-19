@@ -10,6 +10,8 @@ import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme';
 import { useWorkoutState } from '@/context/AppContext';
+import { parseCoachActivityProgressContext } from '@/features/coach/coachActivityProgressContext';
+import { getCoachActivityProgressContextCopy } from '@/features/coach/coachActivityProgressContextCopy';
 import { parseCoachBodyProgressContext } from '@/features/coach/coachBodyProgressContext';
 import { getCoachBodyProgressContextCopy } from '@/features/coach/coachBodyProgressContextCopy';
 import { parseCoachMeasurementProgressContext } from '@/features/coach/coachMeasurementProgressContext';
@@ -32,11 +34,26 @@ import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 
 const COACH_ACTIONS = [
-  { labelKey: 'coach.addRecoveryCheckIn' as const, route: '/profile/recovery-check-in' as const },
-  { labelKey: 'coach.manageLimitations' as const, route: '/profile/limitations' as const },
-  { labelKey: 'coach.openSafetyRecovery' as const, route: '/profile/safety-recovery' as const },
-  { labelKey: 'coach.openCombinedReview' as const, route: '/profile/combined-review' as const },
-  { labelKey: 'coach.openCombinedProposal' as const, route: '/profile/combined-proposal' as const },
+  {
+    labelKey: 'coach.addRecoveryCheckIn' as const,
+    route: '/profile/recovery-check-in' as const,
+  },
+  {
+    labelKey: 'coach.manageLimitations' as const,
+    route: '/profile/limitations' as const,
+  },
+  {
+    labelKey: 'coach.openSafetyRecovery' as const,
+    route: '/profile/safety-recovery' as const,
+  },
+  {
+    labelKey: 'coach.openCombinedReview' as const,
+    route: '/profile/combined-review' as const,
+  },
+  {
+    labelKey: 'coach.openCombinedProposal' as const,
+    route: '/profile/combined-proposal' as const,
+  },
 ] as const;
 
 export default function CoachScreen() {
@@ -47,23 +64,41 @@ export default function CoachScreen() {
   const searchParams = useLocalSearchParams();
   const safeAreaInsets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(colors), [colors]);
-  const progress = useMemo(() => deriveCompanionProgress(workoutSessions), [workoutSessions]);
+  const progress = useMemo(
+    () => deriveCompanionProgress(workoutSessions),
+    [workoutSessions],
+  );
   const progressContext = useMemo(
-    () => parseCoachProgressContext(searchParams as CoachProgressSearchParams),
+    () =>
+      parseCoachProgressContext(searchParams as CoachProgressSearchParams),
     [searchParams],
   );
   const bodyProgressContext = useMemo(
-    () => parseCoachBodyProgressContext(searchParams as CoachProgressSearchParams),
+    () =>
+      parseCoachBodyProgressContext(searchParams as CoachProgressSearchParams),
     [searchParams],
   );
   const measurementProgressContext = useMemo(
-    () => parseCoachMeasurementProgressContext(searchParams as CoachProgressSearchParams),
+    () =>
+      parseCoachMeasurementProgressContext(
+        searchParams as CoachProgressSearchParams,
+      ),
+    [searchParams],
+  );
+  const activityProgressContext = useMemo(
+    () =>
+      parseCoachActivityProgressContext(
+        searchParams as CoachProgressSearchParams,
+      ),
     [searchParams],
   );
   const progressPacket = useMemo(
     () =>
       progressContext
-        ? buildCoachFactPacket({ request: progressContext.request, sources: retrievalSources })
+        ? buildCoachFactPacket({
+            request: progressContext.request,
+            sources: retrievalSources,
+          })
         : null,
     [progressContext, retrievalSources],
   );
@@ -88,10 +123,21 @@ export default function CoachScreen() {
         : null,
     [measurementProgressContext, retrievalSources],
   );
+  const activityProgressPacket = useMemo(
+    () =>
+      activityProgressContext
+        ? buildCoachFactPacket({
+            request: activityProgressContext.request,
+            sources: retrievalSources,
+          })
+        : null,
+    [activityProgressContext, retrievalSources],
+  );
   const copy = companionCopy[locale];
   const contextCopy = getCoachProgressContextCopy(locale);
   const bodyContextCopy = getCoachBodyProgressContextCopy(locale);
   const measurementContextCopy = getCoachMeasurementProgressContextCopy(locale);
+  const activityContextCopy = getCoachActivityProgressContextCopy(locale);
   const exerciseHistory = progressPacket?.ok
     ? progressPacket.data.facts.exerciseHistory ?? null
     : null;
@@ -101,8 +147,13 @@ export default function CoachScreen() {
   const measurementMetrics = measurementProgressPacket?.ok
     ? measurementProgressPacket.data.facts.bodyMetrics ?? null
     : null;
+  const trainingSummary = activityProgressPacket?.ok
+    ? activityProgressPacket.data.facts.trainingSummary ?? null
+    : null;
   const exerciseName =
-    progressContext?.request.exerciseName ?? exerciseHistory?.exercise.exerciseName ?? null;
+    progressContext?.request.exerciseName ??
+    exerciseHistory?.exercise.exerciseName ??
+    null;
   const measurementLabel = measurementMetrics?.measurements[0]?.label ?? null;
 
   return (
@@ -128,7 +179,11 @@ export default function CoachScreen() {
           </View>
         </View>
 
-        <CompanionProgressCard colors={colors} locale={locale} progress={progress} />
+        <CompanionProgressCard
+          colors={colors}
+          locale={locale}
+          progress={progress}
+        />
 
         {progressContext ? (
           <AppCard>
@@ -145,7 +200,9 @@ export default function CoachScreen() {
                   : contextCopy.noMatchingHistory}
               </Text>
             ) : (
-              <Text selectable style={styles.contextSummary}>{contextCopy.unavailable}</Text>
+              <Text selectable style={styles.contextSummary}>
+                {contextCopy.unavailable}
+              </Text>
             )}
             {progressContext.requestedDays > progressContext.retrievalDays ? (
               <Text selectable style={styles.contextNote}>
@@ -200,7 +257,8 @@ export default function CoachScreen() {
                   : measurementContextCopy.noMatchingHistory
                 : measurementContextCopy.unavailable}
             </Text>
-            {measurementProgressContext.requestedDays > measurementProgressContext.retrievalDays ? (
+            {measurementProgressContext.requestedDays >
+            measurementProgressContext.retrievalDays ? (
               <Text selectable style={styles.contextNote}>
                 {measurementContextCopy.boundedPeriod(
                   formatNumber(measurementProgressContext.requestedDays),
@@ -211,6 +269,37 @@ export default function CoachScreen() {
             <AppButton
               label={measurementContextCopy.openProgress}
               onPress={() => router.push('/measurement-progress')}
+              variant="secondary"
+            />
+          </AppCard>
+        ) : null}
+
+        {activityProgressContext ? (
+          <AppCard>
+            <Text style={styles.title}>{activityContextCopy.title}</Text>
+            <Text style={styles.body}>{activityContextCopy.description}</Text>
+            <Text selectable style={styles.contextSummary}>
+              {trainingSummary
+                ? trainingSummary.sessionCount > 0
+                  ? activityContextCopy.summary(
+                      formatNumber(trainingSummary.sessionCount),
+                      formatNumber(activityProgressContext.retrievalDays),
+                    )
+                  : activityContextCopy.noMatchingHistory
+                : activityContextCopy.unavailable}
+            </Text>
+            {activityProgressContext.requestedDays >
+            activityProgressContext.retrievalDays ? (
+              <Text selectable style={styles.contextNote}>
+                {activityContextCopy.boundedPeriod(
+                  formatNumber(activityProgressContext.requestedDays),
+                  formatNumber(activityProgressContext.retrievalDays),
+                )}
+              </Text>
+            ) : null}
+            <AppButton
+              label={activityContextCopy.openProgress}
+              onPress={() => router.push('/activity-progress')}
               variant="secondary"
             />
           </AppCard>
@@ -253,8 +342,16 @@ const createStyles = (colors: typeof Colors.light) =>
       fontSize: Typography.body.fontSize,
       lineHeight: Typography.body.lineHeight,
     },
-    container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
-    content: { alignItems: 'center', flexGrow: 1, paddingHorizontal: Spacing.three },
+    container: {
+      gap: Spacing.three,
+      maxWidth: MaxContentWidth,
+      width: '100%',
+    },
+    content: {
+      alignItems: 'center',
+      flexGrow: 1,
+      paddingHorizontal: Spacing.three,
+    },
     contextNote: {
       color: colors.textSecondary,
       fontSize: Typography.caption.fontSize,
@@ -269,7 +366,11 @@ const createStyles = (colors: typeof Colors.light) =>
       marginTop: Spacing.two,
     },
     headerCopy: { flex: 1, minWidth: 0 },
-    headerRow: { alignItems: 'flex-start', flexDirection: 'row', gap: Spacing.three },
+    headerRow: {
+      alignItems: 'flex-start',
+      flexDirection: 'row',
+      gap: Spacing.three,
+    },
     screen: { backgroundColor: colors.background, flex: 1 },
     title: {
       color: colors.textPrimary,
