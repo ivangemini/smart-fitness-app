@@ -12,6 +12,7 @@ Reusable project-specific lessons and current constraints.
 - The cross-repository execution plan is `docs/implementation-plan.md`.
 - Avoid mixing demo data with user-created state.
 - Labs / Analyses is an approved private server-authoritative domain. Do not add diagnosis, prescribing/dosing, unrestricted raw-Labs model access, payments, marketplace functionality, or unreviewed Social domains without an explicit reviewed contract.
+- Phase 18 Knowledge & Learning is an approved backend-authoritative educational domain. Canonical articles/claims/sources/quizzes are shared reviewed content, not private fitness `AppState` data.
 
 ## Current synchronization coverage
 
@@ -49,6 +50,8 @@ Remaining validation requires physical environments:
 - user-visible recovery and conflict states during those scenarios.
 
 Do not describe the project as weight-sync-only, and do not claim custom exercises or meal templates are local-only.
+
+Canonical Knowledge content must not be inserted into private fitness synchronization. Future user learning state needs an explicit account ownership/privacy/export contract before persistence ships.
 
 ## Synchronization invariants
 
@@ -92,7 +95,8 @@ Implemented Coach surfaces include:
 - separate explicit Strength-template and Nutrition-target confirmations;
 - immutable run history, provenance, before/after summaries, trust state, and privacy-safe input coverage;
 - Phase 15 authenticated read-only question routing through minimal scopes and minimized evidence;
-- bounded confirmed structured Labs overview/marker-history evidence inside the reviewed question path.
+- bounded confirmed structured Labs overview/marker-history evidence inside the reviewed question path;
+- Phase 17 bounded goal-progress question evidence.
 
 Deterministic workers own authoritative calculations and hard limits: macro calories, BMR/TDEE when inputs are complete, tonnage, estimated 1RM, progression deltas, volume limits, and movement restrictions.
 
@@ -102,13 +106,38 @@ Automatic application remains prohibited. Do not invent a client-only compensati
 
 Phase 15 established a reusable rule for contextual Coach/Companion data: pass selectors/period/anchor metadata, rebuild bounded facts inside the owning boundary, and bound source inputs before analytics when older history would otherwise influence internal calculations. Omitting a field from the final DTO is not sufficient if out-of-scope source data still enters the computation.
 
+Phase 18 education must reuse the same deterministic-first principle. Coach should first produce or reuse a typed finding, then map that finding to an allowlisted canonical knowledge concept/article. The model may explain relevance; it must not invent or publish a new scientific lesson from user data.
+
+## Knowledge & Learning
+
+- No gamification: no knowledge XP, levels, streaks, badges, leaderboards, competitive ranks or punitive learning mechanics.
+- Canonical educational content is generated/reviewed ahead of end-user use, not regenerated from scratch per user request.
+- Reviewed pipeline: `topic → curated evidence pack → AI-assisted draft → claim extraction → claim/source verification → quiz generation → quiz validation/review → published article version`.
+- Published article versions are stable. Material revisions create a new version rather than silently changing what prior users read.
+- Every material claim must map to reviewed source records. Unsupported or ambiguous claims fail closed.
+- The model is an editorial assistant, not publication authority.
+- Tier-3 Labs/medical-adjacent educational material requires human review before publication and remains non-diagnostic/non-prescriptive.
+- Quizzes are generated as a bank against an exact article version. V1 uses strict four-option single-select questions with one provably defensible answer.
+- Quiz items map to reviewed claim/concept IDs; questions that depend on facts outside the canonical article/evidence pack are invalid.
+- A read event alone never proves understanding.
+- Minimal future learning states are informational: `unseen`, `read`, `understood`, `refresh_useful`.
+- Canonical articles, claims, sources and quiz items never contain private user evidence.
+- Private evidence may only influence bounded content selection/relevance explanation and future refresh selection.
+- Coach→Learn recommendations use deterministic finding→content mappings, not unconstrained semantic/free-form article choice.
+- Daily-report education remains optional and non-punitive; no shame or medical-necessity language.
+- Reading or quiz completion never automatically mutates workouts, nutrition targets, goals, Labs, recovery or safety state.
+- If user behavior later changes, do not claim the article caused the change.
+- Raw Labs documents/extraction drafts are not ordinary Knowledge-generation context.
+- Focused architecture: `docs/architecture/phase18-knowledge-learning-system.md`.
+- Focused roadmap: `docs/roadmap/knowledge-learning.md`.
+
 ## Labs / Analyses
 
 - Labs is private and server-authoritative, separate from private revisioned `AppState` sync.
 - OCR/extraction output remains draft data until explicit confirmation.
 - Confirmed structured facts, source units and laboratory reference intervals are authoritative.
 - Ordinary Coach question context may use only bounded confirmed structured marker facts.
-- Raw Labs documents, unconfirmed extraction drafts, storage/provider payloads and secrets stay outside ordinary model-visible context.
+- Raw Labs documents, unconfirmed extraction drafts, storage/provider payloads and secrets stay outside ordinary model-visible context and ordinary Knowledge article generation.
 - Descriptive reference/semantic state is not diagnosis and must not be converted into treatment, prescribing or causal clinical claims.
 - Provider-backed extraction/interpretation remains capability/configuration gated and fail closed.
 
