@@ -57,7 +57,7 @@ export default function KnowledgeArticleScreen() {
       <View style={styles.topRow}>
         <LiquidGlassIconButton
           accessibilityLabel={copy.backToLibrary}
-          icon={<ChevronLeft color={colors.textPrimary} size={22} />}
+          Icon={ChevronLeft}
           onPress={() => router.back()}
         />
       </View>
