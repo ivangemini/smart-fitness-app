@@ -105,14 +105,13 @@ const buildConsistencyInsight = (
   sessions: WorkoutSession[],
   nowTimestamp: number,
 ): ProactiveInsight | null => {
-  const startTimestamp = nowTimestamp - PERIOD_DAYS * DAY_MS;
   const midpointTimestamp = nowTimestamp - HALF_PERIOD_DAYS * DAY_MS;
   const previousDays = new Set<string>();
   const recentDays = new Set<string>();
 
   sessions.forEach((session) => {
     const timestamp = sessionTimestamp(session);
-    if (timestamp === null || timestamp < startTimestamp || timestamp > nowTimestamp) return;
+    if (timestamp === null) return;
     const day = toLocalDayKey(timestamp);
     if (timestamp < midpointTimestamp) previousDays.add(day);
     else recentDays.add(day);
@@ -152,7 +151,16 @@ export const selectProactiveInsight = ({
   }
   if (cooldownActive(nowTimestamp, presentation)) return null;
 
-  const analytics = buildTrainingProgressAnalytics(sessions, {
+  const startTimestamp = nowTimestamp - PERIOD_DAYS * DAY_MS;
+  const boundedSessions = sessions.filter((session) => {
+    const timestamp = sessionTimestamp(session);
+    return (
+      timestamp !== null &&
+      timestamp >= startTimestamp &&
+      timestamp <= nowTimestamp
+    );
+  });
+  const analytics = buildTrainingProgressAnalytics(boundedSessions, {
     endAt: nowAt,
     periodDays: PERIOD_DAYS,
     maxExercises: 50,
@@ -231,7 +239,10 @@ export const selectProactiveInsight = ({
     if (!isSuppressed(insight, presentation)) return insight;
   }
 
-  const consistencyInsight = buildConsistencyInsight(sessions, nowTimestamp);
+  const consistencyInsight = buildConsistencyInsight(
+    boundedSessions,
+    nowTimestamp,
+  );
   if (consistencyInsight && !isSuppressed(consistencyInsight, presentation)) {
     return consistencyInsight;
   }
