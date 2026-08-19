@@ -41,7 +41,7 @@ May surface only for a positive change in unique active training days across the
 - recent half has at least 4 active days;
 - recent half exceeds the previous half by at least 2 unique active days.
 
-Multiple workouts on the same calendar day count as one active day for this signal.
+Multiple workouts on the same **local calendar day** count as one active day, matching the existing Companion progression day semantics.
 
 **Negative consistency changes are intentionally excluded from v1** to avoid guilt, punishment, streak-loss framing or pressure to train.
 
@@ -85,7 +85,7 @@ The selector requires pure regression coverage for:
 
 - evidence thresholds;
 - one-insight priority;
-- unique-day consistency counting;
+- local unique-day consistency counting;
 - seven-day cooldown;
 - dismissed-key suppression;
 - no negative-consistency insight;
