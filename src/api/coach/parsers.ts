@@ -355,17 +355,30 @@ export const parseCoachCapabilities = (value: unknown): CoachCapabilities => {
     return { schemaVersion, nutrition, strength, safety };
   }
   const combined = parseCombinedCapabilities(value.combined, schemaVersion);
-  if (schemaVersion <= 10) {
+  if (
+    schemaVersion === 6 ||
+    schemaVersion === 7 ||
+    schemaVersion === 8 ||
+    schemaVersion === 9 ||
+    schemaVersion === 10
+  ) {
     return { schemaVersion, nutrition, strength, safety, combined };
   }
-  return {
-    schemaVersion,
-    questions: parseQuestionCapabilities(value.questions, schemaVersion),
-    nutrition,
-    strength,
-    safety,
-    combined,
-  };
+  if (
+    schemaVersion === 11 ||
+    schemaVersion === 12 ||
+    schemaVersion === 13
+  ) {
+    return {
+      schemaVersion,
+      questions: parseQuestionCapabilities(value.questions, schemaVersion),
+      nutrition,
+      strength,
+      safety,
+      combined,
+    };
+  }
+  throw new Error('Invalid coach capabilities response');
 };
 
 export const parseCoachRunEnvelope = (value: unknown): CoachRunEnvelope => {
