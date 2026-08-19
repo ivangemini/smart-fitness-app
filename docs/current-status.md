@@ -10,7 +10,7 @@ Exact code, tests, migrations, CI and current Git history override this checkpoi
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current verified `main`: `45119f2ef3cc381e667fa8e17ad2d108a9114062` (#776).
+Current verified `main`: `e086f6795b0ea5f07ad00c3d03283759a1889780` (#777).
 
 Phase 15 remains source/CI-complete for the reviewed Coach Intelligence + Progress scope. Phase 16 deterministic foreground v1 is source/CI-complete through #770–#772.
 
@@ -18,7 +18,9 @@ Phase 17 Goals & Planning is now active over the existing fitness-profile goal a
 
 - #773 — typed deterministic goal facts from canonical profile goals, weight history and completed workout history, plus neutral goal-relative Progress context;
 - #776 — selector-only Goals → Companion handoff; navigation carries reviewed intent/time anchor only and Companion rebuilds facts from canonical state;
-- #777 — authenticated read-only Ask Coach UI and mobile capability-schema compatibility is in final exact-head validation and is not claimed merged by this checkpoint yet.
+- #777 — authenticated read-only Ask Coach UI, strict question-response parsing, capability-aware availability and mobile Coach capability-schema compatibility through v13.
+
+#777 passed exact-head Mobile CI: repository/changed-file line audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
 
 The existing Profile goals editor remains the canonical mutation surface. No second persisted goal collection was introduced.
 
@@ -49,7 +51,7 @@ Goal-only questions do not read food logs or workout sets and do not expose note
 - **Phase 14:** ordinary autonomous source/runtime preparation is exhausted for current contracts; external provider and physical-device evidence remains.
 - **Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics:** source/CI-complete for the currently reviewed scope.
 - **Phase 16 — Proactive Coach:** deterministic foreground Companion-card v1 source/CI-complete through #770–#772; expansion requires a separate purpose/delivery contract.
-- **Phase 17 — Goals & Planning:** in progress. Canonical goal facts, Progress context, Goals → Companion context and backend goal-aware question scope are implemented for the reviewed first slices.
+- **Phase 17 — Goals & Planning:** in progress. Canonical goal facts, Progress context, Goals → Companion context and goal-aware Ask Coach are source/CI-complete for the reviewed first slices.
 
 ## Phase 17 authority and boundaries
 
@@ -87,11 +89,11 @@ Source/CI completion does **not** claim production deployment, provider activati
 
 ## Current execution order
 
-1. Finish exact-head validation and merge of mobile #777 before claiming the Ask Coach UI as part of `main`.
-2. Synchronize canonical status/roadmap/handoff docs to the resulting mobile/backend merge SHAs.
-3. Continue Phase 17 with a reviewed planning/proposal contract over the existing fitness-profile goal authority; do not create a second goal store by default.
-4. Keep Phase 15 and the reviewed Phase 16 foreground v1 closed unless a reproduced defect or newly reviewed contract requires expansion.
-5. Execute Phase 14 provider/device evidence independently whenever its prerequisites become available.
+1. Treat P17-A/B/C as source/CI-complete for the reviewed first goal-aware slices through mobile #777 and backend #271.
+2. Continue Phase 17 with a reviewed P17-D planning/proposal preview contract over the existing fitness-profile goal authority; proposals remain non-canonical until explicit confirmation and must define stale-source handling before mutation.
+3. Keep Phase 15 and the reviewed Phase 16 foreground v1 closed unless a reproduced defect or newly reviewed contract requires expansion.
+4. Execute Phase 14 provider/device evidence independently whenever its prerequisites become available.
+5. Repair demonstrated defects; do not manufacture unrelated cleanup work.
 
 ## Execution boundary
 
