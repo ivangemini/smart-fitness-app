@@ -1,8 +1,8 @@
 # Smart Fitness Roadmap Progress
 
-Updated: 2026-08-18
+Updated: 2026-08-19
 
-This is the canonical cross-program roadmap index for mobile `ivangemini/smart-fitness-app` and backend `ivangemini/smart-fitness-backend`. Exact source, tests, migrations and Git history override stale prose.
+This is the canonical cross-program roadmap index for mobile `ivangemini/smart-fitness-app` and backend `ivangemini/smart-fitness-backend`. Exact source, tests, migrations, CI and Git history override stale prose.
 
 Focused roadmap references retained as stable contracts:
 
@@ -18,7 +18,7 @@ Focused roadmap references retained as stable contracts:
 - Phase 12 Labs + Settings: provider-neutral source composition, native import, private-processing runtime, isolated staging and bounded evidence tooling complete; configured-provider/device evidence remains.
 - Phase 13 Companion v1: baseline retained. Companion is the presentation/character of the existing Coach, not a separate assistant.
 - Phase 14: autonomous source/runtime preparation is complete for current contracts; external provider and physical-device evidence remains.
-- **Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics: approved and active next source priority.**
+- **Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics: active and substantially implemented.**
 - **Phase 16 — Proactive Coach: planned successor.**
 - **Phase 17 — Goals & Planning: planned successor.**
 
@@ -26,86 +26,92 @@ Focused roadmap references retained as stable contracts:
 
 ### Mobile
 
-Repository `main`: `2027566349026af0a209ceb57a330101259e330e` (#745 docs checkpoint).
+Current `main`: `bb48f0452690f0b33e824eea18aae8fb61a7fc2d` (#764).
 
-Runtime baseline: `cf4af93344b9b7645a839af46ac29866cc7ea218` (#746).
-
-#746 closed the final runtime Liquid Glass residual owners after exact-head Mobile CI passed all required validation gates. Evidence-only #747 reran the repository-wide inventory and found only 21 previously inspected structural-divider hits. No unmatched material owner remains.
+Phase 15 mobile progression through #755–#764 now includes compact Progress IA, bounded weight details, deterministic exercise series, Strength & Training drill-down, Activity drill-down, Highlights drill-down, Body measurement drill-down, plus reviewed exercise and weight Progress → Companion contextual handoffs.
 
 ### Backend
 
-Current known backend `main`: `211d1966bcac01a21c047eaf8f844843a764a186` (#265).
+Current verified backend `main`: `92fbf47d3bf10725e11ee43ccf61eba042abcba1` (#267).
 
-Phase 14 preparation remains complete for reviewed source/runtime contracts.
+Backend Phase 15 question infrastructure now includes the minimal-scope question router (#266) and minimized evidence + strict structured-answer boundary (#267). #267 passed exact-head Backend CI before merge.
 
-## Phase 15 — Coach Intelligence & Progress
+## Phase 15 — workstream status
 
-### Product direction
+### P15-A — Bounded Coach data access
 
-Coach/Companion becomes the primary interpretation and information-retrieval surface. Development focuses on usefulness before cosmetics.
+Purpose-specific typed retrieval foundations exist across current mobile and backend contracts. Raw application state, raw Labs documents, unconfirmed drafts, provider payloads and secrets remain outside model-visible context.
 
-Progress becomes the primary destination for detailed visual analytics. It should expose a compact first-level summary and progressively disclose detailed charts/data only when requested.
+**Status:** active; extend only when a reviewed question requires a new minimal scope.
 
-Home remains concise. Do not duplicate a dense analytics dashboard there.
+### P15-B — Deterministic analytics
 
-No standalone Program Intelligence/linting product is planned. Coach can inspect and discuss the user's current program through the general bounded data-access layer.
+Shared deterministic progress/training analytics are already consumed by current Progress surfaces, including bounded periods, exercise progression and body/activity/highlight summaries.
 
-### Workstreams
+**Status:** substantially implemented; add facts only where evidence quality and reuse justify them.
 
-1. **Coach data access** — typed bounded retrieval for workouts, exercises, current program, progress, nutrition summaries and confirmed Labs marker facts.
-2. **Deterministic analytics** — reusable tested calculations for training consistency, progression, PRs, meaningful e1RM/volume/RPE trends, conservative stagnation signals, body trends and nutrition averages where data is sufficient.
-3. **Coach orchestration** — request only the data relevant to the user's question and explain validated facts without silently changing plans or records.
-4. **Progress IA** — user-friendly first-level Body / Strength & Training / Activity / Highlights summaries.
-5. **Progress drill-down** — period/exercise selection, charts and comparisons behind intentional navigation rather than all at once.
-6. **Coach ↔ Progress** — Coach can link to supporting Progress detail; Progress can open Coach with bounded selected context.
-7. **Closure** — accessibility, performance, regression contracts, exact-head CI and canonical docs.
+### P15-C — Coach retrieval/orchestration
 
-### Explicit non-goals
+Completed foundation:
 
-- separate second AI assistant;
-- Companion cosmetics/progression systems in Phase 15;
-- standalone program scoring/linting feature;
-- walls of graphs on Home or top-level Progress;
-- model access to raw Labs documents, unconfirmed drafts, secrets or unrestricted application state;
-- automatic mutation of programs, workouts, nutrition targets, goals or medical data.
+- question → minimal supported scope routing (#266);
+- minimal model-visible evidence assembly (#267);
+- structured answer contract with explicit evidence scopes, caveats, data quality and confidence (#267);
+- fail-closed unsupported routes and evidence-scope mismatches (#266/#267).
 
-## Phase 16 — Proactive Coach
+**Next:** compose the reviewed pieces into an authenticated read-only end-to-end question orchestration/API path. Do not add automatic mutation.
 
-After Phase 15 contracts stabilize, allow Coach to surface a small number of high-value contextual observations based on deterministic facts. This must remain bounded, dismissible and non-compulsive rather than becoming an alert feed.
+### P15-D — Progress IA and drill-down
 
-## Phase 17 — Goals & Planning
+Completed through #764:
 
-Introduce canonical user-owned goals as context for Coach and Progress. Planning/recommendations remain explainable and confirmation-gated; no automatic plan mutation or punitive streak mechanics.
+- compact Body / Strength & Training / Activity / Highlights overview;
+- weight details;
+- body measurement detail;
+- Strength & Training detail;
+- Activity detail;
+- Highlights detail;
+- deliberate period/exercise selection where relevant;
+- textual/empty-state fallbacks instead of rendering unsupported charts.
+
+**Status:** source/CI-complete for the currently reviewed drill-down set.
+
+### P15-E — Coach ↔ Progress linking
+
+Completed reviewed contexts:
+
+- selected exercise/period Progress → Companion (#760);
+- weight/period Progress → Companion (#762).
+
+Both rebuild bounded facts inside Coach rather than transporting raw state.
+
+**Status:** partially complete. Further contexts require equivalent metric-level minimization and fail-closed parsing.
+
+### P15-F — Closure
+
+Remaining after the orchestration/linking contracts stabilize:
+
+- accessibility review;
+- performance/regression review;
+- exact-head CI for final source packages;
+- canonical docs synchronization and closure checkpoint.
 
 ## Remaining Phase 14 gates
 
-### Push
-
-Provider/device evidence still requires staging-only APNs/FCM material, bounded provider sends, signed physical-device permission/token/delivery/tap evidence, device/account isolation and deliberate rollout controls.
-
-### Labs / Analyses
-
-Configured-provider evidence still requires staging-only HTTPS S3-compatible private storage plus Gemini material, exact readiness, one bounded synthetic processing lifecycle and privacy-safe evidence. Physical-device PDF/photo picker and accessibility evidence also remains.
-
-### Stories
-
-Remaining work is mobile/physical-device/runtime evidence beyond the already completed basic backend staging route/auth/account-lifecycle probe.
-
-### Steps
-
-Remaining work is signed native/physical-device support/permission/real aggregate-read/local-day/DST/Home evidence.
+- **Push:** staging-only APNs/FCM material, bounded provider sends, signed physical-device permission/token/delivery/tap evidence and deliberate rollout controls.
+- **Labs / Analyses:** staging-only private S3-compatible storage plus Gemini material, configured-provider readiness, one bounded synthetic lifecycle and physical-device picker/accessibility evidence.
+- **Stories:** remaining mobile/physical-device runtime evidence.
+- **Steps:** signed native/physical-device support, permission, real aggregate-read and local-day/DST/Home evidence.
 
 ## Current execution order
 
-1. Start Phase 15 bounded data contracts/selectors and deterministic analytics.
-2. Design Progress IA in parallel against existing canonical data and Liquid Glass UI contracts.
-3. Integrate Coach retrieval after bounded capability contracts exist.
-4. Implement Progress summary and drill-down surfaces on shared analytics.
-5. Add contextual Coach ↔ Progress navigation.
-6. Execute Phase 14 provider/device evidence independently whenever prerequisites become available.
-7. Repair reproduced defects; do not manufacture unrelated cleanup work.
-8. Keep canonical documentation aligned with verified Git/runtime evidence.
+1. Finish P15-C authenticated read-only question orchestration/API composition.
+2. Extend P15-E only for explicitly reviewed minimal contexts where it materially improves the product.
+3. Run P15-F accessibility/performance/regression and documentation closure.
+4. Execute Phase 14 provider/device evidence independently whenever prerequisites become available.
+5. Repair reproduced defects; do not manufacture unrelated cleanup work.
+6. Do not start Phase 16 or Phase 17 source expansion before Phase 15 contracts stabilize.
 
 ## Authorization / release boundary
 
-The new Phase 15 priority does not relax provider, native/device or production controls. Those remain governed by current `AGENTS.md`, least-privilege, preflight, privacy, evidence, recovery and rollback requirements.
+Phase 15 does not relax provider, native/device or production controls. Those remain governed by current `AGENTS.md`, least privilege, privacy, preflight, evidence, recovery and rollback requirements.
