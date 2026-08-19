@@ -14,6 +14,9 @@ import { parseCoachActivityProgressContext } from '@/features/coach/coachActivit
 import { getCoachActivityProgressContextCopy } from '@/features/coach/coachActivityProgressContextCopy';
 import { parseCoachBodyProgressContext } from '@/features/coach/coachBodyProgressContext';
 import { getCoachBodyProgressContextCopy } from '@/features/coach/coachBodyProgressContextCopy';
+import { buildCoachHighlightsProgressFacts } from '@/features/coach/coachHighlightsProgressFacts';
+import { parseCoachHighlightsProgressContext } from '@/features/coach/coachHighlightsProgressContext';
+import { getCoachHighlightsProgressContextCopy } from '@/features/coach/coachHighlightsProgressContextCopy';
 import { parseCoachMeasurementProgressContext } from '@/features/coach/coachMeasurementProgressContext';
 import { getCoachMeasurementProgressContextCopy } from '@/features/coach/coachMeasurementProgressContextCopy';
 import { buildCoachFactPacket } from '@/features/coach/coachRetrieval';
@@ -92,6 +95,13 @@ export default function CoachScreen() {
       ),
     [searchParams],
   );
+  const highlightsProgressContext = useMemo(
+    () =>
+      parseCoachHighlightsProgressContext(
+        searchParams as CoachProgressSearchParams,
+      ),
+    [searchParams],
+  );
   const progressPacket = useMemo(
     () =>
       progressContext
@@ -133,11 +143,23 @@ export default function CoachScreen() {
         : null,
     [activityProgressContext, retrievalSources],
   );
+  const highlightsProgressFacts = useMemo(
+    () =>
+      highlightsProgressContext
+        ? buildCoachHighlightsProgressFacts({
+            sessions: workoutSessions,
+            endAt: highlightsProgressContext.endAt,
+            days: highlightsProgressContext.retrievalDays,
+          })
+        : null,
+    [highlightsProgressContext, workoutSessions],
+  );
   const copy = companionCopy[locale];
   const contextCopy = getCoachProgressContextCopy(locale);
   const bodyContextCopy = getCoachBodyProgressContextCopy(locale);
   const measurementContextCopy = getCoachMeasurementProgressContextCopy(locale);
   const activityContextCopy = getCoachActivityProgressContextCopy(locale);
+  const highlightsContextCopy = getCoachHighlightsProgressContextCopy(locale);
   const exerciseHistory = progressPacket?.ok
     ? progressPacket.data.facts.exerciseHistory ?? null
     : null;
@@ -300,6 +322,39 @@ export default function CoachScreen() {
             <AppButton
               label={activityContextCopy.openProgress}
               onPress={() => router.push('/activity-progress')}
+              variant="secondary"
+            />
+          </AppCard>
+        ) : null}
+
+        {highlightsProgressContext && highlightsProgressFacts ? (
+          <AppCard>
+            <Text style={styles.title}>{highlightsContextCopy.title}</Text>
+            <Text style={styles.body}>{highlightsContextCopy.description}</Text>
+            <Text selectable style={styles.contextSummary}>
+              {highlightsProgressFacts.evidence.sessionCount > 0 &&
+              highlightsProgressFacts.evidence.estimated1RmSetCount > 0
+                ? highlightsContextCopy.summary(
+                    formatNumber(highlightsProgressFacts.evidence.sessionCount),
+                    formatNumber(highlightsProgressContext.retrievalDays),
+                  )
+                : highlightsContextCopy.noMatchingHistory}
+            </Text>
+            <Text selectable style={styles.contextNote}>
+              {highlightsContextCopy.recordBoundary}
+            </Text>
+            {highlightsProgressContext.requestedDays >
+            highlightsProgressContext.retrievalDays ? (
+              <Text selectable style={styles.contextNote}>
+                {highlightsContextCopy.boundedPeriod(
+                  formatNumber(highlightsProgressContext.requestedDays),
+                  formatNumber(highlightsProgressContext.retrievalDays),
+                )}
+              </Text>
+            ) : null}
+            <AppButton
+              label={highlightsContextCopy.openProgress}
+              onPress={() => router.push('/progress-highlights')}
               variant="secondary"
             />
           </AppCard>
