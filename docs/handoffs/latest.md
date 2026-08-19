@@ -10,18 +10,13 @@ Exact Git history, source, tests and CI override prose if this handoff becomes s
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current merged `main` while final P15-E validation runs: `ff9e71af8a306e4e8802fc50a67da730dbc8e689` (#767).
+Current verified `main`: `bf302de39c1190f736f17c731f0d2fac2f41e569` (#768).
 
-The reviewed Phase 15 mobile sequence has established:
+The reviewed Phase 15 mobile sequence established bounded Coach capabilities/selective retrieval (#749–#751), compact Progress IA and drill-downs (#755–#764), then selector-only Progress → Companion handoffs for exercise, Weight, Measurements, Activity and Highlights (#760, #762, #766, #767, #768).
 
-- bounded Coach data capabilities and selective retrieval (#749–#751);
-- compact Progress IA (#755);
-- Weight, Strength & Training, Activity, Highlights and Body-measurement drill-downs (#756, #759, #761, #763, #764; shared exercise series #758);
-- selected-exercise, Weight, Measurements and Activity Progress → Companion handoffs (#760, #762, #766, #767).
+#768 passed exact-head Mobile CI and closes the current P15-E handoff set. Its Highlights boundary filters source sessions to the 90-day Coach window before analytics; longer-history all-time record evidence remains Progress-only.
 
-PR #768 is the remaining current-set Highlights → Companion handoff. It deliberately sends only source/intent/metric/period/anchor selectors, rebuilds trend facts inside Companion and physically filters session input to the 90-day Coach window before shared analytics. All-time record evidence remains Progress-only because its source calculation uses longer history.
-
-Do not reopen completed Progress drill-downs or create parallel Coach state paths without a reproduced defect or newly reviewed contract.
+Do not reopen completed Progress/Coach source work without a reproduced defect, failed invariant or newly reviewed capability.
 
 ### Backend
 
@@ -29,48 +24,38 @@ Repository: `ivangemini/smart-fitness-backend`.
 
 Current verified `main`: `a4b1e51b7e3a2b1e388a17454ee86482a273ab94` (#270).
 
-P15-C now contains the complete reviewed read-only question path:
+P15-C contains the reviewed read-only question path:
 
 - #266 minimal-scope structured router;
 - #267 minimized evidence + strict structured answer boundary;
 - #269 authenticated `POST /v1/coach/questions` composition;
 - #270 confirmed structured Labs overview/marker-history evidence.
 
-The latest Labs question contract is user-scoped and bounded. It exposes only confirmed structured marker facts and forbids raw documents, extraction drafts, provider payloads, diagnosis, treatment/prescribing and automatic canonical mutation.
+The latest Labs question contract is user-scoped and bounded. It exposes confirmed structured marker facts only and excludes raw documents, extraction drafts, provider payloads, secrets, diagnosis, prescribing/treatment and automatic canonical mutation. #269 and #270 passed authoritative Backend CI before merge.
 
-#269 and #270 passed authoritative Backend CI before merge.
+## Phase 15 closure
 
-## Immediate execution order
+P15-A through P15-F are source/CI-complete for the currently reviewed scope. `docs/qa/phase15-closure.md` is the focused evidence matrix.
 
-1. Let exact-head Mobile CI finish for #768 and merge only the exact validated head if green.
-2. Finish the P15-F closure checkpoint in `docs/qa/phase15-closure.md` and synchronize `docs/current-status.md`, this handoff, `ROADMAP_PROGRESS.md` and `docs/implementation-plan.md` to the final mobile/backend SHAs.
-3. Classify P15-A through P15-E source/CI-complete for the currently reviewed scope after #768 merges; keep P15-F explicit about source CI versus physical/provider/release evidence.
-4. Do not create additional Phase 15 source work merely to stay busy. Reopen it only for a reproduced defect, failed closure invariant or new reviewed capability.
-5. Phase 14 external provider/device evidence remains independent and may execute when its prerequisites exist.
-6. Phase 16 Proactive Coach and Phase 17 Goals & Planning are successors and must preserve their own review/safety requirements before runtime expansion.
+Preserve these contracts:
 
-## Existing contracts to preserve
+- Coach and Companion are one product surface, not separate assistants;
+- deterministic calculations and hard guardrails stay outside model prompts;
+- model-visible retrieval is purpose-specific, user-scoped and bounded;
+- navigation handoffs carry selectors/anchors, never raw private state or prebuilt broad analytics;
+- automatic mutation of programs, workouts, nutrition targets, goals and Labs data remains prohibited;
+- Labs drafts/raw documents stay outside ordinary Coach question context;
+- missing RPE, nutrition, recovery, body and Labs evidence stays missing rather than being inferred.
 
-- Coach and Companion are one product surface, not separate assistants.
-- Deterministic calculations and hard guardrails stay outside model prompts.
-- Model-visible retrieval is purpose-specific and bounded; unrestricted `AppState`/raw-provider access is prohibited.
-- Automatic mutation of programs, workouts, nutrition targets, goals and Labs data remains prohibited.
-- User-owned server reads remain authenticated and user-scoped.
-- Labs drafts/raw documents stay outside ordinary Coach question context.
-- Missing RPE, nutrition, recovery, body and Labs evidence stays missing rather than being inferred.
-- Existing workout/program lifecycle, active-session persistence, sync/revision/idempotency, Social/Stories privacy, Labs confirmation semantics and export/privacy boundaries remain unchanged unless explicitly included in a reviewed package.
+Source/CI closure is not provider, signed-device, rollout or production-model evidence.
 
-## P15-F closure evidence
+## Next execution order
 
-Use `docs/qa/phase15-closure.md` as the focused source/CI closure evidence matrix. The repository's Mobile CI is the authority for line limits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor. Backend question changes require their separate backend gates.
-
-Do not convert successful source CI into claims about:
-
-- production model/provider activation;
-- signed native/physical-device testing;
-- Phase 14 provider evidence;
-- production rollout;
-- medical diagnosis/prescribing behavior.
+1. Keep Phase 15 closed unless a reproduced defect or new reviewed capability warrants reopening it.
+2. Execute remaining Phase 14 external evidence when prerequisites are available: Labs configured-provider/device, Push provider/device, Steps signed-device, and remaining Stories mobile/device evidence.
+3. Phase 16 Proactive Coach is the next planned product source phase; it must reuse the bounded Phase 15 fact layer and preserve frequency/dismissal/anti-compulsion safeguards.
+4. Phase 17 Goals & Planning follows under typed ownership/state contracts and no automatic plan mutation.
+5. Repair demonstrated defects rather than inventing unrelated cleanup work.
 
 ## External Phase 14 gates still outstanding
 
@@ -78,5 +63,3 @@ Do not convert successful source CI into claims about:
 - Push provider + physical-device evidence;
 - Steps signed native/physical-device evidence;
 - Stories remaining mobile/physical-device runtime evidence.
-
-These gates do not justify unrelated source refactors while prerequisites are absent.
