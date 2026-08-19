@@ -28,6 +28,9 @@ const NUTRITION_REQUEST_TYPES = new Set<NutritionCoachRequestType>([
   'nutrition_target_proposal',
   'nutrition_strategy_proposal',
 ]);
+const CAPABILITY_SCHEMA_VERSIONS = [
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+] as const;
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -218,7 +221,7 @@ const parseNutritionCapabilities = (
 
 const parseStrengthCapabilities = (
   value: unknown,
-  schemaVersion: 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10,
+  schemaVersion: 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13,
 ): NonNullable<CoachCapabilities['strength']> => {
   if (!isRecord(value)) throw new Error('Invalid coach capabilities response');
   if (
@@ -262,7 +265,7 @@ const parseSafetyCapabilities = (
 
 const parseCombinedCapabilities = (
   value: unknown,
-  schemaVersion: 6 | 7 | 8 | 9 | 10,
+  schemaVersion: 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13,
 ): NonNullable<CoachCapabilities['combined']> => {
   if (
     !isRecord(value) ||
@@ -273,7 +276,7 @@ const parseCombinedCapabilities = (
         value.proposalRequiresExplicitConfirmation !== true)) ||
     (schemaVersion >= 8 && value.effectiveStrengthConfirmation !== true) ||
     (schemaVersion >= 9 && value.nutritionConfirmation !== true) ||
-    (schemaVersion === 10 && value.nutritionReconciliation !== true)
+    (schemaVersion >= 10 && value.nutritionReconciliation !== true)
   ) {
     throw new Error('Invalid coach capabilities response');
   }
@@ -289,7 +292,40 @@ const parseCombinedCapabilities = (
       ? { effectiveStrengthConfirmation: true }
       : {}),
     ...(schemaVersion >= 9 ? { nutritionConfirmation: true } : {}),
-    ...(schemaVersion === 10 ? { nutritionReconciliation: true } : {}),
+    ...(schemaVersion >= 10 ? { nutritionReconciliation: true } : {}),
+    automaticApplication: false,
+  };
+};
+
+const parseQuestionCapabilities = (
+  value: unknown,
+  schemaVersion: 11 | 12 | 13,
+): NonNullable<CoachCapabilities['questions']> => {
+  if (
+    !isRecord(value) ||
+    typeof value.structuredAnswer !== 'boolean' ||
+    value.readOnly !== true ||
+    value.automaticApplication !== false ||
+    !Array.isArray(value.availableScopes)
+  ) {
+    throw new Error('Invalid coach capabilities response');
+  }
+  const expectedScopes =
+    schemaVersion === 11
+      ? ['strength', 'nutrition', 'safety_recovery']
+      : schemaVersion === 12
+        ? ['strength', 'nutrition', 'safety_recovery', 'labs']
+        : ['strength', 'nutrition', 'safety_recovery', 'labs', 'goal'];
+  if (
+    value.availableScopes.length !== expectedScopes.length ||
+    value.availableScopes.some((scope, index) => scope !== expectedScopes[index])
+  ) {
+    throw new Error('Invalid coach capabilities response');
+  }
+  return {
+    structuredAnswer: value.structuredAnswer,
+    availableScopes: [...expectedScopes],
+    readOnly: true,
     automaticApplication: false,
   };
 };
@@ -297,7 +333,9 @@ const parseCombinedCapabilities = (
 export const parseCoachCapabilities = (value: unknown): CoachCapabilities => {
   if (
     !isRecord(value) ||
-    ![1, 2, 3, 4, 5, 6, 7, 8, 9, 10].includes(value.schemaVersion as number) ||
+    !CAPABILITY_SCHEMA_VERSIONS.includes(
+      value.schemaVersion as (typeof CAPABILITY_SCHEMA_VERSIONS)[number],
+    ) ||
     !isRecord(value.nutrition)
   ) {
     throw new Error('Invalid coach capabilities response');
@@ -315,12 +353,17 @@ export const parseCoachCapabilities = (value: unknown): CoachCapabilities => {
   if (schemaVersion === 5) {
     return { schemaVersion, nutrition, strength, safety };
   }
+  const combined = parseCombinedCapabilities(value.combined, schemaVersion);
+  if (schemaVersion <= 10) {
+    return { schemaVersion, nutrition, strength, safety, combined };
+  }
   return {
     schemaVersion,
+    questions: parseQuestionCapabilities(value.questions, schemaVersion),
     nutrition,
     strength,
     safety,
-    combined: parseCombinedCapabilities(value.combined, schemaVersion),
+    combined,
   };
 };
 
