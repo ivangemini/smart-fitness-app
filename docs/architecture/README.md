@@ -29,6 +29,8 @@ For stable cross-repository orientation, read `../project-context.md`. For curre
 - `phase17-goal-authority.md` — canonical goal ownership and richer-goal threshold.
 - `phase17-goal-proposal-contract.md` — ephemeral goal proposal, preview, stale-source and explicit application boundary.
 - `phase18-knowledge-learning-system.md` — versioned evidence-linked educational content, quiz, learning-state and Coach→Learn architecture with explicit no-gamification rules.
+- `phase18-learning-state-contract.md` — account-owned informational learning-state semantics, exact-version evidence, privacy/deletion/export and implementation gates.
+- `phase18-learning-state-authority.md` — P18-E authority decision: dedicated server-authoritative account state plus a bounded mobile retry queue, outside private revisioned fitness `AppState` sync.
 
 ## Media, Social, links, platform composition, CI, and UI layout
 
