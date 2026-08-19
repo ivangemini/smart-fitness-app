@@ -10,54 +10,52 @@ Exact Git history, source, tests and CI override prose if this handoff becomes s
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current `main`: `bb48f0452690f0b33e824eea18aae8fb61a7fc2d` (#764).
+Current verified `main`: `bf302de39c1190f736f17c731f0d2fac2f41e569` (#768).
 
-The current Phase 15 mobile sequence has completed the reviewed Progress information architecture and drill-down set through #764:
+The reviewed Phase 15 mobile sequence established bounded Coach capabilities/selective retrieval (#749–#751), compact Progress IA and drill-downs (#755–#764), then selector-only Progress → Companion handoffs for exercise, Weight, Measurements, Activity and Highlights (#760, #762, #766, #767, #768).
 
-- #755 compact Progress overview;
-- #756 bounded weight details;
-- #758 bounded deterministic exercise progress series;
-- #759 Strength & Training drill-down;
-- #760 selected-exercise Progress → Companion context;
-- #761 Activity drill-down;
-- #762 weight-only Progress → Companion context;
-- #763 Highlights drill-down;
-- #764 Body measurement drill-down.
+#768 passed exact-head Mobile CI and closes the current P15-E handoff set. Its Highlights boundary filters source sessions to the 90-day Coach window before analytics; longer-history all-time record evidence remains Progress-only.
 
-Do not reopen completed Liquid Glass convergence work or duplicate these Progress views without a demonstrated defect/new reviewed contract.
+Do not reopen completed Progress/Coach source work without a reproduced defect, failed invariant or newly reviewed capability.
 
 ### Backend
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Current verified `main`: `92fbf47d3bf10725e11ee43ccf61eba042abcba1` (#267).
+Current verified `main`: `a4b1e51b7e3a2b1e388a17454ee86482a273ab94` (#270).
 
-P15-C backend foundation now contains:
+P15-C contains the reviewed read-only question path:
 
-- #266 minimal-scope structured question routing;
-- #267 minimized question evidence and strict structured answer boundary.
+- #266 minimal-scope structured router;
+- #267 minimized evidence + strict structured answer boundary;
+- #269 authenticated `POST /v1/coach/questions` composition;
+- #270 confirmed structured Labs overview/marker-history evidence.
 
-#267 exact-head Backend CI passed lint, Prettier, build, production configuration validation, isolated staging topology validation and tests before merge.
+The latest Labs question contract is user-scoped and bounded. It exposes confirmed structured marker facts only and excludes raw documents, extraction drafts, provider payloads, secrets, diagnosis, prescribing/treatment and automatic canonical mutation. #269 and #270 passed authoritative Backend CI before merge.
 
-The new question pipeline remains read-only and is not yet exposed as a complete public authenticated question endpoint.
+## Phase 15 closure
+
+P15-A through P15-F are source/CI-complete for the currently reviewed scope. `docs/qa/phase15-closure.md` is the focused evidence matrix.
+
+Preserve these contracts:
+
+- Coach and Companion are one product surface, not separate assistants;
+- deterministic calculations and hard guardrails stay outside model prompts;
+- model-visible retrieval is purpose-specific, user-scoped and bounded;
+- navigation handoffs carry selectors/anchors, never raw private state or prebuilt broad analytics;
+- automatic mutation of programs, workouts, nutrition targets, goals and Labs data remains prohibited;
+- Labs drafts/raw documents stay outside ordinary Coach question context;
+- missing RPE, nutrition, recovery, body and Labs evidence stays missing rather than being inferred.
+
+Source/CI closure is not provider, signed-device, rollout or production-model evidence.
 
 ## Next execution order
 
-1. Continue P15-C by composing authenticated question handling end to end: question router → only required user-scoped contexts → minimized evidence → structured answer.
-2. Keep the endpoint read-only and fail closed for unsupported scopes, missing context, provider unavailability and model/output validation failures.
-3. Do not expose raw Labs documents, unconfirmed extraction drafts, secrets, provider payloads or unrestricted application state to the answer model.
-4. Extend P15-E beyond existing exercise/weight handoffs only with an equivalent minimal metric/exercise/period contract.
-5. After P15-C/P15-E stabilize, run P15-F accessibility/performance/regression and canonical docs closure.
-6. Execute Phase 14 external provider/device evidence when its prerequisites become available; it remains independent from Phase 15 source work.
-
-## Existing contracts to preserve
-
-- Coach and Companion are one product surface, not separate assistants.
-- Deterministic calculations and hard guardrails stay outside model prompts.
-- Automatic mutation of programs, workouts, nutrition targets, goals and Labs data remains prohibited.
-- User-owned reads remain authenticated and user-scoped.
-- Raw provider/model/storage internals stay out of public DTOs.
-- Existing workout/program lifecycle, active-session persistence, sync/revision/idempotency, Social/Stories privacy, Labs confirmation semantics and export/privacy boundaries remain unchanged unless explicitly included in a reviewed package.
+1. Keep Phase 15 closed unless a reproduced defect or new reviewed capability warrants reopening it.
+2. Execute remaining Phase 14 external evidence when prerequisites are available: Labs configured-provider/device, Push provider/device, Steps signed-device, and remaining Stories mobile/device evidence.
+3. Phase 16 Proactive Coach is the next planned product source phase; it must reuse the bounded Phase 15 fact layer and preserve frequency/dismissal/anti-compulsion safeguards.
+4. Phase 17 Goals & Planning follows under typed ownership/state contracts and no automatic plan mutation.
+5. Repair demonstrated defects rather than inventing unrelated cleanup work.
 
 ## External Phase 14 gates still outstanding
 
@@ -65,5 +63,3 @@ The new question pipeline remains read-only and is not yet exposed as a complete
 - Push provider + physical-device evidence;
 - Steps signed native/physical-device evidence;
 - Stories remaining mobile/physical-device runtime evidence.
-
-These gates do not justify unrelated source refactors while prerequisites are absent.
