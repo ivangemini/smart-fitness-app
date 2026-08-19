@@ -280,9 +280,9 @@ export default function CoachScreen() {
             <Text style={styles.body}>{activityContextCopy.description}</Text>
             <Text selectable style={styles.contextSummary}>
               {trainingSummary
-                ? trainingSummary.sessionCount > 0
+                ? trainingSummary.frequency.sessionCount > 0
                   ? activityContextCopy.summary(
-                      formatNumber(trainingSummary.sessionCount),
+                      formatNumber(trainingSummary.frequency.sessionCount),
                       formatNumber(activityProgressContext.retrievalDays),
                     )
                   : activityContextCopy.noMatchingHistory
