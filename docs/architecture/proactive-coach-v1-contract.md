@@ -59,7 +59,8 @@ The selector accepts presentation state as an input. This package does **not** d
 ## Data and computation boundary
 
 - Source facts are canonical completed workout sessions/sets already available to the app.
-- Deterministic shared Phase 15 analytics own comparable e1RM/trend calculations.
+- The selector filters source sessions to its 28-day analysis window **before** invoking shared analytics; older history must not enter internal all-time calculations merely because the shared analytics type supports them.
+- Deterministic shared Phase 15 analytics own comparable e1RM/trend calculations inside that bounded slice.
 - No model call is involved in trigger selection.
 - No raw Labs, nutrition, safety notes, Social data, provider payloads or unrestricted `AppState` dump enters this selector.
 - Missing or insufficient evidence produces no insight.
@@ -89,6 +90,7 @@ The selector requires pure regression coverage for:
 - seven-day cooldown;
 - dismissed-key suppression;
 - no negative-consistency insight;
-- invalid timestamp fail-closed behavior.
+- invalid timestamp fail-closed behavior;
+- source-input bounding to the reviewed 28-day window.
 
 Runtime/source changes require exact-head Mobile CI before merge.
