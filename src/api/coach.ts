@@ -1,6 +1,11 @@
 export { createCoachApi } from './coach/client';
 export { parseCoachCapabilities, parseCoachRunEnvelope } from './coach/parsers';
 export { parseCoachRunInputSummary } from './coach/inputSummary';
+export {
+  COACH_QUESTION_ANSWER_SCHEMA_VERSION,
+  COACH_QUESTION_MAX_LENGTH,
+  parseCoachQuestionResponse,
+} from './coach/questions';
 export type {
   CoachAgentRunRecord,
   CoachApi,
@@ -33,3 +38,11 @@ export type {
   SafetyRecoveryInputCoverage,
   StrengthInputCoverage,
 } from './coach/inputSummary';
+export type {
+  CoachQuestionAnswer,
+  CoachQuestionCaveatCode,
+  CoachQuestionIntent,
+  CoachQuestionResponse,
+  CoachQuestionScope,
+  CoachQuestionUnsupportedReason,
+} from './coach/questions';

@@ -1,4 +1,5 @@
 import type { CoachRunInputSummary } from './inputSummary';
+import type { CoachQuestionResponse, CoachQuestionScope } from './questions';
 
 export type CoachRunStatus = 'queued' | 'running' | 'completed' | 'rejected' | 'failed';
 export type CoachDomain = 'strength' | 'nutrition' | 'safety_recovery' | 'combined';
@@ -19,7 +20,13 @@ export type CoachRequestType =
   | CombinedCoachRequestType;
 
 export type CoachCapabilities = {
-  schemaVersion: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+  schemaVersion: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13;
+  questions?: {
+    structuredAnswer: boolean;
+    availableScopes: CoachQuestionScope[];
+    readOnly: true;
+    automaticApplication: false;
+  };
   nutrition: {
     deterministicReview: true;
     deterministicTargetProposal: true;
@@ -171,6 +178,7 @@ type WaitForRunOptions = {
 
 export type CoachApi = {
   getCapabilities(): Promise<CoachCapabilities>;
+  askQuestion(question: string): Promise<CoachQuestionResponse>;
   startStrengthRun(input: StartStrengthCoachRunInput): Promise<CoachRunEnvelope>;
   startNutritionRun(input?: StartNutritionCoachRunInput): Promise<CoachRunEnvelope>;
   startSafetyRecoveryRun(input?: StartSafetyRecoveryRunInput): Promise<CoachRunEnvelope>;
@@ -185,5 +193,8 @@ export type CoachApi = {
     input: ConfirmCoachRunInput,
   ): Promise<CoachRunEnvelope>;
   getRun(runId: string): Promise<CoachRunEnvelope>;
-  waitForTerminalRun(initial: CoachRunEnvelope, options?: WaitForRunOptions): Promise<CoachRunEnvelope>;
+  waitForTerminalRun(
+    initial: CoachRunEnvelope,
+    options?: WaitForRunOptions,
+  ): Promise<CoachRunEnvelope>;
 };
