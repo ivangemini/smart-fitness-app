@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { PENDING_ACCOUNT_DELETION_RECEIPT_STORAGE_KEY } from '@/auth/accountDeletionReceipt';
 import { getLocalAccountDataStorageKeys } from '@/auth/accountDataCleanup';
+import { getProactivePresentationStorageKey } from '@/features/companion/proactivePresentationStore';
 import { getNutritionFavoritesStorageKey } from '@/features/nutrition/nutritionFavorites';
 import { getNutritionFoodLibraryStorageKey } from '@/features/nutrition/nutritionFoodLibrary';
 import { getSocialFollowingFeedCacheStorageKey } from '@/features/social/socialFollowingFeedCache';
@@ -62,6 +63,11 @@ describe('mobile account data inventory', () => {
     expect(inventoriedKeys.has(PENDING_ACCOUNT_DELETION_RECEIPT_STORAGE_KEY)).toBe(
       true,
     );
+    expect(
+      MOBILE_ACCOUNT_DATA_SURFACES.some(
+        (surface) => surface.id === 'proactive_coach_presentation',
+      ),
+    ).toBe(true);
   });
 
   it('uses the inventory as the complete local account cleanup boundary', () => {
@@ -70,6 +76,7 @@ describe('mobile account data inventory', () => {
       ...ACCOUNT_SCOPED_ASYNC_STORAGE_KEYS,
       getNutritionFavoritesStorageKey(userId),
       getNutritionFoodLibraryStorageKey(userId),
+      getProactivePresentationStorageKey(userId),
       getSocialFollowingFeedCacheStorageKey(userId),
     ]);
     const actual = getLocalAccountDataStorageKeys(userId);
