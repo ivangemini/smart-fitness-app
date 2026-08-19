@@ -12,7 +12,7 @@ Phase 18 is active and dependency-ordered.
 - **P18-A persistence + published reader:** merged in backend #285 as backend `main` `e0ae0e4506674a533903bb046fd2ff16b2cf44a3`. Its exact head passed Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI before merge.
 - **P18-B editorial orchestration:** clean exact-main rebuild is open as backend #290 at head `8d14c54159128b71f42b6b01cb28c9e5adad36d9`. It adds bounded provider-neutral editorial orchestration, deterministic preflight/readiness, independent claim verification and quiz validation, Tier-3 human-review handling and fail-closed provider-output consistency checks. Merge remains exact-head Hermes CI gated.
 - **P18-C Library/reader:** merged in mobile #793 as mobile `main` `3a99b017b679da295207e4a8e4d1506681368023` after exact-head Mobile CI passed.
-- **P18-D quiz bank:** hardened four-file package is privately prepared one dependency step above #290 at `18e2b318aa7ccd80320bead09c07c9b13c6b3267`; no PR is open while P18-B owns the dependency/CI lane. The package composes full publication eligibility with quiz-specific eligibility, snapshots/freeze-protects canonical quiz evidence, uses module-private `WeakSet` runtime membership to reject structural or reflected-brand forgeries, returns presentation-safe assembly DTOs without answer keys/feedback, and keeps answer evaluation backend-only. It must be rebuilt from exact backend `main` after #290 merges, then exact-head validated before merge.
+- **P18-D quiz bank:** hardened five-file package is privately prepared one dependency step above #290 at `ce0843909d0572ee2169cc2988964f4c8a880e48`; no PR is open while P18-B owns the dependency/CI lane. The package composes full publication eligibility with quiz-specific eligibility, stores parsed/frozen answer-bearing snapshots only in a module-private `WeakMap`, exposes a frozen opaque bank token with no `.items`, rejects structural/reflected-brand reconstruction, returns presentation-safe assembly DTOs without answer keys/feedback, keeps answer evaluation backend-only, and includes the required architecture-index update. It must be rebuilt from exact backend `main` after #290 merges, then exact-head validated before merge.
 - **P18-E learning state:** ownership/versioning/privacy/deletion/export/offline-replay contracts are reviewed. Runtime remains intentionally blocked until merged/stable P18-A reader identity and P18-D quiz identity/evaluation exist.
 - **P18-F Coach → Learn:** recommendation authority is reviewed in `docs/architecture/phase18-coach-learn-recommendation-contract.md`. Runtime waits for P18-A/P18-D plus enough P18-E state for deterministic suppression/revisit semantics.
 - **P18-G Coach/report surface integration:** authority is reviewed in `docs/architecture/phase18-coach-learn-surface-integration.md`. Runtime waits for P18-F plus an existing host surface with a trustworthy typed finding identity; it must not create a second scheduler or promote local presentation labels into backend finding authority.
@@ -115,11 +115,13 @@ Acceptance:
 - each question is provably supported by reviewed article claims;
 - presentation/evaluation cannot bypass full publication eligibility, exact-version bank eligibility or Tier-3 human-review gates;
 - runtime authority cannot be forged by structural typing or by reflecting a private brand symbol from a genuine bank;
+- the public eligible-bank token contains no canonical item collection or answer-bearing snapshot property;
+- parsed/frozen answer-bearing snapshots remain module-private and object-identity-bound to the opaque token;
 - normal assembly/presentation never exposes `correctOptionId`, option feedback-before-answer or review metadata;
 - updating an article does not silently rewrite historical quiz evidence;
 - successful evaluation resolves only an item/option inside the eligible exact-version bank.
 
-**Current state:** privately prepared at `18e2b318aa7ccd80320bead09c07c9b13c6b3267` as exactly four files above the current #290 head. It is deliberately not a PR yet. After #290 merges, rebuild the same reviewed package from exact new backend `main`, update the architecture index, exact-head validate, then merge.
+**Current state:** privately prepared at `ce0843909d0572ee2169cc2988964f4c8a880e48` as exactly five files above the current #290 head, including the architecture-index update. It is deliberately not a PR yet. After #290 merges, rebuild the same reviewed package from exact new backend `main`, exact-head validate, then merge.
 
 ## P18-E — Learning state
 
