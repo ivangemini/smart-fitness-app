@@ -186,6 +186,21 @@ export default function ProgressHighlightsScreen() {
           truncatedLabel={copy.truncated}
         />
 
+        <AppButton
+          label={copy.askCompanion}
+          onPress={() =>
+            router.push({
+              pathname: '/(tabs)/coach',
+              params: {
+                contextSource: 'progress',
+                contextIntent: 'training_highlights',
+                contextMetric: 'highlights',
+                days: String(PERIOD_DAYS[periodKey]),
+                endAt: anchorAt,
+              },
+            })
+          }
+        />
         <AppButton label={copy.openStrength} onPress={() => router.push('/training-progress')} />
         <AppButton label={copy.back} onPress={() => router.back()} variant="secondary" />
       </View>
