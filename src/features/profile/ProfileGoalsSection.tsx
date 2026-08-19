@@ -228,6 +228,7 @@ export function ProfileGoalsSection() {
               clearProposal();
               setWeeklyWeightChangeGoal(value);
             }}
+            primaryActionLabel={planningCopy.reviewChanges}
             targetWeight={targetWeight}
             trainingDaysPerWeek={trainingDaysPerWeek}
             validationErrors={validationErrors}
