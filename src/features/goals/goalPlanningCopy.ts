@@ -3,6 +3,7 @@ import type { GoalPlanningField } from './goalPlanningProposal';
 type Locale = 'en' | 'ru';
 
 export type GoalPlanningCopy = {
+  reviewChanges: string;
   reviewTitle: string;
   reviewBody: string;
   fieldLabels: Record<GoalPlanningField, string>;
@@ -23,6 +24,7 @@ export type GoalPlanningCopy = {
 
 const COPY: Record<Locale, GoalPlanningCopy> = {
   en: {
+    reviewChanges: 'Review changes',
     reviewTitle: 'Review goal changes',
     reviewBody: 'These changes are still a preview. Nothing is saved until you confirm.',
     fieldLabels: {
@@ -49,6 +51,7 @@ const COPY: Record<Locale, GoalPlanningCopy> = {
     keepNutrition: 'Keep current nutrition',
   },
   ru: {
+    reviewChanges: 'Проверить изменения',
     reviewTitle: 'Проверь изменения целей',
     reviewBody: 'Пока это только предпросмотр. Ничего не сохранится до подтверждения.',
     fieldLabels: {
