@@ -33,6 +33,10 @@ import { useCoachRetrievalSources } from '@/features/coach/useCoachRetrievalSour
 import { companionCopy } from '@/features/companion/companionCopy';
 import { CompanionProgressCard } from '@/features/companion/CompanionProgressCard';
 import { deriveCompanionProgress } from '@/features/companion/companionProgression';
+import { ProactiveInsightCard } from '@/features/companion/ProactiveInsightCard';
+import { getProactiveInsightCopy } from '@/features/companion/proactiveInsightCopy';
+import { useProactiveInsight } from '@/features/companion/useProactiveInsight';
+import { useAuthSession } from '@/hooks/useAuthSession';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 
@@ -62,6 +66,7 @@ const COACH_ACTIONS = [
 export default function CoachScreen() {
   const { colors } = useAppTheme();
   const { formatNumber, locale, t } = useLocalization();
+  const { user } = useAuthSession();
   const { workoutSessions } = useWorkoutState();
   const retrievalSources = useCoachRetrievalSources();
   const searchParams = useLocalSearchParams();
@@ -71,6 +76,11 @@ export default function CoachScreen() {
     () => deriveCompanionProgress(workoutSessions),
     [workoutSessions],
   );
+  const { dismiss: dismissProactiveInsight, insight: proactiveInsight } =
+    useProactiveInsight({
+      sessions: workoutSessions,
+      userId: user?.id ?? null,
+    });
   const progressContext = useMemo(
     () =>
       parseCoachProgressContext(searchParams as CoachProgressSearchParams),
@@ -155,6 +165,9 @@ export default function CoachScreen() {
     [highlightsProgressContext, workoutSessions],
   );
   const copy = companionCopy[locale];
+  const proactiveCopy = proactiveInsight
+    ? getProactiveInsightCopy(locale, proactiveInsight, formatNumber)
+    : null;
   const contextCopy = getCoachProgressContextCopy(locale);
   const bodyContextCopy = getCoachBodyProgressContextCopy(locale);
   const measurementContextCopy = getCoachMeasurementProgressContextCopy(locale);
@@ -177,6 +190,21 @@ export default function CoachScreen() {
     exerciseHistory?.exercise.exerciseName ??
     null;
   const measurementLabel = measurementMetrics?.measurements[0]?.label ?? null;
+
+  const openProactiveEvidence = () => {
+    if (!proactiveInsight) return;
+    if (proactiveInsight.kind === 'consistency_up') {
+      router.push('/activity-progress');
+      return;
+    }
+    router.push({
+      pathname: '/training-progress',
+      params: {
+        exerciseId: proactiveInsight.exerciseId,
+        exerciseName: proactiveInsight.exerciseName,
+      },
+    });
+  };
 
   return (
     <ScrollView
@@ -206,6 +234,16 @@ export default function CoachScreen() {
           locale={locale}
           progress={progress}
         />
+
+        {proactiveInsight && proactiveCopy ? (
+          <ProactiveInsightCard
+            copy={proactiveCopy}
+            onDismiss={() => {
+              void dismissProactiveInsight();
+            }}
+            onOpenEvidence={openProactiveEvidence}
+          />
+        ) : null}
 
         {progressContext ? (
           <AppCard>
