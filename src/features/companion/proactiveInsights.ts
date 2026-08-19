@@ -105,7 +105,9 @@ const buildConsistencyInsight = (
   sessions: WorkoutSession[],
   nowTimestamp: number,
 ): ProactiveInsight | null => {
-  const midpointTimestamp = nowTimestamp - HALF_PERIOD_DAYS * DAY_MS;
+  const midpointDay = toLocalDayKey(
+    nowTimestamp - HALF_PERIOD_DAYS * DAY_MS,
+  );
   const previousDays = new Set<string>();
   const recentDays = new Set<string>();
 
@@ -113,7 +115,7 @@ const buildConsistencyInsight = (
     const timestamp = sessionTimestamp(session);
     if (timestamp === null) return;
     const day = toLocalDayKey(timestamp);
-    if (timestamp < midpointTimestamp) previousDays.add(day);
+    if (day < midpointDay) previousDays.add(day);
     else recentDays.add(day);
   });
 
