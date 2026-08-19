@@ -8,7 +8,8 @@ Focused roadmap references retained as stable contracts:
 
 - `docs/roadmap/release-and-account.md`;
 - `docs/roadmap/localization-settings.md`;
-- `docs/roadmap/data-quality-and-scale.md`.
+- `docs/roadmap/data-quality-and-scale.md`;
+- `docs/roadmap/knowledge-learning.md`.
 
 ## Verified phase baseline
 
@@ -21,12 +22,13 @@ Focused roadmap references retained as stable contracts:
 - **Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics: source/CI-complete for the currently reviewed scope.**
 - **Phase 16 — Proactive Coach: deterministic foreground Companion-card v1 source/CI-complete through #770–#772.**
 - **Phase 17 — Goals & Planning: P17-A through P17-D source/CI-complete for the currently reviewed first scope through mobile #783 and backend #271.**
+- **Phase 18 — Knowledge & Learning: active; P18-A Knowledge/content/evidence foundation is the current autonomous source priority.**
 
 ## Current verified checkpoint
 
 ### Mobile
 
-Current `main`: `b2531e2122d6d7357129c76c48554b3a915d2e6c` (#783).
+Current verified runtime `main`: `b2531e2122d6d7357129c76c48554b3a915d2e6c` (#783); docs checkpoint #784 follows without runtime changes.
 
 Phase 15 mobile includes bounded Coach capabilities/selective retrieval (#749–#751), compact Progress IA/current drill-downs (#755–#764), and selector-only exercise, Weight, Measurements, Activity and Highlights Progress → Companion handoffs through #768.
 
@@ -57,6 +59,8 @@ Backend Coach question infrastructure includes minimal-scope routing (#266), min
 #271 adds the dedicated `goal` question scope, `goal_progress` intent and capabilities schema v13. Goal-only retrieval reads the existing fitness profile, bounded 42-day weight history and bounded recent completed-session history; it does not read food logs or workout sets and does not expose user/storage ids, notes or session payloads to the answer model.
 
 The first backend goal training window uses UTC-day buckets because server-side user-timezone authority has not been introduced. Do not describe this v1 evidence as local-calendar-week parity with mobile.
+
+Phase 18 P18-A backend work is being built from exact #271 `main` as a new `knowledge` module. Initial scope is provider-neutral contracts plus deterministic publication eligibility; no migration, route, model call or publication activation is implied until that contract passes validation.
 
 ## Phase 15 — closure status
 
@@ -148,6 +152,87 @@ Before implementation, define:
 
 Do not manufacture a new goal persistence domain merely because P17-D is complete.
 
+## Phase 18 — Knowledge & Learning
+
+### Product model
+
+Phase 18 teaches users the reasoning behind fitness decisions rather than only returning recommendations.
+
+Canonical content pipeline:
+
+`topic → curated evidence pack → AI-assisted draft → claim/source verification → validated quiz bank → reviewed published article version`
+
+User loop:
+
+`bounded evidence → deterministic Coach finding → allowlisted article mapping → canonical article → validated quiz → informational learning state`
+
+No knowledge XP, levels, streaks, badges, leaderboards or punishment mechanics are allowed in the reviewed scope.
+
+Focused architecture: `docs/architecture/phase18-knowledge-learning-system.md`.
+Focused roadmap: `docs/roadmap/knowledge-learning.md`.
+
+### P18-A — Knowledge/content/evidence foundation
+
+Build the canonical domain contract first:
+
+- stable concepts;
+- stable articles and immutable versions;
+- allowlisted sources;
+- factual claims with source linkage/evidence strength/review state;
+- article risk tiers;
+- strict article-version-linked quiz items;
+- deterministic publication eligibility;
+- shared-content/private-user-data separation;
+- then minimum relational persistence/read API/privacy ownership.
+
+Initial backend package deliberately contains no model/provider dependency. It must prove fail-closed publication rules before storage or UI treats content as canonical.
+
+**Status:** active.
+
+### P18-B — Editorial generation pipeline
+
+Provider-neutral evidence-pack → draft → claims → independent verification → review-ready/rejected workflow. The generator cannot publish directly. Retries remain bounded and provider output remains internal/versioned.
+
+**Status:** planned after P18-A contract/persistence foundation.
+
+### P18-C — Library and reader
+
+Mobile Knowledge destination, category/concept browse, bounded search, article detail, source visibility and strict published-version parsing.
+
+**Status:** planned after the P18-A read contract; may overlap late P18-B.
+
+### P18-D — Quiz bank and validation
+
+Pre-generated article-version-linked recall/understanding/application/misconception items with exactly four options and one defensible answer in v1. Ambiguous or unsupported questions fail closed.
+
+**Status:** planned after P18-A core contracts.
+
+### P18-E — Learning state
+
+Minimal informational states: `unseen`, `read`, `understood`, `refresh_useful`. Reading alone does not imply understanding. Account deletion/export/privacy/version semantics are required before persistence ships.
+
+No gamification.
+
+**Status:** planned after reader/quiz contracts.
+
+### P18-F — Coach → Learn recommendations
+
+Typed deterministic Coach findings map to allowlisted published concepts/articles. The model may explain bounded relevance but cannot invent/select unpublished scientific content.
+
+**Status:** planned after canonical published content exists.
+
+### P18-G — Daily-report integration
+
+Attach optional non-punitive educational recommendations to applicable reports with bounded frequency/deduplication and no automatic cross-domain mutation.
+
+**Status:** planned after P18-F.
+
+### P18-H — Curriculum / learning paths
+
+Optional ordered concept paths after the content/quiz/learning systems are proven. Paths are curriculum/navigation, not reward progression.
+
+**Status:** later optional Phase 18 slice.
+
 ## Remaining Phase 14 gates
 
 - **Push:** staging-only APNs/FCM material, bounded provider sends, signed physical-device permission/token/delivery/tap evidence and deliberate rollout controls.
@@ -157,12 +242,15 @@ Do not manufacture a new goal persistence domain merely because P17-D is complet
 
 ## Next execution order
 
-1. Keep P17-A through P17-D closed for the currently reviewed first Goals & Planning scope through #783 unless a reproduced defect or newly reviewed capability requires expansion.
-2. Do not start P17-E persistence/model-planning work until the richer-goal threshold is actually met.
-3. Keep Phase 15 and reviewed Phase 16 foreground v1 closed unless a reproduced defect/new reviewed purpose requires reopening them.
-4. Execute Phase 14 provider/device evidence independently whenever external prerequisites become available.
-5. Repair reproduced defects; do not manufacture unrelated cleanup work.
+1. Execute P18-A provider-neutral contracts/publication gate, then minimum persistence/read API/privacy ownership.
+2. Keep P17-A through P17-D closed for the reviewed first scope; do not activate P17-E without a richer-goal requirement.
+3. After P18-A stabilizes, proceed with P18-B editorial pipeline, P18-C reader and P18-D quiz validation in dependency-safe parallel workstreams.
+4. Do not persist P18-E learning state before account ownership/deletion/export/privacy/version semantics are explicit; do not add gamification.
+5. Implement P18-F/G only against published allowlisted content and typed findings.
+6. Keep Phase 15 and reviewed Phase 16 foreground v1 closed unless a reproduced defect/new reviewed purpose requires reopening them.
+7. Execute Phase 14 provider/device evidence independently whenever external prerequisites become available.
+8. Repair reproduced defects; do not manufacture unrelated cleanup work.
 
 ## Authorization / release boundary
 
-Source/CI closure does not relax provider, native/device, production or medical-safety controls. Those remain governed by current `AGENTS.md`, least privilege, privacy, preflight, evidence, recovery and rollback requirements.
+Source/CI closure does not relax provider, native/device, production, editorial-publication or medical-safety controls. Those remain governed by current `AGENTS.md`, least privilege, privacy, preflight, evidence, recovery and rollback requirements.

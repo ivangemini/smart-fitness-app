@@ -12,11 +12,11 @@ Reviewed local-state storage decision remains `docs/architecture/local-state-per
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current verified `main`: `b2531e2122d6d7357129c76c48554b3a915d2e6c` (#783).
+Current verified runtime `main`: `b2531e2122d6d7357129c76c48554b3a915d2e6c` (#783). Documentation checkpoint #784 follows without runtime changes.
 
 The repository-wide Liquid Glass convergence and Phase 15 Coach Intelligence + Progress scope remain source/CI-complete for reviewed boundaries. Phase 16 deterministic foreground v1 remains source/CI-complete through #770–#772.
 
-The first reviewed Phase 17 Goals & Planning scope is now source/CI-complete:
+The first reviewed Phase 17 Goals & Planning scope is source/CI-complete:
 
 - #773 — deterministic typed goal facts + neutral Progress Goals context;
 - #776 — selector-only Goals → Companion context handoff;
@@ -40,6 +40,8 @@ The reviewed read-only Coach question infrastructure includes minimal routing (#
 
 Phase 14 provider/runtime source preparation remains complete for reviewed contracts. Existing isolated Hermes staging and bounded Labs/Stories evidence tooling remain the execution foundation for external evidence work.
 
+Phase 18 has now been explicitly reviewed and activated. P18-A begins from backend #271 `main` with provider-neutral versioned Knowledge contracts and deterministic publication gating; no publication/provider activation is implied by this roadmap update.
+
 ## Phase status
 
 - Phases 1–10: complete for established source/CI scope.
@@ -51,6 +53,7 @@ Phase 14 provider/runtime source preparation remains complete for reviewed contr
 - Phase 15: **Coach Intelligence & Data Access + Progress UX/Analytics is source/CI-complete for the currently reviewed scope.**
 - Phase 16: **Proactive Coach deterministic foreground v1 is source/CI-complete through #770–#772.**
 - Phase 17: **Goals & Planning P17-A through P17-D are source/CI-complete for the currently reviewed first scope through mobile #783 and backend #271. P17-E remains richer-goal-threshold gated.**
+- Phase 18: **Knowledge & Learning is active. P18-A Knowledge/content/evidence foundation is the current autonomous source priority.**
 
 ## Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics
 
@@ -242,6 +245,170 @@ If triggered, design first:
 
 Do not manufacture a new goal persistence or model-planning domain merely because P17-D is complete.
 
+## Phase 18 — Knowledge & Learning System
+
+Phase 18 is now the active successor source phase. Its purpose is to make Smart Fitness teach users the reasoning behind training, nutrition, physiology, recovery, body-composition and selected Labs concepts, then connect those reviewed lessons to real Coach findings.
+
+This phase is **not gamified**. Do not add knowledge XP, levels, streaks, badges, leaderboards, competition, loss mechanics or engagement rewards.
+
+Reviewed content pipeline:
+
+`topic → curated evidence pack → AI-assisted draft → claim extraction → claim/source verification → quiz generation → quiz validation/review → published article version`
+
+Reviewed user loop:
+
+`bounded user evidence → deterministic Coach finding → allowlisted content mapping → canonical article → validated quiz → informational learning state → future bounded personalization`
+
+Permanent Phase 18 rules:
+
+- canonical scientific/educational articles are generated and reviewed ahead of end-user consumption;
+- a live user request does not cause a new scientific article to be invented and treated as canonical;
+- AI is an editorial drafting/verifier tool over an approved evidence pack, not publication authority;
+- every material claim is source-linked and approval-gated;
+- published article versions are stable; material updates produce a new version;
+- quizzes are pre-generated against exact article versions and reviewed claims;
+- single-select v1 requires exactly four options and one defensible answer;
+- ambiguous answer keys fail closed;
+- Tier-3 Labs/medical-adjacent content requires human review before publication;
+- canonical shared content contains no private user evidence;
+- private user evidence may influence only bounded recommendation/relevance/depth layers;
+- Coach uses deterministic finding→content mappings rather than unconstrained article generation;
+- learning state is informational, not reward-based;
+- reading/quiz completion never automatically mutates workouts, nutrition, goals, Labs, recovery or safety;
+- later behavior/outcome changes cannot be claimed as caused by reading;
+- raw Labs documents/extraction drafts remain outside ordinary Knowledge generation/recommendation context.
+
+Focused architecture: `docs/architecture/phase18-knowledge-learning-system.md`.
+Focused roadmap: `docs/roadmap/knowledge-learning.md`.
+
+### P18-A — Knowledge/content/evidence foundation
+
+Define and validate:
+
+- stable concepts;
+- stable articles + immutable article versions;
+- source records and allowlisting state;
+- article claims with evidence strength/review state and explicit source linkage;
+- article risk tiers;
+- strict article-version-linked quiz items;
+- deterministic publication eligibility;
+- shared-content/private-user-data separation;
+- minimum relational persistence/read API after the domain contract is proven;
+- privacy/export/retention ownership before user learning persistence ships.
+
+Initial backend source work begins with provider-neutral versioned Zod contracts and a pure publication gate. No model provider activation, DB migration or content publication is required for the first contract package.
+
+**Status:** active.
+
+### P18-B — Editorial generation pipeline
+
+Build the provider-neutral editorial workflow:
+
+`evidence pack → draft → extracted claims → independent verification → review-ready/rejected`.
+
+Requirements:
+
+- generator cannot publish directly;
+- structured/versioned provider outputs;
+- no hidden chain-of-thought persistence;
+- bounded retries;
+- source IDs verified against canonical records;
+- unsupported claims rejected or rewritten before review;
+- risk-tier-aware human review.
+
+**Status:** planned after P18-A contract/persistence foundation.
+
+### P18-C — Library and reader
+
+Build the mobile Knowledge destination and article reader:
+
+- category/concept browse;
+- bounded search;
+- quick lesson / standard / deep dive / practical guide / reference presentation;
+- article sources/evidence context;
+- strict published-version parsing;
+- unpublished/editorial states hidden from end users.
+
+**Status:** planned; may proceed in parallel with late P18-B once the read API contract is stable.
+
+### P18-D — Quiz bank + validation
+
+Build versioned pre-generated quiz items:
+
+- recall;
+- understanding;
+- application;
+- misconception checks;
+- exactly four options / one answer in v1;
+- claim/article-version linkage;
+- option feedback grounded in reviewed claims;
+- deterministic structural and answer-key validation.
+
+No arbitrary live quiz generation is required for normal reading.
+
+**Status:** planned after P18-A core contracts.
+
+### P18-E — Learning state
+
+Minimal informational user state:
+
+- `unseen`;
+- `read`;
+- `understood`;
+- `refresh_useful`.
+
+Reading alone does not imply understanding. Exact article/quiz versions remain part of evidence. Account ownership, deletion, export and privacy behavior must be reviewed before persistence ships.
+
+No XP/levels/streaks/badges.
+
+**Status:** planned after reader + quiz contracts.
+
+### P18-F — Coach → Learn recommendation engine
+
+Use deterministic Coach finding codes and allowlisted mappings to select reviewed content.
+
+Example direction:
+
+- `nutrition_low_fiber` → `fiber_basics` / `increasing_fiber`;
+- `training_high_failure_frequency` → `rir_basics` / `training_to_failure` / `fatigue_management`.
+
+The model may explain why the selected reviewed article is relevant to the user's bounded evidence. It cannot select arbitrary unpublished content or replace the canonical lesson.
+
+**Status:** planned after published content and learning-state read boundaries exist.
+
+### P18-G — Daily-report integration
+
+Attach optional educational recommendations to applicable Coach reports.
+
+Requirements:
+
+- report remains useful without a recommendation;
+- recommendation is optional/non-punitive;
+- finding and content mapping are valid first;
+- frequency/deduplication bounded;
+- no medical-necessity framing;
+- no automatic canonical mutation after reading/testing.
+
+**Status:** planned after P18-F.
+
+### P18-H — Curriculum / learning paths
+
+Compose ordered concept paths only after the underlying content/quiz/learning-state systems are proven.
+
+Possible paths:
+
+- Training fundamentals;
+- Nutrition fundamentals;
+- Build your first program;
+- Fat-loss fundamentals;
+- Muscle-gain fundamentals;
+- Recovery fundamentals;
+- Understanding Labs.
+
+Paths are navigation/curriculum, not gamified progression.
+
+**Status:** optional later Phase 18 slice.
+
 ## P14-A — Push
 
 Source/CI complete. Remaining work:
@@ -291,12 +458,15 @@ Detailed inventory: `docs/architecture/liquid-glass-residual-inventory.md`.
 
 ## Current execution order
 
-1. Keep P17-A through P17-D closed for the currently reviewed first Goals & Planning scope through #783; closure evidence is `docs/qa/phase17-goals-planning-closure.md`.
-2. Do not start P17-E richer goal persistence/model-planning work until a reviewed requirement crosses its threshold.
-3. Keep Phase 15 and reviewed Phase 16 foreground v1 closed unless a reproduced defect, failed invariant or newly reviewed purpose requires reopening them.
-4. Execute Phase 14 provider/device evidence whenever external prerequisites become available; it remains independent of successor source phases.
-5. If evidence or normal use reproduces a defect, repair it in a coherent bounded package and validate exact head.
-6. Keep `docs/current-status.md`, `docs/handoffs/latest.md`, `ROADMAP_PROGRESS.md` and this plan synchronized with verified Git/evidence.
+1. Execute **P18-A** to a validated provider-neutral foundation: contracts, publication gate, then minimum persistence/read API/privacy ownership.
+2. Keep P17-A through P17-D closed for the currently reviewed first Goals & Planning scope through #783. Do not start P17-E unless its richer-goal threshold is actually crossed.
+3. Once P18-A API/persistence contracts are stable, run P18-B editorial pipeline and P18-C Library/reader as dependency-safe parallel workstreams; start P18-D quiz-bank validation from the same canonical article/claim contract.
+4. Do not implement P18-E learning persistence until account deletion/export/privacy/version semantics are explicit; do not add gamification.
+5. Implement P18-F/G only after published canonical content exists; Coach recommendations must map typed findings to allowlisted content.
+6. Keep Phase 15 and reviewed Phase 16 foreground v1 closed unless a reproduced defect, failed invariant or newly reviewed purpose requires reopening them.
+7. Execute Phase 14 provider/device evidence whenever external prerequisites become available; it remains independent of Phase 18 source work.
+8. If evidence or normal use reproduces a defect, repair it in a coherent bounded package and validate exact head.
+9. Keep `docs/current-status.md`, `docs/handoffs/latest.md`, `ROADMAP_PROGRESS.md`, `docs/project-context.md`, `PROJECT_LEARNINGS.md` and this plan synchronized with verified Git/evidence.
 
 ## Validation policy
 
@@ -306,10 +476,14 @@ A source-contract failure must be distinguished from a runtime/type failure. Whe
 
 Backend source/operations changes require the applicable backend/PostgreSQL/account-lifecycle gates for their scope.
 
+Phase 18 publication/model pipelines must additionally prove strict schema parsing, source/claim traceability, review-state enforcement, quiz answer-key uniqueness and private/shared data separation. Model plausibility is not a publication test.
+
 Evidence-only diagnostics may intentionally fail after printing requested evidence and should be restored/closed without merge when their purpose is complete.
 
-Documentation-only synchronization must never claim provider, physical-device or production evidence that did not run.
+Documentation-only synchronization must never claim provider, physical-device, editorial publication or production evidence that did not run.
 
 ## Activation boundary
 
 Provider configuration, native/device execution and rollout actions remain governed by current repository authorization, least privilege, privacy, preflight, evidence, recovery and rollback controls in `AGENTS.md` and relevant operational docs. Successor source phases do not relax those boundaries.
+
+Phase 18 activation of any editorial/model/search provider is a separate configuration/evidence step. A source-level generation interface does not imply that provider-backed article generation or publication is active.

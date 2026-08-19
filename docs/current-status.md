@@ -10,11 +10,11 @@ Exact code, tests, migrations, CI and current Git history override this checkpoi
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current verified `main`: `b2531e2122d6d7357129c76c48554b3a915d2e6c` (#783).
+Current verified runtime `main`: `b2531e2122d6d7357129c76c48554b3a915d2e6c` (#783). Documentation checkpoint #784 follows without runtime changes.
 
 Phase 15 remains source/CI-complete for the reviewed Coach Intelligence + Progress scope. Phase 16 deterministic foreground v1 is source/CI-complete through #770–#772.
 
-The first reviewed Phase 17 Goals & Planning scope is now source/CI-complete:
+The first reviewed Phase 17 Goals & Planning scope is source/CI-complete:
 
 - #773 — typed deterministic goal facts from canonical fitness-profile goals, weight history and completed workout history, plus neutral goal-relative Progress context;
 - #776 — selector-only Goals → Companion handoff with canonical fact rebuilding at the destination;
@@ -56,6 +56,7 @@ Goal-only questions do not read food logs or workout sets and do not expose note
 - **Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics:** source/CI-complete for the currently reviewed scope.
 - **Phase 16 — Proactive Coach:** deterministic foreground Companion-card v1 source/CI-complete through #770–#772; expansion requires a separate purpose/delivery contract.
 - **Phase 17 — Goals & Planning:** P17-A through P17-D are source/CI-complete for the currently reviewed first scope through #783. P17-E richer goal persistence remains threshold-gated and is not an automatic next task.
+- **Phase 18 — Knowledge & Learning:** newly approved and active. P18-A knowledge/content/evidence foundation is the current autonomous source priority; later editorial generation, reader, quizzes, learning state and Coach→Learn integration remain dependency ordered.
 
 ## Phase 17 authority and boundaries
 
@@ -86,6 +87,32 @@ Permanent Phase 17 first-scope rules:
 
 A new persisted goal entity is justified only by a reviewed requirement the current profile cannot safely express, such as multiple independently versioned simultaneous goals, explicit deadlines/status or goal lifecycle history. Ownership, migration, sync/revision, conflict, deletion/account-cleanup and privacy/export semantics must be designed before such expansion.
 
+## Phase 18 approved product boundary
+
+Phase 18 adds a controlled educational layer across training, nutrition, physiology, recovery, body composition and selected Labs concepts.
+
+The reviewed loop is:
+
+`bounded user evidence → deterministic Coach finding → approved knowledge mapping → canonical article → validated quiz → informational learning state → future Coach personalization`
+
+Permanent first-scope rules:
+
+- **no gamification**: no knowledge XP, levels, streaks, badges, leaderboards, competitive ranks or punitive learning mechanics;
+- canonical articles are generated/reviewed ahead of use and are versioned; end-user requests do not create a new scientific article from scratch;
+- AI is an editorial assistant over an approved evidence pack, not the publication authority;
+- every material factual claim must be traceable to reviewed source records before publication;
+- quizzes are pre-generated for an exact article version and must have a provably unique answer key;
+- medical-adjacent/Labs educational material remains non-diagnostic and requires stronger review; Tier-3 publication requires human review;
+- canonical article/source/quiz records contain no private user evidence;
+- private evidence may be used only in bounded recommendation/relevance layers;
+- Coach recommendations use allowlisted deterministic finding→content mappings rather than unconstrained content generation;
+- reading or quiz completion never automatically mutates workouts, nutrition targets, goals, Labs, recovery or safety state;
+- later behavior change must not be attributed causally to having read an article.
+
+Focused architecture: `docs/architecture/phase18-knowledge-learning-system.md`.
+
+Focused execution roadmap: `docs/roadmap/knowledge-learning.md`.
+
 ## Phase 14 external evidence boundary
 
 Phase 14 remains independently actionable when external prerequisites become available.
@@ -99,13 +126,16 @@ Phase 14 remains independently actionable when external prerequisites become ava
 
 Source/CI completion does **not** claim production deployment, provider activation, signed physical-device evidence, production-model quality, diagnosis/prescribing authority, server-side local-timezone parity or automatic cross-domain mutation.
 
+Phase 18 source completion likewise does not claim editorial publication quality merely because a model produced a draft. Publication requires the reviewed evidence/claim/quiz gates.
+
 ## Current execution order
 
-1. Treat P17-A through P17-D as source/CI-complete for the currently reviewed first Goals & Planning scope through #783; see `docs/qa/phase17-goals-planning-closure.md`.
-2. Do not manufacture P17-E goal persistence/model-planning work unless a reviewed richer-goal requirement crosses the documented threshold.
-3. Keep Phase 15 and reviewed Phase 16 foreground v1 closed unless a reproduced defect or newly reviewed capability requires expansion.
-4. Execute Phase 14 provider/device evidence independently whenever its external prerequisites become available.
-5. Repair demonstrated defects before inventing unrelated cleanup work.
+1. Execute **P18-A Knowledge/content/evidence foundation**: versioned domain contracts, source/claim traceability, risk/review states and deterministic publication eligibility; then define the minimum persistence/read API boundary.
+2. Keep P17-A through P17-D closed for the currently reviewed first Goals & Planning scope through #783; do not manufacture P17-E unless its richer-goal threshold is crossed.
+3. After P18-A is validated, continue P18-B editorial generation pipeline and P18-C library/reader as dependency-safe workstreams; do not skip publication gates to accelerate UI.
+4. Keep Phase 15 and reviewed Phase 16 foreground v1 closed unless a reproduced defect or newly reviewed capability requires expansion.
+5. Execute Phase 14 provider/device evidence independently whenever its external prerequisites become available.
+6. Repair demonstrated defects before unrelated cleanup work.
 
 ## Execution boundary
 
