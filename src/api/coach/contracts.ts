@@ -1,5 +1,5 @@
 import type { CoachRunInputSummary } from './inputSummary';
-import type { CoachQuestionResponse } from './questions';
+import type { CoachQuestionResponse, CoachQuestionScope } from './questions';
 
 export type CoachRunStatus = 'queued' | 'running' | 'completed' | 'rejected' | 'failed';
 export type CoachDomain = 'strength' | 'nutrition' | 'safety_recovery' | 'combined';
@@ -20,7 +20,13 @@ export type CoachRequestType =
   | CombinedCoachRequestType;
 
 export type CoachCapabilities = {
-  schemaVersion: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+  schemaVersion: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13;
+  questions?: {
+    structuredAnswer: boolean;
+    availableScopes: CoachQuestionScope[];
+    readOnly: true;
+    automaticApplication: false;
+  };
   nutrition: {
     deterministicReview: true;
     deterministicTargetProposal: true;
