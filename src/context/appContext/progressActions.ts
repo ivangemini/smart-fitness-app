@@ -1,10 +1,14 @@
 import { calculateNutritionTargets } from '@/features/profile/profilePlan';
 import { ensureUuid } from '@/lib/ids';
+import {
+  areProfileGoalsSnapshotsEqual,
+  getProfileGoalsSnapshot,
+} from '@/lib/profileGoals';
 import type {
   AppState,
   BodyMeasurement,
   ProfileCalculationSex,
-  ProfileGoalType,
+  ProfileGoalsSnapshot,
   ProfileTrainingExperience,
   WeightEntry,
 } from '@/types';
@@ -16,11 +20,11 @@ export type ProfileActivityLevel =
   | 'high'
   | 'very_high';
 
-export type ProfileGoalsUpdate = {
-  targetWeight: number;
-  goalType: ProfileGoalType;
-  weeklyWeightChangeGoal: number;
-  trainingDaysPerWeek: number;
+export type ProfileGoalsUpdate = ProfileGoalsSnapshot;
+
+export type GuardedProfileGoalsUpdateResult = {
+  nextState: AppState;
+  status: 'applied' | 'stale';
 };
 
 export type RegistrationProfileUpdate = {
@@ -43,7 +47,7 @@ export type OnboardingSetup = {
   age: number;
   activityLevel: ProfileActivityLevel;
   currentWeight: number;
-  goalType: ProfileGoalType;
+  goalType: ProfileGoalsSnapshot['goalType'];
   trainingDaysPerWeek: number;
 };
 
@@ -63,6 +67,26 @@ export function updateProfileGoalsInState(
       ...currentState.profile,
       ...goals,
     },
+  };
+}
+
+export function updateProfileGoalsIfCurrentInState(
+  currentState: AppState,
+  goals: ProfileGoalsUpdate,
+  expectedCurrent: ProfileGoalsSnapshot,
+): GuardedProfileGoalsUpdateResult {
+  if (
+    !areProfileGoalsSnapshotsEqual(
+      getProfileGoalsSnapshot(currentState.profile),
+      expectedCurrent,
+    )
+  ) {
+    return { nextState: currentState, status: 'stale' };
+  }
+
+  return {
+    nextState: updateProfileGoalsInState(currentState, goals),
+    status: 'applied',
   };
 }
 

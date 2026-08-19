@@ -64,12 +64,12 @@ describe('Profile state boundary', () => {
     }
   });
 
-  test('Profile Goals composes focused Profile and Progress state', () => {
+  test('Profile Goals uses focused Profile state and actions without Progress coupling', () => {
     const source = readSource('src/features/profile/ProfileGoalsSection.tsx');
 
     expect(source).toContain('useProfileState');
-    expect(source).toContain('useProgressState');
     expect(source).toContain('useAppActions');
+    expect(source).not.toContain('useProgressState');
     expect(source).not.toContain('useAppContext');
   });
 });

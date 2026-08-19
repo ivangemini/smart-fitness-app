@@ -99,7 +99,9 @@ describe('navigation repair and UX cleanup 3.0', () => {
     expect(profile).not.toContain('profile.planMovedTitle');
     expect(progress).not.toContain('ProgressPlanningSections');
     expect(profileGoals).toContain('ProfileGoalsCard');
-    expect(profileGoals).toContain("t('goals.recalculateBody')");
+    expect(profileGoals).toContain('buildGoalProposal({');
+    expect(profileGoals).toContain('expectedCurrent: proposal.source');
+    expect(profileGoals).not.toContain('updateNutritionTargets');
     expect(coach).toContain('router.push(action.route)');
     expect(coach).toContain('/profile/combined-review');
     expect(coach).toContain('/profile/combined-proposal');

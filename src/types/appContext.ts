@@ -7,6 +7,7 @@ import type {
   NutritionTargets,
   ProfileCalculationSex,
   ProfileGoalType,
+  ProfileGoalsSnapshot,
   ProfileState,
   ProfileTrainingExperience,
   RecoveryCheckIn,
@@ -89,12 +90,10 @@ export type AppActions = {
   setActiveTrainingProgram: (programId: string | null) => void;
   toggleTrainingProgramFavorite: (programId: string) => void;
   updateNutritionTargets: (targets: NutritionTargets) => void;
-  updateProfileGoals: (goals: {
-    targetWeight: number;
-    goalType: ProfileGoalType;
-    weeklyWeightChangeGoal: number;
-    trainingDaysPerWeek: number;
-  }) => void;
+  updateProfileGoals: (
+    goals: ProfileGoalsSnapshot,
+    options?: { expectedCurrent?: ProfileGoalsSnapshot },
+  ) => Promise<'applied' | 'stale'>;
   updateRegistrationProfile: (profile: {
     height: string;
     trainingExperience: ProfileTrainingExperience;
