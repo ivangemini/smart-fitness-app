@@ -1,5 +1,6 @@
-import type { AppLocale } from '@/localization';
 import type { GoalPlanningField } from './goalPlanningProposal';
+
+type Locale = 'en' | 'ru';
 
 export type GoalPlanningCopy = {
   reviewTitle: string;
@@ -20,7 +21,7 @@ export type GoalPlanningCopy = {
   keepNutrition: string;
 };
 
-const COPY: Record<AppLocale, GoalPlanningCopy> = {
+const COPY: Record<Locale, GoalPlanningCopy> = {
   en: {
     reviewTitle: 'Review goal changes',
     reviewBody: 'These changes are still a preview. Nothing is saved until you confirm.',
@@ -75,4 +76,4 @@ const COPY: Record<AppLocale, GoalPlanningCopy> = {
   },
 };
 
-export const getGoalPlanningCopy = (locale: AppLocale): GoalPlanningCopy => COPY[locale];
+export const getGoalPlanningCopy = (locale: Locale): GoalPlanningCopy => COPY[locale];
