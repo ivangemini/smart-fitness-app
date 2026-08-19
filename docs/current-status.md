@@ -10,41 +10,31 @@ Exact code, tests, migrations, CI and current Git history override this checkpoi
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current verified runtime `main`: `b2531e2122d6d7357129c76c48554b3a915d2e6c` (#783). Documentation checkpoint #784 follows without runtime changes.
+- Current `main`: `b8de527f435319be9b7d70ec3c698b03945e21f9` (#787).
+- Current verified runtime baseline remains `b2531e2122d6d7357129c76c48554b3a915d2e6c` (#783); the Phase 18 commits currently on `main` after that point are documentation-only.
+- Phase 15 Coach Intelligence + Progress, Phase 16 foreground Proactive Coach v1 and the reviewed first Phase 17 Goals & Planning scope remain source/CI-complete.
+- #785 activated and indexed the reviewed Phase 18 Knowledge & Learning architecture and roadmap.
+- #787 added the reviewed P18-E learning-state ownership/privacy/versioning contract. It is architecture-only and does not authorize persistence before the prerequisite reader/quiz identities are stable.
 
-Phase 15 remains source/CI-complete for the reviewed Coach Intelligence + Progress scope. Phase 16 deterministic foreground v1 is source/CI-complete through #770–#772.
+Active mobile Phase 18 work:
 
-The first reviewed Phase 17 Goals & Planning scope is source/CI-complete:
-
-- #773 — typed deterministic goal facts from canonical fitness-profile goals, weight history and completed workout history, plus neutral goal-relative Progress context;
-- #776 — selector-only Goals → Companion handoff with canonical fact rebuilding at the destination;
-- #777 — authenticated read-only Ask Coach UI, strict question-response parsing, capability-aware availability and Coach capability-schema compatibility through v13;
-- #781 — typed non-canonical goal proposal preview, explicit current→proposed changes and guarded `applied | stale` canonical update;
-- #783 — inline Liquid Glass proposal review, preview invalidation after further edits, and preservation of the #781 atomic stale-source guard without adding a second goal authority.
-
-#783 exact-head `98aece0b5a44b97988797db2fedd04529bf302df` passed Mobile CI run `32245117299` / 2641: repository/changed-file line audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
-
-The existing fitness profile remains the canonical goal authority. No second persisted goal collection or proposal store was introduced. Applying a goal proposal changes only goal fields; the previous hidden nutrition-target recalculation remains removed, so nutrition/program changes remain separate reviewed application flows. The review surface is ephemeral: changing the editable form invalidates the current preview and requires a fresh review before apply.
-
-Focused closure evidence: `docs/qa/phase17-goals-planning-closure.md`.
+- #786 — P18-C Knowledge Library + article reader. The branch adds strict `knowledge-v1` parsing/client boundaries, category/concept/bounded-search discovery, immutable article reading, reviewed source/evidence presentation, EN/RU copy and deterministic bounded Markdown rendering. Its previous exact head passed Mobile CI, but the PR deliberately depends on backend #275 and must be rebuilt/revalidated from exact current mobile `main` after that server contract merges.
 
 ### Backend repository
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Current verified backend `main`: `eebca930893f3b2a5bcc4e2293873695d1bbb3c6` (#271).
+- Current `main`: `ace6149e5795fbeb8308d6c2eea44bbf70e00cbc` (#273).
+- #272 merged the first P18-A provider-neutral Knowledge foundation: versioned canonical content/source/claim/quiz contracts plus deterministic publication gating.
+- #273 independently added the fail-closed read-only Peptonio admin-console foundation; it does not change Knowledge ownership or publication authority.
 
-The read-only Coach question path includes:
+Active backend Phase 18 dependency chain:
 
-- #266 — minimal-scope structured question routing;
-- #267 — minimized evidence, strict structured answer output and fail-closed scope validation;
-- #269 — authenticated `POST /v1/coach/questions` composition;
-- #270 — bounded confirmed structured Labs overview/marker-history evidence;
-- #271 — bounded `goal_progress` routing/evidence over the existing fitness profile, 42-day weight history and recent completed sessions, with capabilities schema v13.
+1. #275 — P18-A relational canonical Knowledge persistence + authenticated published-reader API. Exact head `e76ec127de1c297c7ebf6bb1a68bfbda99584cf1`; required Backend CI and Backend PostgreSQL CI are pending on the self-hosted Hermes queue. Account Deletion Receipt CI already passed for that head. Do not merge until all required exact-head gates pass.
+2. #276 — P18-B provider-neutral editorial orchestration foundation, stacked on the P18-A persistence branch. It must be rebuilt/retargeted to exact current `main` after #275 merges and then revalidated before merge.
+3. P18-D quiz-bank foundation was prepared as #279 on top of #276, but #279 is currently closed/unmerged. Rebuild/reopen or replace it from exact current `main` only after #276 is merged and stable.
 
-#271 passed exact-head Backend CI: lint, Prettier, build, production-configuration validation, isolated-staging topology validation and the full test suite.
-
-Goal-only questions do not read food logs or workout sets and do not expose notes/session payloads. The first backend goal evidence contract uses a bounded seven-day **UTC-day** training window because server-side user-timezone authority has not been introduced; it must not be described as a local-calendar-week contract.
+Independent read-only admin branches #277/#278 remain outside the Phase 18 dependency chain and must not be allowed to weaken Knowledge migration or exact-head validation discipline.
 
 ## Phase status
 
@@ -54,89 +44,63 @@ Goal-only questions do not read food logs or workout sets and do not expose note
 - **Phase 13 — Companion v1:** retained; Companion remains the user-facing presentation of Coach, not a second assistant.
 - **Phase 14:** ordinary autonomous source/runtime preparation is exhausted for current contracts; external provider and physical-device evidence remains.
 - **Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics:** source/CI-complete for the currently reviewed scope.
-- **Phase 16 — Proactive Coach:** deterministic foreground Companion-card v1 source/CI-complete through #770–#772; expansion requires a separate purpose/delivery contract.
-- **Phase 17 — Goals & Planning:** P17-A through P17-D are source/CI-complete for the currently reviewed first scope through #783. P17-E richer goal persistence remains threshold-gated and is not an automatic next task.
-- **Phase 18 — Knowledge & Learning:** newly approved and active. P18-A knowledge/content/evidence foundation is the current autonomous source priority; later editorial generation, reader, quizzes, learning state and Coach→Learn integration remain dependency ordered.
+- **Phase 16 — Proactive Coach:** deterministic foreground Companion-card v1 source/CI-complete through #770–#772.
+- **Phase 17 — Goals & Planning:** P17-A through P17-D source/CI-complete through #783; richer P17-E remains threshold-gated.
+- **Phase 18 — Knowledge & Learning:** active. P18-A contracts are merged; P18-A persistence/reader is awaiting exact-head CI; P18-B and P18-C are prepared behind that dependency; P18-D must be rebuilt after P18-B; P18-E ownership architecture is reviewed but persistence remains dependency-gated.
 
-## Phase 17 authority and boundaries
+## Phase 18 authority and boundaries
 
-Canonical goal-related fields remain:
+Reviewed pipeline:
 
-- `ProfileState.goalType`;
-- `ProfileState.targetWeight`;
-- `ProfileState.weeklyWeightChangeGoal`;
-- `ProfileState.trainingDaysPerWeek`.
+`topic → curated evidence pack → AI-assisted draft → claim/source verification → validated quiz bank → reviewed published article version`
 
-They already participate in the fitness-profile synchronization path and mutate through `updateProfileGoals`.
+Reviewed user loop:
 
-P17-D adds an ephemeral proposal contract over those fields. A proposal captures the source goal snapshot plus only explicit current→proposed changes. Before canonical mutation, the app compares that source snapshot with current state inside the state transition. A mismatch returns `stale` and preserves newer state unchanged.
+`bounded user evidence → deterministic Coach finding → allowlisted article mapping → canonical article → validated quiz → informational learning state`
 
-#783 refines presentation only: review now happens in an inline Liquid Glass card, any subsequent form edit invalidates that review, and Apply still uses the captured source snapshot through the atomic guarded update.
+Permanent rules:
 
-Permanent Phase 17 first-scope rules:
+- no Knowledge XP, levels, streaks, badges, leaderboards, competitive ranks, punishment or engagement-reward loops;
+- canonical educational articles are generated/reviewed ahead of use; end-user requests do not publish live-generated scientific content;
+- model output is never publication authority;
+- every material claim must remain traceable to reviewed source records;
+- published article versions are immutable evidence boundaries;
+- quizzes bind to exact article versions and reviewed claim identities; ambiguous answer keys fail closed;
+- Tier-3 Labs/medical-adjacent educational content requires human review and remains non-diagnostic/non-prescriptive;
+- canonical content never contains private user evidence;
+- raw Labs documents/extraction drafts remain outside ordinary Knowledge generation/recommendation context;
+- reading or quiz completion never automatically mutates workouts, nutrition, goals, Labs, recovery or safety;
+- later fitness/health outcomes must not be attributed causally to reading an article.
 
-- missing evidence remains missing;
-- no universal goal/adherence score;
-- no moralized success/failure or punitive streak mechanics;
-- no inferred body composition;
-- navigation passes selectors/anchors rather than raw private state;
-- generic Coach questions are read-only and minimum-scope;
-- proposals remain non-canonical until explicit confirmation;
-- stale proposals fail closed;
-- accepting a goal proposal does not automatically mutate nutrition targets, programs, workouts, Labs, recovery or safety state.
+Learning state is private account-owned informational data. The reviewed states are `unseen`, `read`, `understood` and `refresh_useful`. Positive evidence is tied to exact canonical article/article-version identities; reading alone cannot produce `understood`, hidden answer keys remain backend-only, and account deletion/export/privacy/account-switch/replay/two-device semantics must ship with the persistence authority rather than later.
 
-A new persisted goal entity is justified only by a reviewed requirement the current profile cannot safely express, such as multiple independently versioned simultaneous goals, explicit deadlines/status or goal lifecycle history. Ownership, migration, sync/revision, conflict, deletion/account-cleanup and privacy/export semantics must be designed before such expansion.
+Focused architecture:
 
-## Phase 18 approved product boundary
+- `docs/architecture/phase18-knowledge-learning-system.md`
+- `docs/architecture/phase18-learning-state-contract.md`
 
-Phase 18 adds a controlled educational layer across training, nutrition, physiology, recovery, body composition and selected Labs concepts.
+Focused execution roadmap:
 
-The reviewed loop is:
-
-`bounded user evidence → deterministic Coach finding → approved knowledge mapping → canonical article → validated quiz → informational learning state → future Coach personalization`
-
-Permanent first-scope rules:
-
-- **no gamification**: no knowledge XP, levels, streaks, badges, leaderboards, competitive ranks or punitive learning mechanics;
-- canonical articles are generated/reviewed ahead of use and are versioned; end-user requests do not create a new scientific article from scratch;
-- AI is an editorial assistant over an approved evidence pack, not the publication authority;
-- every material factual claim must be traceable to reviewed source records before publication;
-- quizzes are pre-generated for an exact article version and must have a provably unique answer key;
-- medical-adjacent/Labs educational material remains non-diagnostic and requires stronger review; Tier-3 publication requires human review;
-- canonical article/source/quiz records contain no private user evidence;
-- private evidence may be used only in bounded recommendation/relevance layers;
-- Coach recommendations use allowlisted deterministic finding→content mappings rather than unconstrained content generation;
-- reading or quiz completion never automatically mutates workouts, nutrition targets, goals, Labs, recovery or safety state;
-- later behavior change must not be attributed causally to having read an article.
-
-Focused architecture: `docs/architecture/phase18-knowledge-learning-system.md`.
-
-Focused execution roadmap: `docs/roadmap/knowledge-learning.md`.
-
-## Phase 14 external evidence boundary
-
-Phase 14 remains independently actionable when external prerequisites become available.
-
-- **Push:** staging-only APNs/FCM material plus signed physical-device permission/token/delivery/tap evidence remain.
-- **Labs / Analyses:** configured-provider evidence still requires staging-only private S3-compatible storage plus Gemini material, one bounded synthetic lifecycle and physical-device picker/accessibility evidence.
-- **Stories:** backend route/auth/account-lifecycle staging evidence is complete; remaining mobile/physical-device runtime evidence remains.
-- **Steps:** signed native/physical-device support, permissions, real aggregate reads and local-day/DST/Home evidence remain.
-
-## Validation / closure boundary
-
-Source/CI completion does **not** claim production deployment, provider activation, signed physical-device evidence, production-model quality, diagnosis/prescribing authority, server-side local-timezone parity or automatic cross-domain mutation.
-
-Phase 18 source completion likewise does not claim editorial publication quality merely because a model produced a draft. Publication requires the reviewed evidence/claim/quiz gates.
+- `docs/roadmap/knowledge-learning.md`
 
 ## Current execution order
 
-1. Execute **P18-A Knowledge/content/evidence foundation**: versioned domain contracts, source/claim traceability, risk/review states and deterministic publication eligibility; then define the minimum persistence/read API boundary.
-2. Keep P17-A through P17-D closed for the currently reviewed first Goals & Planning scope through #783; do not manufacture P17-E unless its richer-goal threshold is crossed.
-3. After P18-A is validated, continue P18-B editorial generation pipeline and P18-C library/reader as dependency-safe workstreams; do not skip publication gates to accelerate UI.
-4. Keep Phase 15 and reviewed Phase 16 foreground v1 closed unless a reproduced defect or newly reviewed capability requires expansion.
-5. Execute Phase 14 provider/device evidence independently whenever its external prerequisites become available.
-6. Repair demonstrated defects before unrelated cleanup work.
+1. Finish #275 only after required exact-head Backend CI + Backend PostgreSQL CI pass.
+2. Immediately rebuild/retarget #276 from exact backend `main`, revalidate, and merge if clean.
+3. Rebuild #786 from exact mobile `main` against the merged backend reader contract, run exact-head Mobile CI, and merge if clean.
+4. Rebuild the P18-D quiz-bank package from the merged P18-B baseline, preserving backend-only answer-key authority and exact article-version/claim linkage.
+5. Only after the reader and quiz identities are merged/stable, implement P18-E learning-state persistence/API/mobile integration under the #787 ownership/deletion/export/offline-replay contract.
+6. Continue P18-F Coach → Learn deterministic finding-to-content mappings only after the canonical article and bounded learning-state boundaries are stable enough to consume safely.
+7. Execute remaining Phase 14 provider/device evidence independently whenever its external prerequisites are available.
+8. Repair demonstrated defects before unrelated cleanup work.
 
-## Execution boundary
+## External Phase 14 gates still outstanding
 
-`AGENTS.md` remains the operational authority. Provider activation, deployment, native/device execution, credential changes and production-sensitive operations remain separately evidence- and authorization-gated.
+- Labs configured-provider + physical-device evidence;
+- Push provider + physical-device evidence;
+- Steps signed native/physical-device evidence;
+- Stories remaining mobile/physical-device runtime evidence.
+
+## Closure boundary
+
+Source/CI completion does not imply provider activation, production deployment, content publication quality approval, signed-device evidence, diagnosis/prescribing authority, automatic cross-domain mutation or production rollout. Operational activation remains separately evidence-gated under `AGENTS.md`.
