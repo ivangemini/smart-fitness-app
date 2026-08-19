@@ -12,7 +12,7 @@ Reviewed local-state storage decision remains `docs/architecture/local-state-per
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current verified `main`: `45119f2ef3cc381e667fa8e17ad2d108a9114062` (#776).
+Current verified `main`: `e086f6795b0ea5f07ad00c3d03283759a1889780` (#777).
 
 The repository-wide Liquid Glass convergence and Phase 15 Coach Intelligence + Progress scope remain source/CI-complete for the reviewed boundaries. Phase 16 deterministic foreground v1 is source/CI-complete through #770–#772.
 
@@ -20,7 +20,9 @@ Phase 17 is active over the existing fitness-profile goal authority:
 
 - #773 — deterministic typed goal facts + neutral Progress Goals context;
 - #776 — selector-only Goals → Companion context handoff;
-- #777 — authenticated read-only Ask Coach surface and mobile capabilities v11–v13 compatibility is in final exact-head validation and is not yet claimed merged by this draft checkpoint.
+- #777 — authenticated read-only Ask Coach surface, strict response parsing, capability-aware availability and mobile Coach capabilities compatibility through v13.
+
+#777 passed exact-head Mobile CI: repository/changed-file line audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
 
 ### Backend
 
@@ -29,6 +31,8 @@ Repository: `ivangemini/smart-fitness-backend`.
 Current verified backend `main`: `eebca930893f3b2a5bcc4e2293873695d1bbb3c6` (#271).
 
 The reviewed read-only Coach question infrastructure now includes minimal routing (#266), minimized evidence/strict answer output (#267), authenticated `/v1/coach/questions` composition (#269), confirmed structured Labs evidence (#270), and bounded goal-progress evidence/capabilities v13 (#271).
+
+#271 passed exact-head Backend CI: lint, Prettier, build, production-configuration validation, isolated-staging topology validation and the full test suite.
 
 Phase 14 provider/runtime source preparation remains complete for the reviewed contracts. Existing isolated Hermes staging and bounded Labs/Stories evidence tooling remain the execution foundation for external evidence work.
 
@@ -42,7 +46,7 @@ Phase 14 provider/runtime source preparation remains complete for the reviewed c
 - Phase 14: ordinary autonomous source/runtime preparation is exhausted for current contracts; remaining work is external provider material, signed native/physical-device evidence, deliberate rollout, or bounded repair of a reproduced defect.
 - Phase 15: **Coach Intelligence & Data Access + Progress UX/Analytics is source/CI-complete for the currently reviewed scope.**
 - Phase 16: **Proactive Coach deterministic foreground v1 is source/CI-complete through #770–#772.**
-- Phase 17: **Goals & Planning is active. P17-A/B and backend P17-C are implemented; mobile P17-C is awaiting final exact-head closure in #777.**
+- Phase 17: **Goals & Planning is active. P17-A/B/C first slices are source/CI-complete through mobile #777 and backend #271.**
 
 ## Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics
 
@@ -95,7 +99,7 @@ Milestones:
 - #269 authenticated read-only `/v1/coach/questions` composition;
 - #270 confirmed structured Labs overview/marker-history scope.
 
-Phase 17 may extend this same architecture with a newly reviewed purpose-specific scope; it must not create a second retrieval authority.
+Phase 17 extends this same architecture with a newly reviewed purpose-specific goal scope; it does not create a second retrieval authority.
 
 **Status:** source/CI-complete for the Phase 15 reviewed scopes.
 
@@ -205,11 +209,11 @@ Mobile #777 adds:
 - main Companion Ask Coach composer/result presentation;
 - no conversation persistence and no automatic canonical mutation.
 
-**Status:** backend source/CI-complete via #271; mobile pending final exact-head closure/merge via #777 in this draft checkpoint.
+**Status:** source/CI-complete for the reviewed first goal-aware question/UI contract.
 
 ### P17-D — Planning/proposal preview contract
 
-This is the next planned source slice after P17-C closure.
+This is the next planned source slice.
 
 Before richer planning UI, define a typed non-canonical proposal/preview contract over the existing fitness-profile goal authority.
 
@@ -288,7 +292,7 @@ Detailed inventory: `docs/architecture/liquid-glass-residual-inventory.md`.
 
 ## Current execution order
 
-1. Finish exact-head validation/merge of mobile #777 and synchronize the four canonical checkpoint documents to exact merge SHAs.
+1. Treat P17-A/B/C as source/CI-complete for the reviewed first goal-aware slice set.
 2. Begin P17-D planning/proposal preview with explicit non-canonical/stale-source/confirmation boundaries over existing profile authority.
 3. Keep Phase 15 and reviewed Phase 16 foreground v1 closed unless a reproduced defect, failed invariant or newly reviewed purpose requires reopening them.
 4. Execute Phase 14 provider/device evidence whenever external prerequisites become available; it remains independent of successor source phases.
