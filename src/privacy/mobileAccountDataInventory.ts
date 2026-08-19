@@ -128,6 +128,20 @@ export const MOBILE_ACCOUNT_DATA_SURFACES: readonly MobileAccountDataSurface[] =
       'Edit the source data, clear it through product flows, or delete account.',
   },
   {
+    id: 'proactive_coach_presentation',
+    storage: 'async_storage',
+    storageKeys: [],
+    category: 'preferences_and_cache',
+    contains:
+      'Account-scoped Proactive Coach last-shown timestamp and bounded dismissed insight keys only.',
+    purpose:
+      'Apply local presentation cooldown and dismissal without creating fitness-data or recommendation authority.',
+    transmission: 'none',
+    deletion: 'account_cleanup',
+    userControl:
+      'Dismiss individual insights; the local presentation record is also removed when the account is deleted.',
+  },
+  {
     id: 'auth_session_metadata',
     storage: 'async_storage',
     storageKeys: ['@smart_fitness_mvp_auth_session'],
