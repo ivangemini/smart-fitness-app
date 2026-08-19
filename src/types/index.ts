@@ -28,6 +28,7 @@ export type {
 export type {
   ProfileCalculationSex,
   ProfileGoalType,
+  ProfileGoalsSnapshot,
   ProfileState,
   ProfileTrainingExperience,
 } from './profile';
