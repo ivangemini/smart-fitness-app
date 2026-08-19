@@ -38,6 +38,7 @@ import { deriveCompanionProgress } from '@/features/companion/companionProgressi
 import { ProactiveInsightCard } from '@/features/companion/ProactiveInsightCard';
 import { getProactiveInsightCopy } from '@/features/companion/proactiveInsightCopy';
 import { useProactiveInsight } from '@/features/companion/useProactiveInsight';
+import { KnowledgeLibraryEntryButton } from '@/features/knowledge/KnowledgeLibraryEntryButton';
 import { useAuthSession } from '@/hooks/useAuthSession';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
@@ -419,6 +420,7 @@ export default function CoachScreen() {
                 variant="secondary"
               />
             ))}
+            <KnowledgeLibraryEntryButton />
           </View>
         </AppCard>
         <AppCard>
