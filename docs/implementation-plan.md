@@ -12,7 +12,7 @@ Reviewed local-state storage decision remains `docs/architecture/local-state-per
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current verified `main`: `fe36a5ff00666a977099277258cd326dc5a9cf14` (#781).
+Current verified `main`: `b2531e2122d6d7357129c76c48554b3a915d2e6c` (#783).
 
 The repository-wide Liquid Glass convergence and Phase 15 Coach Intelligence + Progress scope remain source/CI-complete for reviewed boundaries. Phase 16 deterministic foreground v1 remains source/CI-complete through #770–#772.
 
@@ -21,9 +21,10 @@ The first reviewed Phase 17 Goals & Planning scope is now source/CI-complete:
 - #773 — deterministic typed goal facts + neutral Progress Goals context;
 - #776 — selector-only Goals → Companion context handoff;
 - #777 — authenticated read-only Ask Coach surface, strict response parsing, capability-aware availability and mobile Coach capabilities compatibility through v13;
-- #781 — typed ephemeral goal proposal preview, explicit current→proposed changes and guarded `applied | stale` canonical update.
+- #781 — typed ephemeral goal proposal preview, explicit current→proposed changes and guarded `applied | stale` canonical update;
+- #783 — inline Liquid Glass proposal review with preview invalidation after further edits while preserving the #781 atomic stale-source guard.
 
-#781 exact-head `5c239c3638932568440c811f6d44e7578db1ea8a` passed Mobile CI run `32242728771` / 2638: repository/changed-file line audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
+#783 exact-head `98aece0b5a44b97988797db2fedd04529bf302df` passed Mobile CI run `32245117299` / 2641: repository/changed-file line audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
 
 Focused Phase 17 first-scope closure evidence: `docs/qa/phase17-goals-planning-closure.md`.
 
@@ -49,7 +50,7 @@ Phase 14 provider/runtime source preparation remains complete for reviewed contr
 - Phase 14: ordinary autonomous source/runtime preparation is exhausted for current contracts; remaining work is external provider material, signed native/physical-device evidence, deliberate rollout, or bounded repair of a reproduced defect.
 - Phase 15: **Coach Intelligence & Data Access + Progress UX/Analytics is source/CI-complete for the currently reviewed scope.**
 - Phase 16: **Proactive Coach deterministic foreground v1 is source/CI-complete through #770–#772.**
-- Phase 17: **Goals & Planning P17-A through P17-D are source/CI-complete for the currently reviewed first scope through mobile #781 and backend #271. P17-E remains richer-goal-threshold gated.**
+- Phase 17: **Goals & Planning P17-A through P17-D are source/CI-complete for the currently reviewed first scope through mobile #783 and backend #271. P17-E remains richer-goal-threshold gated.**
 
 ## Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics
 
@@ -215,9 +216,11 @@ Applying a proposal mutates only the four canonical goal fields. The previous hi
 
 The form preserves unsaved goal edits across unrelated profile changes. It also preserves exact canonical kg values when the displayed kg/lb number was not edited, avoiding format/convert round-trip drift.
 
+#783 refines the presentation boundary without changing authority: proposal review is now an inline Liquid Glass card, any subsequent form edit invalidates the current preview, and Apply still passes the captured source snapshot into the #781 atomic stale guard. No second proposal persistence or goal store was added.
+
 Detailed architecture: `docs/architecture/phase17-goal-proposal-contract.md`.
 
-**Status:** source/CI-complete.
+**Status:** source/CI-complete through #783.
 
 ### P17-E — Richer goal model threshold
 
@@ -288,7 +291,7 @@ Detailed inventory: `docs/architecture/liquid-glass-residual-inventory.md`.
 
 ## Current execution order
 
-1. Keep P17-A through P17-D closed for the currently reviewed first Goals & Planning scope; closure evidence is `docs/qa/phase17-goals-planning-closure.md`.
+1. Keep P17-A through P17-D closed for the currently reviewed first Goals & Planning scope through #783; closure evidence is `docs/qa/phase17-goals-planning-closure.md`.
 2. Do not start P17-E richer goal persistence/model-planning work until a reviewed requirement crosses its threshold.
 3. Keep Phase 15 and reviewed Phase 16 foreground v1 closed unless a reproduced defect, failed invariant or newly reviewed purpose requires reopening them.
 4. Execute Phase 14 provider/device evidence whenever external prerequisites become available; it remains independent of successor source phases.
