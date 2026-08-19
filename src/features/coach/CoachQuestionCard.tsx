@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import {
@@ -26,6 +26,7 @@ const COPY = {
     ask: 'Ask Coach',
     signIn: 'Sign in to ask Coach',
     signInBody: 'Questions use your private account data and require an authenticated session.',
+    unavailable: 'Structured Coach questions are not available on this server right now.',
     answer: 'Coach answer',
     evidence: 'Evidence used',
     limited: 'Limited data',
@@ -44,6 +45,7 @@ const COPY = {
     ask: 'Спросить Coach',
     signIn: 'Войти, чтобы спросить Coach',
     signInBody: 'Вопросы используют приватные данные аккаунта и требуют авторизации.',
+    unavailable: 'Структурированные вопросы Coach сейчас недоступны на этом сервере.',
     answer: 'Ответ Coach',
     evidence: 'Использованные данные',
     limited: 'Данных мало',
@@ -76,6 +78,8 @@ const unsupportedMessage = (
   return details[locale][reason];
 };
 
+type CapabilityState = 'idle' | 'checking' | 'available' | 'unavailable';
+
 export function CoachQuestionCard() {
   const { colors } = useAppTheme();
   const { locale } = useLocalization();
@@ -86,14 +90,9 @@ export function CoachQuestionCard() {
   const [response, setResponse] = useState<CoachQuestionResponse | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [capabilityState, setCapabilityState] = useState<CapabilityState>('idle');
   const isAuthenticated = Boolean(session?.tokens.accessToken);
   const normalizedQuestion = question.trim();
-  const canSubmit =
-    ready &&
-    isAuthenticated &&
-    !busy &&
-    normalizedQuestion.length > 0 &&
-    normalizedQuestion.length <= COACH_QUESTION_MAX_LENGTH;
 
   const coachApi = useMemo(
     () =>
@@ -103,6 +102,43 @@ export function CoachQuestionCard() {
       }),
     [refresh, session?.tokens.accessToken],
   );
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!ready || !isAuthenticated) {
+      setCapabilityState('idle');
+      return () => {
+        cancelled = true;
+      };
+    }
+    setCapabilityState('checking');
+    void coachApi
+      .getCapabilities()
+      .then((capabilities) => {
+        if (cancelled) return;
+        setCapabilityState(
+          capabilities.questions?.structuredAnswer === true &&
+            capabilities.questions.readOnly === true &&
+            capabilities.questions.automaticApplication === false
+            ? 'available'
+            : 'unavailable',
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setCapabilityState('unavailable');
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [coachApi, isAuthenticated, ready]);
+
+  const canSubmit =
+    ready &&
+    isAuthenticated &&
+    capabilityState === 'available' &&
+    !busy &&
+    normalizedQuestion.length > 0 &&
+    normalizedQuestion.length <= COACH_QUESTION_MAX_LENGTH;
 
   const submit = async () => {
     if (!canSubmit) return;
@@ -144,7 +180,7 @@ export function CoachQuestionCard() {
       <FormField
         accessibilityLabel={copy.label}
         autoCapitalize="sentences"
-        editable={!busy}
+        editable={!busy && capabilityState === 'available'}
         helperText={copy.characters(question.length, COACH_QUESTION_MAX_LENGTH)}
         label={copy.label}
         maxLength={COACH_QUESTION_MAX_LENGTH}
@@ -159,9 +195,12 @@ export function CoachQuestionCard() {
       <AppButton
         disabled={!canSubmit}
         label={copy.ask}
-        loading={busy}
+        loading={busy || capabilityState === 'checking'}
         onPress={() => void submit()}
       />
+      {capabilityState === 'unavailable' ? (
+        <Text style={styles.meta}>{copy.unavailable}</Text>
+      ) : null}
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
