@@ -33,6 +33,7 @@ For stable cross-repository orientation, read `../project-context.md`. For curre
 - `phase18-learning-state-authority.md` — P18-E authority decision: dedicated server-authoritative account state plus a bounded mobile retry queue, outside private revisioned fitness `AppState` sync.
 - `phase18-coach-learn-recommendation-contract.md` — P18-F deterministic finding→allowlisted canonical-content selection, exact-version learning-state suppression, bounded relevance explanation and fail-closed no-model-selection authority.
 - `phase18-coach-learn-surface-integration.md` — P18-G host-surface integration: optional Knowledge attachments over already-trusted Coach findings, no new scheduler, and no trust shortcut from local Proactive insight kinds to backend finding authority.
+- `phase18-learning-paths-contract.md` — P18-H reviewed curriculum/navigation authority over immutable path versions and exact article versions, reusing P18-E state without locks, XP or duplicate progress truth.
 
 ## Media, Social, links, platform composition, CI, and UI layout
 
