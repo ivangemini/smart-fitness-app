@@ -1,6 +1,6 @@
 # Smart Fitness Current Status
 
-Updated: 2026-08-19
+Updated: 2026-08-20
 
 Exact code, tests, migrations, CI and current Git history override this checkpoint if it becomes stale.
 
@@ -10,31 +10,24 @@ Exact code, tests, migrations, CI and current Git history override this checkpoi
 
 Repository: `ivangemini/smart-fitness-app`.
 
-- Current `main`: `b8de527f435319be9b7d70ec3c698b03945e21f9` (#787).
-- Current verified runtime baseline remains `b2531e2122d6d7357129c76c48554b3a915d2e6c` (#783); the Phase 18 commits currently on `main` after that point are documentation-only.
+- Current `main`: `3a99b017b679da295207e4a8e4d1506681368023` (#793).
+- #793 merged P18-C Knowledge Library + article reader after exact-head Mobile CI passed. It adds strict `knowledge-v1` parsing/client boundaries, category/concept/bounded-search discovery, immutable article reading, reviewed source/evidence presentation, EN/RU copy and deterministic bounded Markdown rendering.
 - Phase 15 Coach Intelligence + Progress, Phase 16 foreground Proactive Coach v1 and the reviewed first Phase 17 Goals & Planning scope remain source/CI-complete.
-- #785 activated and indexed the reviewed Phase 18 Knowledge & Learning architecture and roadmap.
-- #787 added the reviewed P18-E learning-state ownership/privacy/versioning contract. It is architecture-only and does not authorize persistence before the prerequisite reader/quiz identities are stable.
+- Phase 18 architecture through P18-H is reviewed on `main`: learning-state authority, Coach → Learn recommendation authority, surface-integration authority and immutable reviewed learning-path authority are documentation contracts only until their runtime prerequisites are stable.
 
-Active mobile Phase 18 work:
-
-- #786 — P18-C Knowledge Library + article reader. The branch adds strict `knowledge-v1` parsing/client boundaries, category/concept/bounded-search discovery, immutable article reading, reviewed source/evidence presentation, EN/RU copy and deterministic bounded Markdown rendering. Its previous exact head passed Mobile CI, but the PR deliberately depends on backend #275 and must be rebuilt/revalidated from exact current mobile `main` after that server contract merges.
+There is no open mobile P18 runtime dependency at this checkpoint. P18-E mobile work intentionally remains blocked until backend P18-D quiz identity/evaluation is merged and stable.
 
 ### Backend repository
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-- Current `main`: `ace6149e5795fbeb8308d6c2eea44bbf70e00cbc` (#273).
-- #272 merged the first P18-A provider-neutral Knowledge foundation: versioned canonical content/source/claim/quiz contracts plus deterministic publication gating.
-- #273 independently added the fail-closed read-only Peptonio admin-console foundation; it does not change Knowledge ownership or publication authority.
+- Current Phase 18 baseline on `main`: `e0ae0e4506674a533903bb046fd2ff16b2cf44a3` (#285).
+- #272 merged the provider-neutral Knowledge contracts/publication gate.
+- #285 merged P18-A relational canonical Knowledge persistence + authenticated fail-closed published-reader API after exact-head Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI passed.
+- #290 is the current clean P18-B editorial-orchestration PR. Its exact head is `8d14c54159128b71f42b6b01cb28c9e5adad36d9`, one commit from `e0ae0e45…`. It includes bounded provider-neutral evidence-pack orchestration, deterministic preflight/readiness, independent claim verification/quiz validation, Tier-3 human-review handling, provider-output consistency hardening, tests and architecture indexing. Merge remains exact-head Hermes CI gated.
+- P18-D is privately prepared one dependency step above #290 at `18e2b318aa7ccd80320bead09c07c9b13c6b3267`; it is deliberately not opened as a PR while #290 owns the dependency/CI lane. The prep diff is exactly four quiz-bank files. It composes full publication eligibility with quiz-specific eligibility, snapshots/freeze-protects canonical quiz evidence, uses module-private `WeakSet` runtime membership so reflected brand symbols cannot forge authority, returns presentation-safe assembly DTOs without answer keys/feedback, and keeps answer evaluation backend-only.
 
-Active backend Phase 18 dependency chain:
-
-1. #275 — P18-A relational canonical Knowledge persistence + authenticated published-reader API. Exact head `e76ec127de1c297c7ebf6bb1a68bfbda99584cf1`; required Backend CI and Backend PostgreSQL CI are pending on the self-hosted Hermes queue. Account Deletion Receipt CI already passed for that head. Do not merge until all required exact-head gates pass.
-2. #276 — P18-B provider-neutral editorial orchestration foundation, stacked on the P18-A persistence branch. It must be rebuilt/retargeted to exact current `main` after #275 merges and then revalidated before merge.
-3. P18-D quiz-bank foundation was prepared as #279 on top of #276, but #279 is currently closed/unmerged. Rebuild/reopen or replace it from exact current `main` only after #276 is merged and stable.
-
-Independent read-only admin branches #277/#278 remain outside the Phase 18 dependency chain and must not be allowed to weaken Knowledge migration or exact-head validation discipline.
+Peptonio admin work remains outside this Phase 18 dependency chain and must not weaken exact-head Knowledge validation discipline.
 
 ## Phase status
 
@@ -46,7 +39,7 @@ Independent read-only admin branches #277/#278 remain outside the Phase 18 depen
 - **Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics:** source/CI-complete for the currently reviewed scope.
 - **Phase 16 — Proactive Coach:** deterministic foreground Companion-card v1 source/CI-complete through #770–#772.
 - **Phase 17 — Goals & Planning:** P17-A through P17-D source/CI-complete through #783; richer P17-E remains threshold-gated.
-- **Phase 18 — Knowledge & Learning:** active. P18-A contracts are merged; P18-A persistence/reader is awaiting exact-head CI; P18-B and P18-C are prepared behind that dependency; P18-D must be rebuilt after P18-B; P18-E ownership architecture is reviewed but persistence remains dependency-gated.
+- **Phase 18 — Knowledge & Learning:** active. P18-A and P18-C runtime are merged. P18-B is exact-head CI gated in #290. Hardened P18-D is prepared privately and will be rebuilt from merged P18-B `main` before validation/merge. P18-E/F/G/H runtime remains dependency-gated behind those canonical identities.
 
 ## Phase 18 authority and boundaries
 
@@ -66,6 +59,7 @@ Permanent rules:
 - every material claim must remain traceable to reviewed source records;
 - published article versions are immutable evidence boundaries;
 - quizzes bind to exact article versions and reviewed claim identities; ambiguous answer keys fail closed;
+- normal quiz assembly/presentation must not expose hidden answer keys, feedback-before-answer or review authority;
 - Tier-3 Labs/medical-adjacent educational content requires human review and remains non-diagnostic/non-prescriptive;
 - canonical content never contains private user evidence;
 - raw Labs documents/extraction drafts remain outside ordinary Knowledge generation/recommendation context;
@@ -78,6 +72,10 @@ Focused architecture:
 
 - `docs/architecture/phase18-knowledge-learning-system.md`
 - `docs/architecture/phase18-learning-state-contract.md`
+- `docs/architecture/phase18-learning-state-authority.md`
+- `docs/architecture/phase18-coach-learn-recommendation-contract.md`
+- `docs/architecture/phase18-coach-learn-surface-integration.md`
+- `docs/architecture/phase18-learning-paths-contract.md`
 
 Focused execution roadmap:
 
@@ -85,12 +83,12 @@ Focused execution roadmap:
 
 ## Current execution order
 
-1. Finish #275 only after required exact-head Backend CI + Backend PostgreSQL CI pass.
-2. Immediately rebuild/retarget #276 from exact backend `main`, revalidate, and merge if clean.
-3. Rebuild #786 from exact mobile `main` against the merged backend reader contract, run exact-head Mobile CI, and merge if clean.
-4. Rebuild the P18-D quiz-bank package from the merged P18-B baseline, preserving backend-only answer-key authority and exact article-version/claim linkage.
-5. Only after the reader and quiz identities are merged/stable, implement P18-E learning-state persistence/API/mobile integration under the #787 ownership/deletion/export/offline-replay contract.
-6. Continue P18-F Coach → Learn deterministic finding-to-content mappings only after the canonical article and bounded learning-state boundaries are stable enough to consume safely.
+1. Get #290 P18-B exact head green on Hermes; fix only reproducible failures and merge only if backend `main` is still the expected base.
+2. Rebuild the privately prepared hardened P18-D four-file package from the exact new backend `main`, exact-head validate it on Hermes, and merge if clean.
+3. Only after merged/stable P18-A + P18-D identities, implement P18-E server-authoritative account-scoped learning state plus bounded mobile retry/replay under the reviewed ownership/deletion/export contract.
+4. Implement deterministic P18-F finding → Learn mapping/selection only after enough P18-E state exists for suppression/revisit semantics.
+5. Integrate P18-F only into an existing trustworthy typed Coach/report host under P18-G; do not create a second scheduler or treat local presentation labels as backend finding authority.
+6. Implement P18-H reviewed immutable learning paths only after reader/quiz/learning-state layers are stable.
 7. Execute remaining Phase 14 provider/device evidence independently whenever its external prerequisites are available.
 8. Repair demonstrated defects before unrelated cleanup work.
 
