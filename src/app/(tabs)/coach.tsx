@@ -14,6 +14,8 @@ import { parseCoachActivityProgressContext } from '@/features/coach/coachActivit
 import { getCoachActivityProgressContextCopy } from '@/features/coach/coachActivityProgressContextCopy';
 import { parseCoachBodyProgressContext } from '@/features/coach/coachBodyProgressContext';
 import { getCoachBodyProgressContextCopy } from '@/features/coach/coachBodyProgressContextCopy';
+import { CoachGoalProgressCard } from '@/features/coach/CoachGoalProgressCard';
+import { parseCoachGoalProgressContext } from '@/features/coach/coachGoalProgressContext';
 import { buildCoachHighlightsProgressFacts } from '@/features/coach/coachHighlightsProgressFacts';
 import { parseCoachHighlightsProgressContext } from '@/features/coach/coachHighlightsProgressContext';
 import { getCoachHighlightsProgressContextCopy } from '@/features/coach/coachHighlightsProgressContextCopy';
@@ -84,6 +86,11 @@ export default function CoachScreen() {
   const progressContext = useMemo(
     () =>
       parseCoachProgressContext(searchParams as CoachProgressSearchParams),
+    [searchParams],
+  );
+  const goalProgressContext = useMemo(
+    () =>
+      parseCoachGoalProgressContext(searchParams as CoachProgressSearchParams),
     [searchParams],
   );
   const bodyProgressContext = useMemo(
@@ -279,6 +286,8 @@ export default function CoachScreen() {
             />
           </AppCard>
         ) : null}
+
+        <CoachGoalProgressCard context={goalProgressContext} />
 
         {bodyProgressContext ? (
           <AppCard>
