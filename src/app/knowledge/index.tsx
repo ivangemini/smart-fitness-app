@@ -14,9 +14,9 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { KnowledgeCategory } from '@/api/knowledge';
-import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
+import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { MaxContentWidth, Radii, Spacing, Typography } from '@/constants/theme';
 import { KnowledgeArticleCard } from '@/features/knowledge/KnowledgeArticleCard';
 import {
@@ -49,7 +49,7 @@ export default function KnowledgeLibraryScreen() {
       <View style={styles.topRow}>
         <LiquidGlassIconButton
           accessibilityLabel={copy.backToLibrary}
-          icon={<ChevronLeft color={colors.textPrimary} size={22} />}
+          Icon={ChevronLeft}
           onPress={() => router.back()}
         />
       </View>
