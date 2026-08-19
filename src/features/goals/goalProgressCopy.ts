@@ -11,6 +11,7 @@ const copy = {
     currentWeight: 'Current weight',
     trainingActual: 'Active days · last 7 days',
     openProfile: 'Edit goals',
+    openCompanion: 'Open in Companion',
     unavailable: 'Not recorded',
     goalType: {
       lose_fat: 'Fat loss',
@@ -26,6 +27,7 @@ const copy = {
     currentWeight: 'Текущий вес',
     trainingActual: 'Активных дней · 7 дней',
     openProfile: 'Изменить цели',
+    openCompanion: 'Открыть в Компаньоне',
     unavailable: 'Нет данных',
     goalType: {
       lose_fat: 'Снижение жира',
