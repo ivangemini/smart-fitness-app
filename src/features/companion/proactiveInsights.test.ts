@@ -60,6 +60,22 @@ describe('selectProactiveInsight', () => {
     expect(result?.kind === 'strength_progress' && result.evidence.relativeChange).toBeGreaterThanOrEqual(0.05);
   });
 
+  it('prioritizes strength progress over a simultaneous positive consistency signal', () => {
+    const result = selectProactiveInsight({
+      nowAt: '2026-08-19T12:00:00.000Z',
+      sessions: [
+        makeSession('early-1', '2026-07-25T10:00:00.000Z', twoSets('early-1', 100)),
+        makeSession('early-2', '2026-07-30T10:00:00.000Z', twoSets('early-2', 100)),
+        makeSession('recent-1', '2026-08-08T10:00:00.000Z', twoSets('recent-1', 108)),
+        makeSession('recent-2', '2026-08-11T10:00:00.000Z', twoSets('recent-2', 110)),
+        makeSession('recent-3', '2026-08-14T10:00:00.000Z'),
+        makeSession('recent-4', '2026-08-18T10:00:00.000Z'),
+      ],
+    });
+
+    expect(result?.kind).toBe('strength_progress');
+  });
+
   it('requires a larger sample before surfacing stagnation', () => {
     const result = selectProactiveInsight({
       nowAt: '2026-08-19T12:00:00.000Z',
@@ -120,6 +136,23 @@ describe('selectProactiveInsight', () => {
     expect(result).toBeNull();
   });
 
+  it('suppresses future or malformed presentation timestamps instead of risking spam', () => {
+    expect(
+      selectProactiveInsight({
+        nowAt: '2026-08-19T12:00:00.000Z',
+        sessions: [],
+        presentation: { lastShownAt: '2026-08-20T12:00:00.000Z' },
+      }),
+    ).toBeNull();
+    expect(
+      selectProactiveInsight({
+        nowAt: '2026-08-19T12:00:00.000Z',
+        sessions: [],
+        presentation: { lastShownAt: 'not-a-date' },
+      }),
+    ).toBeNull();
+  });
+
   it('suppresses a dismissed stable insight key and does not invent a negative consistency insight', () => {
     const sessions = [
       makeSession('early-1', '2026-07-24T10:00:00.000Z', twoSets('early-1', 100)),
@@ -143,15 +176,7 @@ describe('selectProactiveInsight', () => {
     expect(suppressed).toBeNull();
   });
 
-  it('fails closed for invalid presentation timestamps and rejects an invalid anchor', () => {
-    expect(
-      selectProactiveInsight({
-        nowAt: '2026-08-19T12:00:00.000Z',
-        sessions: [],
-        presentation: { lastShownAt: 'not-a-date' },
-      }),
-    ).toBeNull();
-
+  it('rejects an invalid analysis anchor', () => {
     expect(() =>
       selectProactiveInsight({ sessions: [], nowAt: 'not-a-date' }),
     ).toThrow('selectProactiveInsight requires a valid nowAt timestamp');
