@@ -254,6 +254,11 @@ export default function ProgressScreen() {
             onPress={() => setMeasurementEditorOpen((current) => !current)}
             variant="secondary"
           />
+          <AppButton
+            label={copy.measurementDetails}
+            onPress={() => router.push('/measurement-progress')}
+            variant="secondary"
+          />
         </View>
 
         {measurementEditorOpen ? (
