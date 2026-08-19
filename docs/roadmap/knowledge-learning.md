@@ -9,16 +9,16 @@ This is the focused execution roadmap for Phase 18. The canonical cross-reposito
 Phase 18 is active and dependency-ordered.
 
 - **P18-A contracts/publication gate:** merged in backend #272.
-- **P18-A persistence + published reader:** backend #275 is open at exact head `e76ec127de1c297c7ebf6bb1a68bfbda99584cf1`. Account Deletion Receipt CI passed. Its first Backend PostgreSQL CI attempt proved migrations/idempotency/schema and preceding PostgreSQL suites before the self-hosted Hermes runner exhausted disk during later Social tests; the failed PostgreSQL job has been requeued and Backend CI is running. Backend #281 separately adds a bounded PostgreSQL-service tmpfs mitigation for that demonstrated runner-disk failure without reducing test coverage. Do not merge #275 until all required exact-head gates pass.
-- **P18-B editorial orchestration:** backend #276 is prepared as a stacked branch and must be rebuilt/retargeted from exact backend `main` after #275 merges, with its known Prettier-only CI failure corrected before exact-head revalidation.
-- **P18-C Library/reader:** mobile #786 is prepared and its previous exact head passed Mobile CI, but it depends on #275 and must be rebuilt/revalidated from exact current mobile `main` after the backend reader contract merges.
+- **P18-A persistence + published reader:** backend #275 remains open at exact head `e76ec127de1c297c7ebf6bb1a68bfbda99584cf1`. Account Deletion Receipt CI passed. The first Backend PostgreSQL CI attempt proved migrations/idempotency/schema and preceding PostgreSQL suites before the self-hosted Hermes runner exhausted disk during later Social tests. Its failed PostgreSQL job is requeued. Backend CI later completed with failure, but the archived job log is currently unavailable through GitHub (`BlobNotFound`), so do not infer an application regression from that missing log. Backend #281 separately adds a bounded PostgreSQL-service tmpfs mitigation for the demonstrated runner-disk failure without reducing test coverage and is awaiting the same runner. Do not merge #275 until all required exact-head gates pass on a healthy/rebuilt head.
+- **P18-B editorial orchestration:** backend #276 is prepared as a stacked branch and must be rebuilt/retargeted from exact backend `main` after P18-A is dependency-clean, with its known Prettier-only CI failure corrected before exact-head revalidation.
+- **P18-C Library/reader:** mobile #786 is prepared and its previous exact head passed Mobile CI, but it depends on P18-A and must be rebuilt/revalidated from exact current mobile `main` after the backend reader contract merges.
 - **P18-D quiz bank:** a deterministic foundation was prepared as backend #279 on top of #276. #279 is currently closed/unmerged; rebuild/reopen or replace it only after P18-B is merged and stable. The rebuild must make presentation/evaluation consume a proven eligible exact-version bank so exported helpers cannot bypass Tier-3/review eligibility.
 - **P18-E learning state:** the ownership/versioning/privacy/deletion/export/offline-replay contract is merged through #787 and the dedicated server-authoritative account-state + bounded mobile retry-queue authority decision is merged through #789. Persistence remains blocked until P18-A reader identities and P18-D quiz identities are merged/stable.
 - **P18-F Coach → Learn:** recommendation authority is merged through mobile #790 in `docs/architecture/phase18-coach-learn-recommendation-contract.md`. Runtime remains blocked until P18-A, P18-D and enough of P18-E are merged/stable.
-- **P18-G Coach/report surface integration:** architecture is reviewed in `docs/architecture/phase18-coach-learn-surface-integration.md`. It deliberately does not create a new daily scheduler or treat local Proactive Coach kinds as trusted backend finding codes. Runtime waits for P18-F plus an existing eligible host surface with a trustworthy typed finding identity.
-- **P18-H:** remains downstream of the canonical content, quiz, learning-state and recommendation/surface boundaries below.
+- **P18-G Coach/report surface integration:** architecture is merged through mobile #791 in `docs/architecture/phase18-coach-learn-surface-integration.md`. It deliberately does not create a new daily scheduler or treat local Proactive Coach kinds as trusted backend finding codes. Runtime waits for P18-F plus an existing eligible host surface with a trustworthy typed finding identity.
+- **P18-H curriculum/learning paths:** architecture is reviewed in `docs/architecture/phase18-learning-paths-contract.md`. Paths are immutable reviewed navigation over exact article versions, reuse P18-E state, never lock content and do not create duplicate progress truth.
 
-Immediate order: finish #275 exact-head CI (or land/rebuild through #281 if runner disk pressure recurs) → merge dependency-clean P18-A → rebuild/revalidate #276 and #786 in parallel → merge dependency-clean heads → rebuild hardened P18-D → implement P18-E under the reviewed authority contract → implement deterministic P18-F mapping/selector → integrate it only into an already-authoritative Coach surface under P18-G → consider curriculum/navigation P18-H after the lower layers are stable.
+Immediate order: validate/fix the Hermes PostgreSQL CI failure mode through #281 as required → rebuild/validate/merge dependency-clean P18-A → rebuild/revalidate P18-B and P18-C in parallel → merge dependency-clean heads → rebuild hardened P18-D → implement P18-E under the reviewed authority contract → implement deterministic P18-F mapping/selector → integrate it only into an already-authoritative Coach surface under P18-G → implement P18-H only after the canonical reader/quiz/learning-state layers are stable.
 
 ## Product objective
 
@@ -70,7 +70,7 @@ Acceptance:
 - retries are bounded;
 - source identifiers are verified rather than fabricated by the model.
 
-**Current state:** provider-neutral foundation prepared in backend #276, stacked behind #275. Its prior CI failure is formatting-only in three P18-B files. Rebuild/retarget from exact current `main` after #275 merges, apply exact Prettier output, and revalidate before merge.
+**Current state:** provider-neutral foundation prepared in backend #276, stacked behind #275. Its prior CI failure is formatting-only in three P18-B files. Rebuild/retarget from exact current `main` after P18-A is dependency-clean, apply exact Prettier output, and revalidate before merge.
 
 ## P18-C — Library and reader
 
@@ -91,7 +91,7 @@ Acceptance:
 - article version remains stable while reading;
 - user-facing sources correspond to the canonical article version.
 
-**Current state:** prepared in mobile #786. Previous exact head passed Mobile CI, but merge is intentionally blocked on backend #275 and a rebuild/revalidation from exact current mobile `main`.
+**Current state:** prepared in mobile #786. Previous exact head passed Mobile CI, but merge is intentionally blocked on backend P18-A and a rebuild/revalidation from exact current mobile `main`.
 
 ## P18-D — Quiz bank and validation
 
@@ -175,23 +175,29 @@ Acceptance:
 - no automatic fitness/nutrition/goal/Labs mutation follows reading or quiz completion;
 - future behavior changes are not attributed causally to the educational intervention.
 
-The reviewed authority is `docs/architecture/phase18-coach-learn-surface-integration.md`. Current Proactive Coach v1 remains a local mobile deterministic presentation domain and is not a P18-F finding authority. A future Proactive→Learn bridge requires explicit provenance/validation rather than a label-only mapping. P18-G does not create a new daily/periodic scheduler merely to carry Knowledge.
+The reviewed authority is `docs/architecture/phase18-coach-learn-surface-integration.md` (#791). Current Proactive Coach v1 remains a local mobile deterministic presentation domain and is not a P18-F finding authority. A future Proactive→Learn bridge requires explicit provenance/validation rather than a label-only mapping. P18-G does not create a new daily/periodic scheduler merely to carry Knowledge.
 
 **Current state:** architecture-approved; runtime waits for P18-F and an existing eligible Coach surface with a trustworthy compatible finding identity.
 
 ## P18-H — Curriculum / learning paths
 
-Only after P18-A–G are stable, compose reviewed concept sequences such as:
+Deliver reviewed shared curriculum/navigation over immutable path versions and exact article versions.
 
-- Training fundamentals;
-- Nutrition fundamentals;
-- Build your first program;
-- Fat-loss fundamentals;
-- Muscle-gain fundamentals;
-- Recovery fundamentals;
-- Understanding Labs.
+Acceptance:
 
-Paths are curriculum/navigation, not gamified progression.
+- a published path version references exact canonical article-version identities;
+- changing material curriculum/article content produces a new reviewed version rather than silently rewriting a published path;
+- all required steps remain publication-eligible and Tier-3 review rules are preserved;
+- sequence is recommended navigation, never an access lock;
+- users may skip/revisit/open any visible step without quiz/mastery gating;
+- step state is derived from P18-E exact-version evidence rather than a duplicate path-completion authority;
+- no XP, levels, streaks, badges, ranks, reward currency or loss mechanics are introduced;
+- model personalization cannot rewrite canonical path order or insert unpublished content;
+- path failure does not make the standalone Knowledge Library/reader unavailable.
+
+The reviewed authority is `docs/architecture/phase18-learning-paths-contract.md`. Shared path definitions are backend-authoritative curriculum content. User-specific decoration reuses P18-E account-owned state; a future enrollment/resume preference would require a separate minimal ownership contract without redefining learning truth.
+
+**Current state:** architecture-approved; runtime remains intentionally downstream of stable P18-A/P18-C reader identity, P18-D quiz evidence where required, and P18-E learning state.
 
 ## Content-generation operating model
 
