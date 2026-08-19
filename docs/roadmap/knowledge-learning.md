@@ -4,6 +4,20 @@ Updated: 2026-08-19
 
 This is the focused execution roadmap for Phase 18. The canonical cross-repository priority remains `docs/implementation-plan.md`; the architecture boundary is `docs/architecture/phase18-knowledge-learning-system.md`.
 
+## Current execution checkpoint
+
+Phase 18 is active and dependency-ordered.
+
+- **P18-A contracts/publication gate:** merged in backend #272.
+- **P18-A persistence + published reader:** backend #275 is open at exact head `e76ec127de1c297c7ebf6bb1a68bfbda99584cf1`; Account Deletion Receipt CI passed, while required Backend CI and Backend PostgreSQL CI remain pending on the self-hosted Hermes queue. Do not merge until all required exact-head gates pass.
+- **P18-B editorial orchestration:** backend #276 is prepared as a stacked branch and must be rebuilt/retargeted from exact backend `main` after #275 merges, then revalidated.
+- **P18-C Library/reader:** mobile #786 is prepared and its previous exact head passed Mobile CI, but it depends on #275 and must be rebuilt/revalidated from exact current mobile `main` after the backend reader contract merges.
+- **P18-D quiz bank:** a deterministic foundation was prepared as backend #279 on top of #276. #279 is currently closed/unmerged; rebuild/reopen or replace it only after P18-B is merged and stable.
+- **P18-E learning state:** the ownership/versioning/privacy/deletion/export/offline-replay architecture contract is merged in mobile #787. Persistence remains blocked until P18-A reader identities and P18-D quiz identities are merged/stable.
+- **P18-F/G/H:** remain downstream of the canonical content, quiz and learning-state boundaries below.
+
+Immediate order: finish #275 exact-head CI → merge #275 → rebuild/revalidate #276 and #786 in parallel → merge dependency-clean heads → rebuild P18-D → implement P18-E under the #787 contract → continue deterministic Coach→Learn mappings.
+
 ## Product objective
 
 Teach users how training, nutrition, physiology, recovery, body composition and selected Labs concepts work, then connect those reviewed educational materials to real Coach findings.
@@ -32,6 +46,8 @@ Acceptance:
 - no provider/model is required for the foundation to function;
 - canonical article data contains no private user evidence.
 
+**Current state:** contract/publication-gate foundation merged in backend #272. Relational persistence and the authenticated published-reader API are pending in backend #275 and remain exact-head CI gated.
+
 ## P18-B — Editorial generation pipeline
 
 Deliver:
@@ -52,6 +68,8 @@ Acceptance:
 - retries are bounded;
 - source identifiers are verified rather than fabricated by the model.
 
+**Current state:** provider-neutral foundation prepared in backend #276, stacked behind #275. Rebuild/retarget from exact current `main` after #275 merges and revalidate before merge.
+
 ## P18-C — Library and reader
 
 Deliver:
@@ -71,6 +89,8 @@ Acceptance:
 - article version remains stable while reading;
 - user-facing sources correspond to the canonical article version.
 
+**Current state:** prepared in mobile #786. Previous exact head passed Mobile CI, but merge is intentionally blocked on backend #275 and a rebuild/revalidation from exact current mobile `main`.
+
 ## P18-D — Quiz bank and validation
 
 Deliver:
@@ -89,6 +109,8 @@ Acceptance:
 - each question is provably supported by reviewed article claims;
 - updating an article does not silently rewrite historical quiz evidence.
 
+**Current state:** deterministic foundation was prepared as backend #279 on top of #276. #279 is closed/unmerged and must be rebuilt from the merged P18-B baseline before it can become mergeable roadmap progress.
+
 ## P18-E — Learning state
 
 Deliver minimal account-scoped informational state:
@@ -104,6 +126,10 @@ Acceptance:
 - quiz evidence references exact article/question versions;
 - account deletion/export/privacy behavior is explicit before persistence ships;
 - no scores are converted into XP, levels, streaks or engagement rewards.
+
+The reviewed architecture is `docs/architecture/phase18-learning-state-contract.md` (#787). Learning state is private account-owned activity data, separate from shared canonical Knowledge content. Positive evidence is keyed to exact article/article-version identities; hidden answer keys remain backend-controlled; the persistence package must include authenticated ownership, retry/replay, stale/deprecated handling, two-device behavior, deletion, export/privacy and account-switch/logout cleanup rather than deferring those responsibilities.
+
+**Current state:** architecture-approved; persistence intentionally not started until P18-A reader identities and P18-D quiz identities are merged/stable.
 
 ## P18-F — Coach → Learn recommendation engine
 
