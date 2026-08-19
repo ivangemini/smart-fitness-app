@@ -10,17 +10,20 @@ Exact Git history, source, tests and CI override prose if this handoff becomes s
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current verified `main`: `e086f6795b0ea5f07ad00c3d03283759a1889780` (#777).
+Current verified `main`: `fe36a5ff00666a977099277258cd326dc5a9cf14` (#781).
 
-Phase 15 remains source/CI-complete for its reviewed Coach Intelligence + Progress scope. Phase 16 foreground v1 is source/CI-complete through #770–#772.
+Phase 15 remains source/CI-complete for its reviewed Coach Intelligence + Progress scope. Phase 16 foreground v1 remains source/CI-complete through #770–#772.
 
-Phase 17 is active:
+The first reviewed Phase 17 Goals & Planning scope is source/CI-complete:
 
 - #773 — canonical fitness-profile goal authority, deterministic typed goal facts and neutral Progress Goals context;
 - #776 — selector-only Goals → Companion handoff with canonical fact rebuilding at the destination;
-- #777 — authenticated read-only Ask Coach UI, strict response parsing, capability-aware availability and mobile Coach capabilities compatibility through v13.
+- #777 — authenticated read-only Ask Coach UI, strict response parsing, capability-aware availability and mobile Coach capabilities compatibility through v13;
+- #781 — typed ephemeral goal proposal preview with exact source snapshot and guarded `applied | stale` canonical update.
 
-#777 passed exact-head Mobile CI including line audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
+#781 exact-head `5c239c3638932568440c811f6d44e7578db1ea8a` passed Mobile CI run `32242728771` / 2638: line audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
+
+Focused closure evidence: `docs/qa/phase17-goals-planning-closure.md`.
 
 ### Backend
 
@@ -28,7 +31,7 @@ Repository: `ivangemini/smart-fitness-backend`.
 
 Current verified `main`: `eebca930893f3b2a5bcc4e2293873695d1bbb3c6` (#271).
 
-The reviewed read-only question path now consists of:
+The reviewed read-only question path consists of:
 
 - #266 minimal-scope structured router;
 - #267 minimized evidence + strict structured answer boundary;
@@ -48,7 +51,10 @@ The reviewed read-only question path now consists of:
 - Goal-only backend evidence uses the existing fitness profile, bounded weight history and recent completed sessions; it does not read food logs/workout sets or expose notes/session payloads.
 - Backend goal training-day evidence v1 is UTC-day-bucketed; do not claim local-calendar parity until server-side timezone authority exists.
 - Proactive foreground presentation remains frequency-capped, dismissible and non-punitive.
-- Automatic mutation of programs, workouts, nutrition targets, goals and Labs data remains prohibited outside separately reviewed explicit confirmation flows.
+- Canonical goal ownership remains the existing fitness profile; do not add a second goal store for the closed first scope.
+- Goal proposals are ephemeral until explicit confirmation and must fail closed when their captured source snapshot is stale.
+- Applying a goal proposal changes only the four canonical goal fields; nutrition targets, programs, workouts, Labs, recovery and safety remain separate application domains.
+- Automatic mutation outside separately reviewed explicit confirmation flows remains prohibited.
 - Labs drafts/raw documents stay outside ordinary Coach question context.
 - Missing RPE, nutrition, recovery, body, goal and Labs evidence stays missing rather than being inferred.
 
@@ -56,21 +62,23 @@ Source/CI closure is not provider, signed-device, rollout or production-model ev
 
 ## Phase 17 authority
 
-Goals & Planning continues from the fields already owned by the fitness profile:
+Goals & Planning uses the fields already owned by the fitness profile:
 
 - `goalType`;
 - `targetWeight`;
 - `weeklyWeightChangeGoal`;
 - `trainingDaysPerWeek`.
 
-The existing Profile goals editor remains the canonical mutation surface through `updateProfileGoals`, with the existing explicit confirmation around related nutrition-target recalculation.
+The existing Profile goals editor remains the canonical mutation surface through `updateProfileGoals`.
 
-Do not add a second persisted goal source merely for goal-aware Progress/Coach/planning behavior. A new persisted entity requires a reviewed need that the current authority cannot represent and must define ownership, migration, sync/revision, conflict and deletion semantics first.
+P17-D changed the mutation boundary: goal save no longer silently recalculates nutrition targets. The user sees an explicit current→proposed preview; apply uses the captured source snapshot as a CAS-style stale guard. A stale preview leaves newer state untouched.
+
+Do not add a second persisted goal source merely for goal-aware Progress/Coach/planning behavior. A new persisted entity requires a reviewed need the current authority cannot represent and must define ownership, migration, sync/revision, conflict, deletion/account-cleanup and privacy/export semantics first.
 
 ## Next execution order
 
-1. Treat the reviewed P17-A/B/C slices as source/CI-complete through mobile #777 and backend #271.
-2. Start P17-D as a planning/proposal **preview** contract over current goal authority: proposals remain non-canonical until explicit confirmation and must define stale-source handling before mutation.
+1. Treat P17-A through P17-D as source/CI-complete for the currently reviewed first Goals & Planning scope.
+2. Keep P17-E richer goal persistence/model-planning dormant unless a reviewed requirement crosses the documented richer-goal threshold.
 3. Keep Phase 15 and reviewed Phase 16 foreground v1 closed unless a reproduced defect or newly reviewed purpose warrants expansion.
 4. Execute remaining Phase 14 external evidence when prerequisites are available: Labs configured-provider/device, Push provider/device, Steps signed-device and remaining Stories mobile/device evidence.
 5. Repair reproduced defects before inventing unrelated cleanup work.
