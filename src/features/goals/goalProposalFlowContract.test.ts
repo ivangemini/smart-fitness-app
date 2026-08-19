@@ -12,13 +12,26 @@ const readSource = (relativePath: string) =>
   readFileSync(resolve(projectRoot, relativePath), 'utf8');
 
 describe('Phase 17 goal proposal flow contract', () => {
-  it('previews a typed proposal and applies it with the captured source snapshot', () => {
+  it('previews a typed proposal inline and applies it with the captured source snapshot', () => {
     const section = readSource('src/features/profile/ProfileGoalsSection.tsx');
 
     expect(section).toContain('buildGoalProposal({');
     expect(section).toContain('source: getProfileGoalsSnapshot(profile)');
-    expect(section).toContain('expectedCurrent: proposal.source');
+    expect(section).toContain('setProposal(nextProposal)');
+    expect(section).toContain('<GoalProposalPreviewCard');
+    expect(section).toContain('expectedCurrent: currentProposal.source');
     expect(section).toContain("status === 'stale'");
+  });
+
+  it('invalidates the preview when the user edits or collapses the goal form', () => {
+    const section = readSource('src/features/profile/ProfileGoalsSection.tsx');
+
+    expect(section).toContain('const clearProposal = () => setProposal(null)');
+    expect(section).toContain('onGoalTypeChange={(value) => {');
+    expect(section).toContain('onTargetWeightChange={(value) => {');
+    expect(section).toContain('onTrainingDaysPerWeekChange={(value) => {');
+    expect(section).toContain('onWeeklyWeightChangeGoalChange={(value) => {');
+    expect(section).toContain('if (expanded) setProposal(null)');
   });
 
   it('keeps nutrition and training domains outside goal proposal application', () => {

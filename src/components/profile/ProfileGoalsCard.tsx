@@ -27,6 +27,7 @@ type ProfileGoalsCardProps = {
   onTargetWeightChange: (value: string) => void;
   onTrainingDaysPerWeekChange: (value: string) => void;
   onWeeklyWeightChangeGoalChange: (value: string) => void;
+  primaryActionLabel?: string;
   targetWeight: string;
   trainingDaysPerWeek: string;
   validationErrors?: ProfileGoalsValidationErrors;
@@ -42,6 +43,7 @@ export function ProfileGoalsCard({
   onTargetWeightChange,
   onTrainingDaysPerWeekChange,
   onWeeklyWeightChangeGoalChange,
+  primaryActionLabel,
   targetWeight,
   trainingDaysPerWeek,
   validationErrors = {},
@@ -101,7 +103,7 @@ export function ProfileGoalsCard({
       <PrimaryButton
         accessibilityHint={isSaveDisabled ? saveAccessibilityHint : undefined}
         disabled={isSaveDisabled}
-        label={t('goals.save')}
+        label={primaryActionLabel ?? t('goals.save')}
         onPress={onSaveGoals}
       />
     </AppCard>
