@@ -10,6 +10,7 @@ import type {
   NutritionCoachRequestType,
   StrengthCoachRequestType,
 } from './contracts';
+import type { CoachQuestionScope } from './questions';
 
 const RUN_STATUSES = new Set<CoachRunStatus>([
   'queued',
@@ -310,7 +311,7 @@ const parseQuestionCapabilities = (
   ) {
     throw new Error('Invalid coach capabilities response');
   }
-  const expectedScopes =
+  const expectedScopes: CoachQuestionScope[] =
     schemaVersion === 11
       ? ['strength', 'nutrition', 'safety_recovery']
       : schemaVersion === 12
