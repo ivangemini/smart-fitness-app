@@ -1,6 +1,6 @@
 # Mobile Architecture Index
 
-Updated: 2026-08-12
+Updated: 2026-08-19
 
 This directory contains focused architecture evidence. Use this index instead of creating overlapping broad summaries.
 
@@ -23,6 +23,12 @@ For stable cross-repository orientation, read `../project-context.md`. For curre
 - `placeholder-timestamp-inventory.md` — placeholder timestamp audit.
 - `bounded-adversarial-validation.md` — generated state-machine and adversarial validation boundary.
 - `privacy-safe-support-diagnostics.md` — bounded local support diagnostics.
+
+## Coach, planning, and learning
+
+- `phase17-goal-authority.md` — canonical goal ownership and richer-goal threshold.
+- `phase17-goal-proposal-contract.md` — ephemeral goal proposal, preview, stale-source and explicit application boundary.
+- `phase18-knowledge-learning-system.md` — versioned evidence-linked educational content, quiz, learning-state and Coach→Learn architecture with explicit no-gamification rules.
 
 ## Media, Social, links, platform composition, CI, and UI layout
 
