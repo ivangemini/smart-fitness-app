@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,6 +13,7 @@ import { SectionHeader } from '@/components/ui/SectionHeader';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useWorkoutState } from '@/context/AppContext';
+import { getRequestedTrainingProgressExerciseKey } from '@/features/progress/trainingProgressSelection';
 import {
   buildExerciseProgressSeries,
   buildTrainingProgressAnalytics,
@@ -23,6 +24,11 @@ import { useAppTheme } from '@/theme/AppThemeProvider';
 import { useUnitPreferences, weightFromKg } from '@/units';
 
 type PeriodKey = '28' | '90' | '180';
+
+type TrainingProgressSearchParams = {
+  exerciseId?: string | string[];
+  exerciseName?: string | string[];
+};
 
 const PERIOD_OPTIONS = [
   { label: '28D', value: '28' },
@@ -39,12 +45,17 @@ export default function TrainingProgressScreen() {
   const { workoutSessions } = useWorkoutState();
   const { formatDate, formatNumber, locale } = useLocalization();
   const { formatWeightValue, weight: weightUnit } = useUnitPreferences();
+  const searchParams = useLocalSearchParams<TrainingProgressSearchParams>();
   const copy = getTrainingProgressCopy(locale);
   const safeAreaInsets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const [anchorAt] = useState(() => new Date().toISOString());
   const [periodKey, setPeriodKey] = useState<PeriodKey>('28');
   const [selectedExerciseKey, setSelectedExerciseKey] = useState<string | null>(null);
+  const requestedExerciseKey = useMemo(
+    () => getRequestedTrainingProgressExerciseKey(searchParams),
+    [searchParams],
+  );
   const periodDays = PERIOD_DAYS[periodKey];
   const analytics = useMemo(
     () => buildTrainingProgressAnalytics(workoutSessions, { endAt: anchorAt, maxExercises: 12, periodDays }),
@@ -58,9 +69,12 @@ export default function TrainingProgressScreen() {
       return;
     }
     if (!exercises.some((exercise) => getExerciseKey(exercise) === selectedExerciseKey)) {
-      setSelectedExerciseKey(getExerciseKey(exercises[0]));
+      const requested = requestedExerciseKey
+        ? exercises.find((exercise) => getExerciseKey(exercise) === requestedExerciseKey)
+        : null;
+      setSelectedExerciseKey(getExerciseKey(requested ?? exercises[0]));
     }
-  }, [exercises, selectedExerciseKey]);
+  }, [exercises, requestedExerciseKey, selectedExerciseKey]);
 
   const selectedExercise = exercises.find((exercise) => getExerciseKey(exercise) === selectedExerciseKey) ?? null;
   const series = useMemo(() => {
