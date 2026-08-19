@@ -25,7 +25,11 @@ const PERIOD_OPTIONS = [
   { label: '90D', value: '90' },
   { label: '180D', value: '180' },
 ] as const;
-const PERIOD_DAYS: Record<PeriodKey, number> = { '28': 28, '90': 90, '180': 180 };
+const PERIOD_DAYS: Record<PeriodKey, number> = {
+  '28': 28,
+  '90': 90,
+  '180': 180,
+};
 
 export default function ActivityProgressScreen() {
   const { colors } = useAppTheme();
@@ -60,13 +64,21 @@ export default function ActivityProgressScreen() {
     { label: copy.activeDays, value: formatNumber(analytics.activeDayCount) },
     {
       label: copy.workoutsPerWeek,
-      value: formatNumber(analytics.workoutsPerWeek, { maximumFractionDigits: 1 }),
+      value: formatNumber(analytics.workoutsPerWeek, {
+        maximumFractionDigits: 1,
+      }),
     },
-    { label: copy.sessionsLast7Days, value: formatNumber(analytics.sessionsLast7Days) },
+    {
+      label: copy.sessionsLast7Days,
+      value: formatNumber(analytics.sessionsLast7Days),
+    },
     {
       label: copy.latestWorkout,
       value: analytics.latestWorkoutAt
-        ? formatDate(analytics.latestWorkoutAt, { day: 'numeric', month: 'short' })
+        ? formatDate(analytics.latestWorkoutAt, {
+            day: 'numeric',
+            month: 'short',
+          })
         : '—',
     },
   ];
@@ -84,7 +96,9 @@ export default function ActivityProgressScreen() {
         <SectionHeader title={copy.title} subtitle={copy.subtitle} />
 
         <AppCard>
-          <Text selectable style={styles.cardTitle}>{copy.period}</Text>
+          <Text selectable style={styles.cardTitle}>
+            {copy.period}
+          </Text>
           <SegmentedControl
             accessibilityLabel={copy.periodAccessibility}
             onChange={setPeriodKey}
@@ -94,23 +108,33 @@ export default function ActivityProgressScreen() {
         </AppCard>
 
         <AppCard>
-          <Text selectable style={styles.cardTitle}>{copy.summary}</Text>
+          <Text selectable style={styles.cardTitle}>
+            {copy.summary}
+          </Text>
           {analytics.sessionCount > 0 ? (
             <View style={styles.summaryList}>
               {summaryRows.map((row) => (
                 <View key={row.label} style={styles.summaryRow}>
-                  <Text selectable style={styles.summaryLabel}>{row.label}</Text>
-                  <Text selectable style={styles.summaryValue}>{row.value}</Text>
+                  <Text selectable style={styles.summaryLabel}>
+                    {row.label}
+                  </Text>
+                  <Text selectable style={styles.summaryValue}>
+                    {row.value}
+                  </Text>
                 </View>
               ))}
             </View>
           ) : (
-            <Text selectable style={styles.detail}>{copy.noData}</Text>
+            <Text selectable style={styles.detail}>
+              {copy.noData}
+            </Text>
           )}
         </AppCard>
 
         <AppCard>
-          <Text selectable style={styles.cardTitle}>{copy.cadence}</Text>
+          <Text selectable style={styles.cardTitle}>
+            {copy.cadence}
+          </Text>
           {analytics.sessionCount > 0 && cadencePoints.length >= 2 ? (
             <ProgressTrendChart
               emptyLabel={copy.cadenceNeedsData}
@@ -119,37 +143,68 @@ export default function ActivityProgressScreen() {
               points={cadencePoints}
             />
           ) : (
-            <Text selectable style={styles.detail}>{copy.cadenceNeedsData}</Text>
+            <Text selectable style={styles.detail}>
+              {copy.cadenceNeedsData}
+            </Text>
           )}
         </AppCard>
 
         {analytics.recentSessions.length > 0 ? (
           <AppCard>
-            <Text selectable style={styles.cardTitle}>{copy.recentSessions}</Text>
+            <Text selectable style={styles.cardTitle}>
+              {copy.recentSessions}
+            </Text>
             <View style={styles.summaryList}>
               {analytics.recentSessions.map((session) => (
                 <View key={session.sessionId} style={styles.summaryRow}>
-                  <Text selectable numberOfLines={2} style={styles.summaryLabel}>
+                  <Text
+                    selectable
+                    numberOfLines={2}
+                    style={styles.summaryLabel}>
                     {session.workoutTitle}
                   </Text>
                   <Text selectable style={styles.summaryValue}>
-                    {formatDate(session.completedAt, { day: 'numeric', month: 'short' })}
+                    {formatDate(session.completedAt, {
+                      day: 'numeric',
+                      month: 'short',
+                    })}
                   </Text>
                 </View>
               ))}
             </View>
             {analytics.recentSessionsTruncated ? (
-              <Text selectable style={styles.detail}>{copy.recentSessionsTruncated}</Text>
+              <Text selectable style={styles.detail}>
+                {copy.recentSessionsTruncated}
+              </Text>
             ) : null}
           </AppCard>
         ) : null}
 
         <AppButton
+          label={copy.askCoach}
+          onPress={() =>
+            router.push({
+              pathname: '/(tabs)/coach',
+              params: {
+                contextSource: 'progress',
+                contextIntent: 'training_overview',
+                metric: 'activity',
+                days: String(PERIOD_DAYS[periodKey]),
+                endAt: anchorAt,
+              },
+            })
+          }
+        />
+        <AppButton
           label={copy.openWorkoutHistory}
           onPress={() => router.push('/workout-history')}
           variant="secondary"
         />
-        <AppButton label={copy.back} onPress={() => router.back()} variant="secondary" />
+        <AppButton
+          label={copy.back}
+          onPress={() => router.back()}
+          variant="secondary"
+        />
       </View>
     </ScrollView>
   );
@@ -164,8 +219,16 @@ const createStyles = (colors: typeof Colors.light) =>
       lineHeight: Typography.cardTitle.lineHeight,
       marginBottom: Spacing.two,
     },
-    container: { gap: Spacing.three, maxWidth: MaxContentWidth, width: '100%' },
-    content: { alignItems: 'center', flexGrow: 1, padding: Spacing.three },
+    container: {
+      gap: Spacing.three,
+      maxWidth: MaxContentWidth,
+      width: '100%',
+    },
+    content: {
+      alignItems: 'center',
+      flexGrow: 1,
+      padding: Spacing.three,
+    },
     detail: {
       color: colors.textSecondary,
       fontSize: Typography.caption.fontSize,
