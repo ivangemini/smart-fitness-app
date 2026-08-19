@@ -4,7 +4,7 @@ Updated: 2026-08-19
 
 ## Purpose
 
-Smart Fitness is an offline-first fitness application covering workouts, nutrition, progress, profile/authentication, synchronization, deterministic/structured AI Coach workflows, private server-authoritative Labs / Analyses, and a privacy-first server-authoritative Social workout network.
+Smart Fitness is an offline-first fitness application covering workouts, nutrition, progress, profile/authentication, synchronization, deterministic/structured AI Coach workflows, private server-authoritative Labs / Analyses, a privacy-first server-authoritative Social workout network, and an evidence-linked Knowledge & Learning system.
 
 Repositories:
 
@@ -27,17 +27,22 @@ The mobile application currently contains:
 - Labs / Analyses as a private server-authoritative longitudinal laboratory-results domain with confirmation-gated structured facts;
 - Social profiles, relationships, Stories, workout posts, following feed, reactions, comments, notifications, reporting/moderation surfaces, and managed-media contracts.
 
+Phase 18 adds an approved **Knowledge & Learning** product domain. Its end-user surfaces are not all implemented yet, but the reviewed architecture is part of the product scope: versioned canonical educational articles, source/claim evidence, validated article-linked quizzes, minimal informational learning state, and deterministic Coach→Learn recommendations.
+
+Knowledge & Learning is deliberately non-gamified. No knowledge XP, levels, streaks, badges, leaderboards, competition or punitive progress mechanics are part of the reviewed contract.
+
 Home Stories are a real server-authoritative domain. The completed baseline covers image-only v1 plus reviewed S9-A through S9-F source contracts. The S10 source boundary adds owner-only viewer activity, Close Friends/per-Story audience, bounded private replies, a fail-closed provider-neutral push-preference seam, and owner Archive/Highlights. Exact S10 product/privacy rules live in `docs/architecture/stories-s10-contract.md`; environment, native/provider and release activation remain separate authorization gates in `docs/roadmap/stories.md`.
 
 Real steps likewise require a reviewed device-health/activity source rather than inferred or demo values.
 
-Labs is approved only inside its reviewed private boundaries. Confirmed structured marker/history facts may be used by bounded Coach question flows; raw documents, extraction drafts and unrestricted provider payloads are not ordinary Coach context.
+Labs is approved only inside its reviewed private boundaries. Confirmed structured marker/history facts may be used by bounded Coach question flows; raw documents, extraction drafts and unrestricted provider payloads are not ordinary Coach context or ordinary Knowledge article-generation context.
 
 Excluded unless explicitly approved by a separate reviewed contract:
 
 - diagnosis, emergency triage or clinical urgency inference;
 - pharmacology, hormone, SARM, medication or supplement prescribing/dosing protocols;
 - unrestricted model access to raw Labs documents or private provider payloads;
+- arbitrary live generation/publication of scientific content without the Phase 18 evidence/review pipeline;
 - marketplace;
 - payments and subscriptions;
 - unreviewed Social/Stories domains outside the approved focused roadmaps and contracts.
@@ -53,6 +58,7 @@ Excluded unless explicitly approved by a separate reviewed contract:
 - Synchronization orchestration lives in `src/context/SyncContext.tsx` and `src/cloud/`.
 - Presentation uses the adaptive Liquid Glass system documented in `docs/architecture/liquid-glass-ui.md`.
 - Social and Labs are server-authoritative domains separate from private revisioned `AppState` synchronization.
+- Canonical Knowledge content is backend-authoritative/shared; future user learning state must have an explicit account ownership/privacy contract before persistence ships.
 
 Local AsyncStorage remains the active storage strategy for private offline-first app state; architecture-only design options are not implementation authorization.
 
@@ -67,9 +73,10 @@ The backend is the only server authority for:
 - provider access and secrets;
 - Labs result/document ownership and confirmation authority;
 - Social, Stories, and managed-media authority;
+- canonical Knowledge concepts/articles/article versions/sources/claims/quizzes and editorial publication state;
 - privacy, retention, deletion, and export source controls.
 
-Mobile must not call food, model, moderation, classifier, OCR, storage, email, or other providers directly.
+Mobile must not call food, model, moderation, classifier, OCR, storage, email, search/evidence or other providers directly.
 
 ## Synchronization model
 
@@ -104,6 +111,8 @@ Core invariants:
 
 Source-level hardening is complete for current contracts. Matching standalone-runtime and physical second-device validation remains a separate evidence class.
 
+Knowledge shared content does not belong in private revisioned fitness `AppState` sync. Future learning-state persistence must be designed as an explicit account-scoped domain rather than silently inserted into existing fitness synchronization.
+
 ## AI Coach model
 
 Required architecture:
@@ -127,11 +136,36 @@ Implemented categories include:
 - Combined Review and Combined Proposal with Safety-capped effective Strength;
 - explicit application paths and run history/provenance/trust state;
 - Phase 15 bounded read-only question orchestration with minimal scopes and minimized evidence;
-- confirmed structured Labs overview/marker-history question evidence inside the reviewed read-only boundary.
+- confirmed structured Labs overview/marker-history question evidence inside the reviewed read-only boundary;
+- Phase 17 bounded goal-progress question evidence.
 
 Automatic application is prohibited. Hidden chain-of-thought is not stored. Deterministic calculations and hard guardrails stay outside model prompts.
 
 Coach and Companion are one product surface. Progress is the primary detailed analytics destination; Companion interprets bounded facts and links back to inspectable Progress evidence rather than becoming a second data authority.
+
+Phase 18 extends Coach only through an allowlisted educational recommendation boundary. The reviewed direction is `deterministic finding → approved content mapping → bounded relevance explanation`. The model does not freely invent or publish lessons from private user context.
+
+## Knowledge & Learning boundary
+
+Canonical educational content is generated/reviewed ahead of end-user consumption:
+
+`topic → curated evidence pack → AI-assisted draft → claim extraction → source verification → quiz generation → quiz validation/review → published article version`.
+
+Key rules:
+
+- published article versions are stable/versioned;
+- material factual claims are source-linked and approval-gated;
+- quizzes reference exact article versions and reviewed claims;
+- ambiguous answer keys fail closed;
+- Tier-3 Labs/medical-adjacent education requires human review;
+- canonical shared content contains no private user evidence;
+- dynamic personalization may explain relevance but not rewrite the factual core;
+- learning state is informational (`unseen/read/understood/refresh_useful`) and non-gamified;
+- reading/quiz completion cannot automatically mutate workout/nutrition/goal/Labs/recovery/safety state;
+- later outcome changes cannot be attributed causally to reading.
+
+Focused architecture: `docs/architecture/phase18-knowledge-learning-system.md`.
+Focused roadmap: `docs/roadmap/knowledge-learning.md`.
 
 ## Labs / Analyses boundary
 
@@ -141,15 +175,15 @@ Labs is private and server-authoritative.
 - Confirmed structured facts, source units and laboratory reference intervals are authoritative.
 - Chart/reference classifications are descriptive presentation states, not diagnoses.
 - Ordinary Coach question context may use only bounded confirmed structured facts.
-- Raw documents, extraction drafts, storage/provider payloads and secrets remain excluded from ordinary model-visible context.
+- Raw documents, extraction drafts, storage/provider payloads and secrets remain excluded from ordinary model-visible context and from ordinary Knowledge content generation.
 - Provider-backed processing remains capability/configuration gated and fail closed.
-- No reviewed Labs contract authorizes diagnosis, prescribing, medication/supplement dosing or causal clinical claims.
+- No reviewed Labs or Knowledge contract authorizes diagnosis, prescribing, medication/supplement dosing or causal clinical claims.
 
 ## Social, Stories, media, and private state
 
 Private fitness state uses revisioned synchronization.
 
-Social, Stories, Labs and managed media are server-authoritative domains separate from private `AppState` synchronization. The Home feed and Story strip reuse Social authority, account-scoped caches, pagination, block/private-profile enforcement, and moderation boundaries.
+Social, Stories, Labs and managed media are server-authoritative domains separate from private `AppState` synchronization. Canonical Knowledge content is likewise backend-authoritative shared content, not private fitness sync state. The Home feed and Story strip reuse Social authority, account-scoped caches, pagination, block/private-profile enforcement, and moderation boundaries.
 
 Stories retain one server-owned managed-image lifecycle and active visibility authority while reviewed product slices add bounded behavior around it. The backend owns authenticated creation, expiry/archive transitions, Following/Close Friends visibility, viewed state, replies, Highlights, interaction lifecycle, owner deletion, account-deletion cascade, retention cleanup and the `story_image` managed-media lifecycle. Mobile strictly consumes that authority and must not fabricate server Story rows, audience membership, viewer/reply activity, archive state, effective push delivery or managed-media approval.
 
@@ -171,12 +205,12 @@ Use this order when statements conflict:
 6. `PROJECT_LEARNINGS.md`;
 7. old PR descriptions, chat summaries, and historical notes.
 
-For Stories, `docs/roadmap/stories.md` is the focused source/release/expansion roadmap and `docs/architecture/stories-s10-contract.md` defines the reviewed S10 product/privacy boundary. For the Liquid Glass/Home UI program, `docs/roadmap/liquid-glass.md` is the focused execution/evidence roadmap. Phase 15 source/CI closure evidence is recorded in `docs/qa/phase15-closure.md`.
+For Stories, `docs/roadmap/stories.md` is the focused source/release/expansion roadmap and `docs/architecture/stories-s10-contract.md` defines the reviewed S10 product/privacy boundary. For the Liquid Glass/Home UI program, `docs/roadmap/liquid-glass.md` is the focused execution/evidence roadmap. Phase 15 source/CI closure evidence is recorded in `docs/qa/phase15-closure.md`. Phase 18 uses `docs/roadmap/knowledge-learning.md` plus `docs/architecture/phase18-knowledge-learning-system.md`.
 
 Permanent agent rules belong in `AGENTS.md`. The latest restart checkpoint belongs in `docs/handoffs/latest.md`.
 
 ## Change discipline
 
-A pull request that changes architecture, synchronization coverage, roadmap state, active blockers, Social/Labs privacy boundaries, or deployment boundaries must update corresponding documentation in the same change.
+A pull request that changes architecture, synchronization coverage, roadmap state, active blockers, Social/Labs/Knowledge privacy boundaries, or deployment boundaries must update corresponding documentation in the same change.
 
 Do not create a second broad overview when a current canonical file already covers the subject. Add a focused document or update the architecture/index hierarchy instead.
