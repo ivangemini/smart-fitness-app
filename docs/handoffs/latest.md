@@ -23,7 +23,7 @@ Repository: `ivangemini/smart-fitness-backend`.
 - #272 merged the P18-A provider-neutral Knowledge contracts/publication gate.
 - #285 merged relational canonical Knowledge persistence, migration 0053 and authenticated fail-closed publication-eligible reader routes after exact-head Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI passed.
 - #290 is the clean P18-B editorial-orchestration PR. Exact head: `8d14c54159128b71f42b6b01cb28c9e5adad36d9`. It is one commit from exact #285 `main`, mergeable, and awaiting required Hermes Backend CI.
-- P18-D is privately prepared at `18e2b318aa7ccd80320bead09c07c9b13c6b3267`, exactly one four-file commit above #290. It is intentionally not open as a PR while #290 owns the dependency/CI lane. Before merge it must be rebuilt from the exact backend `main` produced by #290.
+- P18-D is privately prepared at `ce0843909d0572ee2169cc2988964f4c8a880e48`, exactly one five-file commit above #290. It is intentionally not open as a PR while #290 owns the dependency/CI lane. The package includes the architecture-index update, hides parsed/frozen answer-bearing snapshots in a module-private `WeakMap`, exposes only an opaque frozen bank token with no `.items`, rejects structural/reflected-brand reconstruction, returns presentation-safe assembly DTOs, and keeps answer evaluation backend-only. Before merge it must be rebuilt from the exact backend `main` produced by #290.
 
 Peptonio admin work remains outside the Phase 18 dependency chain. Do not let concurrent admin heads alter the exact-main/rebuild discipline for Knowledge.
 
@@ -50,6 +50,7 @@ Preserve these invariants:
 - hidden answer keys/feedback remain backend-controlled before answer evaluation;
 - quiz assembly/presentation must return presentation-safe DTOs rather than raw canonical answer-bearing items;
 - runtime eligible-bank authority must require module-private object-identity membership, not only a reflectable symbol/structural shape;
+- the public eligible-bank token must not expose answer-bearing item snapshots as properties;
 - Tier-3 Labs/medical-adjacent content requires human review and remains non-diagnostic/non-prescriptive;
 - canonical Knowledge records never contain private user evidence;
 - raw Labs documents/extraction drafts stay outside ordinary Knowledge generation/recommendation context;
@@ -70,7 +71,7 @@ Do not implement P18-E persistence until P18-D quiz identity/evaluation is merge
 ## Immediate execution order
 
 1. Wait only for required exact-head Hermes Backend CI on #290; fetch exact failure evidence if it fails, fix only the reproduced issue, and merge only the validated unchanged head against the expected backend `main`.
-2. After #290 merges, rebuild the prepared hardened P18-D four-file package from exact new backend `main`, add its architecture-index entry, exact-head validate and merge if clean.
+2. After #290 merges, rebuild the prepared hardened P18-D five-file package from exact new backend `main`, exact-head validate and merge if clean.
 3. After P18-A/P18-D identities are merged/stable, implement P18-E dedicated server-authoritative account-scoped state plus bounded mobile offline retry/replay under `docs/architecture/phase18-learning-state-authority.md`.
 4. Continue P18-F deterministic Coach finding → approved content mapping/selection only after enough P18-E state exists for suppression/revisit semantics.
 5. Integrate P18-F only into an already-authoritative typed Coach/report host under P18-G; do not create a duplicate scheduler or silently promote local presentation kinds into backend finding codes.
