@@ -81,12 +81,13 @@ describe('proactive insight presentation gate', () => {
   });
 
   it('does not write a new cooldown when the stored cooldown suppresses selection', async () => {
+    const suppressedState: ProactivePresentationState = {
+      schemaVersion: 1,
+      lastShownAt: '2026-08-18T12:00:00.000Z',
+      dismissedKeys: [],
+    };
     const store = createStore({
-      read: vi.fn(async () => ({
-        schemaVersion: 1,
-        lastShownAt: '2026-08-18T12:00:00.000Z',
-        dismissedKeys: [],
-      })),
+      read: vi.fn(async () => suppressedState),
     });
 
     const insight = await resolveProactiveInsightForPresentation({
