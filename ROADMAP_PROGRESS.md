@@ -20,13 +20,13 @@ Focused roadmap references retained as stable contracts:
 - Phase 14: autonomous source/runtime preparation is complete for current contracts; external provider and physical-device evidence remains.
 - **Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics: source/CI-complete for the currently reviewed scope.**
 - **Phase 16 — Proactive Coach: deterministic foreground Companion-card v1 source/CI-complete through #770–#772.**
-- **Phase 17 — Goals & Planning: active. First canonical goal-fact, Progress/Companion and backend question slices are implemented.**
+- **Phase 17 — Goals & Planning: active. P17-A/B/C first slices are source/CI-complete through mobile #777 and backend #271.**
 
 ## Current verified checkpoint
 
 ### Mobile
 
-Current `main`: `45119f2ef3cc381e667fa8e17ad2d108a9114062` (#776).
+Current `main`: `e086f6795b0ea5f07ad00c3d03283759a1889780` (#777).
 
 Phase 15 mobile includes bounded Coach capabilities/selective retrieval (#749–#751), compact Progress IA/current drill-downs (#755–#764), and selector-only exercise, Weight, Measurements, Activity and Highlights Progress → Companion handoffs through #768.
 
@@ -40,7 +40,9 @@ Phase 17 mobile includes:
 
 - #773 existing fitness-profile goal authority + deterministic typed `buildGoalFacts()` + neutral Progress Goals card;
 - #776 selector-only Goals → Companion handoff with canonical fact rebuilding on the destination;
-- #777 authenticated read-only Ask Coach UI, strict question-response parsing and Coach capabilities v11–v13 compatibility is in final exact-head validation and is not yet claimed merged here.
+- #777 authenticated read-only Ask Coach UI, strict fail-closed question-response parsing, capability-aware availability, and Coach capabilities v11–v13 compatibility.
+
+#777 passed exact-head Mobile CI: repository/changed-file audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
 
 ### Backend
 
@@ -119,7 +121,7 @@ Current authority remains the existing fitness profile:
 
 Backend #271 adds purpose-specific goal question routing/evidence and keeps the answer path read-only. Capabilities v13 explicitly advertises the new scope.
 
-Mobile #777 adds the user-facing Ask Coach composer/result surface through the existing bearer/refresh API stack, strict fail-closed response parsing and capabilities compatibility for v11 → v12 → v13. It is only complete once exact-head Mobile CI passes and the PR is merged.
+Mobile #777 adds the user-facing Ask Coach composer/result surface through the existing bearer/refresh API stack, strict fail-closed response parsing and capabilities compatibility for v11 → v12 → v13.
 
 Permanent P17-C rules:
 
@@ -129,6 +131,8 @@ Permanent P17-C rules:
 - no conversation persistence is introduced by this slice;
 - no automatic goal/program/workout/nutrition mutation;
 - unavailable provider-backed structured answering is surfaced through capabilities rather than hidden retries.
+
+**Status:** source/CI-complete for the reviewed first scope/UI contract.
 
 ### P17-D — Planning/proposal contract (next)
 
@@ -153,7 +157,7 @@ Required boundaries:
 
 ## Next execution order
 
-1. Finish #777 exact-head validation/merge and synchronize canonical checkpoint docs.
+1. Treat P17-A/B/C as source/CI-complete for the reviewed first goal-aware slice set.
 2. Define and implement P17-D planning/proposal preview with explicit stale-source and confirmation boundaries over the existing profile authority.
 3. Keep Phase 15 and reviewed Phase 16 foreground v1 closed unless a reproduced defect or new reviewed purpose requires reopening them.
 4. Execute Phase 14 provider/device evidence independently whenever its prerequisites become available.
