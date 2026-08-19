@@ -3,7 +3,8 @@ import type { SupportedLocale } from '@/localization';
 
 const EN = {
   libraryTitle: 'Learn',
-  librarySubtitle: 'Reviewed explanations of training, nutrition, physiology, recovery, body composition, and Labs concepts.',
+  librarySubtitle:
+    'Reviewed explanations of training, nutrition, physiology, recovery, body composition, and Labs concepts.',
   searchPlaceholder: 'Search reviewed topics',
   allCategories: 'All',
   conceptsTitle: 'Concepts',
@@ -18,17 +19,19 @@ const EN = {
   sourcesTitle: 'Reviewed sources',
   evidenceTitle: 'Evidence notes',
   quizTitle: 'Knowledge check',
-  quizBody: 'Questions are linked to this exact article version. Answer evaluation will be enabled in the quiz phase.',
+  quizBody:
+    'Questions are linked to this exact article version. Answer evaluation will be enabled in the quiz phase.',
   quizCount: (count: number) => `${count} questions available`,
   publishedVersion: (version: number) => `Version ${version}`,
   backToLibrary: 'Back to Learn',
   openLibrary: 'Open Learn library',
   openSource: 'Open source',
-} as const;
+};
 
 const RU: typeof EN = {
   libraryTitle: 'Обучение',
-  librarySubtitle: 'Проверенные материалы о тренировках, питании, физиологии, восстановлении, композиции тела и отдельных темах анализов.',
+  librarySubtitle:
+    'Проверенные материалы о тренировках, питании, физиологии, восстановлении, композиции тела и отдельных темах анализов.',
   searchPlaceholder: 'Поиск по проверенным темам',
   allCategories: 'Все',
   conceptsTitle: 'Темы',
@@ -43,7 +46,8 @@ const RU: typeof EN = {
   sourcesTitle: 'Проверенные источники',
   evidenceTitle: 'Что подтверждают источники',
   quizTitle: 'Проверка знаний',
-  quizBody: 'Вопросы привязаны к этой версии статьи. Проверка ответов будет включена на этапе тестов.',
+  quizBody:
+    'Вопросы привязаны к этой версии статьи. Проверка ответов будет включена на этапе тестов.',
   quizCount: (count: number) => `Доступно вопросов: ${count}`,
   publishedVersion: (version: number) => `Версия ${version}`,
   backToLibrary: 'Назад к обучению',
@@ -51,9 +55,13 @@ const RU: typeof EN = {
   openSource: 'Открыть источник',
 };
 
-export const getKnowledgeCopy = (locale: SupportedLocale) => (locale === 'ru' ? RU : EN);
+export const getKnowledgeCopy = (locale: SupportedLocale) =>
+  locale === 'ru' ? RU : EN;
 
-const CATEGORY_LABELS: Record<SupportedLocale, Record<KnowledgeCategory, string>> = {
+const CATEGORY_LABELS: Record<
+  SupportedLocale,
+  Record<KnowledgeCategory, string>
+> = {
   en: {
     training: 'Training',
     nutrition: 'Nutrition',
@@ -72,7 +80,10 @@ const CATEGORY_LABELS: Record<SupportedLocale, Record<KnowledgeCategory, string>
   },
 };
 
-const FORMAT_LABELS: Record<SupportedLocale, Record<KnowledgeArticleFormat, string>> = {
+const FORMAT_LABELS: Record<
+  SupportedLocale,
+  Record<KnowledgeArticleFormat, string>
+> = {
   en: {
     quick_lesson: 'Quick lesson',
     standard: 'Article',
