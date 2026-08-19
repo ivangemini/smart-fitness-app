@@ -10,54 +10,67 @@ Exact Git history, source, tests and CI override prose if this handoff becomes s
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current `main`: `bb48f0452690f0b33e824eea18aae8fb61a7fc2d` (#764).
+Current merged `main` while final P15-E validation runs: `ff9e71af8a306e4e8802fc50a67da730dbc8e689` (#767).
 
-The current Phase 15 mobile sequence has completed the reviewed Progress information architecture and drill-down set through #764:
+The reviewed Phase 15 mobile sequence has established:
 
-- #755 compact Progress overview;
-- #756 bounded weight details;
-- #758 bounded deterministic exercise progress series;
-- #759 Strength & Training drill-down;
-- #760 selected-exercise Progress → Companion context;
-- #761 Activity drill-down;
-- #762 weight-only Progress → Companion context;
-- #763 Highlights drill-down;
-- #764 Body measurement drill-down.
+- bounded Coach data capabilities and selective retrieval (#749–#751);
+- compact Progress IA (#755);
+- Weight, Strength & Training, Activity, Highlights and Body-measurement drill-downs (#756, #759, #761, #763, #764; shared exercise series #758);
+- selected-exercise, Weight, Measurements and Activity Progress → Companion handoffs (#760, #762, #766, #767).
 
-Do not reopen completed Liquid Glass convergence work or duplicate these Progress views without a demonstrated defect/new reviewed contract.
+PR #768 is the remaining current-set Highlights → Companion handoff. It deliberately sends only source/intent/metric/period/anchor selectors, rebuilds trend facts inside Companion and physically filters session input to the 90-day Coach window before shared analytics. All-time record evidence remains Progress-only because its source calculation uses longer history.
+
+Do not reopen completed Progress drill-downs or create parallel Coach state paths without a reproduced defect or newly reviewed contract.
 
 ### Backend
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Current verified `main`: `92fbf47d3bf10725e11ee43ccf61eba042abcba1` (#267).
+Current verified `main`: `a4b1e51b7e3a2b1e388a17454ee86482a273ab94` (#270).
 
-P15-C backend foundation now contains:
+P15-C now contains the complete reviewed read-only question path:
 
-- #266 minimal-scope structured question routing;
-- #267 minimized question evidence and strict structured answer boundary.
+- #266 minimal-scope structured router;
+- #267 minimized evidence + strict structured answer boundary;
+- #269 authenticated `POST /v1/coach/questions` composition;
+- #270 confirmed structured Labs overview/marker-history evidence.
 
-#267 exact-head Backend CI passed lint, Prettier, build, production configuration validation, isolated staging topology validation and tests before merge.
+The latest Labs question contract is user-scoped and bounded. It exposes only confirmed structured marker facts and forbids raw documents, extraction drafts, provider payloads, diagnosis, treatment/prescribing and automatic canonical mutation.
 
-The new question pipeline remains read-only and is not yet exposed as a complete public authenticated question endpoint.
+#269 and #270 passed authoritative Backend CI before merge.
 
-## Next execution order
+## Immediate execution order
 
-1. Continue P15-C by composing authenticated question handling end to end: question router → only required user-scoped contexts → minimized evidence → structured answer.
-2. Keep the endpoint read-only and fail closed for unsupported scopes, missing context, provider unavailability and model/output validation failures.
-3. Do not expose raw Labs documents, unconfirmed extraction drafts, secrets, provider payloads or unrestricted application state to the answer model.
-4. Extend P15-E beyond existing exercise/weight handoffs only with an equivalent minimal metric/exercise/period contract.
-5. After P15-C/P15-E stabilize, run P15-F accessibility/performance/regression and canonical docs closure.
-6. Execute Phase 14 external provider/device evidence when its prerequisites become available; it remains independent from Phase 15 source work.
+1. Let exact-head Mobile CI finish for #768 and merge only the exact validated head if green.
+2. Finish the P15-F closure checkpoint in `docs/qa/phase15-closure.md` and synchronize `docs/current-status.md`, this handoff, `ROADMAP_PROGRESS.md` and `docs/implementation-plan.md` to the final mobile/backend SHAs.
+3. Classify P15-A through P15-E source/CI-complete for the currently reviewed scope after #768 merges; keep P15-F explicit about source CI versus physical/provider/release evidence.
+4. Do not create additional Phase 15 source work merely to stay busy. Reopen it only for a reproduced defect, failed closure invariant or new reviewed capability.
+5. Phase 14 external provider/device evidence remains independent and may execute when its prerequisites exist.
+6. Phase 16 Proactive Coach and Phase 17 Goals & Planning are successors and must preserve their own review/safety requirements before runtime expansion.
 
 ## Existing contracts to preserve
 
 - Coach and Companion are one product surface, not separate assistants.
 - Deterministic calculations and hard guardrails stay outside model prompts.
+- Model-visible retrieval is purpose-specific and bounded; unrestricted `AppState`/raw-provider access is prohibited.
 - Automatic mutation of programs, workouts, nutrition targets, goals and Labs data remains prohibited.
-- User-owned reads remain authenticated and user-scoped.
-- Raw provider/model/storage internals stay out of public DTOs.
+- User-owned server reads remain authenticated and user-scoped.
+- Labs drafts/raw documents stay outside ordinary Coach question context.
+- Missing RPE, nutrition, recovery, body and Labs evidence stays missing rather than being inferred.
 - Existing workout/program lifecycle, active-session persistence, sync/revision/idempotency, Social/Stories privacy, Labs confirmation semantics and export/privacy boundaries remain unchanged unless explicitly included in a reviewed package.
+
+## P15-F closure evidence
+
+Use `docs/qa/phase15-closure.md` as the focused source/CI closure evidence matrix. The repository's Mobile CI is the authority for line limits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor. Backend question changes require their separate backend gates.
+
+Do not convert successful source CI into claims about:
+
+- production model/provider activation;
+- signed native/physical-device testing;
+- Phase 14 provider evidence;
+- production rollout;
+- medical diagnosis/prescribing behavior.
 
 ## External Phase 14 gates still outstanding
 
