@@ -31,9 +31,9 @@ const makeSession = (
   sets,
 });
 
-const twoSets = (prefix: string, weight: number) => [
-  makeSet(`${prefix}-1`, 'bench', 'Bench Press', weight),
-  makeSet(`${prefix}-2`, 'bench', 'Bench Press', weight),
+const twoSets = (prefix: string, weight: number, exerciseId = 'bench', exerciseName = 'Bench Press') => [
+  makeSet(`${prefix}-1`, exerciseId, exerciseName, weight),
+  makeSet(`${prefix}-2`, exerciseId, exerciseName, weight),
 ];
 
 describe('selectProactiveInsight', () => {
@@ -74,6 +74,29 @@ describe('selectProactiveInsight', () => {
     });
 
     expect(result?.kind).toBe('strength_progress');
+  });
+
+  it('uses a normalized exercise-name fallback for legacy sets without an exercise id', () => {
+    const sessions = [
+      makeSession('early-1', '2026-07-25T10:00:00.000Z', twoSets('early-1', 100, '', 'Bench Press')),
+      makeSession('early-2', '2026-07-30T10:00:00.000Z', twoSets('early-2', 100, '', 'Bench Press')),
+      makeSession('recent-1', '2026-08-10T10:00:00.000Z', twoSets('recent-1', 108, '', 'Bench Press')),
+      makeSession('recent-2', '2026-08-17T10:00:00.000Z', twoSets('recent-2', 110, '', 'Bench Press')),
+    ];
+    const result = selectProactiveInsight({
+      nowAt: '2026-08-19T12:00:00.000Z',
+      sessions,
+    });
+
+    expect(result?.kind).toBe('strength_progress');
+    expect(result?.key).toContain('name:bench_press');
+    expect(
+      selectProactiveInsight({
+        nowAt: '2026-08-19T12:00:00.000Z',
+        sessions,
+        presentation: { dismissedKeys: result ? [result.key] : [] },
+      }),
+    ).toBeNull();
   });
 
   it('requires a larger sample before surfacing stagnation', () => {
