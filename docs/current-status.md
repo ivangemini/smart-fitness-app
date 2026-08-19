@@ -10,19 +10,22 @@ Exact code, tests, migrations, CI and current Git history override this checkpoi
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current verified `main`: `e086f6795b0ea5f07ad00c3d03283759a1889780` (#777).
+Current verified `main`: `fe36a5ff00666a977099277258cd326dc5a9cf14` (#781).
 
 Phase 15 remains source/CI-complete for the reviewed Coach Intelligence + Progress scope. Phase 16 deterministic foreground v1 is source/CI-complete through #770–#772.
 
-Phase 17 Goals & Planning is now active over the existing fitness-profile goal authority:
+The first reviewed Phase 17 Goals & Planning scope is now source/CI-complete:
 
-- #773 — typed deterministic goal facts from canonical profile goals, weight history and completed workout history, plus neutral goal-relative Progress context;
-- #776 — selector-only Goals → Companion handoff; navigation carries reviewed intent/time anchor only and Companion rebuilds facts from canonical state;
-- #777 — authenticated read-only Ask Coach UI, strict question-response parsing, capability-aware availability and mobile Coach capability-schema compatibility through v13.
+- #773 — typed deterministic goal facts from canonical fitness-profile goals, weight history and completed workout history, plus neutral goal-relative Progress context;
+- #776 — selector-only Goals → Companion handoff with canonical fact rebuilding at the destination;
+- #777 — authenticated read-only Ask Coach UI, strict question-response parsing, capability-aware availability and Coach capability-schema compatibility through v13;
+- #781 — typed non-canonical goal proposal preview, explicit current→proposed changes and guarded `applied | stale` canonical update.
 
-#777 passed exact-head Mobile CI: repository/changed-file line audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
+#781 exact-head `5c239c3638932568440c811f6d44e7578db1ea8a` passed Mobile CI run `32242728771` / 2638: repository/changed-file line audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
 
-The existing Profile goals editor remains the canonical mutation surface. No second persisted goal collection was introduced.
+The existing fitness profile remains the canonical goal authority. No second persisted goal collection or proposal store was introduced. Applying a goal proposal now changes only goal fields; the previous hidden nutrition-target recalculation was removed, so nutrition/program changes remain separate reviewed application flows.
+
+Focused closure evidence: `docs/qa/phase17-goals-planning-closure.md`.
 
 ### Backend repository
 
@@ -30,7 +33,7 @@ Repository: `ivangemini/smart-fitness-backend`.
 
 Current verified backend `main`: `eebca930893f3b2a5bcc4e2293873695d1bbb3c6` (#271).
 
-The read-only Coach question path now includes:
+The read-only Coach question path includes:
 
 - #266 — minimal-scope structured question routing;
 - #267 — minimized evidence, strict structured answer output and fail-closed scope validation;
@@ -40,7 +43,7 @@ The read-only Coach question path now includes:
 
 #271 passed exact-head Backend CI: lint, Prettier, build, production-configuration validation, isolated-staging topology validation and the full test suite.
 
-Goal-only questions do not read food logs or workout sets and do not expose notes/sessionData. The first backend goal evidence contract uses a bounded seven-day **UTC-day** training window because server-side user-timezone authority has not been introduced; it must not be described as a local-calendar-week contract.
+Goal-only questions do not read food logs or workout sets and do not expose notes/session payloads. The first backend goal evidence contract uses a bounded seven-day **UTC-day** training window because server-side user-timezone authority has not been introduced; it must not be described as a local-calendar-week contract.
 
 ## Phase status
 
@@ -51,28 +54,34 @@ Goal-only questions do not read food logs or workout sets and do not expose note
 - **Phase 14:** ordinary autonomous source/runtime preparation is exhausted for current contracts; external provider and physical-device evidence remains.
 - **Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics:** source/CI-complete for the currently reviewed scope.
 - **Phase 16 — Proactive Coach:** deterministic foreground Companion-card v1 source/CI-complete through #770–#772; expansion requires a separate purpose/delivery contract.
-- **Phase 17 — Goals & Planning:** in progress. Canonical goal facts, Progress context, Goals → Companion context and goal-aware Ask Coach are source/CI-complete for the reviewed first slices.
+- **Phase 17 — Goals & Planning:** P17-A through P17-D are source/CI-complete for the currently reviewed first scope. P17-E richer goal persistence remains threshold-gated and is not an automatic next task.
 
 ## Phase 17 authority and boundaries
 
-Current canonical goal-related fields remain:
+Canonical goal-related fields remain:
 
 - `ProfileState.goalType`;
 - `ProfileState.targetWeight`;
 - `ProfileState.weeklyWeightChangeGoal`;
 - `ProfileState.trainingDaysPerWeek`.
 
-They already participate in the fitness-profile synchronization path and are mutated through the established `updateProfileGoals` flow. A new persisted goal entity is justified only by a reviewed requirement that these fields cannot safely express, such as multiple independently versioned simultaneous goals or goal lifecycle history; ownership, migration, sync/revision, conflict and deletion semantics must be defined before such expansion.
+They already participate in the fitness-profile synchronization path and mutate through `updateProfileGoals`.
 
-Permanent Phase 17 rules for the current authority:
+P17-D adds an ephemeral proposal contract over those fields. A proposal captures the source goal snapshot plus only explicit current→proposed changes. Before canonical mutation, the app compares that source snapshot with current state inside the state transition. A mismatch returns `stale` and preserves newer state unchanged.
+
+Permanent Phase 17 first-scope rules:
 
 - missing evidence remains missing;
 - no universal goal/adherence score;
 - no moralized success/failure or punitive streak mechanics;
 - no inferred body composition;
 - navigation passes selectors/anchors rather than raw private state;
-- Coach questions are read-only and minimum-scope;
-- planning recommendations may be proposed later, but canonical mutation remains explicit and confirmation-gated.
+- generic Coach questions are read-only and minimum-scope;
+- proposals remain non-canonical until explicit confirmation;
+- stale proposals fail closed;
+- accepting a goal proposal does not automatically mutate nutrition targets, programs, workouts, Labs, recovery or safety state.
+
+A new persisted goal entity is justified only by a reviewed requirement the current profile cannot safely express, such as multiple independently versioned simultaneous goals, explicit deadlines/status or goal lifecycle history. Ownership, migration, sync/revision, conflict, deletion/account-cleanup and privacy/export semantics must be designed before such expansion.
 
 ## Phase 14 external evidence boundary
 
@@ -85,15 +94,15 @@ Phase 14 remains independently actionable when external prerequisites become ava
 
 ## Validation / closure boundary
 
-Source/CI completion does **not** claim production deployment, provider activation, signed physical-device evidence, production-model quality, diagnosis/prescribing authority or automatic canonical mutation.
+Source/CI completion does **not** claim production deployment, provider activation, signed physical-device evidence, production-model quality, diagnosis/prescribing authority, server-side local-timezone parity or automatic cross-domain mutation.
 
 ## Current execution order
 
-1. Treat P17-A/B/C as source/CI-complete for the reviewed first goal-aware slices through mobile #777 and backend #271.
-2. Continue Phase 17 with a reviewed P17-D planning/proposal preview contract over the existing fitness-profile goal authority; proposals remain non-canonical until explicit confirmation and must define stale-source handling before mutation.
-3. Keep Phase 15 and the reviewed Phase 16 foreground v1 closed unless a reproduced defect or newly reviewed contract requires expansion.
-4. Execute Phase 14 provider/device evidence independently whenever its prerequisites become available.
-5. Repair demonstrated defects; do not manufacture unrelated cleanup work.
+1. Treat P17-A through P17-D as source/CI-complete for the currently reviewed first Goals & Planning scope; see `docs/qa/phase17-goals-planning-closure.md`.
+2. Do not manufacture P17-E goal persistence/model-planning work unless a reviewed richer-goal requirement crosses the documented threshold.
+3. Keep Phase 15 and reviewed Phase 16 foreground v1 closed unless a reproduced defect or newly reviewed capability requires expansion.
+4. Execute Phase 14 provider/device evidence independently whenever its external prerequisites become available.
+5. Repair demonstrated defects before inventing unrelated cleanup work.
 
 ## Execution boundary
 
