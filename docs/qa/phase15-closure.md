@@ -4,9 +4,12 @@ Updated: 2026-08-19
 
 This document records the source/CI closure boundary for **Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics**. It does not claim provider activation, signed physical-device evidence, production rollout, or Phase 14 external evidence.
 
-## Reviewed source boundary
+## Verified checkpoints
 
-Phase 15 is organized around five implemented source contracts plus closure:
+- Mobile `main`: `bf302de39c1190f736f17c731f0d2fac2f41e569` (#768).
+- Backend `main`: `a4b1e51b7e3a2b1e388a17454ee86482a273ab94` (#270).
+
+## Reviewed source boundary
 
 - **P15-A — bounded Coach data access:** typed, purpose-specific retrieval with hard period/result limits and explicit privacy exclusions;
 - **P15-B — deterministic analytics:** reusable pure training/progress calculations with missing-data and evidence semantics;
@@ -17,7 +20,7 @@ Phase 15 is organized around five implemented source contracts plus closure:
 
 ## Mobile evidence
 
-Verified merged sequence before the final Highlights handoff:
+Verified sequence:
 
 - #749 training analytics and bounded workout/exercise Coach capabilities;
 - #750 canonical program/profile/body/nutrition/confirmed-Labs Coach capabilities;
@@ -32,23 +35,14 @@ Verified merged sequence before the final Highlights handoff:
 - #763 Highlights drill-down;
 - #764 Body measurement drill-down;
 - #766 Measurements → Companion handoff;
-- #767 Activity → Companion handoff.
+- #767 Activity → Companion handoff;
+- #768 Highlights → Companion handoff plus final boundary hardening.
 
-PR #768 adds the remaining reviewed Highlights → Companion handoff. Its exact-head validation must be green before this document may classify P15-E as source/CI-complete for the current drill-down set.
+#768 exact-head Mobile CI passed repository file audit, changed-file line limit, TypeScript, full regression suite, expanded-model smoke, Expo export and Expo Doctor.
 
-### Mobile validation contract
+### Context/privacy invariants
 
-Every runtime/code PR above is subject to the repository's authoritative Mobile CI on `[self-hosted, linux, x64, hermes-mobile-ci]`, including:
-
-1. repository file line audit;
-2. changed-file line limit;
-3. TypeScript validation;
-4. full regression suite;
-5. expanded-model smoke;
-6. Expo export;
-7. Expo Doctor.
-
-The Progress/Companion handoff contracts additionally enforce:
+The Progress/Companion handoff contracts enforce:
 
 - navigation carries selectors/anchors only, never raw workout, measurement or analytics payloads;
 - malformed contextual params fail closed;
@@ -56,6 +50,8 @@ The Progress/Companion handoff contracts additionally enforce:
 - facts are rebuilt from canonical state inside the Companion boundary;
 - missing data remains missing;
 - all-time Highlights record evidence is not silently widened into the bounded Companion context.
+
+Closure review found one substantive issue before #768 merged: shared training analytics could still inspect older sessions internally while the final Highlights DTO omitted all-time fields. #768 was hardened so the Companion Highlights path filters source session inputs to the 90-day Coach window **before** analytics. A regression test proves an older out-of-window high-value session cannot influence Companion facts.
 
 ## Backend evidence
 
@@ -66,23 +62,25 @@ Verified Phase 15 question-path sequence:
 - #269 authenticated `POST /v1/coach/questions` end-to-end composition;
 - #270 confirmed structured Labs overview/marker-history evidence in the same read-only question path.
 
-Backend #269 and #270 passed the authoritative Backend CI gates before merge: lint, Prettier, TypeScript build, production-configuration validation, isolated-staging topology validation and the full test suite.
+#269 and #270 passed authoritative Backend CI before merge: lint, Prettier, TypeScript build, production-configuration validation, isolated-staging topology validation and the full test suite.
 
-The Labs question path uses existing user-scoped confirmed-result repositories/tooling. Model-visible Labs evidence is bounded structured marker data only. Raw documents, extraction drafts, provider payloads, secrets, diagnosis, treatment, medication/supplement prescription and automatic canonical mutation remain outside the reviewed contract.
+The Labs question path uses user-scoped confirmed-result repositories/tooling. Model-visible Labs evidence is bounded structured marker data only. Raw documents, extraction drafts, provider payloads, secrets, diagnosis, treatment/prescribing and automatic canonical mutation remain outside the reviewed contract.
 
 ## Accessibility and resilience review
 
-The current Progress drill-downs use the shared responsive/Safe Area and UI primitives already covered by repository source/regression contracts. Coach contextual actions use the shared `AppButton` control rather than introducing custom undersized touch targets. The Companion screen keeps its existing localized accessible back control and safe-area-aware scroll layout.
+The current Progress drill-downs use shared responsive/Safe Area and UI primitives already covered by repository source/regression contracts. Coach contextual actions use shared `AppButton` controls rather than introducing custom undersized touch targets. Companion retains its localized accessible back control and safe-area-aware scroll layout.
 
-No source-demonstrated Phase 15 accessibility defect was identified during closure review that justified a speculative UI refactor. Physical-device/Dynamic Type/VoiceOver evidence is not claimed by source CI and remains a separate runtime evidence class when required.
+No source-demonstrated Phase 15 accessibility defect was identified during closure review that justified a speculative refactor. Physical-device, Dynamic Type and VoiceOver evidence is not claimed by source CI and remains a separate runtime evidence class when required.
 
 ## Performance and data-volume review
 
-Phase 15 data access is bounded before model exposure and, where privacy scope requires it, before analytics input. Relevant limits include the existing 90-day Coach training-history boundary, bounded workout/set/result counts, bounded Progress chart/detail periods, and bounded Labs result/history evidence.
+Phase 15 data access is bounded before model exposure and, where privacy scope requires it, before analytics input. Relevant limits include the 90-day Coach training-history boundary, bounded workout/set/result counts, bounded Progress periods and bounded Labs result/history evidence.
 
-The Highlights handoff specifically excludes all-time record evidence from Companion because Progress computes that status from longer history. The reviewed implementation must filter session inputs to the bounded Coach window before running the Highlights Companion analytics, rather than merely dropping all-time fields from the final DTO.
+No unbounded raw `AppState`, AsyncStorage, SecureStore, provider payload or raw Labs-document path was approved for model-visible context.
 
 ## Closure classification
+
+**P15-A through P15-F are source/CI-complete for the currently reviewed scope.**
 
 Source/CI closure is not release evidence. The following remain outside Phase 15 closure and must not be inferred from it:
 
@@ -94,4 +92,4 @@ Source/CI closure is not release evidence. The following remain outside Phase 15
 - diagnosis, prescribing, pharmacology or medication/SARM/hormone guidance;
 - automatic mutation of workouts, programs, nutrition targets, goals or Labs data.
 
-After the exact final mobile handoff is green and merged, synchronize `docs/current-status.md`, `docs/handoffs/latest.md`, `ROADMAP_PROGRESS.md`, `docs/implementation-plan.md` and any stale stable-context statements to the exact merged mobile/backend SHAs.
+Reopen Phase 15 only for a reproduced defect, failed closure invariant or newly reviewed capability.
