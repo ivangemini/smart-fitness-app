@@ -20,13 +20,13 @@ Focused roadmap references retained as stable contracts:
 - Phase 14: autonomous source/runtime preparation is complete for current contracts; external provider and physical-device evidence remains.
 - **Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics: source/CI-complete for the currently reviewed scope.**
 - **Phase 16 — Proactive Coach: deterministic foreground Companion-card v1 source/CI-complete through #770–#772.**
-- **Phase 17 — Goals & Planning: P17-A through P17-D source/CI-complete for the currently reviewed first scope through mobile #781 and backend #271.**
+- **Phase 17 — Goals & Planning: P17-A through P17-D source/CI-complete for the currently reviewed first scope through mobile #783 and backend #271.**
 
 ## Current verified checkpoint
 
 ### Mobile
 
-Current `main`: `fe36a5ff00666a977099277258cd326dc5a9cf14` (#781).
+Current `main`: `b2531e2122d6d7357129c76c48554b3a915d2e6c` (#783).
 
 Phase 15 mobile includes bounded Coach capabilities/selective retrieval (#749–#751), compact Progress IA/current drill-downs (#755–#764), and selector-only exercise, Weight, Measurements, Activity and Highlights Progress → Companion handoffs through #768.
 
@@ -41,9 +41,10 @@ Phase 17 mobile includes:
 - #773 existing fitness-profile goal authority + deterministic typed `buildGoalFacts()` + neutral Progress Goals card;
 - #776 selector-only Goals → Companion handoff with canonical fact rebuilding on the destination;
 - #777 authenticated read-only Ask Coach UI, strict fail-closed question-response parsing, capability-aware availability, and Coach capabilities v11–v13 compatibility;
-- #781 ephemeral typed goal proposal preview, exact source snapshot, explicit current→proposed changes, guarded `applied | stale` update and removal of hidden nutrition-target mutation.
+- #781 ephemeral typed goal proposal preview, exact source snapshot, explicit current→proposed changes, guarded `applied | stale` update and removal of hidden nutrition-target mutation;
+- #783 inline Liquid Glass proposal review with preview invalidation after further edits while preserving the same atomic stale-source guard.
 
-#781 exact-head `5c239c3638932568440c811f6d44e7578db1ea8a` passed Mobile CI run `32242728771` / 2638: repository/changed-file audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
+#783 exact-head `98aece0b5a44b97988797db2fedd04529bf302df` passed Mobile CI run `32245117299` / 2641: repository/changed-file audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
 
 Focused first-scope closure evidence: `docs/qa/phase17-goals-planning-closure.md`.
 
@@ -126,9 +127,11 @@ Applying a proposal changes only goal fields. It no longer recalculates nutritio
 
 The form preserves unsaved goal edits across unrelated profile-field changes and preserves exact canonical kg values when a displayed kg/lb value was not edited, avoiding display round-trip drift.
 
+#783 refines only the review UX: the preview is rendered inline in Liquid Glass, further edits invalidate it, and Apply still passes the captured source snapshot into the #781 atomic guard. No second proposal persistence or goal authority was added.
+
 Detailed architecture: `docs/architecture/phase17-goal-proposal-contract.md`.
 
-**Status:** source/CI-complete.
+**Status:** source/CI-complete through #783.
 
 ### P17-E — Richer goal model threshold
 
@@ -154,7 +157,7 @@ Do not manufacture a new goal persistence domain merely because P17-D is complet
 
 ## Next execution order
 
-1. Keep P17-A through P17-D closed for the currently reviewed first Goals & Planning scope unless a reproduced defect or newly reviewed capability requires expansion.
+1. Keep P17-A through P17-D closed for the currently reviewed first Goals & Planning scope through #783 unless a reproduced defect or newly reviewed capability requires expansion.
 2. Do not start P17-E persistence/model-planning work until the richer-goal threshold is actually met.
 3. Keep Phase 15 and reviewed Phase 16 foreground v1 closed unless a reproduced defect/new reviewed purpose requires reopening them.
 4. Execute Phase 14 provider/device evidence independently whenever external prerequisites become available.
