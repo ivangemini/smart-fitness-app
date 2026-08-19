@@ -24,6 +24,8 @@ export const getMeasurementProgressCopy = (locale: SupportedLocale) => ({
       ? 'Нужно минимум два сравнимых измерения этого показателя.'
       : 'At least two comparable measurements are needed for this metric.',
   recentEntries: locale === 'ru' ? 'Недавние записи' : 'Recent entries',
+  askCoach:
+    locale === 'ru' ? 'Обсудить показатель с Companion' : 'Ask Companion about this metric',
   percentPointsUnit: locale === 'ru' ? 'п.п.' : 'pp',
   pointsTruncated: (count: string) =>
     locale === 'ru'
