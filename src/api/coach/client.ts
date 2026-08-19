@@ -11,6 +11,10 @@ import type {
 } from './contracts';
 import { parseCoachRunInputSummary } from './inputSummary';
 import { parseCoachCapabilities, parseCoachRunEnvelope } from './parsers';
+import {
+  COACH_QUESTION_MAX_LENGTH,
+  parseCoachQuestionResponse,
+} from './questions';
 import { parseCoachRunTrustState } from './trust';
 
 type CoachApiAuth = {
@@ -126,6 +130,26 @@ export const createCoachApi = (
           }),
         ),
       ),
+    askQuestion: async (question) => {
+      const normalized = question.trim();
+      if (!normalized || normalized.length > COACH_QUESTION_MAX_LENGTH) {
+        throw new Error(
+          `Coach questions must contain between 1 and ${COACH_QUESTION_MAX_LENGTH} characters.`,
+        );
+      }
+      return requestWithAuth(async (accessToken) =>
+        parseCoachQuestionResponse(
+          await apiClient.post<unknown, { question: string }>(
+            '/v1/coach/questions',
+            { question: normalized },
+            {
+              headers: { authorization: `Bearer ${accessToken}` },
+              retry: false,
+            },
+          ),
+        ),
+      );
+    },
     startStrengthRun: (input) =>
       postRun('/v1/coach/strength/runs', input),
     startNutritionRun: (input = {}) =>
