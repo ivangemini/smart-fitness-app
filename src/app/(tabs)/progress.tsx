@@ -285,11 +285,26 @@ export default function ProgressScreen() {
 
         <ProgressOverviewCard
           actions={
-            <AppButton
-              label={goalCopy.openProfile}
-              onPress={() => router.push('/(tabs)/profile')}
-              variant="secondary"
-            />
+            <View style={styles.inlineActions}>
+              <AppButton
+                label={goalCopy.openCompanion}
+                onPress={() =>
+                  router.push({
+                    pathname: '/(tabs)/coach',
+                    params: {
+                      contextSource: 'progress',
+                      contextIntent: 'goal_progress',
+                      endAt: anchorAt,
+                    },
+                  })
+                }
+              />
+              <AppButton
+                label={goalCopy.openProfile}
+                onPress={() => router.push('/(tabs)/profile')}
+                variant="secondary"
+              />
+            </View>
           }
           rows={goalRows}
           subtitle={goalCopy.subtitle}
