@@ -10,61 +10,73 @@ Exact code, tests, migrations, CI and current Git history override this checkpoi
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current verified `main`: `11282c8d65d15c60c27f27aa41806b374101dbd5` (#772).
+Current verified `main`: `e086f6795b0ea5f07ad00c3d03283759a1889780` (#777).
 
-Phase 15 remains source/CI-complete for the reviewed Coach Intelligence + Progress scope. The current mobile baseline includes bounded Coach capabilities/selective retrieval (#749–#751), compact Progress IA and drill-downs (#755–#764), and selector-only Progress → Companion handoffs through #768.
+Phase 15 remains source/CI-complete for the reviewed Coach Intelligence + Progress scope. Phase 16 deterministic foreground v1 is source/CI-complete through #770–#772.
 
-The first reviewed Phase 16 Proactive Coach foreground slice is now also source/CI-complete:
+Phase 17 Goals & Planning is now active over the existing fitness-profile goal authority:
 
-- #770 — deterministic bounded proactive selector for notable strength progression, conservative strength stagnation and positive consistency change, with stable evidence keys and bounded source input;
-- #771 — schema-versioned account-scoped presentation memory with a global seven-day cooldown, dismissed evidence keys, privacy inventory coverage and account-deletion cleanup;
-- #772 — one authenticated foreground insight card inside Companion, persistence-before-display, fail-closed storage behavior, localized neutral copy and evidence-specific Progress drill-down.
+- #773 — typed deterministic goal facts from canonical profile goals, weight history and completed workout history, plus neutral goal-relative Progress context;
+- #776 — selector-only Goals → Companion handoff; navigation carries reviewed intent/time anchor only and Companion rebuilds facts from canonical state;
+- #777 — authenticated read-only Ask Coach UI, strict question-response parsing, capability-aware availability and mobile Coach capability-schema compatibility through v13.
 
-#772 exact-head Mobile CI passed repository/changed-file line audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor. Focused closure evidence is recorded in `docs/qa/phase16-foreground-closure.md`.
+#777 passed exact-head Mobile CI: repository/changed-file line audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
 
-Phase 16 foreground v1 does not include Home takeover, push/background delivery, model-triggered proactive generation, badge/streak mechanics or automatic mutation of workouts, programs, nutrition, goals, Labs or safety state.
+The existing Profile goals editor remains the canonical mutation surface. No second persisted goal collection was introduced.
 
 ### Backend repository
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Current verified backend `main`: `a4b1e51b7e3a2b1e388a17454ee86482a273ab94` (#270).
+Current verified backend `main`: `eebca930893f3b2a5bcc4e2293873695d1bbb3c6` (#271).
 
-Phase 15 Coach question infrastructure remains the current backend baseline:
+The read-only Coach question path now includes:
 
 - #266 — minimal-scope structured question routing;
 - #267 — minimized evidence, strict structured answer output and fail-closed scope validation;
-- #269 — authenticated read-only `POST /v1/coach/questions` composition;
-- #270 — bounded confirmed structured Labs overview/marker-history evidence.
+- #269 — authenticated `POST /v1/coach/questions` composition;
+- #270 — bounded confirmed structured Labs overview/marker-history evidence;
+- #271 — bounded `goal_progress` routing/evidence over the existing fitness profile, 42-day weight history and recent completed sessions, with capabilities schema v13.
 
-No backend change was required for Phase 16 foreground v1 because selection and presentation are deterministic over already-approved bounded facts.
+#271 passed exact-head Backend CI: lint, Prettier, build, production-configuration validation, isolated-staging topology validation and the full test suite.
+
+Goal-only questions do not read food logs or workout sets and do not expose notes/sessionData. The first backend goal evidence contract uses a bounded seven-day **UTC-day** training window because server-side user-timezone authority has not been introduced; it must not be described as a local-calendar-week contract.
 
 ## Phase status
 
 - **Phases 1–10:** complete for established source/CI scope.
 - **Phase 11 — Liquid Glass + Home:** source/CI-complete for the reviewed convergence scope.
-- **Phase 12 — Labs + Settings:** source/runtime preparation complete for reviewed contracts; configured-provider/device evidence remains.
+- **Phase 12 — Labs + Settings:** provider-neutral source/runtime preparation complete for reviewed contracts; configured-provider/device evidence remains.
 - **Phase 13 — Companion v1:** retained; Companion remains the user-facing presentation of Coach, not a second assistant.
 - **Phase 14:** ordinary autonomous source/runtime preparation is exhausted for current contracts; external provider and physical-device evidence remains.
-- **Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics:** source/CI-complete for the currently reviewed scope. See `docs/qa/phase15-closure.md`.
-- **Phase 16 — Proactive Coach:** the reviewed deterministic foreground Companion-card slice is source/CI-complete through #770–#772. Further expansion requires a new purpose-specific contract.
-- **Phase 17 — Goals & Planning:** next executable product source phase.
+- **Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics:** source/CI-complete for the currently reviewed scope.
+- **Phase 16 — Proactive Coach:** deterministic foreground Companion-card v1 source/CI-complete through #770–#772; expansion requires a separate purpose/delivery contract.
+- **Phase 17 — Goals & Planning:** in progress. Canonical goal facts, Progress context, Goals → Companion context and goal-aware Ask Coach are source/CI-complete for the reviewed first slices.
 
-## Phase 17 authority baseline
+## Phase 17 authority and boundaries
 
-The application already has canonical goal-related fitness-profile state: `goalType`, `targetWeight`, `weeklyWeightChangeGoal` and `trainingDaysPerWeek`. The same fields are already represented in fitness-profile synchronization metadata, and the existing Profile goals editor updates them through the established `updateProfileGoals` action.
+Current canonical goal-related fields remain:
 
-Therefore Phase 17 must not introduce a second persisted goal authority merely to add goal-aware Progress/Coach behavior. The safe starting direction is:
+- `ProfileState.goalType`;
+- `ProfileState.targetWeight`;
+- `ProfileState.weeklyWeightChangeGoal`;
+- `ProfileState.trainingDaysPerWeek`.
 
-1. define typed deterministic goal facts/views over existing fitness-profile state;
-2. expose goal-relative status in Progress with explicit evidence and no pseudo-precision;
-3. allow Coach to consume only the minimum typed goal context needed for a question;
-4. preserve explicit confirmation for any future plan/nutrition changes;
-5. introduce new goal persistence only if a reviewed requirement cannot be represented by the existing fitness-profile authority.
+They already participate in the fitness-profile synchronization path and are mutated through the established `updateProfileGoals` flow. A new persisted goal entity is justified only by a reviewed requirement that these fields cannot safely express, such as multiple independently versioned simultaneous goals or goal lifecycle history; ownership, migration, sync/revision, conflict and deletion semantics must be defined before such expansion.
+
+Permanent Phase 17 rules for the current authority:
+
+- missing evidence remains missing;
+- no universal goal/adherence score;
+- no moralized success/failure or punitive streak mechanics;
+- no inferred body composition;
+- navigation passes selectors/anchors rather than raw private state;
+- Coach questions are read-only and minimum-scope;
+- planning recommendations may be proposed later, but canonical mutation remains explicit and confirmation-gated.
 
 ## Phase 14 external evidence boundary
 
-Phase 14 remains independently actionable when its external prerequisites become available.
+Phase 14 remains independently actionable when external prerequisites become available.
 
 - **Push:** staging-only APNs/FCM material plus signed physical-device permission/token/delivery/tap evidence remain.
 - **Labs / Analyses:** configured-provider evidence still requires staging-only private S3-compatible storage plus Gemini material, one bounded synthetic lifecycle and physical-device picker/accessibility evidence.
@@ -77,10 +89,10 @@ Source/CI completion does **not** claim production deployment, provider activati
 
 ## Current execution order
 
-1. Keep Phase 15 closed unless a reproduced defect, failed invariant or newly reviewed capability requires reopening it.
-2. Treat Phase 16 foreground v1 as closed for the reviewed deterministic Companion-card scope; expand only under a new reviewed trigger/delivery contract.
-3. Advance Phase 17 Goals & Planning by reusing the existing fitness-profile goal authority and adding typed deterministic goal-relative facts before richer planning UI.
-4. Execute Phase 14 external provider/device evidence independently whenever prerequisites are available.
+1. Treat P17-A/B/C as source/CI-complete for the reviewed first goal-aware slices through mobile #777 and backend #271.
+2. Continue Phase 17 with a reviewed P17-D planning/proposal preview contract over the existing fitness-profile goal authority; proposals remain non-canonical until explicit confirmation and must define stale-source handling before mutation.
+3. Keep Phase 15 and the reviewed Phase 16 foreground v1 closed unless a reproduced defect or newly reviewed contract requires expansion.
+4. Execute Phase 14 provider/device evidence independently whenever its prerequisites become available.
 5. Repair demonstrated defects; do not manufacture unrelated cleanup work.
 
 ## Execution boundary
