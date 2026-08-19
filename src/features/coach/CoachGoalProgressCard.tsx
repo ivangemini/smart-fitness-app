@@ -4,7 +4,7 @@ import { Text } from 'react-native';
 
 import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
-import { Typography } from '@/constants/theme';
+import { Spacing, Typography } from '@/constants/theme';
 import { buildGoalFacts } from '@/features/goals/goalFacts';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
@@ -57,9 +57,9 @@ export function CoachGoalProgressCard({
     ...bodyStyle,
     color: colors.textPrimary,
     fontWeight: '700' as const,
-    marginTop: 8,
+    marginTop: Spacing.two,
   };
-  const noteStyle = { ...bodyStyle, marginTop: 8 };
+  const noteStyle = { ...bodyStyle, marginTop: Spacing.two };
 
   return (
     <AppCard>
