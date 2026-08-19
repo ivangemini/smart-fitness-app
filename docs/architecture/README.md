@@ -31,6 +31,7 @@ For stable cross-repository orientation, read `../project-context.md`. For curre
 - `phase18-knowledge-learning-system.md` — versioned evidence-linked educational content, quiz, learning-state and Coach→Learn architecture with explicit no-gamification rules.
 - `phase18-learning-state-contract.md` — account-owned informational learning-state semantics, exact-version evidence, privacy/deletion/export and implementation gates.
 - `phase18-learning-state-authority.md` — P18-E authority decision: dedicated server-authoritative account state plus a bounded mobile retry queue, outside private revisioned fitness `AppState` sync.
+- `phase18-coach-learn-recommendation-contract.md` — P18-F deterministic finding→allowlisted canonical-content selection, exact-version learning-state suppression, bounded relevance explanation and fail-closed no-model-selection authority.
 
 ## Media, Social, links, platform composition, CI, and UI layout
 
