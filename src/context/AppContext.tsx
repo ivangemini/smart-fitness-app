@@ -17,6 +17,7 @@ import type {
   NutritionDataState,
   ProfileCalculationSex,
   ProfileGoalType,
+  ProfileGoalsSnapshot,
   ProfileTrainingExperience,
   RecoveryCheckIn,
   UserLimitation,
@@ -44,6 +45,7 @@ import {
   resetOnboardingInState,
   updateCoachProfileInState,
   updatePersonalDetailsInState,
+  updateProfileGoalsIfCurrentInState,
   updateProfileGoalsInState,
   updateRegistrationProfileInState,
   type CoachProfileUpdate,
@@ -145,18 +147,36 @@ export function AppProvider({ children }: PropsWithChildren) {
   } = useWorkoutStateActions({ scheduleStateMutation, setState });
 
   const updateProfileGoals = useCallback(
-    (goals: {
-      targetWeight: number;
-      goalType: ProfileGoalType;
-      weeklyWeightChangeGoal: number;
-      trainingDaysPerWeek: number;
-    }) => {
-      setState((currentState) => {
-        const nextState = updateProfileGoalsInState(currentState, goals);
-        scheduleStateMutation({ label: 'Save profile goals', nextState });
-        return nextState;
-      });
-    },
+    (
+      goals: ProfileGoalsSnapshot,
+      options?: { expectedCurrent?: ProfileGoalsSnapshot },
+    ): Promise<'applied' | 'stale'> =>
+      new Promise((resolve) => {
+        setState((currentState) => {
+          const result = options?.expectedCurrent
+            ? updateProfileGoalsIfCurrentInState(
+                currentState,
+                goals,
+                options.expectedCurrent,
+              )
+            : {
+                nextState: updateProfileGoalsInState(currentState, goals),
+                status: 'applied' as const,
+              };
+
+          if (result.status === 'stale') {
+            resolve('stale');
+            return currentState;
+          }
+
+          scheduleStateMutation({
+            label: 'Save profile goals',
+            nextState: result.nextState,
+          });
+          resolve('applied');
+          return result.nextState;
+        });
+      }),
     [scheduleStateMutation],
   );
 
