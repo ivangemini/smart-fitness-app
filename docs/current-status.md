@@ -25,7 +25,7 @@ Repository: `ivangemini/smart-fitness-backend`.
 - #272 merged the provider-neutral Knowledge contracts/publication gate.
 - #285 merged P18-A relational canonical Knowledge persistence + authenticated fail-closed published-reader API after exact-head Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI passed.
 - #290 is the current clean P18-B editorial-orchestration PR. Its exact head is `8d14c54159128b71f42b6b01cb28c9e5adad36d9`, one commit from `e0ae0e45…`. It includes bounded provider-neutral evidence-pack orchestration, deterministic preflight/readiness, independent claim verification/quiz validation, Tier-3 human-review handling, provider-output consistency hardening, tests and architecture indexing. Merge remains exact-head Hermes CI gated.
-- P18-D is privately prepared one dependency step above #290 at `18e2b318aa7ccd80320bead09c07c9b13c6b3267`; it is deliberately not opened as a PR while #290 owns the dependency/CI lane. The prep diff is exactly four quiz-bank files. It composes full publication eligibility with quiz-specific eligibility, snapshots/freeze-protects canonical quiz evidence, uses module-private `WeakSet` runtime membership so reflected brand symbols cannot forge authority, returns presentation-safe assembly DTOs without answer keys/feedback, and keeps answer evaluation backend-only.
+- P18-D is privately prepared one dependency step above #290 at `ce0843909d0572ee2169cc2988964f4c8a880e48`; it is deliberately not opened as a PR while #290 owns the dependency/CI lane. The prep diff is exactly five files, including the required architecture index update. It composes full publication eligibility with quiz-specific eligibility, stores parsed/frozen answer-bearing snapshots only in a module-private `WeakMap`, exposes a frozen opaque bank token with no `.items`, rejects structural/reflected-brand reconstruction, returns presentation-safe assembly DTOs without answer keys/feedback, and keeps answer evaluation backend-only.
 
 Peptonio admin work remains outside this Phase 18 dependency chain and must not weaken exact-head Knowledge validation discipline.
 
@@ -84,7 +84,7 @@ Focused execution roadmap:
 ## Current execution order
 
 1. Get #290 P18-B exact head green on Hermes; fix only reproducible failures and merge only if backend `main` is still the expected base.
-2. Rebuild the privately prepared hardened P18-D four-file package from the exact new backend `main`, exact-head validate it on Hermes, and merge if clean.
+2. Rebuild the privately prepared hardened P18-D five-file package from the exact new backend `main`, exact-head validate it on Hermes, and merge if clean.
 3. Only after merged/stable P18-A + P18-D identities, implement P18-E server-authoritative account-scoped learning state plus bounded mobile retry/replay under the reviewed ownership/deletion/export contract.
 4. Implement deterministic P18-F finding → Learn mapping/selection only after enough P18-E state exists for suppression/revisit semantics.
 5. Integrate P18-F only into an existing trustworthy typed Coach/report host under P18-G; do not create a second scheduler or treat local presentation labels as backend finding authority.
