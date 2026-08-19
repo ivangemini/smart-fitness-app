@@ -1,6 +1,6 @@
 # Knowledge & Learning Roadmap
 
-Updated: 2026-08-19
+Updated: 2026-08-20
 
 This is the focused execution roadmap for Phase 18. The canonical cross-repository priority remains `docs/implementation-plan.md`; the architecture boundary is `docs/architecture/phase18-knowledge-learning-system.md`.
 
@@ -9,16 +9,16 @@ This is the focused execution roadmap for Phase 18. The canonical cross-reposito
 Phase 18 is active and dependency-ordered.
 
 - **P18-A contracts/publication gate:** merged in backend #272.
-- **P18-A persistence + published reader:** backend #275 remains open at exact head `e76ec127de1c297c7ebf6bb1a68bfbda99584cf1`. Account Deletion Receipt CI passed. The first Backend PostgreSQL CI attempt proved migrations/idempotency/schema and preceding PostgreSQL suites before the self-hosted Hermes runner exhausted disk during later Social tests. Its failed PostgreSQL job is requeued. Backend CI later completed with failure, but the archived job log is currently unavailable through GitHub (`BlobNotFound`), so do not infer an application regression from that missing log. Backend #281 separately adds a bounded PostgreSQL-service tmpfs mitigation for the demonstrated runner-disk failure without reducing test coverage and is awaiting the same runner. Do not merge #275 until all required exact-head gates pass on a healthy/rebuilt head.
-- **P18-B editorial orchestration:** backend #276 is prepared as a stacked branch and must be rebuilt/retargeted from exact backend `main` after P18-A is dependency-clean, with its known Prettier-only CI failure corrected before exact-head revalidation.
-- **P18-C Library/reader:** mobile #786 is prepared and its previous exact head passed Mobile CI, but it depends on P18-A and must be rebuilt/revalidated from exact current mobile `main` after the backend reader contract merges.
-- **P18-D quiz bank:** a deterministic foundation was prepared as backend #279 on top of #276. #279 is currently closed/unmerged; rebuild/reopen or replace it only after P18-B is merged and stable. The rebuild must make presentation/evaluation consume a proven eligible exact-version bank so exported helpers cannot bypass Tier-3/review eligibility.
-- **P18-E learning state:** the ownership/versioning/privacy/deletion/export/offline-replay contract is merged through #787 and the dedicated server-authoritative account-state + bounded mobile retry-queue authority decision is merged through #789. Persistence remains blocked until P18-A reader identities and P18-D quiz identities are merged/stable.
-- **P18-F Coach → Learn:** recommendation authority is merged through mobile #790 in `docs/architecture/phase18-coach-learn-recommendation-contract.md`. Runtime remains blocked until P18-A, P18-D and enough of P18-E are merged/stable.
-- **P18-G Coach/report surface integration:** architecture is merged through mobile #791 in `docs/architecture/phase18-coach-learn-surface-integration.md`. It deliberately does not create a new daily scheduler or treat local Proactive Coach kinds as trusted backend finding codes. Runtime waits for P18-F plus an existing eligible host surface with a trustworthy typed finding identity.
-- **P18-H curriculum/learning paths:** architecture is reviewed in `docs/architecture/phase18-learning-paths-contract.md`. Paths are immutable reviewed navigation over exact article versions, reuse P18-E state, never lock content and do not create duplicate progress truth.
+- **P18-A persistence + published reader:** merged in backend #285 as backend `main` `e0ae0e4506674a533903bb046fd2ff16b2cf44a3`. Its exact head passed Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI before merge.
+- **P18-B editorial orchestration:** clean exact-main rebuild is open as backend #290 at head `8d14c54159128b71f42b6b01cb28c9e5adad36d9`. It adds bounded provider-neutral editorial orchestration, deterministic preflight/readiness, independent claim verification and quiz validation, Tier-3 human-review handling and fail-closed provider-output consistency checks. Merge remains exact-head Hermes CI gated.
+- **P18-C Library/reader:** merged in mobile #793 as mobile `main` `3a99b017b679da295207e4a8e4d1506681368023` after exact-head Mobile CI passed.
+- **P18-D quiz bank:** hardened four-file package is privately prepared one dependency step above #290 at `18e2b318aa7ccd80320bead09c07c9b13c6b3267`; no PR is open while P18-B owns the dependency/CI lane. The package composes full publication eligibility with quiz-specific eligibility, snapshots/freeze-protects canonical quiz evidence, uses module-private `WeakSet` runtime membership to reject structural or reflected-brand forgeries, returns presentation-safe assembly DTOs without answer keys/feedback, and keeps answer evaluation backend-only. It must be rebuilt from exact backend `main` after #290 merges, then exact-head validated before merge.
+- **P18-E learning state:** ownership/versioning/privacy/deletion/export/offline-replay contracts are reviewed. Runtime remains intentionally blocked until merged/stable P18-A reader identity and P18-D quiz identity/evaluation exist.
+- **P18-F Coach → Learn:** recommendation authority is reviewed in `docs/architecture/phase18-coach-learn-recommendation-contract.md`. Runtime waits for P18-A/P18-D plus enough P18-E state for deterministic suppression/revisit semantics.
+- **P18-G Coach/report surface integration:** authority is reviewed in `docs/architecture/phase18-coach-learn-surface-integration.md`. Runtime waits for P18-F plus an existing host surface with a trustworthy typed finding identity; it must not create a second scheduler or promote local presentation labels into backend finding authority.
+- **P18-H curriculum/learning paths:** authority is reviewed in `docs/architecture/phase18-learning-paths-contract.md`. Paths are immutable reviewed navigation over exact article versions, reuse P18-E state, never lock content and do not create duplicate progress truth.
 
-Immediate order: validate/fix the Hermes PostgreSQL CI failure mode through #281 as required → rebuild/validate/merge dependency-clean P18-A → rebuild/revalidate P18-B and P18-C in parallel → merge dependency-clean heads → rebuild hardened P18-D → implement P18-E under the reviewed authority contract → implement deterministic P18-F mapping/selector → integrate it only into an already-authoritative Coach surface under P18-G → implement P18-H only after the canonical reader/quiz/learning-state layers are stable.
+Immediate order: exact-head validate/fix/merge #290 P18-B → rebuild hardened P18-D from the resulting exact backend `main` → exact-head validate/merge P18-D → implement P18-E under the reviewed account-state authority → implement deterministic P18-F mapping/selector → integrate only into an already-authoritative Coach/report surface under P18-G → implement P18-H after reader/quiz/learning-state layers are stable.
 
 ## Product objective
 
@@ -37,7 +37,7 @@ Deliver:
 - versioned quiz-item contracts;
 - deterministic publication eligibility;
 - shared/private data-separation rules;
-- minimum read API/persistence design after the domain contract is validated.
+- relational canonical persistence and authenticated published-reader API.
 
 Acceptance:
 
@@ -46,9 +46,10 @@ Acceptance:
 - a quiz item references the exact article version and reviewed claim(s);
 - Tier-3 medical-adjacent material cannot publish without human review;
 - no provider/model is required for the foundation to function;
-- canonical article data contains no private user evidence.
+- canonical article data contains no private user evidence;
+- reader delivery reruns publication eligibility and omits editorial authority/answer keys.
 
-**Current state:** contract/publication-gate foundation merged in backend #272. Relational persistence and the authenticated published-reader API are pending in backend #275 and remain exact-head CI gated; #281 addresses the demonstrated self-hosted PostgreSQL CI disk-pressure failure mode independently.
+**Current state:** complete for the reviewed runtime/source scope. Contract/publication foundation merged in backend #272; relational persistence and authenticated fail-closed published reader merged in #285 after exact-head CI/PostgreSQL/receipt validation.
 
 ## P18-B — Editorial generation pipeline
 
@@ -67,10 +68,12 @@ Acceptance:
 - the generator cannot publish directly;
 - unsupported claims fail closed;
 - provider output is strict/versioned and never returned raw to mobile;
-- retries are bounded;
-- source identifiers are verified rather than fabricated by the model.
+- a `supported` verification requires explicit supporting evidence and cannot simultaneously carry issue codes;
+- a `valid` quiz validation cannot simultaneously carry blocking issue codes;
+- source identifiers are verified rather than fabricated by the model;
+- raw Labs documents/private application state are outside the normal editorial evidence pack.
 
-**Current state:** provider-neutral foundation prepared in backend #276, stacked behind #275. Its prior CI failure is formatting-only in three P18-B files. Rebuild/retarget from exact current `main` after P18-A is dependency-clean, apply exact Prettier output, and revalidate before merge.
+**Current state:** clean exact-main rebuild is backend #290 at `8d14c54159128b71f42b6b01cb28c9e5adad36d9`. It is mergeable but remains exact-head Hermes Backend CI gated. No provider activation, canonical write path or publication action is included.
 
 ## P18-C — Library and reader
 
@@ -91,7 +94,7 @@ Acceptance:
 - article version remains stable while reading;
 - user-facing sources correspond to the canonical article version.
 
-**Current state:** prepared in mobile #786. Previous exact head passed Mobile CI, but merge is intentionally blocked on backend P18-A and a rebuild/revalidation from exact current mobile `main`.
+**Current state:** merged in mobile #793 after exact-head Mobile CI. The runtime now consumes the P18-A server contract without changing the five primary tabs.
 
 ## P18-D — Quiz bank and validation
 
@@ -101,18 +104,22 @@ Deliver:
 - recall/understanding/application/misconception categories;
 - strict four-option/one-answer validation;
 - claim/article-version linkage;
-- bounded explanations for all options;
-- article-specific quiz assembly.
+- bounded explanations for submitted options;
+- article-specific deterministic quiz assembly;
+- opaque server-authoritative bank eligibility.
 
 Acceptance:
 
 - no live arbitrary quiz generation is required for reading;
 - questions with ambiguous answer keys cannot publish;
 - each question is provably supported by reviewed article claims;
-- presentation/evaluation cannot bypass the exact-version bank eligibility/Tier-3 human-review gate;
-- updating an article does not silently rewrite historical quiz evidence.
+- presentation/evaluation cannot bypass full publication eligibility, exact-version bank eligibility or Tier-3 human-review gates;
+- runtime authority cannot be forged by structural typing or by reflecting a private brand symbol from a genuine bank;
+- normal assembly/presentation never exposes `correctOptionId`, option feedback-before-answer or review metadata;
+- updating an article does not silently rewrite historical quiz evidence;
+- successful evaluation resolves only an item/option inside the eligible exact-version bank.
 
-**Current state:** deterministic foundation was prepared as backend #279 on top of #276. #279 is closed/unmerged and must be rebuilt from the merged P18-B baseline before it can become mergeable roadmap progress. The rebuild must harden the service/public-helper boundary so bank eligibility is a proven prerequisite of presentation and answer evaluation.
+**Current state:** privately prepared at `18e2b318aa7ccd80320bead09c07c9b13c6b3267` as exactly four files above the current #290 head. It is deliberately not a PR yet. After #290 merges, rebuild the same reviewed package from exact new backend `main`, update the architecture index, exact-head validate, then merge.
 
 ## P18-E — Learning state
 
@@ -128,11 +135,13 @@ Acceptance:
 - reading alone never marks `understood`;
 - quiz evidence references exact article/question versions;
 - account deletion/export/privacy behavior is explicit before persistence ships;
+- offline writes use a bounded retry/replay queue rather than fitness `AppState` revision sync;
+- two-device replay is idempotent/server-authoritative;
 - no scores are converted into XP, levels, streaks or engagement rewards.
 
-The reviewed semantic/privacy contract is `docs/architecture/phase18-learning-state-contract.md` (#787). The chosen implementation authority is `docs/architecture/phase18-learning-state-authority.md` (#789): learning state is a dedicated server-authoritative private account domain with a focused bounded mobile offline retry queue, not another entity in revisioned fitness `AppState` sync. Positive evidence is keyed to exact article/article-version identities; hidden answer keys remain backend-controlled; the persistence package must include authenticated ownership, retry/replay, stale/deprecated handling, two-device behavior, deletion, export/privacy and account-switch/logout cleanup rather than deferring those responsibilities.
+The reviewed semantic/privacy contract is `docs/architecture/phase18-learning-state-contract.md`. The chosen implementation authority is `docs/architecture/phase18-learning-state-authority.md`: learning state is a dedicated server-authoritative private account domain with a focused bounded mobile offline retry queue, not another entity in revisioned fitness `AppState` sync. Positive evidence is keyed to exact article/article-version identities; hidden answer keys remain backend-controlled; the persistence package must include authenticated ownership, retry/replay, stale/deprecated handling, two-device behavior, deletion, export/privacy and account-switch/logout cleanup.
 
-**Current state:** architecture-approved; persistence intentionally not started until P18-A reader identities and P18-D quiz identities are merged/stable.
+**Current state:** architecture-approved. Runtime must not begin until P18-D quiz identity/evaluation is merged/stable alongside already-merged P18-A reader identity.
 
 ## P18-F — Coach → Learn recommendation engine
 
@@ -152,12 +161,12 @@ Acceptance:
 - unknown/deprecated/model-invented finding codes fail closed to no recommendation;
 - learning state may suppress or permit a bounded revisit but cannot be model-overridden;
 - the same article/version is deduplicated and repeated prompting is frequency-bounded without guilt/reward mechanics;
-- Tier-3/Labs-adjacent recommendations preserve the canonical human-review and structured-evidence boundary;
+- Tier-3/Labs-adjacent recommendations preserve canonical human-review and structured-evidence boundaries;
 - no diagnosis/prescribing inference or automatic cross-domain mutation is introduced.
 
-The reviewed authority is `docs/architecture/phase18-coach-learn-recommendation-contract.md` (#790). The model may provide an optional bounded explanation only after deterministic selection; selection, publication, risk tier, learning state and canonical content remain non-model authority.
+The reviewed authority is `docs/architecture/phase18-coach-learn-recommendation-contract.md`. The model may provide an optional bounded explanation only after deterministic selection; selection, publication, risk tier, learning state and canonical content remain non-model authority.
 
-**Current state:** architecture-approved; runtime implementation intentionally waits for stable P18-A reader identity, hardened P18-D quiz identity/evaluation and enough P18-E account state to implement deterministic suppression/revisit semantics.
+**Current state:** architecture-approved; runtime intentionally waits for hardened P18-D plus enough P18-E account state.
 
 ## P18-G — Coach/report surface integration
 
@@ -175,9 +184,9 @@ Acceptance:
 - no automatic fitness/nutrition/goal/Labs mutation follows reading or quiz completion;
 - future behavior changes are not attributed causally to the educational intervention.
 
-The reviewed authority is `docs/architecture/phase18-coach-learn-surface-integration.md` (#791). Current Proactive Coach v1 remains a local mobile deterministic presentation domain and is not a P18-F finding authority. A future Proactive→Learn bridge requires explicit provenance/validation rather than a label-only mapping. P18-G does not create a new daily/periodic scheduler merely to carry Knowledge.
+The reviewed authority is `docs/architecture/phase18-coach-learn-surface-integration.md`. Current Proactive Coach v1 remains a local mobile deterministic presentation domain and is not a P18-F finding authority. P18-G does not create a new daily/periodic scheduler merely to carry Knowledge.
 
-**Current state:** architecture-approved; runtime waits for P18-F and an existing eligible Coach surface with a trustworthy compatible finding identity.
+**Current state:** architecture-approved; runtime waits for P18-F and an existing eligible Coach/report surface with a trustworthy compatible finding identity.
 
 ## P18-H — Curriculum / learning paths
 
@@ -197,7 +206,7 @@ Acceptance:
 
 The reviewed authority is `docs/architecture/phase18-learning-paths-contract.md`. Shared path definitions are backend-authoritative curriculum content. User-specific decoration reuses P18-E account-owned state; a future enrollment/resume preference would require a separate minimal ownership contract without redefining learning truth.
 
-**Current state:** architecture-approved; runtime remains intentionally downstream of stable P18-A/P18-C reader identity, P18-D quiz evidence where required, and P18-E learning state.
+**Current state:** architecture-approved; runtime remains downstream of stable reader/quiz/learning-state layers.
 
 ## Content-generation operating model
 
