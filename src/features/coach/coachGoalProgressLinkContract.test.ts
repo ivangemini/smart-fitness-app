@@ -24,15 +24,21 @@ describe('goal Progress and Companion contextual linking', () => {
     expect(progress).not.toContain('workoutSessions:');
   });
 
-  it('parses in the screen and rebuilds goal facts from canonical sources in the focused card', () => {
+  it('parses in the screen and rebuilds goal facts from canonical sources in the focused context owner', () => {
     const coach = readSource('src/app/(tabs)/coach.tsx');
-    const card = readSource('src/features/coach/CoachGoalProgressCard.tsx');
+    const composition = readSource('src/features/coach/CoachGoalProgressCard.tsx');
+    const contextCard = readSource(
+      'src/features/coach/CoachGoalProgressContextCard.tsx',
+    );
 
     expect(coach).toContain('parseCoachGoalProgressContext');
     expect(coach).toContain('<CoachGoalProgressCard context={goalProgressContext} />');
-    expect(card).toContain('buildGoalFacts({');
-    expect(card).toContain('profile: sources.profile');
-    expect(card).toContain('weightHistory: sources.weightHistory');
-    expect(card).toContain('workoutSessions: sources.workoutSessions');
+    expect(composition).toContain(
+      '<CoachGoalProgressContextCard context={context} />',
+    );
+    expect(contextCard).toContain('buildGoalFacts({');
+    expect(contextCard).toContain('profile: sources.profile');
+    expect(contextCard).toContain('weightHistory: sources.weightHistory');
+    expect(contextCard).toContain('workoutSessions: sources.workoutSessions');
   });
 });
