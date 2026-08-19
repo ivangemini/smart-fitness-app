@@ -16,3 +16,8 @@ export type ProfileState = {
   trainingExperience: ProfileTrainingExperience | null;
   activeTrainingProgramId: string | null;
 };
+
+export type ProfileGoalsSnapshot = Pick<
+  ProfileState,
+  'goalType' | 'targetWeight' | 'weeklyWeightChangeGoal' | 'trainingDaysPerWeek'
+>;
