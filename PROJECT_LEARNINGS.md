@@ -6,12 +6,12 @@ Reusable project-specific lessons and current constraints.
 
 - The production backend is `ivangemini/smart-fitness-backend`; do not introduce Supabase or a parallel backend.
 - Production API traffic uses `src/api/config.ts`, defaulting to `https://api.peptonio.com`.
-- Shared user state goes through `src/context/AppContext.tsx`.
+- Shared private fitness state goes through the established focused boundaries backed by `src/context/AppContext.tsx`.
 - Synchronization orchestration goes through `src/context/SyncContext.tsx` and `src/cloud/`.
 - The app is offline-first. Preserve local mutations and extend synchronization through entity-specific adapters, revisions, idempotency, tombstones, and explicit conflict handling.
 - The cross-repository execution plan is `docs/implementation-plan.md`.
 - Avoid mixing demo data with user-created state.
-- Do not add lab analysis, pharmacology logic, payments, marketplace functionality, or unreviewed Social domains without explicit approval.
+- Labs / Analyses is an approved private server-authoritative domain. Do not add diagnosis, prescribing/dosing, unrestricted raw-Labs model access, payments, marketplace functionality, or unreviewed Social domains without an explicit reviewed contract.
 
 ## Current synchronization coverage
 
@@ -90,13 +90,27 @@ Implemented Coach surfaces include:
 - read-only Combined Review;
 - Combined Proposal with effective Safety-capped Strength;
 - separate explicit Strength-template and Nutrition-target confirmations;
-- immutable run history, provenance, before/after summaries, trust state, and privacy-safe input coverage.
+- immutable run history, provenance, before/after summaries, trust state, and privacy-safe input coverage;
+- Phase 15 authenticated read-only question routing through minimal scopes and minimized evidence;
+- bounded confirmed structured Labs overview/marker-history evidence inside the reviewed question path.
 
 Deterministic workers own authoritative calculations and hard limits: macro calories, BMR/TDEE when inputs are complete, tonnage, estimated 1RM, progression deltas, volume limits, and movement restrictions.
 
 All structured outputs require versioned Zod schemas and fail-closed parsing. Retry loops are bounded. Persist versioned structured results and audit metadata, never hidden chain-of-thought.
 
 Automatic application remains prohibited. Do not invent a client-only compensating revert; it requires an explicit backend/API ownership, revision, idempotency, conflict, and audit contract.
+
+Phase 15 established a reusable rule for contextual Coach/Companion data: pass selectors/period/anchor metadata, rebuild bounded facts inside the owning boundary, and bound source inputs before analytics when older history would otherwise influence internal calculations. Omitting a field from the final DTO is not sufficient if out-of-scope source data still enters the computation.
+
+## Labs / Analyses
+
+- Labs is private and server-authoritative, separate from private revisioned `AppState` sync.
+- OCR/extraction output remains draft data until explicit confirmation.
+- Confirmed structured facts, source units and laboratory reference intervals are authoritative.
+- Ordinary Coach question context may use only bounded confirmed structured marker facts.
+- Raw Labs documents, unconfirmed extraction drafts, storage/provider payloads and secrets stay outside ordinary model-visible context.
+- Descriptive reference/semantic state is not diagnosis and must not be converted into treatment, prescribing or causal clinical claims.
+- Provider-backed extraction/interpretation remains capability/configuration gated and fail closed.
 
 ## API and authentication
 
@@ -135,7 +149,7 @@ Automatic application remains prohibited. Do not invent a client-only compensati
 - Keep unfinished unbound Story media restart-safe and account-scoped. Recover pending native image-picker results where supported, and delete replaced unbound assets through the managed-media owner API.
 - Archive/Highlights may retain an expired owner's approved Story image only under server authority; they must not make that Story active/readable through the normal Following/Close Friends surface.
 - Owner viewer lists are separate from S9 Like/Reaction identity privacy. Do not turn S10-A into liker/reactor identity lists.
-- When a previously blocked feature becomes real, update stale source guards to assert the new authoritative contract. Do not weaken them into no-op tests: preserve the original anti-fabrication intent. PR #533 exposed this with the old Home guard that banned the words `Story`/`Stories`; the replacement requires `useSocialStories` and still rejects mock/demo Story data.
+- When a previously blocked feature becomes real, update stale source guards to assert the new authoritative contract. Do not weaken them into no-op tests: preserve the original anti-fabrication intent.
 - Temporary CI diagnostics must be removed before merge and the permanent workflow restored exactly. Use diagnostics to identify a blocker, not as a permanent bypass.
 
 ## Data readiness
@@ -158,6 +172,7 @@ Automatic application remains prohibited. Do not invent a client-only compensati
 - Active workout state persists while editing adjacent screens.
 - Do not show `(tabs)` as an iOS back label.
 - Historical Safety metadata is immutable and must not be recalculated from current readiness.
+- Progress → Companion contextual handoffs carry bounded selectors/period/anchor context, not raw state payloads.
 
 ## Nutrition
 
@@ -182,7 +197,9 @@ Automatic application remains prohibited. Do not invent a client-only compensati
 ## Progress
 
 - Extract focused cards, styles, and pure view models instead of extending large screens.
-- Keep useful summaries visible and move or collapse heavy sections when needed.
+- Keep the first-level Progress surface compact; detailed evidence belongs in deliberate drill-downs.
+- Current reviewed domains are Body, Strength & Training, Activity and Highlights.
+- Keep useful textual summaries/empty states when chart evidence is insufficient.
 - Safety analytics use immutable completed-workout metadata.
 - Exclude stale/missing reviews from fresh readiness calculations.
 - React list keys describe item identity, not displayed text.
@@ -210,7 +227,7 @@ Automatic application remains prohibited. Do not invent a client-only compensati
 - Extract cohesive styles, components, hooks, parsers, contracts, or pure helpers.
 - Do not replace one large file with a generic untestable abstraction.
 - Generated files, lockfiles, generated migrations, and packed outputs are excluded.
-- Markdown-only workflow filters can skip Mobile CI even when source tests assert exact canonical-doc markers. Before merging roadmap/docs rewrites, preserve or deliberately update those asserted strings and inspect the relevant source tests; PR #534/#535 exposed this failure mode.
+- Markdown-only workflow filters can skip Mobile CI even when source tests assert exact canonical-doc markers. Before merging roadmap/docs rewrites, preserve or deliberately update those asserted strings and inspect relevant source tests.
 
 Mobile CI is blocking for:
 
