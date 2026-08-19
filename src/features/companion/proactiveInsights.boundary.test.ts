@@ -29,4 +29,19 @@ describe('proactive insight source boundary', () => {
 
     expect(result).toBeNull();
   });
+
+  it('does not count one local midpoint day in both consistency halves', () => {
+    const result = selectProactiveInsight({
+      nowAt: '2026-08-19T12:00:00.000Z',
+      sessions: [
+        session('midpoint-morning', '2026-08-05T10:00:00.000Z'),
+        session('midpoint-evening', '2026-08-05T18:00:00.000Z'),
+        session('recent-1', '2026-08-08T10:00:00.000Z'),
+        session('recent-2', '2026-08-11T10:00:00.000Z'),
+        session('recent-3', '2026-08-14T10:00:00.000Z'),
+      ],
+    });
+
+    expect(result).toBeNull();
+  });
 });
