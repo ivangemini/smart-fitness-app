@@ -14,10 +14,11 @@ Phase 18 is active and dependency-ordered.
 - **P18-C Library/reader:** mobile #786 is prepared and its previous exact head passed Mobile CI, but it depends on #275 and must be rebuilt/revalidated from exact current mobile `main` after the backend reader contract merges.
 - **P18-D quiz bank:** a deterministic foundation was prepared as backend #279 on top of #276. #279 is currently closed/unmerged; rebuild/reopen or replace it only after P18-B is merged and stable. The rebuild must make presentation/evaluation consume a proven eligible exact-version bank so exported helpers cannot bypass Tier-3/review eligibility.
 - **P18-E learning state:** the ownership/versioning/privacy/deletion/export/offline-replay contract is merged through #787 and the dedicated server-authoritative account-state + bounded mobile retry-queue authority decision is merged through #789. Persistence remains blocked until P18-A reader identities and P18-D quiz identities are merged/stable.
-- **P18-F Coach → Learn:** architecture is reviewed in `docs/architecture/phase18-coach-learn-recommendation-contract.md`. Runtime remains blocked until P18-A, P18-D and enough of P18-E are merged/stable.
-- **P18-G/H:** remain downstream of the canonical content, quiz, learning-state and recommendation boundaries below.
+- **P18-F Coach → Learn:** recommendation authority is merged through mobile #790 in `docs/architecture/phase18-coach-learn-recommendation-contract.md`. Runtime remains blocked until P18-A, P18-D and enough of P18-E are merged/stable.
+- **P18-G Coach/report surface integration:** architecture is reviewed in `docs/architecture/phase18-coach-learn-surface-integration.md`. It deliberately does not create a new daily scheduler or treat local Proactive Coach kinds as trusted backend finding codes. Runtime waits for P18-F plus an existing eligible host surface with a trustworthy typed finding identity.
+- **P18-H:** remains downstream of the canonical content, quiz, learning-state and recommendation/surface boundaries below.
 
-Immediate order: finish #275 exact-head CI (or land/rebuild through #281 if runner disk pressure recurs) → merge dependency-clean P18-A → rebuild/revalidate #276 and #786 in parallel → merge dependency-clean heads → rebuild hardened P18-D → implement P18-E under the reviewed authority contract → implement deterministic P18-F mapping/selector → continue report integration.
+Immediate order: finish #275 exact-head CI (or land/rebuild through #281 if runner disk pressure recurs) → merge dependency-clean P18-A → rebuild/revalidate #276 and #786 in parallel → merge dependency-clean heads → rebuild hardened P18-D → implement P18-E under the reviewed authority contract → implement deterministic P18-F mapping/selector → integrate it only into an already-authoritative Coach surface under P18-G → consider curriculum/navigation P18-H after the lower layers are stable.
 
 ## Product objective
 
@@ -154,20 +155,29 @@ Acceptance:
 - Tier-3/Labs-adjacent recommendations preserve the canonical human-review and structured-evidence boundary;
 - no diagnosis/prescribing inference or automatic cross-domain mutation is introduced.
 
-The reviewed authority is `docs/architecture/phase18-coach-learn-recommendation-contract.md`. The model may provide an optional bounded explanation only after deterministic selection; selection, publication, risk tier, learning state and canonical content remain non-model authority.
+The reviewed authority is `docs/architecture/phase18-coach-learn-recommendation-contract.md` (#790). The model may provide an optional bounded explanation only after deterministic selection; selection, publication, risk tier, learning state and canonical content remain non-model authority.
 
 **Current state:** architecture-approved; runtime implementation intentionally waits for stable P18-A reader identity, hardened P18-D quiz identity/evaluation and enough P18-E account state to implement deterministic suppression/revisit semantics.
 
-## P18-G — Daily-report integration
+## P18-G — Coach/report surface integration
 
-Deliver optional educational recommendations inside applicable Coach daily/periodic reports.
+Deliver optional educational attachments inside applicable existing Coach/report surfaces.
 
 Acceptance:
 
-- reports remain useful when no article is recommended;
+- the host Coach surface remains useful and valid when no article is recommended or Knowledge is unavailable;
+- only a P18-F-approved exact article/version attachment may render;
 - education is phrased as optional context, not punishment or medical necessity;
+- a host cooldown/frequency policy cannot be bypassed by rendering Knowledge as a second unsolicited card;
+- local mobile Proactive Coach insight kinds are not silently treated as trusted backend finding codes;
+- navigation uses exact canonical article/version identity;
+- article opening/impression alone does not imply `read` or `understood`;
 - no automatic fitness/nutrition/goal/Labs mutation follows reading or quiz completion;
 - future behavior changes are not attributed causally to the educational intervention.
+
+The reviewed authority is `docs/architecture/phase18-coach-learn-surface-integration.md`. Current Proactive Coach v1 remains a local mobile deterministic presentation domain and is not a P18-F finding authority. A future Proactive→Learn bridge requires explicit provenance/validation rather than a label-only mapping. P18-G does not create a new daily/periodic scheduler merely to carry Knowledge.
+
+**Current state:** architecture-approved; runtime waits for P18-F and an existing eligible Coach surface with a trustworthy compatible finding identity.
 
 ## P18-H — Curriculum / learning paths
 
