@@ -10,11 +10,11 @@ export type ProactivePresentationState = {
   dismissedKeys: string[];
 };
 
-const EMPTY_STATE: ProactivePresentationState = {
+const createEmptyState = (): ProactivePresentationState => ({
   schemaVersion: 1,
   lastShownAt: null,
   dismissedKeys: [],
-};
+});
 
 const normalizeUserId = (userId: string) => {
   const normalized = userId.trim();
@@ -52,17 +52,17 @@ const normalizeDismissedKeys = (value: unknown): string[] => {
 export const parseProactivePresentationState = (
   raw: string | null,
 ): ProactivePresentationState => {
-  if (!raw) return { ...EMPTY_STATE };
+  if (!raw) return createEmptyState();
   try {
     const value = JSON.parse(raw) as Record<string, unknown>;
-    if (value.schemaVersion !== 1) return { ...EMPTY_STATE };
+    if (value.schemaVersion !== 1) return createEmptyState();
     return {
       schemaVersion: 1,
       lastShownAt: normalizeTimestamp(value.lastShownAt),
       dismissedKeys: normalizeDismissedKeys(value.dismissedKeys),
     };
   } catch {
-    return { ...EMPTY_STATE };
+    return createEmptyState();
   }
 };
 
@@ -90,13 +90,15 @@ export const createProactivePresentationStore = (
     update: (state: ProactivePresentationState) => ProactivePresentationState,
   ) => {
     const storageKey = getProactivePresentationStorageKey(userId);
-    let nextState = { ...EMPTY_STATE };
+    let nextState = createEmptyState();
     const previous = mutations.get(storageKey) ?? Promise.resolve();
-    const current = previous.then(async () => {
-      const state = parseProactivePresentationState(await storage.read(storageKey));
-      nextState = update(state);
-      await storage.write(storageKey, serialize(nextState));
-    });
+    const current = previous
+      .catch(() => undefined)
+      .then(async () => {
+        const state = parseProactivePresentationState(await storage.read(storageKey));
+        nextState = update(state);
+        await storage.write(storageKey, serialize(nextState));
+      });
     mutations.set(storageKey, current);
     try {
       await current;
