@@ -1,6 +1,9 @@
 import { buildTrainingProgressAnalytics } from '@/lib/progress/trainingAnalytics';
 import type { WorkoutSession } from '@/types';
 
+import { COACH_HISTORY_MAX_DAYS } from './coachDataCapabilities';
+
+const DAY_MS = 24 * 60 * 60 * 1000;
 const MAX_ITEMS_PER_GROUP = 12;
 
 export type CoachHighlightsProgressFacts = {
@@ -31,6 +34,13 @@ export type CoachHighlightsProgressFacts = {
 };
 
 type TrendItem = CoachHighlightsProgressFacts['improving'][number];
+
+const sessionTimestamp = (session: WorkoutSession) => {
+  const finishedAt = Date.parse(session.finishedAt);
+  if (Number.isFinite(finishedAt)) return finishedAt;
+  const startedAt = Date.parse(session.startedAt);
+  return Number.isFinite(startedAt) ? startedAt : null;
+};
 
 const toTrendItem = (
   exercise: ReturnType<typeof buildTrainingProgressAnalytics>['exercises'][number],
@@ -63,9 +73,26 @@ export const buildCoachHighlightsProgressFacts = ({
   endAt: string;
   days: number;
 }): CoachHighlightsProgressFacts => {
-  const analytics = buildTrainingProgressAnalytics(sessions, {
+  const endTimestamp = Date.parse(endAt);
+  if (!Number.isFinite(endTimestamp)) {
+    throw new Error('buildCoachHighlightsProgressFacts requires a valid endAt timestamp');
+  }
+  const boundedDays = Math.min(
+    COACH_HISTORY_MAX_DAYS,
+    Math.max(1, Math.trunc(Number.isFinite(days) ? days : COACH_HISTORY_MAX_DAYS)),
+  );
+  const startTimestamp = endTimestamp - boundedDays * DAY_MS;
+  const boundedSessions = sessions.filter((session) => {
+    const timestamp = sessionTimestamp(session);
+    return (
+      timestamp !== null &&
+      timestamp >= startTimestamp &&
+      timestamp <= endTimestamp
+    );
+  });
+  const analytics = buildTrainingProgressAnalytics(boundedSessions, {
     endAt,
-    periodDays: days,
+    periodDays: boundedDays,
     maxExercises: 50,
   });
   const improving = collect(analytics.exercises, 'up');
