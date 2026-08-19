@@ -100,7 +100,13 @@ export function ProfileGoalsSection() {
       formatWeightValue(profile.weeklyWeightChangeGoal, weightUnit),
     );
     setTrainingDaysPerWeek(`${profile.trainingDaysPerWeek}`);
-  }, [profile, weightUnit]);
+  }, [
+    profile.goalType,
+    profile.targetWeight,
+    profile.trainingDaysPerWeek,
+    profile.weeklyWeightChangeGoal,
+    weightUnit,
+  ]);
 
   const parseGoalWeight = (value: string, currentKg: number) => {
     const parsed = parseDisplayNumber(value);
