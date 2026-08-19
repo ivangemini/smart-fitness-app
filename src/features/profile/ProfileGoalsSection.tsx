@@ -6,8 +6,13 @@ import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { Colors, Spacing } from '@/constants/theme';
 import { useAppActions } from '@/context/AppContext';
 import { useProfileState } from '@/context/ProfileStateContext';
-import { useProgressState } from '@/context/ProgressStateContext';
+import {
+  buildGoalProposal,
+  type GoalProposal,
+  type GoalProposalChange,
+} from '@/features/goals/goalProposal';
 import { getGoalTypeLabel } from '@/features/progress/progressLocalization';
+import { getProfileGoalsSnapshot } from '@/lib/profileGoals';
 import { useLocalization } from '@/localization';
 import { getProfileGoalsValidationCopy } from '@/localization/profileGoalsValidationCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
@@ -22,11 +27,46 @@ import {
   weightToKg,
 } from '@/units';
 
-import {
-  calculateNutritionTargets,
-  getProfileWeightKg,
-  normalizeProfileActivityLevel,
-} from './profilePlan';
+const PROPOSAL_COPY = {
+  en: {
+    reviewTitle: 'Review goal changes',
+    reviewBody:
+      'Only your saved goal fields will change. Nutrition targets and training programs stay unchanged.',
+    apply: 'Apply goals',
+    noChangesTitle: 'No goal changes',
+    noChangesBody: 'Your saved goals already match these values.',
+    staleTitle: 'Goals changed',
+    staleBody:
+      'Your saved goals changed while this preview was open. Review the latest values before applying.',
+    savedTitle: 'Goals updated',
+    savedBody:
+      'Your goal changes are saved. Nutrition targets and training programs were not changed.',
+    goalType: 'Goal',
+    targetWeight: 'Target weight',
+    weeklyChange: 'Weekly weight change',
+    trainingDays: 'Training days',
+    perWeek: '/week',
+  },
+  ru: {
+    reviewTitle: 'Проверь изменения целей',
+    reviewBody:
+      'Изменятся только сохранённые поля цели. Цели питания и тренировочные программы останутся без изменений.',
+    apply: 'Применить цели',
+    noChangesTitle: 'Изменений нет',
+    noChangesBody: 'Сохранённые цели уже совпадают с этими значениями.',
+    staleTitle: 'Цели изменились',
+    staleBody:
+      'Сохранённые цели изменились, пока было открыто это превью. Проверь актуальные значения перед применением.',
+    savedTitle: 'Цели обновлены',
+    savedBody:
+      'Изменения целей сохранены. Цели питания и тренировочные программы не изменялись.',
+    goalType: 'Цель',
+    targetWeight: 'Целевой вес',
+    weeklyChange: 'Изменение веса за неделю',
+    trainingDays: 'Тренировочных дней',
+    perWeek: '/нед.',
+  },
+} as const;
 
 export function ProfileGoalsSection() {
   const { colors, resolvedAppearance } = useAppTheme();
@@ -36,10 +76,10 @@ export function ProfileGoalsSection() {
   );
   const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const { profile } = useProfileState();
-  const { weightHistory } = useProgressState();
-  const { updateNutritionTargets, updateProfileGoals } = useAppActions();
+  const { updateProfileGoals } = useAppActions();
   const { locale, t } = useLocalization();
   const validationCopy = getProfileGoalsValidationCopy(locale);
+  const proposalCopy = PROPOSAL_COPY[locale];
   const { weight: weightUnit } = useUnitPreferences();
   const [expanded, setExpanded] = useState(false);
   const [targetWeight, setTargetWeight] = useState(() =>
@@ -62,10 +102,21 @@ export function ProfileGoalsSection() {
     setTrainingDaysPerWeek(`${profile.trainingDaysPerWeek}`);
   }, [profile, weightUnit]);
 
-  const canonicalTargetWeight = weightToKg(parseDisplayNumber(targetWeight), weightUnit);
-  const canonicalWeeklyWeightChangeGoal = weightToKg(
-    parseDisplayNumber(weeklyWeightChangeGoal),
-    weightUnit,
+  const parseGoalWeight = (value: string, currentKg: number) => {
+    const parsed = parseDisplayNumber(value);
+    const currentDisplay = parseDisplayNumber(
+      formatWeightValue(currentKg, weightUnit),
+    );
+    return parsed === currentDisplay ? currentKg : weightToKg(parsed, weightUnit);
+  };
+
+  const canonicalTargetWeight = parseGoalWeight(
+    targetWeight,
+    profile.targetWeight,
+  );
+  const canonicalWeeklyWeightChangeGoal = parseGoalWeight(
+    weeklyWeightChangeGoal,
+    profile.weeklyWeightChangeGoal,
   );
   const parsedTrainingDaysPerWeek = Number(trainingDaysPerWeek);
   const validationErrors = {
@@ -74,7 +125,8 @@ export function ProfileGoalsSection() {
         ? validationCopy.targetWeight
         : undefined,
     weeklyWeightChange:
-      !Number.isFinite(canonicalWeeklyWeightChangeGoal) || canonicalWeeklyWeightChangeGoal < 0
+      !Number.isFinite(canonicalWeeklyWeightChangeGoal) ||
+      canonicalWeeklyWeightChangeGoal < 0
         ? validationCopy.weeklyWeightChange
         : undefined,
     trainingDays:
@@ -90,35 +142,62 @@ export function ProfileGoalsSection() {
       validationErrors.trainingDays,
   );
 
-  const saveGoals = () => {
-    if (isSaveDisabled) return;
+  const formatProposalChange = (change: GoalProposalChange): string => {
+    if (change.field === 'goalType') {
+      return `${proposalCopy.goalType}: ${getGoalTypeLabel(t, change.current)} → ${getGoalTypeLabel(t, change.proposed)}`;
+    }
+    if (change.field === 'targetWeight') {
+      return `${proposalCopy.targetWeight}: ${formatWeightValue(change.current, weightUnit)} ${weightUnit} → ${formatWeightValue(change.proposed, weightUnit)} ${weightUnit}`;
+    }
+    if (change.field === 'weeklyWeightChangeGoal') {
+      return `${proposalCopy.weeklyChange}: ${formatWeightValue(change.current, weightUnit)} ${weightUnit}${proposalCopy.perWeek} → ${formatWeightValue(change.proposed, weightUnit)} ${weightUnit}${proposalCopy.perWeek}`;
+    }
+    return `${proposalCopy.trainingDays}: ${change.current} → ${change.proposed}`;
+  };
 
-    const latestWeight = weightHistory[0]?.weight;
-    const currentWeight = latestWeight ?? getProfileWeightKg({
-      fallbackWeight: canonicalTargetWeight,
-      profileWeight: profile.weight,
+  const applyProposal = async (proposal: GoalProposal) => {
+    const status = await updateProfileGoals(proposal.proposed, {
+      expectedCurrent: proposal.source,
     });
-    const activityLevel = normalizeProfileActivityLevel(profile.activityLevel) ?? 'moderate';
+    if (status === 'stale') {
+      Alert.alert(proposalCopy.staleTitle, proposalCopy.staleBody);
+      return;
+    }
 
-    updateProfileGoals({
-      targetWeight: canonicalTargetWeight,
-      goalType,
-      weeklyWeightChangeGoal: canonicalWeeklyWeightChangeGoal,
-      trainingDaysPerWeek: parsedTrainingDaysPerWeek,
-    });
-    updateNutritionTargets(
-      calculateNutritionTargets({ activityLevel, goalType, weightKg: currentWeight }),
-    );
     setExpanded(false);
-    Alert.alert(t('goals.savedTitle'), t('goals.savedBody'));
+    Alert.alert(proposalCopy.savedTitle, proposalCopy.savedBody);
   };
 
   const confirmSave = () => {
     if (isSaveDisabled) return;
-    Alert.alert(t('goals.recalculateTitle'), t('goals.recalculateBody'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      { text: t('goals.confirmSave'), onPress: saveGoals },
-    ]);
+
+    const proposal = buildGoalProposal({
+      source: getProfileGoalsSnapshot(profile),
+      proposed: {
+        targetWeight: canonicalTargetWeight,
+        goalType,
+        weeklyWeightChangeGoal: canonicalWeeklyWeightChangeGoal,
+        trainingDaysPerWeek: parsedTrainingDaysPerWeek,
+      },
+    });
+
+    if (!proposal) {
+      Alert.alert(proposalCopy.noChangesTitle, proposalCopy.noChangesBody);
+      return;
+    }
+
+    const summary = proposal.changes.map(formatProposalChange).join('\n');
+    Alert.alert(
+      proposalCopy.reviewTitle,
+      `${proposalCopy.reviewBody}\n\n${summary}`,
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: proposalCopy.apply,
+          onPress: () => void applyProposal(proposal),
+        },
+      ],
+    );
   };
 
   return (
