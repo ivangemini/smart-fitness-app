@@ -10,7 +10,7 @@ Exact Git history, source, tests and CI override prose if this handoff becomes s
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current verified `main`: `45119f2ef3cc381e667fa8e17ad2d108a9114062` (#776).
+Current verified `main`: `e086f6795b0ea5f07ad00c3d03283759a1889780` (#777).
 
 Phase 15 remains source/CI-complete for its reviewed Coach Intelligence + Progress scope. Phase 16 foreground v1 is source/CI-complete through #770–#772.
 
@@ -18,7 +18,9 @@ Phase 17 is active:
 
 - #773 — canonical fitness-profile goal authority, deterministic typed goal facts and neutral Progress Goals context;
 - #776 — selector-only Goals → Companion handoff with canonical fact rebuilding at the destination;
-- #777 — authenticated read-only Ask Coach UI plus capabilities compatibility v11–v13 is in final exact-head validation and is not yet claimed merged by this draft checkpoint.
+- #777 — authenticated read-only Ask Coach UI, strict response parsing, capability-aware availability and mobile Coach capabilities compatibility through v13.
+
+#777 passed exact-head Mobile CI including line audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
 
 ### Backend
 
@@ -67,11 +69,11 @@ Do not add a second persisted goal source merely for goal-aware Progress/Coach/p
 
 ## Next execution order
 
-1. Finish exact-head Mobile CI and merge #777; then replace the draft mobile checkpoint with the exact merge SHA.
-2. Merge the canonical checkpoint-doc synchronization only after #777 is part of `main`.
-3. Start P17-D as a planning/proposal **preview** contract over current goal authority: proposals remain non-canonical until explicit confirmation and must define stale-source handling before mutation.
-4. Keep Phase 15 and reviewed Phase 16 foreground v1 closed unless a reproduced defect or newly reviewed purpose warrants expansion.
-5. Execute remaining Phase 14 external evidence when prerequisites are available: Labs configured-provider/device, Push provider/device, Steps signed-device and remaining Stories mobile/device evidence.
+1. Treat the reviewed P17-A/B/C slices as source/CI-complete through mobile #777 and backend #271.
+2. Start P17-D as a planning/proposal **preview** contract over current goal authority: proposals remain non-canonical until explicit confirmation and must define stale-source handling before mutation.
+3. Keep Phase 15 and reviewed Phase 16 foreground v1 closed unless a reproduced defect or newly reviewed purpose warrants expansion.
+4. Execute remaining Phase 14 external evidence when prerequisites are available: Labs configured-provider/device, Push provider/device, Steps signed-device and remaining Stories mobile/device evidence.
+5. Repair reproduced defects before inventing unrelated cleanup work.
 
 ## External Phase 14 gates still outstanding
 
