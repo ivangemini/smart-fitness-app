@@ -1,4 +1,5 @@
 import type { CoachRunInputSummary } from './inputSummary';
+import type { CoachQuestionResponse } from './questions';
 
 export type CoachRunStatus = 'queued' | 'running' | 'completed' | 'rejected' | 'failed';
 export type CoachDomain = 'strength' | 'nutrition' | 'safety_recovery' | 'combined';
@@ -171,6 +172,7 @@ type WaitForRunOptions = {
 
 export type CoachApi = {
   getCapabilities(): Promise<CoachCapabilities>;
+  askQuestion(question: string): Promise<CoachQuestionResponse>;
   startStrengthRun(input: StartStrengthCoachRunInput): Promise<CoachRunEnvelope>;
   startNutritionRun(input?: StartNutritionCoachRunInput): Promise<CoachRunEnvelope>;
   startSafetyRecoveryRun(input?: StartSafetyRecoveryRunInput): Promise<CoachRunEnvelope>;
@@ -185,5 +187,8 @@ export type CoachApi = {
     input: ConfirmCoachRunInput,
   ): Promise<CoachRunEnvelope>;
   getRun(runId: string): Promise<CoachRunEnvelope>;
-  waitForTerminalRun(initial: CoachRunEnvelope, options?: WaitForRunOptions): Promise<CoachRunEnvelope>;
+  waitForTerminalRun(
+    initial: CoachRunEnvelope,
+    options?: WaitForRunOptions,
+  ): Promise<CoachRunEnvelope>;
 };
