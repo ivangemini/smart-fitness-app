@@ -10,70 +10,88 @@ Exact code, tests, migrations, CI and current Git history override this checkpoi
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current `main`: `bb48f0452690f0b33e824eea18aae8fb61a7fc2d` (#764).
+Current merged `main` while the final Phase 15 handoff validates: `ff9e71af8a306e4e8802fc50a67da730dbc8e689` (#767).
 
-Phase 15 Progress work has advanced materially beyond the previous Liquid Glass checkpoint:
+Verified Phase 15 mobile progression now includes:
 
-- #755 established the compact Progress information architecture around Body, Strength & Training, Activity and Highlights;
-- #756 added bounded weight-detail periods;
-- #758 added deterministic bounded exercise progress series;
-- #759 added the Strength & Training drill-down;
-- #760 added bounded exercise Progress → Companion context;
-- #761 added the Activity drill-down;
-- #762 added weight-only Progress → Companion context;
-- #763 added the Highlights drill-down;
-- #764 added the Body measurement drill-down.
+- #749 — shared deterministic training/progress analytics plus bounded workout/exercise Coach capabilities;
+- #750 — bounded current-program, profile, body, nutrition and confirmed-Labs Coach capabilities;
+- #751 — selective Coach retrieval/fact packets;
+- #755 — compact Progress IA around Body, Strength & Training, Activity and Highlights;
+- #756 — bounded Weight detail periods;
+- #758 — bounded exercise progress series;
+- #759 — Strength & Training drill-down;
+- #760 — selected-exercise Progress → Companion context;
+- #761 — Activity drill-down;
+- #762 — Weight → Companion context;
+- #763 — Highlights drill-down;
+- #764 — Body measurement drill-down;
+- #766 — Measurements → Companion context;
+- #767 — Activity → Companion context.
 
-The top-level Progress surface now uses progressive disclosure rather than a wall of charts. Weight, measurements, training, activity and highlights all have intentional detail paths. Existing contextual Coach linking is deliberately scoped to reviewed exercise and weight contexts rather than passing raw application state.
+PR #768 is the final reviewed current-set P15-E handoff: Highlights → Companion. It passes only selector context through navigation, rebuilds trend facts inside Companion and enforces the 90-day Coach history window before analytics input. All-time record status remains Progress-only rather than broadening Companion history. Exact-head Mobile CI is required before merge.
+
+The Progress first level uses progressive disclosure rather than a wall of charts. Weight, measurements, training, activity and highlights have deliberate detail paths, and reviewed Progress → Companion handoffs transport selectors/anchors rather than raw state or prebuilt analytics.
 
 ### Backend repository
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Current verified backend `main`: `92fbf47d3bf10725e11ee43ccf61eba042abcba1` (#267).
+Current verified backend `main`: `a4b1e51b7e3a2b1e388a17454ee86482a273ab94` (#270).
 
 Phase 15 Coach question infrastructure now includes:
 
-- #266 — a minimal-scope structured question router that receives only the question plus explicitly available server scopes and fails closed for unsupported/unreviewed domains;
-- #267 — minimized model-visible evidence, strict answer output contracts, evidence-scope validation and fail-closed unsupported/scope-mismatch handling.
+- #266 — minimal-scope structured question routing;
+- #267 — minimized evidence, strict structured answer output and fail-closed scope validation;
+- #269 — authenticated read-only `POST /v1/coach/questions` composition from router through user-scoped retrieval to structured answer;
+- #270 — bounded confirmed structured Labs overview/marker-history evidence in the same question path.
 
-The #267 exact-head Backend CI passed lint, formatting, build, production-configuration validation, isolated-staging topology validation and the full test gate before merge.
-
-The P15-C foundation remains read-only. It does not yet expose the new bounded question path through a public `/v1` endpoint and it does not apply canonical mutations.
+#269 and #270 passed authoritative Backend CI before merge. The question path remains read-only: it does not automatically mutate workouts, programs, nutrition targets, goals or Labs data. Labs model-visible evidence is confirmed structured marker data only; raw documents, extraction drafts and provider payloads remain excluded.
 
 ## Active roadmap state
 
-**Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics is active.**
+**Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics is in closure.**
 
 Current workstream state:
 
-1. **P15-A bounded data access:** substantial mobile/server capability foundations exist; continue only with purpose-specific reviewed scopes.
-2. **P15-B deterministic analytics:** shared training/progress calculations are already supporting the shipped Progress drill-down surfaces; continue where Coach needs additional validated facts.
-3. **P15-C Coach orchestration:** router + minimized evidence + structured answer boundary are complete; next source package is end-to-end authenticated orchestration/API composition without automatic mutation.
-4. **P15-D Progress IA/drill-down:** compact overview plus weight, body-measurement, training, activity and highlights detail surfaces are source/CI-complete through #764.
-5. **P15-E Coach ↔ Progress:** reviewed exercise and weight contextual handoffs are source/CI-complete; add further metric contexts only with equivalent minimization contracts.
-6. **P15-F closure:** accessibility/performance/regression review and canonical documentation synchronization remain after the remaining P15-C/P15-E work stabilizes.
+1. **P15-A bounded data access:** source/CI-complete for the currently reviewed capabilities. Extend only for a new reviewed purpose-specific scope.
+2. **P15-B deterministic analytics:** source/CI-complete for the current Progress/Coach facts. Missing evidence remains missing and calculations stay outside the model.
+3. **P15-C Coach retrieval/orchestration:** authenticated read-only question orchestration is source/CI-complete through #270 for strength, nutrition, safety/recovery and confirmed structured Labs question scopes.
+4. **P15-D Progress IA/drill-down:** source/CI-complete for the current compact overview and Weight, Measurements, Strength & Training, Activity and Highlights detail set.
+5. **P15-E Coach ↔ Progress:** exercise, Weight, Measurements and Activity contexts are merged; Highlights #768 is the final reviewed current-set handoff pending exact-head completion.
+6. **P15-F closure:** boundary review and canonical documentation synchronization are active. Source CI is not physical-device/provider/release evidence.
 
-Phase 16 Proactive Coach and Phase 17 Goals & Planning remain successors; do not pull them forward before Phase 15 contracts are stable.
+Phase 16 Proactive Coach and Phase 17 Goals & Planning remain successors. Do not silently treat Phase 15 closure as authorization for provider rollout, autonomous plan changes or medical behavior.
 
 ## Phase 14 external evidence boundary
 
-Phase 14 remains independently actionable when its external prerequisites become available and does not block Phase 15 source work.
+Phase 14 remains independently actionable when its external prerequisites become available and does not block Phase 15 source closure.
 
-- **Push:** provider/device evidence still requires usable staging-only APNs/FCM material plus signed physical-device execution.
-- **Labs / Analyses:** configured-provider evidence still requires staging-only private S3-compatible storage plus Gemini material, followed by a bounded synthetic lifecycle and physical-device picker/accessibility evidence.
-- **Stories:** backend route/auth/account-lifecycle staging evidence is complete; mobile/physical-device runtime evidence remains.
+- **Push:** staging-only APNs/FCM material plus signed physical-device permission/token/delivery/tap evidence remain.
+- **Labs / Analyses:** configured-provider evidence still requires staging-only private S3-compatible storage plus Gemini material, one bounded synthetic lifecycle and physical-device picker/accessibility evidence.
+- **Stories:** backend route/auth/account-lifecycle staging evidence is complete; remaining mobile/physical-device runtime evidence remains.
 - **Steps:** signed native/physical-device support, permissions, real aggregate reads and local-day/DST/Home evidence remain.
+
+## Validation / closure boundary
+
+Authoritative Mobile CI covers repository/changed-file line audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor. Backend source changes use the separate Backend CI gates. `docs/qa/phase15-closure.md` records the Phase 15 source/CI evidence boundary.
+
+Source/CI completion does **not** claim:
+
+- production deployment or provider activation;
+- signed physical-device evidence;
+- model quality/effectiveness evidence against production data;
+- automatic mutation authority;
+- diagnosis, prescribing, medication/supplement dosing or raw-Labs model access.
 
 ## Current execution order
 
-1. Complete P15-C end-to-end authenticated question orchestration using the reviewed router → minimal context/evidence → structured answer boundary.
-2. Keep the new question path read-only and fail closed; no silent program, workout, nutrition, goal or Labs mutation.
-3. Extend Coach ↔ Progress only for explicitly reviewed, minimal metric/exercise/period contexts.
-4. Run P15-F accessibility/performance/regression closure and keep roadmap/status/handoff docs synchronized.
-5. Execute Phase 14 external evidence independently when provider/signing/device prerequisites become available.
-6. Repair reproduced defects; do not manufacture unrelated cleanup work.
+1. Finish exact-head validation and merge #768 if green.
+2. Finalize P15-F canonical status/handoff/roadmap synchronization against the exact resulting mobile/backend `main` SHAs.
+3. Treat Phase 15 source work as closed for the reviewed scope unless validation reproduces a defect or a new contract is explicitly reviewed.
+4. Keep Phase 14 external evidence independently actionable when prerequisites exist.
+5. Only then advance successor Phase 16/17 work under their reviewed product/safety contracts.
 
 ## Execution boundary
 
-`AGENTS.md` remains the operational authority. Ordinary inspect/edit/test/PR/merge work should continue in the largest safe coherent pass with independent workstreams parallelized. Provider activation, deployment, native/device execution, credential changes and production-sensitive operations remain separately authorization-gated.
+`AGENTS.md` remains the operational authority. Ordinary inspect/edit/test/PR/merge work should continue in the largest safe coherent pass with independent workstreams parallelized. Provider activation, deployment, native/device execution, credential changes and production-sensitive operations remain separately evidence- and authorization-gated.
