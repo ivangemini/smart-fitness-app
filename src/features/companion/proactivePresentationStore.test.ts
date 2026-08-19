@@ -92,6 +92,36 @@ describe('proactive presentation state', () => {
     );
   });
 
+  it('lets a queued mutation recover after an earlier write fails', async () => {
+    const values = new Map<string, string>();
+    let writes = 0;
+    const storage: StorageAdapter = {
+      async read(key) {
+        return values.get(key) ?? null;
+      },
+      async write(key, value) {
+        writes += 1;
+        if (writes === 1) throw new Error('write failed');
+        values.set(key, value);
+      },
+      async remove(key) {
+        values.delete(key);
+      },
+    };
+    const store = createProactivePresentationStore(storage);
+
+    const failed = store.dismiss('user-a', 'insight-a');
+    const recovered = store.dismiss('user-a', 'insight-b');
+
+    await expect(failed).rejects.toThrow('write failed');
+    await expect(recovered).resolves.toMatchObject({
+      dismissedKeys: ['insight-b'],
+    });
+    expect(await store.read('user-a')).toMatchObject({
+      dismissedKeys: ['insight-b'],
+    });
+  });
+
   it('rejects invalid identities and timestamps instead of persisting ambiguous state', async () => {
     const storage = createMemoryStorage();
     const store = createProactivePresentationStore(storage);
