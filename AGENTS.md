@@ -85,7 +85,8 @@ Approved product scope includes:
 - the server-authoritative Social workout network and Stories contracts already reviewed in source;
 - adaptive Liquid Glass UI and the social-first Home integration;
 - **Labs / Analyses** as a private, server-authoritative longitudinal laboratory-results domain;
-- **Companion** as the user-facing motivational/presentation layer over existing Coach and canonical fitness history.
+- **Companion** as the user-facing motivational/presentation layer over existing Coach and canonical fitness history;
+- **Knowledge & Learning** as a backend-authoritative, evidence-linked educational system with versioned canonical articles, source-linked claims, validated quizzes and bounded Coach→Learn recommendations.
 
 Labs rules:
 
@@ -107,6 +108,24 @@ Companion rules:
 - Companion may surface existing Coach/Safety actions but cannot automatically apply a plan;
 - model/provider-backed conversational or autonomous behavior requires a separately reviewed contract before activation.
 
+Knowledge & Learning rules:
+
+- the system is educational, not gamified: do not add knowledge XP, levels, streaks, badges, leaderboards, competitive ranks, reward loops or punishment mechanics;
+- canonical scientific/educational articles are generated and reviewed ahead of end-user consumption, not invented live and treated as canonical for each user;
+- AI may draft/revise/verify only inside the reviewed editorial pipeline over approved evidence packs; model output alone is never publication authority;
+- published article versions are stable; material factual changes create a new version;
+- every material factual claim must remain traceable to reviewed source records before publication;
+- quizzes are pre-generated/validated against exact article versions and reviewed claims; ambiguous answer keys fail closed;
+- Tier-3 Labs/medical-adjacent educational content requires human review and remains non-diagnostic/non-prescriptive;
+- canonical article/source/claim/quiz records never contain private user evidence;
+- user data may influence only bounded content recommendation/relevance/depth layers through reviewed contracts;
+- Coach→Learn selection uses typed deterministic findings and allowlisted content mappings rather than unconstrained free-form article choice;
+- future user learning state is informational (`unseen/read/understood/refresh_useful`) and requires explicit ownership/deletion/export/privacy/version semantics before persistence ships;
+- reading/quiz completion must not automatically mutate workouts, nutrition, goals, Labs, recovery or safety state;
+- do not claim that reading an article caused later fitness or health outcomes;
+- raw Labs documents and unconfirmed extraction drafts remain outside ordinary Knowledge generation/recommendation context;
+- mobile never calls editorial model/search/evidence providers directly.
+
 Still prohibited without an explicit reviewed product contract where relevant:
 
 - diagnosis, emergency triage or clinical urgency inference;
@@ -114,6 +133,8 @@ Still prohibited without an explicit reviewed product contract where relevant:
 - unrestricted model access to raw Labs documents;
 - payments/subscriptions;
 - new Social domains beyond reviewed contracts;
+- public/community publishing into canonical Knowledge authority;
+- arbitrary live scientific-content publication outside the reviewed Knowledge pipeline;
 - other unreviewed product behavior that changes the established privacy, safety or recommendation authority boundaries.
 
 ## Mobile architecture
@@ -131,7 +152,7 @@ Focused boundaries include `AppActions`, `AppInfrastructure`, `WorkoutState`, `N
 
 Synchronization orchestration lives in `src/context/SyncContext.tsx` and `src/cloud/`.
 
-Social and Labs are server-authoritative domains separate from private revisioned `AppState` synchronization.
+Social and Labs are server-authoritative domains separate from private revisioned `AppState` synchronization. Canonical Knowledge content is backend-authoritative shared content and must not be inserted into private fitness `AppState` sync. Future learning state requires its own reviewed account-scoped ownership contract.
 
 ## Synchronization baseline
 
@@ -146,6 +167,8 @@ Application-state persistence and outbox enqueue are not one atomic transaction.
 Coach uses deterministic-first typed orchestration. Models may interpret validated facts and propose structured strategies but deterministic workers own calculations and hard guardrails. Automatic application remains prohibited.
 
 Labs interpretation uses confirmed minimum structured context, bounded validated output and provenance. Raw Labs documents/provider payloads must not be exposed to ordinary Coach/model context. Provider/model identity comes from the transport boundary, not generated model fields.
+
+Phase 18 Knowledge editorial generation uses the same deterministic-first/fail-closed philosophy: evidence/source authority and publication gates remain deterministic/reviewed; providers may assist drafting/verification but cannot override source, risk or review rules.
 
 Hidden chain-of-thought is never persisted.
 
@@ -163,6 +186,8 @@ Phase 13 v1 rules:
 - no separate persisted Companion truth is required for derived progress;
 - no backend migration, provider activation or model call is required for this deterministic v1;
 - future cosmetics, naming, richer pet state or conversational behavior require explicit product/state contracts rather than ad-hoc local persistence.
+
+Companion XP is a separate pre-existing character/progression contract. It must not be reused as Knowledge learning progress or educational reward mechanics.
 
 ## CI runner and validation policy
 
@@ -215,7 +240,7 @@ Do not:
 - refactor unrelated code;
 - install dependencies without approval;
 - duplicate API clients;
-- call AI/OCR/storage providers from mobile;
+- call AI/OCR/storage/search/evidence providers from mobile;
 - expose raw backend/provider/schema/error strings in presentation;
 - use screen-relative coordinates or isolated pixel nudges to align related controls.
 
@@ -234,6 +259,8 @@ Do not break:
 - global Companion entry → hidden Coach/Companion route.
 
 Workout session remains outside the tab group.
+
+A future Knowledge destination must follow the reviewed Phase 18 navigation/IA package rather than silently replacing a primary tab or creating a duplicate Coach surface.
 
 ## Git and deployment
 
