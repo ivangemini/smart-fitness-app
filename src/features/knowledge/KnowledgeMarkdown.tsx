@@ -113,15 +113,15 @@ const createStyles = (colors: typeof Colors.light) =>
     container: { gap: Spacing.three },
     heading: { color: colors.textPrimary, fontWeight: '800' },
     headingOne: {
-      fontSize: Typography.title.fontSize,
-      lineHeight: Typography.title.lineHeight,
+      fontSize: Typography.screenTitle.fontSize,
+      lineHeight: Typography.screenTitle.lineHeight,
     },
     headingTwo: {
-      fontSize: Typography.sectionTitle.fontSize,
-      lineHeight: Typography.sectionTitle.lineHeight,
+      fontSize: Typography.cardTitle.fontSize,
+      lineHeight: Typography.cardTitle.lineHeight,
     },
     headingThree: {
-      fontSize: Typography.body.fontSize,
-      lineHeight: Typography.body.lineHeight,
+      fontSize: Typography.sectionTitle.fontSize,
+      lineHeight: Typography.sectionTitle.lineHeight,
     },
   });
