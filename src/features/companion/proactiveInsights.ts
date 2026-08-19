@@ -74,6 +74,13 @@ const toLocalDayKey = (timestamp: number) => {
   return `${year}-${month}-${day}`;
 };
 
+const stableExerciseKey = (exerciseId: string, exerciseName: string) => {
+  const id = exerciseId.trim();
+  if (id) return `id:${id}`;
+  const name = exerciseName.trim().toLocaleLowerCase().replace(/[\s_-]+/g, '_');
+  return `name:${name || 'unknown'}`;
+};
+
 const round = (value: number, digits = 4) => {
   const factor = 10 ** digits;
   return Math.round(value * factor) / factor;
@@ -171,10 +178,11 @@ export const selectProactiveInsight = ({
     .sort((left, right) => right.relativeChange - left.relativeChange);
 
   for (const { exercise, relativeChange } of progressCandidates) {
+    const exerciseKey = stableExerciseKey(exercise.exerciseId, exercise.exerciseName);
     const insight: ProactiveInsight = {
       schemaVersion: 1,
       kind: 'strength_progress',
-      key: `strength_progress:${exercise.exerciseId}:${exercise.recentHalfBestEstimated1Rm}`,
+      key: `strength_progress:${exerciseKey}:${exercise.recentHalfBestEstimated1Rm}`,
       exerciseId: exercise.exerciseId,
       exerciseName: exercise.exerciseName,
       periodDays: PERIOD_DAYS,
@@ -205,10 +213,11 @@ export const selectProactiveInsight = ({
     );
 
   for (const exercise of stagnationCandidates) {
+    const exerciseKey = stableExerciseKey(exercise.exerciseId, exercise.exerciseName);
     const insight: ProactiveInsight = {
       schemaVersion: 1,
       kind: 'strength_stagnation',
-      key: `strength_stagnation:${exercise.exerciseId}:${exercise.recentHalfBestEstimated1Rm}`,
+      key: `strength_stagnation:${exerciseKey}:${exercise.recentHalfBestEstimated1Rm}`,
       exerciseId: exercise.exerciseId,
       exerciseName: exercise.exerciseName,
       periodDays: PERIOD_DAYS,
