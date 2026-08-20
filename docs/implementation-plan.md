@@ -1,6 +1,6 @@
 # Smart Fitness — Implementation Plan
 
-Updated: 2026-08-19
+Updated: 2026-08-20
 
 This file is the canonical forward roadmap. Exact code, tests, migrations, current Git history and repository `AGENTS.md` override stale prose.
 
@@ -12,11 +12,11 @@ Reviewed local-state storage decision remains `docs/architecture/local-state-per
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Current verified runtime `main`: `b2531e2122d6d7357129c76c48554b3a915d2e6c` (#783). Documentation checkpoint #784 follows without runtime changes.
+Current verified runtime `main`: `3a99b017b679da295207e4a8e4d1506681368023` (#793).
 
 The repository-wide Liquid Glass convergence and Phase 15 Coach Intelligence + Progress scope remain source/CI-complete for reviewed boundaries. Phase 16 deterministic foreground v1 remains source/CI-complete through #770–#772.
 
-The first reviewed Phase 17 Goals & Planning scope is source/CI-complete:
+The first reviewed Phase 17 Goals & Planning scope remains source/CI-complete:
 
 - #773 — deterministic typed goal facts + neutral Progress Goals context;
 - #776 — selector-only Goals → Companion context handoff;
@@ -24,7 +24,7 @@ The first reviewed Phase 17 Goals & Planning scope is source/CI-complete:
 - #781 — typed ephemeral goal proposal preview, explicit current→proposed changes and guarded `applied | stale` canonical update;
 - #783 — inline Liquid Glass proposal review with preview invalidation after further edits while preserving the #781 atomic stale-source guard.
 
-#783 exact-head `98aece0b5a44b97988797db2fedd04529bf302df` passed Mobile CI run `32245117299` / 2641: repository/changed-file line audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
+Phase 18 mobile source has advanced through #793, which merged the Knowledge Library / immutable article reader. P18-E mobile runtime is prepared in #794 at exact code head `e43576ec83db1c299972b8667be4966ba49a1945`; Mobile CI run `32380637863` passed repository/changed-file line audits, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor.
 
 Focused Phase 17 first-scope closure evidence: `docs/qa/phase17-goals-planning-closure.md`.
 
@@ -32,15 +32,21 @@ Focused Phase 17 first-scope closure evidence: `docs/qa/phase17-goals-planning-c
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Current verified backend `main`: `eebca930893f3b2a5bcc4e2293873695d1bbb3c6` (#271).
+Current verified backend `main`: `d705457ae36147bb65f110266da2dbceb880cc98` (#295).
 
-The reviewed read-only Coach question infrastructure includes minimal routing (#266), minimized evidence/strict answer output (#267), authenticated `/v1/coach/questions` composition (#269), confirmed structured Labs evidence (#270), and bounded goal-progress evidence/capabilities v13 (#271).
+The reviewed read-only Coach question infrastructure remains in place, including minimal routing (#266), minimized evidence/strict answer output (#267), authenticated `/v1/coach/questions` composition (#269), confirmed structured Labs evidence (#270), and bounded goal-progress evidence/capabilities v13 (#271).
 
-#271 passed exact-head Backend CI: lint, Prettier, build, production-configuration validation, isolated-staging topology validation and the full test suite.
+Phase 18 backend source has advanced through:
+
+- #285 — canonical Knowledge relational persistence + publication-eligible reader;
+- #290 — provider-neutral editorial orchestration;
+- #294 — exact-version eligible quiz-bank preparation and backend-only evaluation.
+
+P18-E backend #296 is source/CI-ready at exact head `91bacc7f2732b843dd01d754aba2a3eb31790ac4`. Backend CI run `32400589482` / #2182, Backend PostgreSQL CI run `32400589540` / #643 and Account Deletion Receipt CI run `32400589605` / #559 all passed.
 
 Phase 14 provider/runtime source preparation remains complete for reviewed contracts. Existing isolated Hermes staging and bounded Labs/Stories evidence tooling remain the execution foundation for external evidence work.
 
-Phase 18 has now been explicitly reviewed and activated. P18-A begins from backend #271 `main` with provider-neutral versioned Knowledge contracts and deterministic publication gating; no publication/provider activation is implied by this roadmap update.
+Backend `main` merge is currently an explicit production-activation boundary because it is configured to trigger the Vercel production deployment for `peptonio-admin`. Source-ready Phase 18 work must not bypass that boundary.
 
 ## Phase status
 
@@ -53,7 +59,7 @@ Phase 18 has now been explicitly reviewed and activated. P18-A begins from backe
 - Phase 15: **Coach Intelligence & Data Access + Progress UX/Analytics is source/CI-complete for the currently reviewed scope.**
 - Phase 16: **Proactive Coach deterministic foreground v1 is source/CI-complete through #770–#772.**
 - Phase 17: **Goals & Planning P17-A through P17-D are source/CI-complete for the currently reviewed first scope through mobile #783 and backend #271. P17-E remains richer-goal-threshold gated.**
-- Phase 18: **Knowledge & Learning is active. P18-A Knowledge/content/evidence foundation is the current autonomous source priority.**
+- Phase 18: **Knowledge & Learning is active. P18-A/B/C/D are merged for their reviewed source scopes; P18-E is source/CI-ready in backend #296 + mobile #794 but remains dependency/production-boundary blocked from merge.**
 
 ## Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics
 
@@ -283,30 +289,27 @@ Focused roadmap: `docs/roadmap/knowledge-learning.md`.
 
 ### P18-A — Knowledge/content/evidence foundation
 
-Define and validate:
+Delivered and merged through backend #285:
 
 - stable concepts;
 - stable articles + immutable article versions;
 - source records and allowlisting state;
 - article claims with evidence strength/review state and explicit source linkage;
 - article risk tiers;
-- strict article-version-linked quiz items;
+- strict article-version-linked quiz identities;
 - deterministic publication eligibility;
-- shared-content/private-user-data separation;
-- minimum relational persistence/read API after the domain contract is proven;
-- privacy/export/retention ownership before user learning persistence ships.
+- relational persistence and authenticated publication-eligible reader API;
+- shared-content/private-user-data separation.
 
-Initial backend source work begins with provider-neutral versioned Zod contracts and a pure publication gate. No model provider activation, DB migration or content publication is required for the first contract package.
-
-**Status:** active.
+**Status:** merged/stable for reviewed source scope through backend #285.
 
 ### P18-B — Editorial generation pipeline
 
-Build the provider-neutral editorial workflow:
+Delivered provider-neutral editorial orchestration through backend #290:
 
 `evidence pack → draft → extracted claims → independent verification → review-ready/rejected`.
 
-Requirements:
+Requirements remain:
 
 - generator cannot publish directly;
 - structured/versioned provider outputs;
@@ -316,37 +319,37 @@ Requirements:
 - unsupported claims rejected or rewritten before review;
 - risk-tier-aware human review.
 
-**Status:** planned after P18-A contract/persistence foundation.
+No provider/content activation is implied by source support.
+
+**Status:** merged for reviewed source scope through backend #290.
 
 ### P18-C — Library and reader
 
-Build the mobile Knowledge destination and article reader:
+Delivered through mobile #793:
 
-- category/concept browse;
-- bounded search;
-- quick lesson / standard / deep dive / practical guide / reference presentation;
-- article sources/evidence context;
+- Knowledge Library destination;
+- category/concept browse and bounded search;
 - strict published-version parsing;
+- immutable article reader;
+- reviewed source/evidence context;
 - unpublished/editorial states hidden from end users.
 
-**Status:** planned; may proceed in parallel with late P18-B once the read API contract is stable.
+**Status:** merged through mobile #793.
 
 ### P18-D — Quiz bank + validation
 
-Build versioned pre-generated quiz items:
+Delivered through backend #294:
 
-- recall;
-- understanding;
-- application;
-- misconception checks;
+- reviewed exact-version pre-generated single-select bank;
 - exactly four options / one answer in v1;
 - claim/article-version linkage;
-- option feedback grounded in reviewed claims;
-- deterministic structural and answer-key validation.
+- deterministic structural/publication validation;
+- hidden answer-key isolation;
+- backend-only canonical quiz evaluation.
 
 No arbitrary live quiz generation is required for normal reading.
 
-**Status:** planned after P18-A core contracts.
+**Status:** merged through backend #294.
 
 ### P18-E — Learning state
 
@@ -357,28 +360,48 @@ Minimal informational user state:
 - `understood`;
 - `refresh_useful`.
 
-Reading alone does not imply understanding. Exact article/quiz versions remain part of evidence. Account ownership, deletion, export and privacy behavior must be reviewed before persistence ships.
+Backend #296 and mobile #794 implement the reviewed runtime boundary:
 
-No XP/levels/streaks/badges.
+- dedicated account-owned learning persistence outside revisioned fitness `AppState` sync;
+- exact-version authenticated list/get/read/quiz-evaluate routes;
+- backend-authoritative quiz evaluation and monotonic `understood` evidence;
+- exact stable `articleId + locale` refresh resolution;
+- account-partitioned mobile cache + bounded pending-read transport;
+- no optimistic canonical completion and no offline quiz scoring;
+- exact user/article-version async guards and account-bound token refresh;
+- account deletion cleanup/cascade;
+- privacy inventory and subject-access export v2 with exact retained evidence plus current derived refresh state.
 
-**Status:** planned after reader + quiz contracts.
+Reading alone does not imply understanding. Exact article/quiz versions remain part of evidence. No XP/levels/streaks/badges are allowed.
+
+**Status:** source/CI-ready on backend #296 exact head `91bacc7f2732b843dd01d754aba2a3eb31790ac4` and mobile #794 exact code head `e43576ec83db1c299972b8667be4966ba49a1945`. Mobile merge requires backend P18-E merged/stable first. Backend merge is blocked on the explicit production-activation boundary described below.
 
 ### P18-F — Coach → Learn recommendation engine
 
-Use deterministic Coach finding codes and allowlisted mappings to select reviewed content.
+Use deterministic Coach finding codes and versioned allowlisted mappings to select reviewed content.
 
-Example direction:
+First runtime package after merged/stable P18-E must be host-independent/provider-neutral and start from exact current backend `main`.
 
-- `nutrition_low_fiber` → `fiber_basics` / `increasing_fiber`;
-- `training_high_failure_frequency` → `rir_basics` / `training_to_failure` / `fatigue_management`.
+Requirements:
 
-The model may explain why the selected reviewed article is relevant to the user's bounded evidence. It cannot select arbitrary unpublished content or replace the canonical lesson.
+- strict versioned typed finding input contract;
+- strict versioned mapping/recommendation contracts;
+- stable mapping target by canonical `articleId`, not title/slug;
+- exact `articleId + locale` candidate hydration through canonical reader repository logic;
+- re-run publication eligibility before recommendation;
+- explicit permitted risk tiers and cooldown/frequency input;
+- deterministic ranking/tie-break/deduplication;
+- P18-E-aware unseen/read/understood/refresh behavior;
+- bounded result count;
+- no model selection authority.
 
-**Status:** planned after published content and learning-state read boundaries exist.
+Current backend source has no reviewed stable `findingCode` authority. Do not reinterpret local mobile Proactive Coach insight kinds as backend finding codes.
 
-### P18-G — Daily-report integration
+**Status:** architecture-approved and implementation design prepared; runtime waits for merged/stable P18-E.
 
-Attach optional educational recommendations to applicable Coach reports.
+### P18-G — Daily-report / Coach surface integration
+
+Attach optional educational recommendations to an already-authoritative Coach/report surface only after P18-F returns an approved exact recommendation.
 
 Requirements:
 
@@ -387,27 +410,27 @@ Requirements:
 - finding and content mapping are valid first;
 - frequency/deduplication bounded;
 - no medical-necessity framing;
-- no automatic canonical mutation after reading/testing.
+- no automatic canonical mutation after reading/testing;
+- trustworthy typed backend finding provenance must exist before host attachment.
 
-**Status:** planned after P18-F.
+**Status:** architecture-approved; blocked on P18-F plus trustworthy backend finding provenance.
 
 ### P18-H — Curriculum / learning paths
 
-Compose ordered concept paths only after the underlying content/quiz/learning-state systems are proven.
+Compose ordered concept paths over canonical exact article versions after stable P18-E.
 
-Possible paths:
+Reviewed v1 direction:
 
-- Training fundamentals;
-- Nutrition fundamentals;
-- Build your first program;
-- Fat-loss fundamentals;
-- Muscle-gain fundamentals;
-- Recovery fundamentals;
-- Understanding Labs.
+- immutable localized path versions;
+- bounded ordered required steps;
+- each step references stable article identity + exact current publication-eligible article version;
+- an old path version fails closed when its exact article version is no longer the current eligible version; a newly reviewed path version must reference the replacement;
+- path navigation is free skip/revisit/open, with no mastery locks or duplicate progress authority;
+- decorate steps from P18-E state rather than creating XP/streak/rank progression.
 
-Paths are navigation/curriculum, not gamified progression.
+Possible paths include Training fundamentals, Nutrition fundamentals, Build your first program, Fat-loss fundamentals, Muscle-gain fundamentals, Recovery fundamentals and Understanding Labs.
 
-**Status:** optional later Phase 18 slice.
+**Status:** architecture-approved; runtime may begin as an independent workstream after merged/stable P18-E.
 
 ## P14-A — Push
 
@@ -458,15 +481,16 @@ Detailed inventory: `docs/architecture/liquid-glass-residual-inventory.md`.
 
 ## Current execution order
 
-1. Execute **P18-A** to a validated provider-neutral foundation: contracts, publication gate, then minimum persistence/read API/privacy ownership.
-2. Keep P17-A through P17-D closed for the currently reviewed first Goals & Planning scope through #783. Do not start P17-E unless its richer-goal threshold is actually crossed.
-3. Once P18-A API/persistence contracts are stable, run P18-B editorial pipeline and P18-C Library/reader as dependency-safe parallel workstreams; start P18-D quiz-bank validation from the same canonical article/claim contract.
-4. Do not implement P18-E learning persistence until account deletion/export/privacy/version semantics are explicit; do not add gamification.
-5. Implement P18-F/G only after published canonical content exists; Coach recommendations must map typed findings to allowlisted content.
-6. Keep Phase 15 and reviewed Phase 16 foreground v1 closed unless a reproduced defect, failed invariant or newly reviewed purpose requires reopening them.
-7. Execute Phase 14 provider/device evidence whenever external prerequisites become available; it remains independent of Phase 18 source work.
-8. If evidence or normal use reproduces a defect, repair it in a coherent bounded package and validate exact head.
-9. Keep `docs/current-status.md`, `docs/handoffs/latest.md`, `ROADMAP_PROGRESS.md`, `docs/project-context.md`, `PROJECT_LEARNINGS.md` and this plan synchronized with verified Git/evidence.
+1. Keep P18-E backend #296 and mobile #794 frozen on their validated source boundaries; repair only a newly demonstrated failure.
+2. Do not merge backend #296 until the production-activation side effect of backend `main` is explicitly authorized or a separately reviewed safe no-production mechanism exists.
+3. After backend #296 is merged/stable, merge/revalidate mobile #794 against exact current mobile `main`.
+4. After P18-E is merged/stable, start P18-F from exact current backend `main` and P18-H from exact current backend/mobile `main` as independent workstreams where their files/contracts do not overlap.
+5. Keep P18-G host integration blocked until P18-F exists and a trustworthy typed backend finding identity is available.
+6. Keep P17-A through P17-D closed for the currently reviewed first Goals & Planning scope. Do not start P17-E unless its richer-goal threshold is actually crossed.
+7. Keep Phase 15 and reviewed Phase 16 foreground v1 closed unless a reproduced defect, failed invariant or newly reviewed purpose requires reopening them.
+8. Execute Phase 14 provider/device evidence whenever external prerequisites become available; it remains independent of Phase 18 source work.
+9. If evidence or normal use reproduces a defect, repair it in a coherent bounded package and validate exact head.
+10. Keep `docs/current-status.md`, `docs/handoffs/latest.md`, `ROADMAP_PROGRESS.md`, `docs/project-context.md`, `PROJECT_LEARNINGS.md`, `docs/roadmap/knowledge-learning.md` and this plan synchronized with verified Git/evidence.
 
 ## Validation policy
 
@@ -487,3 +511,5 @@ Documentation-only synchronization must never claim provider, physical-device, e
 Provider configuration, native/device execution and rollout actions remain governed by current repository authorization, least privilege, privacy, preflight, evidence, recovery and rollback controls in `AGENTS.md` and relevant operational docs. Successor source phases do not relax those boundaries.
 
 Phase 18 activation of any editorial/model/search provider is a separate configuration/evidence step. A source-level generation interface does not imply that provider-backed article generation or publication is active.
+
+Backend `main` is currently known to trigger the Vercel production deployment for `peptonio-admin`. Therefore merging a backend source PR into `main` is not treated as an ordinary source-only merge while that configuration remains active; it requires explicit production-activation authorization or a separately reviewed and authorized no-production mechanism.
