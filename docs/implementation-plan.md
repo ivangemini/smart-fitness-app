@@ -83,7 +83,7 @@ Permanent requirements:
 
 ### P15-B — Deterministic analytics
 
-Shared pure analytics support bounded workout frequency, exercise progression, comparable e1RM/volume evidence, body/measurement/weight facts, nutrition aggregates, profile facts, safety/recovery context and confirmed structured Labs facts.
+Shared pure analytics support bounded workout frequency, exercise progression, comparable e1RM/volume evidence, body/measurement trends, Activity/Highlights and Progress drill-downs.
 
 Permanent rules:
 
