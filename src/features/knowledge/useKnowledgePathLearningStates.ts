@@ -2,7 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 
 import type { KnowledgeLearningState } from '@/api/knowledge';
 import { useAuthSession } from '@/hooks/useAuthSession';
+import {
+  KNOWLEDGE_PATH_STATE_LIST_LIMIT,
+  getKnowledgePathExactStateFallbackIds,
+} from './knowledgePathStateHydration';
 import { useKnowledgeLearningApi } from './useKnowledgeLearningApi';
+
+const EXACT_STATE_BATCH_SIZE = 6;
 
 export const useKnowledgePathLearningStates = (
   articleVersionIds: readonly string[],
@@ -23,25 +29,58 @@ export const useKnowledgePathLearningStates = (
       setAvailable(false);
       return;
     }
+
     let cancelled = false;
     setLoading(true);
     setAvailable(false);
-    void api
-      .listStates({ limit: 500 })
-      .then((result) => {
-        if (cancelled) return;
-        setStates(
-          result.states.filter((state) => ids.has(state.articleVersionId)),
-        );
-        setAvailable(true);
-        setLoading(false);
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setStates([]);
-        setAvailable(false);
-        setLoading(false);
+
+    const load = async () => {
+      const listed = await api.listStates({
+        limit: KNOWLEDGE_PATH_STATE_LIST_LIMIT,
       });
+      const relevant = listed.states.filter((state) =>
+        ids.has(state.articleVersionId),
+      );
+      const fallbackIds = getKnowledgePathExactStateFallbackIds({
+        requestedArticleVersionIds: [...ids],
+        listedStates: listed.states,
+      });
+      const exactStates: KnowledgeLearningState[] = [];
+      for (
+        let offset = 0;
+        offset < fallbackIds.length;
+        offset += EXACT_STATE_BATCH_SIZE
+      ) {
+        if (cancelled) return;
+        const batch = fallbackIds.slice(offset, offset + EXACT_STATE_BATCH_SIZE);
+        exactStates.push(
+          ...(await Promise.all(
+            batch.map((articleVersionId) =>
+              api.getState({ articleVersionId }),
+            ),
+          )),
+        );
+      }
+      if (cancelled) return;
+
+      const byId = new Map(
+        [...relevant, ...exactStates].map((state) => [
+          state.articleVersionId,
+          state,
+        ]),
+      );
+      setStates([...byId.values()]);
+      setAvailable(true);
+      setLoading(false);
+    };
+
+    void load().catch(() => {
+      if (cancelled) return;
+      setStates([]);
+      setAvailable(false);
+      setLoading(false);
+    });
+
     return () => {
       cancelled = true;
     };
