@@ -14,6 +14,8 @@ const EN = {
   quizTitle: 'Knowledge check',
   quizBody:
     'Answers are evaluated on the server against this exact article version. No answer key is stored on this device.',
+  quizReadRequired:
+    'Mark this article as read and let that state sync before checking your answers.',
   answerAll: 'Answer every question before submitting.',
   submitQuiz: 'Check answers',
   submittingQuiz: 'Checking answers…',
@@ -40,6 +42,8 @@ const RU: typeof EN = {
   quizTitle: 'Проверка знаний',
   quizBody:
     'Ответы проверяются на сервере для этой точной версии статьи. Ключ правильных ответов на устройстве не хранится.',
+  quizReadRequired:
+    'Сначала отметь статью прочитанной и дождись синхронизации статуса.',
   answerAll: 'Ответь на все вопросы перед проверкой.',
   submitQuiz: 'Проверить ответы',
   submittingQuiz: 'Проверяем ответы…',
