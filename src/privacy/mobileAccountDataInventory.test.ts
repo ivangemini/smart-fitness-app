@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { PENDING_ACCOUNT_DELETION_RECEIPT_STORAGE_KEY } from '@/auth/accountDeletionReceipt';
 import { getLocalAccountDataStorageKeys } from '@/auth/accountDataCleanup';
 import { getProactivePresentationStorageKey } from '@/features/companion/proactivePresentationStore';
+import { getKnowledgeLearningStorageKey } from '@/features/knowledge/knowledgeLearningStore';
 import { getNutritionFavoritesStorageKey } from '@/features/nutrition/nutritionFavorites';
 import { getNutritionFoodLibraryStorageKey } from '@/features/nutrition/nutritionFoodLibrary';
 import { getSocialFollowingFeedCacheStorageKey } from '@/features/social/socialFollowingFeedCache';
@@ -68,12 +69,18 @@ describe('mobile account data inventory', () => {
         (surface) => surface.id === 'proactive_coach_presentation',
       ),
     ).toBe(true);
+    expect(
+      MOBILE_ACCOUNT_DATA_SURFACES.some(
+        (surface) => surface.id === 'knowledge_learning_local_state',
+      ),
+    ).toBe(true);
   });
 
   it('uses the inventory as the complete local account cleanup boundary', () => {
     const userId = 'privacy-user';
     const expected = new Set([
       ...ACCOUNT_SCOPED_ASYNC_STORAGE_KEYS,
+      getKnowledgeLearningStorageKey(userId),
       getNutritionFavoritesStorageKey(userId),
       getNutritionFoodLibraryStorageKey(userId),
       getProactivePresentationStorageKey(userId),
@@ -87,6 +94,7 @@ describe('mobile account data inventory', () => {
       storageExports.SYNC_CONFLICT_RESOLUTION_INTENT_STORAGE_KEY,
     );
     expect(actual).toContain(storageExports.LOCAL_STATE_DIAGNOSTICS_STORAGE_KEY);
+    expect(actual).toContain(getKnowledgeLearningStorageKey(userId));
     expect(actual).not.toContain(PENDING_ACCOUNT_DELETION_RECEIPT_STORAGE_KEY);
   });
 

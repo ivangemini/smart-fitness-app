@@ -1,93 +1,122 @@
 # Latest Handoff
 
-Updated: 2026-08-19
+Updated: 2026-08-20
 
-Exact Git history, source, tests and CI override prose if this handoff becomes stale.
+Exact source, tests, migrations, CI and Git history override prose if this handoff becomes stale.
 
-## Current repository checkpoint
+## Repository checkpoint
 
 ### Mobile
 
 Repository: `ivangemini/smart-fitness-app`.
 
-- `main`: `b8de527f435319be9b7d70ec3c698b03945e21f9` (#787).
-- Runtime baseline remains #783; the Phase 18 commits currently following it on `main` are documentation/architecture only.
-- #785 activated/indexed Phase 18 Knowledge & Learning.
-- #787 defined the P18-E learning-state ownership, exact-version, privacy, deletion/export and offline/replay contract. It intentionally did not add persistence.
-- Open #786 implements the P18-C mobile Knowledge Library/article reader. Its previous head passed Mobile CI, but it must not merge until backend #275 is merged and the mobile branch is rebuilt/revalidated from exact current `main`.
+- current `main`: `3a99b017b679da295207e4a8e4d1506681368023` (#793);
+- P18-C Library/article reader is merged;
+- active P18-E PR: #794, branch `codex/phase18-learning-state-mobile-2026-08-20`;
+- #794 remains cleanly ahead of current mobile `main` and must pass Mobile CI on its final exact head before source readiness.
 
 ### Backend
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-- `main`: `ace6149e5795fbeb8308d6c2eea44bbf70e00cbc` (#273).
-- #272 merged the P18-A provider-neutral Knowledge contracts/publication gate.
-- #273 independently merged the fail-closed read-only admin-console foundation.
-- Open #275 adds relational canonical Knowledge persistence, migration 0053 and authenticated publication-eligible reader routes. Exact head: `e76ec127de1c297c7ebf6bb1a68bfbda99584cf1`.
-- #275 Account Deletion Receipt CI passed; required Backend CI and Backend PostgreSQL CI are still pending on the self-hosted Hermes queue. Exact-head validation remains mandatory before merge.
-- Open #276 is the stacked P18-B provider-neutral editorial orchestration package. After #275 merges it must be rebuilt/retargeted from exact current backend `main` and revalidated.
-- The prepared P18-D quiz-bank foundation existed as #279 on top of #276. #279 is currently closed/unmerged; rebuild/reopen or replace it only after #276 is merged/stable.
+- current `main`: `d705457ae36147bb65f110266da2dbceb880cc98` (#295);
+- P18-A persistence/published reader merged through #285;
+- P18-B editorial orchestration merged through #290;
+- P18-D hardened quiz authority merged through #294;
+- active P18-E PR: #296, branch `codex/phase18-learning-state-v2-2026-08-20`;
+- #296 remains cleanly ahead of current backend `main` and requires exact-head Backend CI, Backend PostgreSQL CI and Account Deletion Receipt CI.
 
-## Phase 18 product contract
+## P18-E backend package
 
-Canonical Knowledge content is shared backend authority. User learning state is separate private account-owned activity data.
+Backend #296 provides:
 
-Reviewed editorial pipeline:
+- dedicated account-owned exact-version Knowledge learning evidence;
+- authenticated list/get/read/quiz-evaluate routes scoped from the authenticated account;
+- durable `read`/`understood` evidence and deterministic `refresh_useful` when a newer publication-eligible version exists;
+- exact stable `articleId + locale` current-version resolution, avoiding correctness dependence on a global top-N library scan;
+- complete canonical quiz-bank evaluation on the backend with no hidden answer-key exposure;
+- replay-safe read evidence and monotonic understood evidence;
+- fail-closed stale/unavailable content writes;
+- account deletion cascade without deletion of shared Knowledge content;
+- subject-access Knowledge learning export schema v2 preserving historical exact-version evidence plus current state/refresh metadata;
+- same repeatable-read snapshot for export evidence and current-state derivation;
+- privacy inventory and PostgreSQL migration/replay/deletion coverage.
 
-`topic → curated evidence pack → AI-assisted draft → claim/source verification → validated quiz bank → reviewed published article version`
+A TypeScript nullable eligible-bank closure bug and stale export-contract gaps were repaired before merge readiness. Regression coverage also verifies exact-ID refresh resolution rather than a global published scan.
 
-Reviewed user loop:
+## P18-E mobile package
 
-`bounded evidence → deterministic Coach finding → allowlisted content mapping → canonical article → validated quiz → informational learning state`
+Mobile #794 provides:
 
-Preserve these invariants:
+- strict `knowledge-learning-state-v1` contracts/parsers;
+- authenticated exact-version list/get/read/quiz evaluation through the existing token/refresh stack;
+- tokenless account-partitioned AsyncStorage cache outside private fitness `AppState`;
+- bounded pending-read retry queue with duplicate compaction and no optimistic canonical completion;
+- server-only quiz scoring;
+- explicit read completion and reviewed quiz feedback in the article Reader;
+- `userId + articleVersionId` guards preventing stale in-flight results from mutating a newly selected account/article view;
+- account-bound access-token/refresh checks so stale Knowledge API instances cannot rotate or reuse another account's session;
+- quiz interaction only after server-confirmed read evidence for the exact currently available version; queued read transport never unlocks quiz authority;
+- Knowledge cache/pending-read storage included in the existing recovery-safe confirmed account-deletion cleanup path;
+- EN/RU user-facing copy and focused auth/queue/parser/policy/deletion regression coverage.
 
-- no Knowledge gamification: no XP, levels, streaks, badges, leaderboards, ranks, punishment or engagement-reward loops;
-- canonical scientific/educational articles are prepared ahead of end-user consumption;
-- model output alone is never publication authority;
-- material claims require reviewed source linkage;
-- published article versions remain immutable evidence boundaries;
-- quizzes bind to exact article versions and reviewed claims;
-- hidden answer keys/feedback remain backend-controlled before answer evaluation;
-- Tier-3 Labs/medical-adjacent content requires human review and remains non-diagnostic/non-prescriptive;
-- canonical Knowledge records never contain private user evidence;
-- raw Labs documents/extraction drafts stay outside ordinary Knowledge generation/recommendation context;
-- reading/quiz completion cannot automatically mutate workouts, nutrition, goals, Labs, recovery or safety;
-- later behavior/fitness/health changes are not attributed causally to reading content.
+## P18-E invariants
 
-## P18-E learning-state gate
+- backend owns canonical durable learning state and quiz correctness;
+- mobile never stores or infers hidden canonical answer keys;
+- pending read transport is not canonical `read`/`understood` state;
+- quiz attempts are not generically queued or scored offline;
+- exact article-version identity is preserved;
+- account switch cannot display/deliver another account's learning activity;
+- confirmed account deletion clears the local private Knowledge partition;
+- learning state remains outside revisioned private fitness sync;
+- no Knowledge gamification;
+- reading/quiz completion never mutates workouts, nutrition, goals, Labs, recovery or safety.
 
-The reviewed semantic states are:
+## CI and merge boundary
 
-- `unseen` — no positive persisted evidence for the exact article version;
-- `read` — explicit reviewed reading-completion evidence for the exact published version;
-- `understood` — successful server-authoritative reviewed quiz evidence for the same exact version;
-- `refresh_useful` — deterministic version-aware revisit signal, never punishment or loss mechanics.
+Backend #296 required exact-head gates are still the source-merge authority. Mobile #794 likewise requires a final exact-head Mobile CI after its lifecycle/race fixes.
 
-Do not implement P18-E persistence until the canonical reader/article-version identities and quiz identities are merged/stable. When persistence ships, the same package must define authenticated ownership, retry/replay semantics, stale/deprecated handling, two-device behavior, account deletion, export/privacy treatment and mobile account-switch/logout cleanup.
+Do not bypass those gates.
 
-## Immediate execution order
+A separate operational constraint now matters: the backend repository is connected to the Vercel `peptonio-admin` project, and live deployment history shows that backend `main` pushes can create `target: production` deployments while PR branches create previews. Therefore backend source readiness does not automatically authorize merging when production activation is outside the active authorization boundary.
 
-1. Wait only for required exact-head CI on backend #275; do not bypass the self-hosted gate.
-2. As soon as #275 passes, merge it and immediately rebuild/retarget #276 from exact backend `main`; run all required exact-head backend validation.
-3. In parallel after #275 merge, rebuild #786 from exact mobile `main` against the merged reader contract; run exact-head Mobile CI and merge only that validated head.
-4. After #276 merges, rebuild the P18-D quiz-bank package from exact current backend `main`; preserve exact article-version/claim linkage and backend-only answer-key authority.
-5. After P18-A/P18-D identities are stable, implement P18-E persistence/API/mobile integration according to `docs/architecture/phase18-learning-state-contract.md`.
-6. Only then continue P18-F deterministic Coach finding → approved content mapping and bounded recommendation logic.
-7. Keep Phase 14 external provider/device evidence independent and opportunistic when prerequisites exist.
+Do not change Vercel Git/deployment settings merely to bypass that boundary without a separately reviewed operational action.
 
-## Do not reopen closed scope without evidence
+## After P18-E is merged/stable
 
-- Phase 15 remains source/CI-complete for its reviewed scope.
-- Phase 16 foreground proactive v1 remains closed unless a new reviewed delivery/purpose contract exists.
-- Phase 17 P17-A through P17-D remain closed; do not manufacture richer P17-E goal persistence without a threshold-crossing requirement.
-- Do not add live arbitrary scientific publication, new provider authority, diagnosis/prescribing, payments, new Social domains or automatic cross-domain mutations without a separately reviewed contract.
+### P18-F first runtime package
 
-## Remaining external Phase 14 evidence
+Start from exact current backend `main`. Keep the first package deterministic/provider-neutral and independent of a host surface:
+
+- strict versioned finding/mapping/recommendation contracts;
+- caller-supplied trusted typed finding identities rather than free-form/model labels;
+- versioned active/deprecated allowlisted mapping rules targeting stable `articleId`;
+- exact `articleId + locale` hydration through the canonical Knowledge repository;
+- re-run publication eligibility, including Tier-3 human-review requirements;
+- deterministic ranking, tie-break and exact-version dedupe;
+- P18-E suppression/revisit semantics (`understood` suppress, `read` deprioritize, historical `refresh_useful` permit the newer exact version);
+- explicit frequency/cooldown policy and delivery-history input rather than hidden magic timing;
+- unknown/deprecated/incompatible/model-invented finding identities fail closed;
+- no model selection authority, DB table, route or cross-domain mutation in the first selector package unless later source evidence requires one.
+
+Do not integrate this into P18-G until a trustworthy backend finding identity exists. Current mobile Proactive Coach insight kinds are presentation identities, not silently trusted backend finding codes.
+
+### P18-H independent downstream package
+
+P18-H may proceed after stable P18-E without waiting for P18-G because its reviewed dependency chain is reader + quiz + learning state.
+
+First backend path package should use shared immutable curriculum identities and exact article-version steps. A published path version is eligible only if every required exact step still matches the currently publication-eligible candidate for its stable article identity/locale. A material article update therefore makes an old path version fail closed until a newly reviewed path version is published; do not silently rewrite immutable curriculum.
+
+P18-H must reuse P18-E state for step decoration and must not create duplicate `pathProgress`/mastery truth, content locks or gamification.
+
+## Remaining independent external evidence
+
+Phase 14 configured-provider/native/device evidence remains separate:
 
 - Labs configured provider + physical device;
 - Push provider + physical device;
 - Steps signed native/physical device;
-- Stories remaining mobile/physical-device runtime evidence.
+- Stories remaining mobile/physical-device evidence.
 
-Source/CI closure is not production rollout, provider activation, publication-quality approval or signed-device evidence.
+No source/CI result implies production deployment, production migration execution, provider activation, canonical content publication or device validation.

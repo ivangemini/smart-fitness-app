@@ -9,6 +9,7 @@ import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
 import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { MaxContentWidth, Radii, Spacing, Typography } from '@/constants/theme';
+import { KnowledgeLearningPanel } from '@/features/knowledge/KnowledgeLearningPanel';
 import { KnowledgeMarkdown } from '@/features/knowledge/KnowledgeMarkdown';
 import {
   getKnowledgeCategoryLabel,
@@ -132,11 +133,7 @@ export default function KnowledgeArticleScreen() {
             </View>
           </AppCard>
 
-          <AppCard>
-            <Text style={styles.cardTitle}>{copy.quizTitle}</Text>
-            <Text style={styles.body}>{copy.quizCount(article.quizItems.length)}</Text>
-            <Text style={styles.body}>{copy.quizBody}</Text>
-          </AppCard>
+          <KnowledgeLearningPanel article={article} locale={locale} />
         </>
       )}
     </ScrollView>
