@@ -113,11 +113,14 @@ const parseSnapshot = (raw: string | null): KnowledgeLearningLocalSnapshot => {
   }
 };
 
+export const getKnowledgeLearningStorageKey = (userId: string): string =>
+  `${STORAGE_PREFIX}${userId}`;
+
 const keyForUser = (userId: string): string => {
   if (!UUID_PATTERN.test(userId)) {
     throw new Error('Knowledge learning cache user identifier is invalid.');
   }
-  return `${STORAGE_PREFIX}${userId}`;
+  return getKnowledgeLearningStorageKey(userId);
 };
 
 export const createKnowledgeLearningStore = (storage: KnowledgeLearningStorage) => {
