@@ -11,10 +11,19 @@ export {
   KNOWLEDGE_LEARNING_STATE_SCHEMA_VERSION,
 } from './learningContracts';
 export {
+  KNOWLEDGE_PATH_LIST_MAX_LIMIT,
+  KNOWLEDGE_PATH_SCHEMA_VERSION,
+} from './pathContracts';
+export {
   parseKnowledgeLearningState,
   parseKnowledgeLearningStateList,
   parseKnowledgeQuizSubmissionResult,
 } from './learningParsers';
+export {
+  parsePublishedKnowledgePath,
+  parsePublishedKnowledgePathList,
+  parsePublishedKnowledgePathSummary,
+} from './pathParsers';
 export {
   parsePublishedKnowledgeArticle,
   parsePublishedKnowledgeArticleList,
@@ -49,3 +58,10 @@ export type {
   KnowledgeQuizSubmissionResult,
   KnowledgeRefreshReason,
 } from './learningContracts';
+export type {
+  KnowledgePathApi,
+  PublishedKnowledgePath,
+  PublishedKnowledgePathList,
+  PublishedKnowledgePathStep,
+  PublishedKnowledgePathSummary,
+} from './pathContracts';

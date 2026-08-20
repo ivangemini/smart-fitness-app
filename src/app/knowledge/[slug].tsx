@@ -16,19 +16,29 @@ import {
   getKnowledgeCopy,
   getKnowledgeFormatLabel,
 } from '@/features/knowledge/knowledgeCopy';
+import { getKnowledgePathCopy } from '@/features/knowledge/knowledgePathCopy';
 import { useKnowledgeArticle } from '@/features/knowledge/useKnowledgeArticle';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 
+const firstParam = (value?: string | string[]): string | null =>
+  Array.isArray(value) ? value[0] ?? null : value ?? null;
+
 export default function KnowledgeArticleScreen() {
-  const params = useLocalSearchParams<{ slug?: string | string[] }>();
-  const slug = Array.isArray(params.slug) ? params.slug[0] ?? null : params.slug ?? null;
+  const params = useLocalSearchParams<{
+    slug?: string | string[];
+    expectedArticleVersionId?: string | string[];
+  }>();
+  const slug = firstParam(params.slug);
+  const expectedArticleVersionId = firstParam(params.expectedArticleVersionId);
   const { colors } = useAppTheme();
   const { locale } = useLocalization();
   const insets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const copy = getKnowledgeCopy(locale);
-  const { article, error, loading, reload } = useKnowledgeArticle({ slug, locale });
+  const pathCopy = getKnowledgePathCopy(locale);
+  const { article, error, loading, reload, versionMismatch } =
+    useKnowledgeArticle({ slug, locale, expectedArticleVersionId });
 
   const sources = useMemo(() => {
     const byId = new Map<string, PublishedKnowledgeSource>();
@@ -69,9 +79,19 @@ export default function KnowledgeArticleScreen() {
         </AppCard>
       ) : error || !article ? (
         <AppCard>
-          <Text style={styles.cardTitle}>{copy.errorTitle}</Text>
-          <Text style={styles.body}>{copy.errorBody}</Text>
-          <AppButton label={copy.retry} onPress={reload} />
+          <Text style={styles.cardTitle}>
+            {versionMismatch
+              ? pathCopy.exactVersionUnavailableTitle
+              : copy.errorTitle}
+          </Text>
+          <Text style={styles.body}>
+            {versionMismatch
+              ? pathCopy.exactVersionUnavailableBody
+              : copy.errorBody}
+          </Text>
+          {!versionMismatch ? (
+            <AppButton label={copy.retry} onPress={reload} />
+          ) : null}
         </AppCard>
       ) : (
         <>
@@ -80,15 +100,15 @@ export default function KnowledgeArticleScreen() {
               <Text style={styles.meta}>
                 {getKnowledgeCategoryLabel(locale, article.category)}
               </Text>
-              <Text style={styles.meta}>{getKnowledgeFormatLabel(locale, article.format)}</Text>
-              <Text style={styles.meta}>{copy.publishedVersion(article.version)}</Text>
+              <Text style={styles.meta}>
+                {getKnowledgeFormatLabel(locale, article.format)}
+              </Text>
+              <Text style={styles.meta}>
+                {copy.publishedVersion(article.version)}
+              </Text>
             </View>
-            <Text selectable style={styles.title}>
-              {article.title}
-            </Text>
-            <Text selectable style={styles.summary}>
-              {article.summary}
-            </Text>
+            <Text selectable style={styles.title}>{article.title}</Text>
+            <Text selectable style={styles.summary}>{article.summary}</Text>
           </View>
 
           <AppCard>
@@ -101,9 +121,7 @@ export default function KnowledgeArticleScreen() {
               {article.claims.map((claim) => (
                 <View key={claim.id} style={styles.claimRow}>
                   <Text style={styles.bullet}>•</Text>
-                  <Text selectable style={styles.body}>
-                    {claim.text}
-                  </Text>
+                  <Text selectable style={styles.body}>{claim.text}</Text>
                 </View>
               ))}
             </View>
@@ -120,12 +138,8 @@ export default function KnowledgeArticleScreen() {
                   style={({ pressed }) => [styles.sourceRow, pressed && styles.pressed]}
                 >
                   <View style={styles.sourceText}>
-                    <Text selectable style={styles.sourceTitle}>
-                      {source.title}
-                    </Text>
-                    <Text selectable style={styles.meta}>
-                      {source.publisher}
-                    </Text>
+                    <Text selectable style={styles.sourceTitle}>{source.title}</Text>
+                    <Text selectable style={styles.meta}>{source.publisher}</Text>
                   </View>
                   <ExternalLink color={colors.textMuted} size={18} />
                 </Pressable>
@@ -151,52 +165,17 @@ const createStyles = (colors: Record<string, string>) =>
       gap: Spacing.four,
       backgroundColor: colors.background,
     },
-    topRow: {
-      minHeight: 44,
-      justifyContent: 'center',
-      alignItems: 'flex-start',
-    },
-    hero: {
-      gap: Spacing.three,
-    },
-    metaRow: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: Spacing.two,
-    },
-    meta: {
-      ...Typography.caption,
-      color: colors.textMuted,
-    },
-    title: {
-      ...Typography.screenTitle,
-      color: colors.textPrimary,
-    },
-    summary: {
-      ...Typography.body,
-      color: colors.textSecondary,
-    },
-    cardTitle: {
-      ...Typography.cardTitle,
-      color: colors.textPrimary,
-    },
-    body: {
-      ...Typography.body,
-      color: colors.textSecondary,
-      flexShrink: 1,
-    },
-    stack: {
-      gap: Spacing.three,
-    },
-    claimRow: {
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-      gap: Spacing.two,
-    },
-    bullet: {
-      ...Typography.body,
-      color: colors.accent,
-    },
+    topRow: { minHeight: 44, justifyContent: 'center', alignItems: 'flex-start' },
+    hero: { gap: Spacing.three },
+    metaRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
+    meta: { ...Typography.caption, color: colors.textMuted },
+    title: { ...Typography.screenTitle, color: colors.textPrimary },
+    summary: { ...Typography.body, color: colors.textSecondary },
+    cardTitle: { ...Typography.cardTitle, color: colors.textPrimary },
+    body: { ...Typography.body, color: colors.textSecondary, flexShrink: 1 },
+    stack: { gap: Spacing.three },
+    claimRow: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.two },
+    bullet: { ...Typography.body, color: colors.accent },
     sourceRow: {
       minHeight: 52,
       flexDirection: 'row',
@@ -209,15 +188,7 @@ const createStyles = (colors: Record<string, string>) =>
       backgroundColor: colors.surfaceSecondary,
       padding: Spacing.three,
     },
-    sourceText: {
-      flex: 1,
-      gap: Spacing.one,
-    },
-    sourceTitle: {
-      ...Typography.callout,
-      color: colors.textPrimary,
-    },
-    pressed: {
-      opacity: 0.7,
-    },
+    sourceText: { flex: 1, gap: Spacing.one },
+    sourceTitle: { ...Typography.callout, color: colors.textPrimary },
+    pressed: { opacity: 0.7 },
   });
