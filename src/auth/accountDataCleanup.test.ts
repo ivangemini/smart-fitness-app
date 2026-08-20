@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { getKnowledgeLearningStorageKey } from '@/features/knowledge/knowledgeLearningStore';
 import type { StorageAdapter } from '@/storage';
 
 import {
@@ -34,6 +35,7 @@ describe('local account data cleanup', () => {
   it('removes every account key while preserving device preferences', async () => {
     const userId = 'user-1';
     const accountKeys = getLocalAccountDataStorageKeys(userId);
+    expect(accountKeys).toContain(getKnowledgeLearningStorageKey(userId));
     const storage = createMemoryStorage({
       ...Object.fromEntries(accountKeys.map((key) => [key, 'private account data'])),
       '@smart_fitness_theme_mode': 'dark',
