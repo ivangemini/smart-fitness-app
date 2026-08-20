@@ -13,16 +13,19 @@ export const useKnowledgePathLearningStates = (
   const versionKey = [...new Set(articleVersionIds)].sort().join(':');
   const [states, setStates] = useState<KnowledgeLearningState[]>([]);
   const [loading, setLoading] = useState(Boolean(userId && versionKey));
+  const [available, setAvailable] = useState(false);
 
   useEffect(() => {
     const ids = new Set(articleVersionIds);
     if (!userId || ids.size === 0) {
       setStates([]);
       setLoading(false);
+      setAvailable(false);
       return;
     }
     let cancelled = false;
     setLoading(true);
+    setAvailable(false);
     void api
       .listStates({ limit: 500 })
       .then((result) => {
@@ -30,11 +33,13 @@ export const useKnowledgePathLearningStates = (
         setStates(
           result.states.filter((state) => ids.has(state.articleVersionId)),
         );
+        setAvailable(true);
         setLoading(false);
       })
       .catch(() => {
         if (cancelled) return;
         setStates([]);
+        setAvailable(false);
         setLoading(false);
       });
     return () => {
@@ -44,11 +49,12 @@ export const useKnowledgePathLearningStates = (
 
   return useMemo(
     () => ({
+      available,
       loading,
       statesByVersionId: new Map(
         states.map((state) => [state.articleVersionId, state] as const),
       ),
     }),
-    [loading, states],
+    [available, loading, states],
   );
 };

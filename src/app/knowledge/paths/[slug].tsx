@@ -9,6 +9,7 @@ import { AppCard } from '@/components/ui/AppCard';
 import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { MaxContentWidth, Spacing, Typography } from '@/constants/theme';
 import { getKnowledgePathCopy } from '@/features/knowledge/knowledgePathCopy';
+import { resolveKnowledgePathStepLearningView } from '@/features/knowledge/knowledgePathLearningPolicy';
 import { useKnowledgePath } from '@/features/knowledge/useKnowledgePath';
 import { useKnowledgePathLearningStates } from '@/features/knowledge/useKnowledgePathLearningStates';
 import { useLocalization } from '@/localization';
@@ -16,7 +17,9 @@ import { useAppTheme } from '@/theme/AppThemeProvider';
 
 export default function KnowledgePathDetailScreen() {
   const params = useLocalSearchParams<{ slug?: string | string[] }>();
-  const slug = Array.isArray(params.slug) ? params.slug[0] ?? null : params.slug ?? null;
+  const slug = Array.isArray(params.slug)
+    ? (params.slug[0] ?? null)
+    : (params.slug ?? null);
   const { colors } = useAppTheme();
   const { locale } = useLocalization();
   const insets = useSafeAreaInsets();
@@ -65,16 +68,17 @@ export default function KnowledgePathDetailScreen() {
             const state = learning.statesByVersionId.get(
               step.article.articleVersionId,
             );
+            const learningView = resolveKnowledgePathStepLearningView({
+              available: learning.available,
+              loading: learning.loading,
+              state: state?.state ?? null,
+            });
             return (
               <AppCard key={step.article.articleVersionId}>
                 <Text style={styles.stepNumber}>{step.position}</Text>
                 <Text style={styles.cardTitle}>{step.article.title}</Text>
                 <Text style={styles.body}>{step.article.summary}</Text>
-                <Text style={styles.meta}>
-                  {learning.loading
-                    ? '…'
-                    : copy.stateLabel(state?.state ?? null)}
-                </Text>
+                <Text style={styles.meta}>{copy.stateLabel(learningView)}</Text>
                 <AppButton
                   label={copy.openLesson}
                   onPress={() =>
