@@ -1,6 +1,7 @@
+import { getProactivePresentationStorageKey } from '@/features/companion/proactivePresentationStore';
+import { getKnowledgeLearningStorageKey } from '@/features/knowledge/knowledgeLearningStore';
 import { getNutritionFavoritesStorageKey } from '@/features/nutrition/nutritionFavorites';
 import { getNutritionFoodLibraryStorageKey } from '@/features/nutrition/nutritionFoodLibrary';
-import { getProactivePresentationStorageKey } from '@/features/companion/proactivePresentationStore';
 import { getSocialFollowingFeedCacheStorageKey } from '@/features/social/socialFollowingFeedCache';
 import { ACCOUNT_SCOPED_ASYNC_STORAGE_KEYS } from '@/privacy/mobileAccountDataStorageKeys';
 import type { StorageAdapter } from '@/storage';
@@ -21,6 +22,7 @@ export const getLocalAccountDataStorageKeys = (userId: string): string[] =>
   Array.from(
     new Set([
       ...STATIC_ACCOUNT_DATA_KEYS,
+      getKnowledgeLearningStorageKey(userId),
       getNutritionFavoritesStorageKey(userId),
       getNutritionFoodLibraryStorageKey(userId),
       getProactivePresentationStorageKey(userId),
