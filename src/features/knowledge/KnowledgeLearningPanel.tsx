@@ -55,14 +55,25 @@ export function KnowledgeLearningPanel({ article, locale }: Props) {
     () => new Map(result?.evaluations.map((item) => [item.quizItemId, item]) ?? []),
     [result],
   );
+  const stateLabel = learningState
+    ? getKnowledgeLearningStateLabel(locale, learningState.state)
+    : copy.stateUnavailable;
+  const canMarkRead = !pendingRead && learningState?.evidenceState == null;
+  const quizReady =
+    !pendingRead &&
+    learningState?.contentAvailable === true &&
+    learningState.evidenceState !== null;
+  const quizInteractionDisabled = !quizReady || submittingQuiz;
 
   const selectOption = (quizItemId: string, optionId: string) => {
+    if (!quizReady || submittingQuiz) return;
     setSelectedByItem((current) => ({ ...current, [quizItemId]: optionId }));
     setResult(null);
     setShowAnswerAll(false);
   };
 
   const submit = async () => {
+    if (!quizReady) return;
     if (!allAnswered) {
       setShowAnswerAll(true);
       return;
@@ -75,11 +86,6 @@ export function KnowledgeLearningPanel({ article, locale }: Props) {
     );
     if (nextResult) setResult(nextResult);
   };
-
-  const stateLabel = learningState
-    ? getKnowledgeLearningStateLabel(locale, learningState.state)
-    : copy.stateUnavailable;
-  const canMarkRead = !pendingRead && learningState?.evidenceState == null;
 
   return (
     <>
@@ -114,6 +120,9 @@ export function KnowledgeLearningPanel({ article, locale }: Props) {
       <AppCard>
         <Text style={styles.cardTitle}>{copy.quizTitle}</Text>
         <Text style={styles.body}>{copy.quizBody}</Text>
+        {!quizReady ? (
+          <Text style={styles.notice}>{copy.quizReadRequired}</Text>
+        ) : null}
 
         <View style={styles.quizStack}>
           {article.quizItems.map((item, itemIndex) => {
@@ -129,16 +138,26 @@ export function KnowledgeLearningPanel({ article, locale }: Props) {
                     return (
                       <Pressable
                         accessibilityRole="radio"
-                        accessibilityState={{ selected }}
+                        accessibilityState={{
+                          disabled: quizInteractionDisabled,
+                          selected,
+                        }}
+                        disabled={quizInteractionDisabled}
                         key={option.id}
                         onPress={() => selectOption(item.id, option.id)}
                         style={({ pressed }) => [
                           styles.option,
                           selected && styles.optionSelected,
+                          quizInteractionDisabled && styles.optionDisabled,
                           pressed && styles.pressed,
                         ]}
                       >
-                        <View style={[styles.radio, selected && styles.radioSelected]} />
+                        <View
+                          style={[
+                            styles.radio,
+                            selected && styles.radioSelected,
+                          ]}
+                        />
                         <Text selectable style={styles.optionLabel}>
                           {option.label}
                         </Text>
@@ -176,7 +195,7 @@ export function KnowledgeLearningPanel({ article, locale }: Props) {
         ) : null}
 
         <AppButton
-          disabled={submittingQuiz}
+          disabled={quizInteractionDisabled}
           label={submittingQuiz ? copy.submittingQuiz : copy.submitQuiz}
           loading={submittingQuiz}
           onPress={() => void submit()}
@@ -242,6 +261,9 @@ const createStyles = (colors: Record<string, string>) =>
     },
     optionSelected: {
       borderColor: colors.accent,
+    },
+    optionDisabled: {
+      opacity: 0.55,
     },
     radio: {
       width: 18,
