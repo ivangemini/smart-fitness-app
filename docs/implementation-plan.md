@@ -36,11 +36,7 @@ Current verified backend `main`: `d705457ae36147bb65f110266da2dbceb880cc98` (#29
 
 The reviewed read-only Coach question infrastructure remains in place, including minimal routing (#266), minimized evidence/strict answer output (#267), authenticated `/v1/coach/questions` composition (#269), confirmed structured Labs evidence (#270), and bounded goal-progress evidence/capabilities v13 (#271).
 
-Phase 18 backend source has advanced through:
-
-- #285 — canonical Knowledge relational persistence + publication-eligible reader;
-- #290 — provider-neutral editorial orchestration;
-- #294 — exact-version eligible quiz-bank preparation and backend-only evaluation.
+Phase 18 backend source has advanced through #285 canonical Knowledge persistence/reader, #290 provider-neutral editorial orchestration and #294 exact-version quiz-bank/backend evaluation.
 
 P18-E backend #296 is source/CI-ready at exact head `91bacc7f2732b843dd01d754aba2a3eb31790ac4`. Backend CI run `32400589482` / #2182, Backend PostgreSQL CI run `32400589540` / #643 and Account Deletion Receipt CI run `32400589605` / #559 all passed.
 
@@ -87,7 +83,7 @@ Permanent requirements:
 
 ### P15-B — Deterministic analytics
 
-Shared pure analytics support bounded workout frequency, exercise progression, comparable e1RM/volume evidence, body/measurement trends, Activity/Highlights and Progress drill-downs.
+Shared pure analytics support bounded workout frequency, exercise progression, comparable e1RM/volume evidence, body/measurement/weight facts, nutrition aggregates, profile facts, safety/recovery context and confirmed structured Labs facts.
 
 Permanent rules:
 
@@ -289,148 +285,51 @@ Focused roadmap: `docs/roadmap/knowledge-learning.md`.
 
 ### P18-A — Knowledge/content/evidence foundation
 
-Delivered and merged through backend #285:
-
-- stable concepts;
-- stable articles + immutable article versions;
-- source records and allowlisting state;
-- article claims with evidence strength/review state and explicit source linkage;
-- article risk tiers;
-- strict article-version-linked quiz identities;
-- deterministic publication eligibility;
-- relational persistence and authenticated publication-eligible reader API;
-- shared-content/private-user-data separation.
+Backend #285 delivered stable concepts/articles/immutable localized versions, allowlisted sources, reviewed claim/source linkage, risk/review state, deterministic publication eligibility, relational persistence, authenticated publication-eligible reading and shared/private separation.
 
 **Status:** merged/stable for reviewed source scope through backend #285.
 
 ### P18-B — Editorial generation pipeline
 
-Delivered provider-neutral editorial orchestration through backend #290:
+Backend #290 delivered provider-neutral `evidence pack → draft → extracted claims → independent verification → review-ready/rejected` orchestration with bounded retries, structured outputs, source validation, no persisted hidden chain-of-thought and risk-tier-aware human review. Generator/provider output is never publication authority.
 
-`evidence pack → draft → extracted claims → independent verification → review-ready/rejected`.
-
-Requirements remain:
-
-- generator cannot publish directly;
-- structured/versioned provider outputs;
-- no hidden chain-of-thought persistence;
-- bounded retries;
-- source IDs verified against canonical records;
-- unsupported claims rejected or rewritten before review;
-- risk-tier-aware human review.
-
-No provider/content activation is implied by source support.
-
-**Status:** merged for reviewed source scope through backend #290.
+**Status:** merged for reviewed source scope through backend #290; provider/content activation remains separate.
 
 ### P18-C — Library and reader
 
-Delivered through mobile #793:
-
-- Knowledge Library destination;
-- category/concept browse and bounded search;
-- strict published-version parsing;
-- immutable article reader;
-- reviewed source/evidence context;
-- unpublished/editorial states hidden from end users.
+Mobile #793 delivered the Knowledge Library, category/concept browse, bounded search, strict version parsing, immutable reader, reviewed source/evidence presentation and hidden editorial states.
 
 **Status:** merged through mobile #793.
 
 ### P18-D — Quiz bank + validation
 
-Delivered through backend #294:
-
-- reviewed exact-version pre-generated single-select bank;
-- exactly four options / one answer in v1;
-- claim/article-version linkage;
-- deterministic structural/publication validation;
-- hidden answer-key isolation;
-- backend-only canonical quiz evaluation.
-
-No arbitrary live quiz generation is required for normal reading.
+Backend #294 delivered the reviewed exact-version four-option/one-answer quiz bank, claim/version linkage, structural/publication validation, hidden answer-key isolation and backend-only canonical evaluation.
 
 **Status:** merged through backend #294.
 
 ### P18-E — Learning state
 
-Minimal informational user state:
+States remain `unseen | read | understood | refresh_useful`. Backend #296 + mobile #794 implement account-owned persistence outside fitness sync, exact-version read/quiz authority, exact `articleId + locale` refresh resolution, bounded account-partitioned offline read transport, backend-only quiz scoring, account-isolated auth/async guards, deletion cleanup/cascade and subject-access export v2. Reading alone never implies understanding; no gamification or cross-domain mutation is introduced.
 
-- `unseen`;
-- `read`;
-- `understood`;
-- `refresh_useful`.
-
-Backend #296 and mobile #794 implement the reviewed runtime boundary:
-
-- dedicated account-owned learning persistence outside revisioned fitness `AppState` sync;
-- exact-version authenticated list/get/read/quiz-evaluate routes;
-- backend-authoritative quiz evaluation and monotonic `understood` evidence;
-- exact stable `articleId + locale` refresh resolution;
-- account-partitioned mobile cache + bounded pending-read transport;
-- no optimistic canonical completion and no offline quiz scoring;
-- exact user/article-version async guards and account-bound token refresh;
-- account deletion cleanup/cascade;
-- privacy inventory and subject-access export v2 with exact retained evidence plus current derived refresh state.
-
-Reading alone does not imply understanding. Exact article/quiz versions remain part of evidence. No XP/levels/streaks/badges are allowed.
-
-**Status:** source/CI-ready on backend #296 exact head `91bacc7f2732b843dd01d754aba2a3eb31790ac4` and mobile #794 exact code head `e43576ec83db1c299972b8667be4966ba49a1945`. Mobile merge requires backend P18-E merged/stable first. Backend merge is blocked on the explicit production-activation boundary described below.
+**Status:** source/CI-ready on backend #296 exact head `91bacc7f2732b843dd01d754aba2a3eb31790ac4` and mobile #794 exact code head `e43576ec83db1c299972b8667be4966ba49a1945`. Mobile merge requires backend P18-E merged/stable first. Backend merge is blocked on the explicit production-activation boundary below.
 
 ### P18-F — Coach → Learn recommendation engine
 
-Use deterministic Coach finding codes and versioned allowlisted mappings to select reviewed content.
-
-First runtime package after merged/stable P18-E must be host-independent/provider-neutral and start from exact current backend `main`.
-
-Requirements:
-
-- strict versioned typed finding input contract;
-- strict versioned mapping/recommendation contracts;
-- stable mapping target by canonical `articleId`, not title/slug;
-- exact `articleId + locale` candidate hydration through canonical reader repository logic;
-- re-run publication eligibility before recommendation;
-- explicit permitted risk tiers and cooldown/frequency input;
-- deterministic ranking/tie-break/deduplication;
-- P18-E-aware unseen/read/understood/refresh behavior;
-- bounded result count;
-- no model selection authority.
-
-Current backend source has no reviewed stable `findingCode` authority. Do not reinterpret local mobile Proactive Coach insight kinds as backend finding codes.
+After merged/stable P18-E, start a host-independent/provider-neutral selector from exact backend `main`: strict versioned typed finding + mapping contracts, stable `articleId` targets, exact locale hydration through canonical reader logic, rechecked publication eligibility, explicit risk/cooldown policy, deterministic ranking/dedupe, P18-E-aware relevance and no model selection authority. Current backend has no reviewed stable `findingCode`; local mobile Proactive Coach kinds are not substitutes.
 
 **Status:** architecture-approved and implementation design prepared; runtime waits for merged/stable P18-E.
 
 ### P18-G — Daily-report / Coach surface integration
 
-Attach optional educational recommendations to an already-authoritative Coach/report surface only after P18-F returns an approved exact recommendation.
-
-Requirements:
-
-- report remains useful without a recommendation;
-- recommendation is optional/non-punitive;
-- finding and content mapping are valid first;
-- frequency/deduplication bounded;
-- no medical-necessity framing;
-- no automatic canonical mutation after reading/testing;
-- trustworthy typed backend finding provenance must exist before host attachment.
+Attach optional educational context only when P18-F returns an approved exact recommendation and the host has trustworthy typed backend finding provenance. Preserve host usefulness without Knowledge, bounded frequency, non-punitive framing and no automatic canonical mutation.
 
 **Status:** architecture-approved; blocked on P18-F plus trustworthy backend finding provenance.
 
 ### P18-H — Curriculum / learning paths
 
-Compose ordered concept paths over canonical exact article versions after stable P18-E.
+After stable P18-E, use immutable localized path versions with bounded ordered exact-version article steps. Old path versions fail closed when a referenced exact article version is superseded; newly reviewed path versions reference the replacement. Navigation remains free skip/revisit/open and decorates from P18-E instead of inventing duplicate progress/XP/streak/rank authority.
 
-Reviewed v1 direction:
-
-- immutable localized path versions;
-- bounded ordered required steps;
-- each step references stable article identity + exact current publication-eligible article version;
-- an old path version fails closed when its exact article version is no longer the current eligible version; a newly reviewed path version must reference the replacement;
-- path navigation is free skip/revisit/open, with no mastery locks or duplicate progress authority;
-- decorate steps from P18-E state rather than creating XP/streak/rank progression.
-
-Possible paths include Training fundamentals, Nutrition fundamentals, Build your first program, Fat-loss fundamentals, Muscle-gain fundamentals, Recovery fundamentals and Understanding Labs.
-
-**Status:** architecture-approved; runtime may begin as an independent workstream after merged/stable P18-E.
+**Status:** architecture-approved; runtime may begin independently after merged/stable P18-E.
 
 ## P14-A — Push
 
