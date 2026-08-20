@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest';
 
 import type { AuthSession } from '@/auth/types';
 
-import { selectKnowledgeLearningAccessToken } from './useKnowledgeLearningApi';
+import {
+  isKnowledgeLearningAuthCurrent,
+  selectKnowledgeLearningAccessToken,
+} from './useKnowledgeLearningApi';
 
 const USER_A_ID = '11111111-1111-4111-8111-111111111111';
 const USER_B_ID = '22222222-2222-4222-8222-222222222222';
@@ -39,6 +42,13 @@ const sessionFor = (userId: string, accessToken: string): AuthSession => ({
 });
 
 describe('Knowledge learning auth binding', () => {
+  it('treats only the expected account as current', () => {
+    expect(isKnowledgeLearningAuthCurrent(USER_A_ID, USER_A_ID)).toBe(true);
+    expect(isKnowledgeLearningAuthCurrent(USER_B_ID, USER_A_ID)).toBe(false);
+    expect(isKnowledgeLearningAuthCurrent(null, USER_A_ID)).toBe(false);
+    expect(isKnowledgeLearningAuthCurrent(USER_A_ID, null)).toBe(false);
+  });
+
   it('returns a token only for the expected authenticated account', () => {
     const session = sessionFor(USER_A_ID, 'access-a');
 
