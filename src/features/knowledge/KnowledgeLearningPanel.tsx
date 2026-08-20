@@ -15,6 +15,7 @@ import {
   getKnowledgeLearningCopy,
   getKnowledgeLearningStateLabel,
 } from './knowledgeLearningCopy';
+import { canSubmitKnowledgeQuiz } from './knowledgeLearningPolicy';
 import { useKnowledgeLearningState } from './useKnowledgeLearningState';
 
 type Props = {
@@ -59,10 +60,7 @@ export function KnowledgeLearningPanel({ article, locale }: Props) {
     ? getKnowledgeLearningStateLabel(locale, learningState.state)
     : copy.stateUnavailable;
   const canMarkRead = !pendingRead && learningState?.evidenceState == null;
-  const quizReady =
-    !pendingRead &&
-    learningState?.contentAvailable === true &&
-    learningState.evidenceState !== null;
+  const quizReady = canSubmitKnowledgeQuiz({ learningState, pendingRead });
   const quizInteractionDisabled = !quizReady || submittingQuiz;
 
   const selectOption = (quizItemId: string, optionId: string) => {
