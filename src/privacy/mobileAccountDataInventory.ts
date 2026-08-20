@@ -13,6 +13,7 @@ export { ACCOUNT_SCOPED_ASYNC_STORAGE_KEYS } from './mobileAccountDataStorageKey
 
 export type MobileAccountDataTransmission =
   | 'backend_auth'
+  | 'backend_knowledge'
   | 'backend_social'
   | 'backend_sync'
   | 'none';
@@ -140,6 +141,20 @@ export const MOBILE_ACCOUNT_DATA_SURFACES: readonly MobileAccountDataSurface[] =
     deletion: 'account_cleanup',
     userControl:
       'Dismiss individual insights; the local presentation record is also removed when the account is deleted.',
+  },
+  {
+    id: 'knowledge_learning_local_state',
+    storage: 'async_storage',
+    storageKeys: [],
+    category: 'knowledge_learning',
+    contains:
+      'Account-scoped canonical learning-state cache and bounded pending read-completion operations keyed to exact article versions.',
+    purpose:
+      'Support offline presentation and bounded read retry without making mobile authoritative for learning state or quiz evaluation.',
+    transmission: 'backend_knowledge',
+    deletion: 'account_cleanup',
+    userControl:
+      'Use the Knowledge learning flows or delete the account; confirmed account deletion removes the local cache and pending read queue.',
   },
   {
     id: 'auth_session_metadata',
