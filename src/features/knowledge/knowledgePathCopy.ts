@@ -20,7 +20,7 @@ const EN = {
   exactVersionUnavailableTitle: 'This lesson version is no longer available',
   exactVersionUnavailableBody:
     'The learning path points to a reviewed exact version that has changed. Return to the path and refresh it.',
-  stateLabel: (state: KnowledgePathStepLearningView) => {
+  stateLabel: (state: KnowledgePathStepLearningView): string => {
     if (state === 'loading') return 'Loading learning status…';
     if (state === 'unavailable') return 'Learning status unavailable';
     if (state === 'understood') return 'Understood';
@@ -49,7 +49,7 @@ const RU: typeof EN = {
   exactVersionUnavailableTitle: 'Эта версия материала больше недоступна',
   exactVersionUnavailableBody:
     'Маршрут привязан к конкретной проверенной версии, которая изменилась. Вернись к маршруту и обнови его.',
-  stateLabel: (state: KnowledgePathStepLearningView) => {
+  stateLabel: (state: KnowledgePathStepLearningView): string => {
     if (state === 'loading') return 'Загружаем статус обучения…';
     if (state === 'unavailable') return 'Статус обучения недоступен';
     if (state === 'understood') return 'Понятно';
