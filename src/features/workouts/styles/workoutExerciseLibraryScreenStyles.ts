@@ -272,9 +272,9 @@ export const createFilterStyles = (colors: typeof Colors.light, glass: LiquidGla
       borderRadius: 999,
       borderWidth: StyleSheet.hairlineWidth,
       justifyContent: 'center',
-      minHeight: 44,
+      minHeight: 48,
       paddingHorizontal: Spacing.three,
-      paddingVertical: 8,
+      paddingVertical: 7,
     },
     chipActive: {
       backgroundColor: glass.accentFill,
@@ -282,6 +282,11 @@ export const createFilterStyles = (colors: typeof Colors.light, glass: LiquidGla
     },
     chipActivePressed: {
       backgroundColor: glass.accentPressedFill,
+    },
+    chipContent: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: Spacing.one,
     },
     chipLabel: {
       color: colors.textSecondary,
@@ -301,7 +306,7 @@ export const createFilterStyles = (colors: typeof Colors.light, glass: LiquidGla
       paddingRight: Spacing.three,
     },
     chipScroll: {
-      maxHeight: 48,
+      maxHeight: 52,
     },
     label: {
       color: colors.textPrimary,
