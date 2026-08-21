@@ -85,6 +85,17 @@ describe('agent project graph', () => {
     expect(impact.unmatchedFiles).toEqual(['unexpected/new-surface.xyz']);
   });
 
+  it('makes targeted validation fail closed for unmatched paths', () => {
+    const output = execFileSync(
+      process.execPath,
+      ['scripts/agent-validate.mjs', '--json', '--files=unexpected/new-surface.xyz'],
+      { cwd: projectRoot, encoding: 'utf8' },
+    );
+    const plan = JSON.parse(output);
+    expect(plan.failClosedReason).toContain('unmatched changed paths');
+    expect(plan.impact.unmatchedFiles).toEqual(['unexpected/new-surface.xyz']);
+  });
+
   it('keeps deleted paths in the changed-file impact set', () => {
     const root = mkdtempSync(join(tmpdir(), 'agent-toolkit-delete-'));
     try {
