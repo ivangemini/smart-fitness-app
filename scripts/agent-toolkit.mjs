@@ -127,7 +127,7 @@ const splitLines = (value) =>
 export function getChangedFiles({ root = process.cwd(), baseRef = null, includeWorkingTree = true } = {}) {
   const files = [];
   if (baseRef) {
-    const committed = git(['diff', '--name-only', '--diff-filter=ACMR', `${baseRef}...HEAD`], {
+    const committed = git(['diff', '--name-only', '--diff-filter=ACMRD', `${baseRef}...HEAD`], {
       cwd: root,
       allowFailure: true,
     });
@@ -136,8 +136,8 @@ export function getChangedFiles({ root = process.cwd(), baseRef = null, includeW
 
   if (includeWorkingTree) {
     for (const args of [
-      ['diff', '--name-only', '--diff-filter=ACMR'],
-      ['diff', '--cached', '--name-only', '--diff-filter=ACMR'],
+      ['diff', '--name-only', '--diff-filter=ACMRD'],
+      ['diff', '--cached', '--name-only', '--diff-filter=ACMRD'],
       ['ls-files', '--others', '--exclude-standard'],
     ]) {
       const result = git(args, { cwd: root, allowFailure: true });
@@ -217,11 +217,13 @@ function otaSafeCandidate(files) {
   if (files.length === 0) return { value: false, reason: 'no changed files' };
   if (files.every(isDocumentationFile)) return { value: false, reason: 'documentation-only change' };
   for (const file of files) {
-    if (file.startsWith('assets/')) continue;
+    if (file.startsWith('assets/')) {
+      return { value: false, reason: `asset path requires runtime/native usage inspection: ${file}` };
+    }
     if (file.startsWith('src/') && OTA_EXTENSIONS.has(path.extname(file))) continue;
     return { value: false, reason: `non-OTA-safe path: ${file}` };
   }
-  return { value: true, reason: 'only JS/TS/TSX source or bundled assets changed' };
+  return { value: true, reason: 'only JS/TS/TSX source changed; release boundaries still apply' };
 }
 
 export function classifyChangedFiles(graph, files) {
