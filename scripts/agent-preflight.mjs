@@ -32,9 +32,15 @@ if (!existsSync('package-lock.json')) {
 }
 
 if (fetchMain) {
-  const fetched = run('git', ['fetch', '--prune', '--no-tags', 'origin', 'main'], { cwd: root });
+  const fetched = run(
+    'git',
+    ['fetch', '--prune', '--no-tags', 'origin', '+refs/heads/main:refs/remotes/origin/main'],
+    { cwd: root },
+  );
   if (!fetched.ok) {
-    warnings.push(`git fetch origin main failed: ${fetched.stderr.trim() || fetched.error?.message || 'unknown failure'}`);
+    warnings.push(
+      `git fetch origin/main failed: ${fetched.stderr.trim() || fetched.error?.message || 'unknown failure'}`,
+    );
   }
 }
 
