@@ -37,6 +37,7 @@ Physical standalone validation for offline termination/restart, reconnect, recov
 Start with:
 
 - [Agent instructions](AGENTS.md)
+- [Project map](PROJECT_MAP.md) — fast cross-repository/file navigation
 - [Project context](docs/project-context.md)
 - [Current status](docs/current-status.md)
 - [Latest handoff](docs/handoffs/latest.md)
@@ -46,6 +47,13 @@ Start with:
 - [Disaster recovery readiness](docs/operations/disaster-recovery-readiness.md)
 - [External recovery registry](docs/operations/external-recovery-registry.md)
 - [Project learnings](PROJECT_LEARNINGS.md)
+
+For a current filtered checkout tree, run:
+
+```bash
+node scripts/print-project-tree.mjs
+node scripts/print-project-tree.mjs --depth=4
+```
 
 Focused architecture, privacy, QA, roadmap, release, and operations evidence remains under `docs/`.
 
