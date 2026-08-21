@@ -57,7 +57,9 @@
     "lint": "expo lint",
     "typecheck": "node scripts/clear-generated-route-types.mjs && expo customize tsconfig.json && tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "project:tree": "node scripts/print-project-tree.mjs",
+    "agent:check": "node scripts/check-agent-navigation.mjs"
   },
   "private": true
 }
