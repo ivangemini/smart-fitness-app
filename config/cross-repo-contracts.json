@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "backendRepository": "ivangemini/smart-fitness-backend",
+  "backendApiReference": "docs/api-reference.md",
+  "backendRouteSourceCheck": "tests/documentation-reference.test.ts",
+  "contracts": [
+    {"id":"auth","mobilePatterns":["src/api/**","src/auth/**"],"backendPatterns":["src/routes/auth/**","src/services/auth/**","src/plugins/auth.ts"],"requiredEndpoints":["POST /v1/auth/login","POST /v1/auth/refresh","POST /v1/auth/logout","GET /v1/auth/me","GET /v1/auth/sessions"]},
+    {"id":"sync","mobilePatterns":["src/cloud/**","src/context/SyncContext.tsx","src/context/applySyncPullResult.ts","src/api/**"],"backendPatterns":["src/routes/sync/**","src/sync/**","src/repositories/**","src/schema/**"],"requiredEndpoints":["POST /v1/sync/push","POST /v1/sync/pull","POST /v1/sync/conflicts/:conflictId/resolve","GET /v1/sync/status"]},
+    {"id":"coach","mobilePatterns":["src/features/coach/**","src/features/companion/**","src/api/**"],"backendPatterns":["src/routes/coach/**","src/modules/coach/**","src/services/coach/**"],"requiredEndpoints":["GET /v1/coach/capabilities","GET /v1/coach/runs","POST /v1/coach/questions","GET /v1/coach/runs/:runId"]},
+    {"id":"labs","mobilePatterns":["src/features/labs/**","src/api/**"],"backendPatterns":["src/routes/labs/**","src/modules/labs/**","src/services/labs/**"],"requiredEndpoints":["GET /v1/labs/capabilities","GET /v1/labs/documents","GET /v1/labs/markers","GET /v1/labs/documents/:documentId/review","POST /v1/labs/documents/:documentId/confirm"]},
+    {"id":"knowledge","mobilePatterns":["src/features/knowledge/**","src/api/**"],"backendPatterns":["src/routes/knowledge/**","src/modules/knowledge/**","src/services/knowledge/**"],"requiredEndpoints":["GET /v1/knowledge/articles","GET /v1/knowledge/articles/:slug","GET /v1/knowledge/paths","GET /v1/knowledge/learning-states","POST /v1/knowledge/article-versions/:articleVersionId/learning-state/read","POST /v1/knowledge/article-versions/:articleVersionId/quiz/evaluate"]},
+    {"id":"social","mobilePatterns":["src/features/social/**","src/api/**"],"backendPatterns":["src/routes/social/**","src/modules/social-media/**","src/services/social/**"],"requiredEndpoints":["GET /v1/social/capabilities","GET /v1/social/profile","GET /v1/social/stories","GET /v1/social/feed","GET /v1/social/notifications"]},
+    {"id":"foods","mobilePatterns":["src/features/nutrition/**","src/api/**"],"backendPatterns":["src/routes/foods/**"],"requiredEndpoints":["GET /foods/search","GET /foods/autocomplete","GET /foods/barcode/:barcode","GET /foods/:id"]},
+    {"id":"privacy-account","mobilePatterns":["src/features/settings/**","src/features/profile/**","src/api/**"],"backendPatterns":["src/routes/privacy/**","src/routes/auth/**","src/privacy/**"],"requiredEndpoints":["DELETE /v1/auth/account","POST /v1/auth/account-deletion/status","POST /v1/privacy/data-access/export/prepare","GET /v1/privacy/data-access/export/:artifactReference/status"]}
+  ]
+}
