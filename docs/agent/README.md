@@ -4,46 +4,143 @@ Updated: 2026-08-21
 
 ## Purpose
 
-This directory is the fast operational layer for coding agents working on Smart Fitness. It does not replace architecture, roadmap, status, privacy, release, or backend documentation. Its job is to reduce repeated repository discovery and make the first implementation pass safer and faster.
+This directory is the operational layer for coding agents working on Smart Fitness. It reduces repeated repository discovery, makes ownership/blast-radius/validation decisions explicit, and keeps those decisions machine-readable where practical.
 
-Use these documents to answer four questions:
+It does **not** replace exact source, migrations, schemas, tests, Git history, focused architecture, roadmap, privacy, release, operations, or backend documentation.
+
+Use this layer to answer:
 
 1. **Where do I start?** — `PROJECT_MAP.md` and this guide.
-2. **Who owns truth for this data/behavior?** — `ownership-map.md`.
-3. **What else can this change affect?** — `change-impact.md`.
-4. **What evidence is required before calling it done?** — `validation-matrix.md`.
-
-Exact source, migrations, schemas, tests, current Git history, and canonical focused documentation override this operational index if they conflict.
+2. **Who owns truth?** — `ownership-map.md`.
+3. **What else can this affect?** — `change-impact.md`.
+4. **What evidence is required?** — `validation-matrix.md`.
+5. **What does the current diff imply automatically?** — `config/agent-project-graph.json` through the Agent Tooling commands below.
 
 ## Session bootstrap
 
-For a new agent/session, use this order before substantive edits:
+For a new agent/session:
 
-1. `AGENTS.md` — permanent execution, product, safety, CI, and deployment rules.
-2. `PROJECT_MAP.md` — repository/file navigation and high-fan-out areas.
-3. `docs/agent/README.md` — this operating guide.
-4. `docs/project-context.md` — stable cross-repository product/architecture context.
-5. `docs/current-status.md` — mutable verified state and active blockers.
-6. `docs/handoffs/latest.md` — latest continuation checkpoint.
-7. `docs/implementation-plan.md` — canonical cross-repository forward plan.
-8. `PROJECT_LEARNINGS.md` — durable failure patterns and implementation lessons.
-9. Relevant focused architecture/privacy/roadmap/QA/release/operations documents.
-10. Exact current mobile/backend Git state, open PRs, and CI state.
+1. read `AGENTS.md`;
+2. read `PROJECT_MAP.md`;
+3. read this guide;
+4. run `npm run agent:preflight`;
+5. read `docs/project-context.md`;
+6. read `docs/current-status.md`;
+7. read `docs/handoffs/latest.md`;
+8. read `docs/implementation-plan.md`;
+9. read `PROJECT_LEARNINGS.md`;
+10. inspect the relevant ownership/impact/validation rows and focused docs;
+11. inspect exact current mobile/backend Git, PR, and CI state before substantive edits.
 
-Do not read the whole repository by default. Build the smallest correct working set from the map and impact matrix, then expand only when source evidence shows a wider dependency.
+Do not read the whole repository by default. Build the smallest correct working set, then expand only when source evidence or the dependency graph shows a wider dependency.
+
+## Agent Tooling v2
+
+The canonical machine-readable graph is:
+
+```text
+config/agent-project-graph.json
+```
+
+It maps source paths to product/architecture nodes, authority, change classes, cross-repository review requirements, dependency edges, and validation profiles.
+
+The graph includes semantic external backend nodes so a mobile change can surface the backend authority that must be inspected without pretending that the mobile checkout owns backend source.
+
+### Preflight
+
+```bash
+npm run agent:preflight
+npm run agent:preflight -- --fetch
+npm run agent:preflight -- --strict
+npm run agent:preflight -- --json
+```
+
+`agent:preflight` checks:
+
+- Node/toolchain expectations;
+- Git branch/HEAD/base/ahead/behind state;
+- dirty working tree;
+- agent navigation integrity;
+- current changed-file set;
+- documentation update markers;
+- open PR visibility and changed-file overlap when GitHub CLI is available.
+
+`--fetch` performs a bounded read-only `git fetch origin main` before evaluating local freshness. GitHub CLI absence is non-blocking because connected-agent environments may inspect GitHub through another connector. Exact remote state still overrides stale local refs.
+
+### Impact classification
+
+```bash
+npm run agent:impact
+npm run agent:impact -- --json
+npm run agent:impact -- --base origin/main
+npm run agent:impact -- --files=src/api/client.ts,src/features/labs/LabsScreen.tsx
+```
+
+`agent:impact` reports:
+
+- changed files;
+- matched domains;
+- source-of-truth authority;
+- dependencies and dependents to inspect;
+- high-fan-out/privacy/native/release/server-authoritative flags;
+- cross-repository review requirements;
+- required validation profiles;
+- conservative OTA-safe candidacy.
+
+`OTA-safe candidate` means only that the changed paths satisfy the repository's JS/TS/TSX/assets path rule. It does **not** override backend-contract, privacy, deployment, provider, or production gates.
+
+### Dependency / contract graph
+
+```bash
+npm run agent:graph
+npm run agent:graph -- --changed
+npm run agent:graph -- --changed --json
+npm run agent:graph -- --changed --dot
+```
+
+`agent:graph -- --changed` shows the current working-set neighborhood rather than the full project graph.
+
+Use the graph for navigation and blast-radius discovery. Exact imports/callers/tests and backend source remain authoritative.
+
+### Targeted validation
+
+```bash
+npm run agent:validate
+npm run agent:validate -- --plan
+npm run agent:validate -- --json
+npm run agent:validate -- --full
+```
+
+`agent:validate`:
+
+1. classifies the current diff;
+2. runs repository/changed-file line checks;
+3. always runs agent integrity;
+4. selects additional checks from the graph;
+5. executes only the required local validation profiles unless `--full` is requested.
+
+Examples:
+
+- docs/agent tooling → integrity + focused tooling tests;
+- ordinary TS/TSX feature change → typecheck + full regression suite;
+- sync change → typecheck + tests + expanded sync-intent smoke;
+- native/dependency/release-sensitive change → release config + Expo export + Expo Doctor in addition to source gates.
+
+Authoritative PR CI still decides source acceptance. `agent:validate` does not replace required exact-head CI, physical-device evidence, provider evidence, deployment validation, or production verification.
 
 ## Task startup protocol
 
 Before editing:
 
-- identify the user-visible/product behavior being changed;
-- identify the source-of-truth owner in `ownership-map.md`;
-- inspect the corresponding mobile feature/route/state/API layers;
-- inspect backend route/service/repository/schema layers when the backend is authoritative or the contract crosses repositories;
-- inspect current callers and focused tests before changing shared/high-fan-out code;
-- check `change-impact.md` for secondary surfaces that must be inspected;
-- select validation from `validation-matrix.md` before implementation so the change is testable by construction;
-- preserve exact current interfaces unless the task explicitly includes a coordinated contract migration.
+- identify the user-visible/product behavior;
+- establish source-of-truth ownership with `ownership-map.md`;
+- run `agent:impact` or classify the intended paths explicitly;
+- inspect the primary feature/route/state/API layer;
+- inspect backend route/service/repository/schema when the backend is authoritative;
+- inspect callers/tests before changing shared/high-fan-out code;
+- use `change-impact.md` and `agent:graph -- --changed` to expand the working set;
+- select evidence before implementation so the change is testable by construction;
+- preserve released interfaces unless the task explicitly includes a coordinated migration.
 
 ## Working-set strategy
 
@@ -55,14 +152,14 @@ Typical working set:
 src/app/<route>
 src/features/<domain>/...
 shared UI primitive/token only if actually used
-focused tests / QA note
+focused tests / QA evidence
 ```
 
-Do not open sync/backend/schema layers unless the UI behavior depends on them.
+Do not open sync/backend/schema layers unless the behavior depends on them.
 
-### Persisted private fitness state change
+### Persisted private fitness state
 
-Typical working set expands to:
+Expand through:
 
 ```text
 feature
@@ -74,11 +171,9 @@ feature
 → compatibility/conflict/restart tests
 ```
 
-### Server-authoritative domain change
+### Server-authoritative domain
 
-For Labs, Social/Stories, Knowledge/Learning, auth/session/device state, managed media, and backend Coach authority, start from the server contract rather than inventing local truth.
-
-Typical path:
+For Labs, Social/Stories, Knowledge/Learning, authentication/session/device state, managed media, and backend Coach authority:
 
 ```text
 mobile feature
@@ -89,49 +184,48 @@ mobile feature
 → schema/migration when applicable
 ```
 
+Do not invent local server rows/state to satisfy UI behavior.
+
 ### Shared/high-fan-out change
 
-For `src/context/`, `src/cloud/`, shared `src/api/`, root layout/navigation, auth/session code, CI/release/native config, or backend schema/auth/shared repository code:
+For `src/context/`, `src/cloud/`, shared `src/api/`, root navigation, auth/session, native/release config, CI, or backend schema/auth/shared repositories:
 
 - inspect callers first;
-- search for invariants and tests before editing;
+- inspect invariants and focused tests;
+- review the graph neighborhood;
 - prefer a coherent bounded batch;
-- explicitly check the relevant row in `change-impact.md`;
-- do not rely on a single happy-path test.
+- do not rely on one happy-path test.
 
 ## Canonical documentation hierarchy
 
 When prose disagrees, prefer:
 
 1. exact source, migrations, schemas, tests, and current Git history;
-2. `docs/implementation-plan.md` for cross-repository forward sequencing;
-3. `docs/current-status.md` for mutable verified status/blockers;
-4. relevant focused architecture/privacy/operations/QA/release documents;
-5. `docs/project-context.md` for stable cross-repository context;
-6. `PROJECT_MAP.md` and `docs/agent/*` for navigation/operational routing;
-7. `PROJECT_LEARNINGS.md` for durable lessons;
+2. `docs/implementation-plan.md`;
+3. `docs/current-status.md`;
+4. focused architecture/privacy/operations/QA/release documents;
+5. `docs/project-context.md`;
+6. `PROJECT_MAP.md` and `docs/agent/*`;
+7. `PROJECT_LEARNINGS.md`;
 8. historical PR descriptions, old handoffs, and chat summaries.
 
-`docs/handoffs/latest.md` is the restart checkpoint, not a stronger architecture authority than exact source or focused canonical docs.
+`docs/handoffs/latest.md` is a restart checkpoint, not architecture authority.
 
-## Repositories and environment boundaries
+## Repository and state boundaries
 
 ### Mobile
 
-- repository: `ivangemini/smart-fitness-app`;
-- Expo / React Native client;
-- authoritative routine CI runner: `[self-hosted, linux, x64, hermes-mobile-ci]`;
-- production API base: `https://api.peptonio.com`;
-- Expo public environment variables must never contain provider secrets.
+- `ivangemini/smart-fitness-app`;
+- Expo / React Native;
+- routine CI: `[self-hosted, linux, x64, hermes-mobile-ci]`;
+- production API: `https://api.peptonio.com`.
 
 ### Backend
 
-- repository: `ivangemini/smart-fitness-backend`;
-- Node.js 22 / Fastify / PostgreSQL / Drizzle backend authority;
-- authoritative routine CI runner: `[self-hosted, linux, x64, hermes-backend-ci]`;
-- detailed API/data-model/deployment authority lives in the backend repository.
-
-### State claims
+- `ivangemini/smart-fitness-backend`;
+- Node.js 22 / Fastify / PostgreSQL / Drizzle;
+- routine CI: `[self-hosted, linux, x64, hermes-backend-ci]`;
+- backend repo owns detailed API/data-model/deployment authority.
 
 Always distinguish:
 
@@ -147,32 +241,27 @@ source merged
 ≠ production behavior verified
 ```
 
-Do not collapse these into one “done” state.
-
 ## Common commands
-
-From the mobile checkout:
 
 ```bash
 npm ci
+
+npm run project:tree
+npm run agent:check
+npm run agent:preflight
+npm run agent:impact
+npm run agent:graph -- --changed
+npm run agent:validate -- --plan
+npm run agent:validate
+npm run agent:tooling:test
+
 npm run typecheck
 npm test
-node scripts/check-repository-file-lines.mjs
-node scripts/check-changed-file-lines.mjs
-node scripts/print-project-tree.mjs
-node scripts/print-project-tree.mjs --depth=4
 npx expo export --clear
 npx expo-doctor@1.20.1
 ```
 
-After this agent layer is installed:
-
-```bash
-npm run project:tree
-npm run agent:check
-```
-
-Use `validation-matrix.md` to decide which subset is sufficient locally and which authoritative CI/device/provider evidence is additionally required.
+Use `validation-matrix.md` to decide what local checks prove and what additional CI/device/provider/production evidence is required.
 
 ## Cross-repository rules
 
@@ -181,7 +270,7 @@ A mobile change is cross-repository when it changes or depends on:
 - API request/response semantics;
 - server ownership/authorization;
 - persisted server schema;
-- sync entity payloads/revisions/conflicts/tombstones;
+- sync payload/revision/conflict/tombstone behavior;
 - Coach authority/findings/confirmation contracts;
 - Labs/Social/Stories/Knowledge/Learning state;
 - provider-backed behavior;
@@ -189,46 +278,36 @@ A mobile change is cross-repository when it changes or depends on:
 
 For coordinated changes:
 
-1. inspect exact current `main` and open PRs in both repositories;
-2. establish which repository owns the contract;
-3. preserve compatibility with released mobile clients unless the plan explicitly includes a migration;
+1. inspect exact current `main` and open PRs in both repos;
+2. identify the contract owner;
+3. preserve released-client compatibility unless a migration is explicit;
 4. sequence backend/mobile changes so no intermediate deployed state is invalid;
-5. validate each exact head under its repository's authoritative CI;
-6. keep deployment/activation evidence separate from source completion.
+5. validate each exact head with its authoritative CI;
+6. keep source completion separate from activation/deployment evidence.
 
 ## Documentation update routing
 
-Update documentation only where the fact belongs:
-
 - permanent execution/product/safety rule → `AGENTS.md`;
-- top-level repository/file/authority navigation changed → `PROJECT_MAP.md`;
-- agent ownership/impact/validation routing changed → `docs/agent/*`;
-- stable architecture/product baseline changed → `docs/project-context.md` or focused architecture doc;
-- mutable state/blocker changed → `docs/current-status.md`;
-- continuation checkpoint changed → `docs/handoffs/latest.md`;
-- forward sequence changed → `docs/implementation-plan.md` / focused roadmap;
-- durable implementation lesson discovered → `PROJECT_LEARNINGS.md`;
+- repository/file/authority navigation → `PROJECT_MAP.md`;
+- agent ownership/impact/validation/tooling → `docs/agent/*` and `config/agent-project-graph.json`;
+- stable architecture/product baseline → focused architecture or `docs/project-context.md`;
+- mutable state/blocker → `docs/current-status.md`;
+- continuation checkpoint → `docs/handoffs/latest.md`;
+- forward sequence → `docs/implementation-plan.md` / focused roadmap;
+- durable lesson → `PROJECT_LEARNINGS.md`;
 - release/evidence result → relevant QA/release document.
 
-Do not duplicate one fact across several broad documents merely for visibility. Link to the canonical owner instead.
+Do not duplicate one mutable fact across several broad documents.
 
-## Staleness rules
+## Staleness and integrity
 
-Agent documents are intentionally structural and should change less often than roadmaps/status files.
+`scripts/check-agent-navigation.mjs` checks:
 
-Update this layer when:
+- required agent entry points;
+- required navigation links;
+- package command wiring;
+- agent-doc line bounds;
+- graph schema/node/edge/validation-profile integrity;
+- graph coverage for current top-level feature directories.
 
-- a source-of-truth owner moves;
-- a product domain changes authority model;
-- a new high-fan-out subsystem is introduced;
-- validation expectations materially change;
-- canonical entry points are renamed/removed;
-- cross-repository dependency direction changes.
-
-Do not update it for ordinary leaf files, one-off bugs, current PR numbers, temporary blockers, or small UI details.
-
-## Integrity check
-
-`scripts/check-agent-navigation.mjs` checks that critical agent entry points exist, stay linked from the expected indexes, and remain within the hand-written documentation line limit.
-
-It is a structural guard only. It cannot prove that prose still matches implementation. Source inspection remains mandatory.
+The graph is structural. It cannot prove that prose matches implementation or that an external backend contract is current. Source inspection remains mandatory.

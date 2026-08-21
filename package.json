@@ -59,7 +59,12 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "project:tree": "node scripts/print-project-tree.mjs",
-    "agent:check": "node scripts/check-agent-navigation.mjs"
+    "agent:check": "node scripts/check-agent-navigation.mjs",
+    "agent:preflight": "node scripts/agent-preflight.mjs",
+    "agent:impact": "node scripts/agent-impact.mjs",
+    "agent:graph": "node scripts/agent-graph.mjs",
+    "agent:validate": "node scripts/agent-validate.mjs",
+    "agent:tooling:test": "vitest run scripts/agent-toolkit.test.mjs"
   },
   "private": true
 }
