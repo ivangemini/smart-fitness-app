@@ -42,12 +42,18 @@ const profiles = profileOrder
   .map((id) => ({ id, ...graph.validationProfiles[id] }))
   .filter((profile) => profile.command);
 
+const failClosedReason =
+  impact.unmatchedFiles.length > 0 && !full
+    ? `unmatched changed paths require graph coverage or --full: ${impact.unmatchedFiles.join(', ')}`
+    : null;
+
 const plan = {
   schemaVersion: 1,
   baseRef,
   changedFiles: files,
   impact,
   full,
+  failClosedReason,
   prechecks: [
     { label: 'Repository file line audit', command: 'node scripts/check-repository-file-lines.mjs' },
     ...(baseRef
@@ -66,10 +72,16 @@ if (common.json || planOnly) {
     console.log(JSON.stringify(plan, null, 2));
   } else {
     console.log(`Validation plan (${files.length} changed files, base ${baseRef ?? 'unresolved'})`);
+    if (failClosedReason) console.log(`- FAIL CLOSED: ${failClosedReason}`);
     for (const precheck of plan.prechecks) console.log(`- ${precheck.label}: ${precheck.command}`);
     for (const profile of plan.profiles) console.log(`- ${profile.label}: ${profile.command}`);
   }
   if (planOnly) process.exit(0);
+}
+
+if (failClosedReason) {
+  console.error(`Agent validation refused targeted execution: ${failClosedReason}`);
+  process.exit(2);
 }
 
 if (files.length === 0) {
