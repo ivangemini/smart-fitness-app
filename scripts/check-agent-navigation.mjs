@@ -24,6 +24,11 @@ const requiredFiles = [
 
 const requiredReferences = [
   ['CLAUDE.md', '@AGENTS.md'],
+  ['AGENTS.md', 'PROJECT_MAP.md'],
+  ['AGENTS.md', 'docs/agent/README.md'],
+  ['AGENTS.md', 'docs/agent/ownership-map.md'],
+  ['AGENTS.md', 'docs/agent/change-impact.md'],
+  ['AGENTS.md', 'docs/agent/validation-matrix.md'],
   ['README.md', 'PROJECT_MAP.md'],
   ['README.md', 'docs/agent/README.md'],
   ['docs/agent/README.md', 'PROJECT_MAP.md'],
