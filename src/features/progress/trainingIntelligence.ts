@@ -22,7 +22,8 @@ export type TrainingFindingKind =
   | 'regression'
   | 'volume_spike'
   | 'muscle_exposure_imbalance'
-  | 'muscle_gap';
+  | 'muscle_gap'
+  | 'exercise_gap';
 export type TrainingPrType = 'load' | 'reps' | 'estimated_1rm' | 'session_volume';
 
 export type CanonicalMuscleLoadFact = {
@@ -90,6 +91,13 @@ const timestamp = (value: string) => {
 };
 const isWorkingSet = (set: WorkoutSet) =>
   set.completed !== false && Number.isFinite(set.reps) && set.reps > 0 && Number.isFinite(set.weight) && set.weight >= 0;
+const latestTimestamp = (current: string | null, candidate: string) => {
+  if (!current) return candidate;
+  const currentAt = timestamp(current);
+  const candidateAt = timestamp(candidate);
+  if (candidateAt === null) return current;
+  return currentAt === null || candidateAt > currentAt ? candidate : current;
+};
 
 const buildExerciseResolver = (exercises: Exercise[]) => {
   const byId = new Map(exercises.map((exercise) => [exercise.id, exercise] as const));
@@ -121,7 +129,8 @@ const aggregateMuscles = (
   const mappedExerciseIds = new Set<string>();
 
   for (const session of sessions) {
-    const sessionAt = timestamp(session.finishedAt || session.startedAt);
+    const completedAt = session.finishedAt || session.startedAt;
+    const sessionAt = timestamp(completedAt);
     if (sessionAt === null || sessionAt < startAt || sessionAt > endAt) continue;
     for (const set of session.sets) {
       if (!isWorkingSet(set)) continue;
@@ -144,13 +153,13 @@ const aggregateMuscles = (
         bucket.primarySets += 1;
         bucket.primaryVolume += volume;
         bucket.sessions.add(session.id);
-        bucket.lastTrainedAt = session.finishedAt || session.startedAt;
+        bucket.lastTrainedAt = latestTimestamp(bucket.lastTrainedAt, completedAt);
       }
       for (const id of secondary) {
         const bucket = buckets.get(id)!;
         bucket.secondarySets += 1;
         bucket.sessions.add(session.id);
-        bucket.lastTrainedAt = session.finishedAt || session.startedAt;
+        bucket.lastTrainedAt = latestTimestamp(bucket.lastTrainedAt, completedAt);
       }
     }
   }
@@ -201,56 +210,70 @@ const makeFinding = (input: Omit<TrainingFinding, 'rulesetVersion'>): TrainingFi
   rulesetVersion: TRAINING_INTELLIGENCE_RULESET_VERSION,
 });
 
-const buildExerciseFindings = (sessions: WorkoutSession[], endAt: number) => {
+const buildExposureFindings = (key: string, exposures: Exposure[]) => {
   const findings: TrainingFinding[] = [];
-  for (const [key, exposures] of buildExposures(sessions)) {
-    const eligible = exposures.filter((item) => (timestamp(item.finishedAt) ?? Infinity) <= endAt);
-    if (eligible.length === 0) continue;
-    const latest = eligible.at(-1)!;
-    const previous = eligible.slice(0, -1);
-    const latestAt = timestamp(latest.finishedAt) ?? 0;
-    const previousBestWeight = previous.length ? Math.max(...previous.map((item) => item.bestWeight)) : null;
-    const previousBestVolume = previous.length ? Math.max(...previous.map((item) => item.volume)) : null;
-    const previousE1Rm = previous.map((item) => item.bestEstimated1Rm).filter((value): value is number => value !== null);
-    const previousBestE1Rm = previousE1Rm.length ? Math.max(...previousE1Rm) : null;
+  for (let index = 0; index < exposures.length; index += 1) {
+    const current = exposures[index];
+    const previous = exposures.slice(0, index);
+    if (previous.length > 0) {
+      const previousBestWeight = Math.max(...previous.map((item) => item.bestWeight));
+      const previousBestVolume = Math.max(...previous.map((item) => item.volume));
+      const previousE1Rm = previous.map((item) => item.bestEstimated1Rm).filter((value): value is number => value !== null);
+      const previousBestE1Rm = previousE1Rm.length > 0 ? Math.max(...previousE1Rm) : null;
 
-    if (previousBestWeight !== null && latest.bestWeight > previousBestWeight) {
-      findings.push(makeFinding({ id: `${key}:${latest.sessionId}:load`, kind: 'new_pr', occurredAt: latest.finishedAt, exerciseId: latest.exerciseId, exerciseName: latest.exerciseName, prType: 'load', evidence: { previousBest: previousBestWeight, newBest: latest.bestWeight } }));
-    }
-    if (previousBestVolume !== null && latest.volume > previousBestVolume) {
-      findings.push(makeFinding({ id: `${key}:${latest.sessionId}:volume`, kind: 'new_pr', occurredAt: latest.finishedAt, exerciseId: latest.exerciseId, exerciseName: latest.exerciseName, prType: 'session_volume', evidence: { previousBest: previousBestVolume, newBest: latest.volume } }));
-    }
-    if (latest.bestEstimated1Rm !== null && previousBestE1Rm !== null && latest.bestEstimated1Rm > previousBestE1Rm) {
-      findings.push(makeFinding({ id: `${key}:${latest.sessionId}:e1rm`, kind: 'new_pr', occurredAt: latest.finishedAt, exerciseId: latest.exerciseId, exerciseName: latest.exerciseName, prType: 'estimated_1rm', evidence: { previousBest: previousBestE1Rm, newBest: latest.bestEstimated1Rm } }));
-    }
-    for (const set of latest.sets) {
-      const priorSameLoad = previous.flatMap((item) => item.sets).filter((prior) => prior.weight === set.weight);
-      if (priorSameLoad.length === 0) continue;
-      const priorBestReps = Math.max(...priorSameLoad.map((prior) => prior.reps));
-      if (set.reps > priorBestReps) {
-        findings.push(makeFinding({ id: `${key}:${latest.sessionId}:reps:${set.weight}`, kind: 'new_pr', occurredAt: latest.finishedAt, exerciseId: latest.exerciseId, exerciseName: latest.exerciseName, prType: 'reps', evidence: { load: set.weight, previousBestReps: priorBestReps, newBestReps: set.reps } }));
-        break;
+      if (current.bestWeight > previousBestWeight) {
+        findings.push(makeFinding({ id: `${key}:${current.sessionId}:load`, kind: 'new_pr', occurredAt: current.finishedAt, exerciseId: current.exerciseId, exerciseName: current.exerciseName, prType: 'load', evidence: { previousBest: previousBestWeight, newBest: current.bestWeight } }));
+      }
+      if (current.volume > previousBestVolume) {
+        findings.push(makeFinding({ id: `${key}:${current.sessionId}:volume`, kind: 'new_pr', occurredAt: current.finishedAt, exerciseId: current.exerciseId, exerciseName: current.exerciseName, prType: 'session_volume', evidence: { previousBest: previousBestVolume, newBest: current.volume } }));
+      }
+      if (current.bestEstimated1Rm !== null && previousBestE1Rm !== null && current.bestEstimated1Rm > previousBestE1Rm) {
+        findings.push(makeFinding({ id: `${key}:${current.sessionId}:e1rm`, kind: 'new_pr', occurredAt: current.finishedAt, exerciseId: current.exerciseId, exerciseName: current.exerciseName, prType: 'estimated_1rm', evidence: { previousBest: previousBestE1Rm, newBest: current.bestEstimated1Rm } }));
+      }
+      for (const set of current.sets) {
+        const priorSameLoad = previous.flatMap((item) => item.sets).filter((prior) => prior.weight === set.weight);
+        if (priorSameLoad.length === 0) continue;
+        const priorBestReps = Math.max(...priorSameLoad.map((prior) => prior.reps));
+        if (set.reps > priorBestReps) {
+          findings.push(makeFinding({ id: `${key}:${current.sessionId}:reps:${set.weight}`, kind: 'new_pr', occurredAt: current.finishedAt, exerciseId: current.exerciseId, exerciseName: current.exerciseName, prType: 'reps', evidence: { load: set.weight, previousBestReps: priorBestReps, newBestReps: set.reps } }));
+          break;
+        }
       }
     }
 
-    const recent = eligible.slice(-3);
+    const recent = exposures.slice(Math.max(0, index - 2), index + 1);
     if (recent.length < 3) continue;
     const e1rms = recent.map((item) => item.bestEstimated1Rm);
     if (e1rms.every((value): value is number => value !== null)) {
       const high = Math.max(...e1rms);
       const low = Math.min(...e1rms);
       if (high > 0 && (high - low) / high <= PLATEAU_RANGE) {
-        findings.push(makeFinding({ id: `${key}:${latest.sessionId}:plateau`, kind: 'plateau', occurredAt: latest.finishedAt, exerciseId: latest.exerciseId, exerciseName: latest.exerciseName, evidence: { exposureCount: 3, lowEstimated1Rm: low, highEstimated1Rm: high, allowedRangePercent: PLATEAU_RANGE * 100 } }));
+        findings.push(makeFinding({ id: `${key}:${current.sessionId}:plateau`, kind: 'plateau', occurredAt: current.finishedAt, exerciseId: current.exerciseId, exerciseName: current.exerciseName, evidence: { exposureCount: 3, lowEstimated1Rm: low, highEstimated1Rm: high, allowedRangePercent: PLATEAU_RANGE * 100 } }));
       } else if (e1rms[2] < e1rms[0] * (1 - REGRESSION_RANGE) && e1rms[2] <= e1rms[1]) {
-        findings.push(makeFinding({ id: `${key}:${latest.sessionId}:regression`, kind: 'regression', occurredAt: latest.finishedAt, exerciseId: latest.exerciseId, exerciseName: latest.exerciseName, evidence: { firstEstimated1Rm: e1rms[0], latestEstimated1Rm: e1rms[2], thresholdPercent: REGRESSION_RANGE * 100 } }));
+        findings.push(makeFinding({ id: `${key}:${current.sessionId}:regression`, kind: 'regression', occurredAt: current.finishedAt, exerciseId: current.exerciseId, exerciseName: current.exerciseName, evidence: { firstEstimated1Rm: e1rms[0], latestEstimated1Rm: e1rms[2], thresholdPercent: REGRESSION_RANGE * 100 } }));
       }
     }
     const sameLoad = recent.every((item) => item.bestWeight === recent[0].bestWeight);
     const risingReps = recent[0].bestRepsAtBestWeight < recent[1].bestRepsAtBestWeight && recent[1].bestRepsAtBestWeight < recent[2].bestRepsAtBestWeight;
     if (sameLoad && recent[0].bestWeight > 0 && risingReps) {
-      findings.push(makeFinding({ id: `${key}:${latest.sessionId}:rep-progression`, kind: 'rep_progression', occurredAt: latest.finishedAt, exerciseId: latest.exerciseId, exerciseName: latest.exerciseName, evidence: { load: recent[0].bestWeight, firstReps: recent[0].bestRepsAtBestWeight, latestReps: recent[2].bestRepsAtBestWeight } }));
+      findings.push(makeFinding({ id: `${key}:${current.sessionId}:rep-progression`, kind: 'rep_progression', occurredAt: current.finishedAt, exerciseId: current.exerciseId, exerciseName: current.exerciseName, evidence: { load: recent[0].bestWeight, firstReps: recent[0].bestRepsAtBestWeight, latestReps: recent[2].bestRepsAtBestWeight } }));
     }
-    void latestAt;
+  }
+  return findings;
+};
+
+const buildExerciseFindings = (sessions: WorkoutSession[], endAt: number) => {
+  const findings: TrainingFinding[] = [];
+  for (const [key, exposures] of buildExposures(sessions)) {
+    const eligible = exposures.filter((item) => (timestamp(item.finishedAt) ?? Infinity) <= endAt);
+    findings.push(...buildExposureFindings(key, eligible));
+
+    const latest = eligible.at(-1);
+    if (!latest || eligible.length < 2) continue;
+    const latestAt = timestamp(latest.finishedAt);
+    if (latestAt !== null && endAt - latestAt >= GAP_DAYS * DAY_MS) {
+      findings.push(makeFinding({ id: `${key}:gap:${latest.finishedAt}`, kind: 'exercise_gap', occurredAt: new Date(endAt).toISOString(), exerciseId: latest.exerciseId, exerciseName: latest.exerciseName, evidence: { lastTrainedAt: latest.finishedAt, gapDays: Math.floor((endAt - latestAt) / DAY_MS), historicalSessionCount: eligible.length } }));
+    }
   }
   return findings;
 };
@@ -298,7 +321,11 @@ export const buildCanonicalTrainingIntelligence = (input: {
     };
   });
 
-  const findings = buildExerciseFindings(input.sessions, endAt);
+  const findings = buildExerciseFindings(input.sessions, endAt)
+    .filter((finding) => {
+      const findingAt = timestamp(finding.occurredAt);
+      return findingAt !== null && findingAt >= currentStart && findingAt <= endAt;
+    });
   const current7Volume = totalWeightedVolume(input.sessions, endAt - 7 * DAY_MS, endAt);
   const previous7Volume = totalWeightedVolume(input.sessions, endAt - 14 * DAY_MS, endAt - 7 * DAY_MS - 1);
   if (previous7Volume > 0 && current7Volume >= previous7Volume * VOLUME_SPIKE_RATIO) {
@@ -330,7 +357,6 @@ export const buildCanonicalTrainingIntelligence = (input: {
     unmappedWorkingSetCount: current.unmappedWorkingSetCount,
     muscleLoad,
     findings: findings
-      .filter((finding) => (timestamp(finding.occurredAt) ?? endAt) <= endAt)
       .sort((left, right) => (timestamp(right.occurredAt) ?? 0) - (timestamp(left.occurredAt) ?? 0))
       .slice(0, 12),
   };

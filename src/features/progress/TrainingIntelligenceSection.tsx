@@ -6,6 +6,7 @@ import { AppCard } from '@/components/ui/AppCard';
 import { Colors, Spacing } from '@/constants/theme';
 import { exerciseRepository, type Exercise } from '@/features/exercises';
 import { MuscleMap } from '@/features/exercises/components/MuscleMap';
+import { getCanonicalMuscleLabel } from '@/features/exercises/muscleLabels';
 import type { CanonicalMuscleId, MuscleHighlightMap } from '@/features/exercises/muscleTaxonomy';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
@@ -18,28 +19,6 @@ import {
   type TrainingFinding,
   type TrainingIntelligenceWindowDays,
 } from './trainingIntelligence';
-
-const MUSCLE_LABELS_RU: Record<CanonicalMuscleId, string> = {
-  chest: 'Грудь',
-  'front-delts': 'Передние дельты',
-  'side-delts': 'Средние дельты',
-  'rear-delts': 'Задние дельты',
-  biceps: 'Бицепс',
-  triceps: 'Трицепс',
-  forearms: 'Предплечья',
-  abs: 'Пресс',
-  obliques: 'Косые мышцы',
-  lats: 'Широчайшие',
-  traps: 'Трапеции',
-  'lower-back': 'Поясница',
-  glutes: 'Ягодичные',
-  quads: 'Квадрицепс',
-  hamstrings: 'Бицепс бедра',
-  calves: 'Икры',
-};
-
-const getMuscleLabel = (id: CanonicalMuscleId, fallback: string, locale: string) =>
-  locale === 'ru' ? MUSCLE_LABELS_RU[id] : fallback;
 
 export function TrainingIntelligenceSection({
   endAt,
@@ -118,6 +97,8 @@ export function TrainingIntelligenceSection({
     return next;
   }, [analytics, maxPrimarySets, maxVolume]);
 
+  const formatWeight = (value: number) =>
+    `${formatNumber(weightFromKg(value, weightUnit), { maximumFractionDigits: 1 })} ${weightUnit}`;
   const formatVolume = (value: number) =>
     `${formatNumber(weightFromKg(value, weightUnit), { maximumFractionDigits: 0 })} ${weightUnit}·reps`;
   const openMuscle = (muscleId: CanonicalMuscleId) =>
@@ -125,31 +106,31 @@ export function TrainingIntelligenceSection({
   const evidenceText = (finding: TrainingFinding) => {
     const evidence = finding.evidence;
     if (finding.kind === 'new_pr' && finding.prType === 'reps') {
-      return `${formatNumber(Number(evidence.load))} ${weightUnit}: ${formatNumber(Number(evidence.previousBestReps))} → ${formatNumber(Number(evidence.newBestReps))} reps`;
+      return `${formatWeight(Number(evidence.load))}: ${formatNumber(Number(evidence.previousBestReps))} → ${formatNumber(Number(evidence.newBestReps))} ${copy.repsShort}`;
     }
     if (finding.kind === 'new_pr' && finding.prType === 'session_volume') {
       return `${formatVolume(Number(evidence.previousBest))} → ${formatVolume(Number(evidence.newBest))}`;
     }
     if (finding.kind === 'new_pr') {
-      return `${formatNumber(weightFromKg(Number(evidence.previousBest), weightUnit), { maximumFractionDigits: 1 })} → ${formatNumber(weightFromKg(Number(evidence.newBest), weightUnit), { maximumFractionDigits: 1 })} ${weightUnit}${finding.prType === 'estimated_1rm' ? ' e1RM' : ''}`;
+      return `${formatWeight(Number(evidence.previousBest))} → ${formatWeight(Number(evidence.newBest))}${finding.prType === 'estimated_1rm' ? ' e1RM' : ''}`;
     }
     if (finding.kind === 'plateau') {
-      return `${formatNumber(weightFromKg(Number(evidence.lowEstimated1Rm), weightUnit), { maximumFractionDigits: 1 })}–${formatNumber(weightFromKg(Number(evidence.highEstimated1Rm), weightUnit), { maximumFractionDigits: 1 })} ${weightUnit} e1RM · 3 exposures`;
+      return `${formatWeight(Number(evidence.lowEstimated1Rm))}–${formatWeight(Number(evidence.highEstimated1Rm))} e1RM · ${formatNumber(Number(evidence.exposureCount))} ${copy.exposures}`;
     }
     if (finding.kind === 'rep_progression') {
-      return `${formatNumber(weightFromKg(Number(evidence.load), weightUnit), { maximumFractionDigits: 1 })} ${weightUnit}: ${formatNumber(Number(evidence.firstReps))} → ${formatNumber(Number(evidence.latestReps))} reps`;
+      return `${formatWeight(Number(evidence.load))}: ${formatNumber(Number(evidence.firstReps))} → ${formatNumber(Number(evidence.latestReps))} ${copy.repsShort}`;
     }
     if (finding.kind === 'regression') {
-      return `${formatNumber(weightFromKg(Number(evidence.firstEstimated1Rm), weightUnit), { maximumFractionDigits: 1 })} → ${formatNumber(weightFromKg(Number(evidence.latestEstimated1Rm), weightUnit), { maximumFractionDigits: 1 })} ${weightUnit} e1RM`;
+      return `${formatWeight(Number(evidence.firstEstimated1Rm))} → ${formatWeight(Number(evidence.latestEstimated1Rm))} e1RM`;
     }
     if (finding.kind === 'volume_spike') {
       return `${formatVolume(Number(evidence.previous7DayVolume))} → ${formatVolume(Number(evidence.current7DayVolume))}`;
     }
     if (finding.kind === 'muscle_exposure_imbalance') {
-      return `${formatNumber(Number(evidence.topPrimarySets))} vs median ${formatNumber(Number(evidence.medianActiveMusclePrimarySets))} primary sets`;
+      return `${formatNumber(Number(evidence.topPrimarySets))} vs ${copy.median} ${formatNumber(Number(evidence.medianActiveMusclePrimarySets))} ${copy.primarySetsEvidence}`;
     }
-    if (finding.kind === 'muscle_gap') {
-      return `${formatNumber(Number(evidence.gapDays))} days · ${formatDate(String(evidence.lastTrainedAt), { day: 'numeric', month: 'short' })}`;
+    if (finding.kind === 'muscle_gap' || finding.kind === 'exercise_gap') {
+      return `${formatNumber(Number(evidence.gapDays))} ${copy.days} · ${formatDate(String(evidence.lastTrainedAt), { day: 'numeric', month: 'short' })}`;
     }
     return finding.rulesetVersion;
   };
@@ -189,7 +170,7 @@ export function TrainingIntelligenceSection({
             <View style={styles.rows}>
               {activeFacts.map((fact) => (
                 <View key={fact.id} style={styles.row}>
-                  <Text selectable style={styles.rowTitle}>{getMuscleLabel(fact.id, fact.label, locale)}</Text>
+                  <Text selectable style={styles.rowTitle}>{getCanonicalMuscleLabel(fact.id, locale)}</Text>
                   <Text selectable style={styles.detail}>
                     {formatNumber(fact.primarySets)} {copy.primarySets} · {formatNumber(fact.secondarySets)} {copy.secondarySets} · {formatNumber(fact.exposureSessions)} {copy.sessions}
                   </Text>
@@ -215,7 +196,7 @@ export function TrainingIntelligenceSection({
               <View key={finding.id} style={styles.row}>
                 <Text selectable style={styles.rowTitle}>{copy.findingTitle(finding.kind, finding.prType)}</Text>
                 {finding.exerciseName ? <Text selectable style={styles.detail}>{finding.exerciseName}</Text> : null}
-                {finding.muscleId ? <Text selectable style={styles.detail}>{getMuscleLabel(finding.muscleId, finding.muscleId, locale)}</Text> : null}
+                {finding.muscleId ? <Text selectable style={styles.detail}>{getCanonicalMuscleLabel(finding.muscleId, locale)}</Text> : null}
                 <Text selectable style={styles.detail}>{copy.evidence}: {evidenceText(finding)}</Text>
               </View>
             ))}

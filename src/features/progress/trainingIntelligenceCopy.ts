@@ -29,6 +29,7 @@ export const getTrainingIntelligenceCopy = (locale: SupportedLocale) => {
           volume_spike: 'Резкий рост тренировочного объёма',
           muscle_exposure_imbalance: 'Концентрация нагрузки на одной группе',
           muscle_gap: 'Давний перерыв по мышечной группе',
+          exercise_gap: 'Давний перерыв по упражнению',
         }
       : {
           plateau: 'Stable performance',
@@ -37,6 +38,7 @@ export const getTrainingIntelligenceCopy = (locale: SupportedLocale) => {
           volume_spike: 'Large training-volume increase',
           muscle_exposure_imbalance: 'Training exposure is concentrated',
           muscle_gap: 'Long gap for a muscle group',
+          exercise_gap: 'Long gap for an exercise',
         };
     return titles[kind];
   };
@@ -46,7 +48,6 @@ export const getTrainingIntelligenceCopy = (locale: SupportedLocale) => {
     subtitle: ru
       ? 'Детерминированные факты из завершённых тренировок.'
       : 'Deterministic facts from completed training history.',
-    period: ru ? 'Период' : 'Period',
     muscleLoad: ru ? 'Нагрузка по мышцам' : 'Muscle load',
     muscleLoadHint: ru
       ? 'Цвет показывает относительный объём рабочих подходов, где мышца указана основной. Значения по мышцам не складываются в общий объём и не измеряют активацию мышцы.'
@@ -76,6 +77,11 @@ export const getTrainingIntelligenceCopy = (locale: SupportedLocale) => {
     loading: ru ? 'Загрузка карты мышц…' : 'Loading muscle map…',
     front: ru ? 'Спереди' : 'Front',
     back: ru ? 'Сзади' : 'Back',
+    repsShort: ru ? 'повт.' : 'reps',
+    exposures: ru ? 'сопоставимых тренировок' : 'comparable exposures',
+    days: ru ? 'дн.' : 'days',
+    median: ru ? 'медиана' : 'median',
+    primarySetsEvidence: ru ? 'основных подходов' : 'primary sets',
     findingTitle,
   };
 };
