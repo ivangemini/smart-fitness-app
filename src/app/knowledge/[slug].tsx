@@ -16,7 +16,6 @@ import {
   getKnowledgeCopy,
   getKnowledgeFormatLabel,
 } from '@/features/knowledge/knowledgeCopy';
-import { getKnowledgePathCopy } from '@/features/knowledge/knowledgePathCopy';
 import { useKnowledgeArticle } from '@/features/knowledge/useKnowledgeArticle';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
@@ -36,7 +35,6 @@ export default function KnowledgeArticleScreen() {
   const insets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const copy = getKnowledgeCopy(locale);
-  const pathCopy = getKnowledgePathCopy(locale);
   const { article, error, loading, reload, versionMismatch } =
     useKnowledgeArticle({ slug, locale, expectedArticleVersionId });
 
@@ -80,14 +78,10 @@ export default function KnowledgeArticleScreen() {
       ) : error || !article ? (
         <AppCard>
           <Text style={styles.cardTitle}>
-            {versionMismatch
-              ? pathCopy.exactVersionUnavailableTitle
-              : copy.errorTitle}
+            {versionMismatch ? copy.exactVersionUnavailableTitle : copy.errorTitle}
           </Text>
           <Text style={styles.body}>
-            {versionMismatch
-              ? pathCopy.exactVersionUnavailableBody
-              : copy.errorBody}
+            {versionMismatch ? copy.exactVersionUnavailableBody : copy.errorBody}
           </Text>
           {!versionMismatch ? (
             <AppButton label={copy.retry} onPress={reload} />

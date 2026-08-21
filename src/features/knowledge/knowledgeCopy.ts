@@ -14,6 +14,9 @@ const EN = {
   emptyBody: 'Try another category, concept, or search phrase.',
   errorTitle: 'Knowledge is unavailable right now',
   errorBody: 'Check your connection and try again.',
+  exactVersionUnavailableTitle: 'This reviewed version is no longer available',
+  exactVersionUnavailableBody:
+    'This link points to a reviewed exact version that is no longer available. Return to the previous screen and refresh the recommendation or learning path.',
   retry: 'Try again',
   openArticle: 'Read article',
   sourcesTitle: 'Reviewed sources',
@@ -41,6 +44,9 @@ const RU: typeof EN = {
   emptyBody: 'Попробуй другую категорию, тему или поисковую фразу.',
   errorTitle: 'Раздел обучения сейчас недоступен',
   errorBody: 'Проверь подключение и попробуй снова.',
+  exactVersionUnavailableTitle: 'Эта проверенная версия больше недоступна',
+  exactVersionUnavailableBody:
+    'Ссылка ведёт на конкретную проверенную версию, которая больше недоступна. Вернись на предыдущий экран и обнови рекомендацию или учебный маршрут.',
   retry: 'Повторить',
   openArticle: 'Читать статью',
   sourcesTitle: 'Проверенные источники',
