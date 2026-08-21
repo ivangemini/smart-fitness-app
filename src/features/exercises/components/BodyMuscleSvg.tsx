@@ -21,6 +21,7 @@ type BodyMuscleSvgProps = {
   availableMuscleIds?: CanonicalMuscleId[];
   height?: number | string;
   highlights?: MuscleHighlightMap;
+  intensities?: Partial<Record<CanonicalMuscleId, number>>;
   onMusclePress?: (muscleId: CanonicalMuscleId) => void;
   side: MuscleSide;
   style?: StyleProp<ViewStyle>;
@@ -46,11 +47,17 @@ const renderPrimitive = (primitive: MuscleAnatomyPrimitive, key: string) => {
   );
 };
 
+const clampIntensity = (value: number | undefined) => {
+  if (!Number.isFinite(value)) return 1;
+  return Math.min(1, Math.max(0, value as number));
+};
+
 export const BodyMuscleSvg = memo(function BodyMuscleSvg({
   accessibilityLabel,
   availableMuscleIds,
   height = '100%',
   highlights = {},
+  intensities = {},
   onMusclePress,
   side,
   style,
@@ -95,13 +102,15 @@ export const BodyMuscleSvg = memo(function BodyMuscleSvg({
             : role === 'secondary'
               ? colors.warning
               : baseFill;
+        const intensity = clampIntensity(intensities[region.id]);
+        const opacity = enabled ? (role ? 0.35 + intensity * 0.65 : 1) : 0.28;
 
         return (
           <G
             key={region.id}
             fill={fill}
             onPress={enabled && onMusclePress ? () => onMusclePress(region.id) : undefined}
-            opacity={enabled ? 1 : 0.35}
+            opacity={opacity}
             stroke={role ? fill : stroke}
             strokeWidth={2}>
             {region.primitives.map((primitive, index) =>

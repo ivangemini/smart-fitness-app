@@ -8,20 +8,23 @@ import {
   TRAINING_INTELLIGENCE_RULESET_VERSION,
 } from './trainingIntelligence';
 
-const exercise = (overrides: Partial<Exercise> & Pick<Exercise, 'id' | 'name'>): Exercise => ({
-  id: overrides.id,
-  name: overrides.name,
-  source: { provider: 'local-fixture' },
-  aliases: [],
-  equipment: ['barbell'],
-  bodyPart: 'strength',
-  primaryMuscles: [],
-  secondaryMuscles: [],
-  instructions: [],
-  coachingTips: [],
-  media: {},
-  ...overrides,
-});
+const exercise = (overrides: Partial<Exercise> & Pick<Exercise, 'id' | 'name'>): Exercise => {
+  const { id, name, ...rest } = overrides;
+  return {
+    id,
+    name,
+    source: { provider: 'local-fixture' },
+    aliases: [],
+    equipment: ['barbell'],
+    bodyPart: 'strength',
+    primaryMuscles: [],
+    secondaryMuscles: [],
+    instructions: [],
+    coachingTips: [],
+    media: {},
+    ...rest,
+  };
+};
 
 const session = (
   id: string,

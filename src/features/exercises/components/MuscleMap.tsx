@@ -20,6 +20,7 @@ type MuscleMapProps = {
   availableMuscleIds?: CanonicalMuscleId[];
   compact?: boolean;
   highlights: MuscleHighlightMap;
+  intensities?: Partial<Record<CanonicalMuscleId, number>>;
   onMusclePress?: (muscleId: CanonicalMuscleId) => void;
   side: MuscleSide;
   sideLabel?: string;
@@ -29,6 +30,7 @@ export const MuscleMap = memo(function MuscleMap({
   availableMuscleIds,
   compact = false,
   highlights,
+  intensities,
   onMusclePress,
   side,
   sideLabel,
@@ -52,6 +54,7 @@ export const MuscleMap = memo(function MuscleMap({
           accessibilityLabel={`${resolvedSideLabel} muscle map${highlightedLabels ? ` highlighting ${highlightedLabels}` : ''}.`}
           availableMuscleIds={availableMuscleIds}
           highlights={highlights}
+          intensities={intensities}
           onMusclePress={onMusclePress}
           side={side}
         />
