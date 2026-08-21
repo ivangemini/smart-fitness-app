@@ -38,6 +38,7 @@ Start with:
 
 - [Agent instructions](AGENTS.md)
 - [Project map](PROJECT_MAP.md) — fast cross-repository/file navigation
+- [Agent operating guide](docs/agent/README.md) — ownership, change-impact, validation, and session startup routing
 - [Project context](docs/project-context.md)
 - [Current status](docs/current-status.md)
 - [Latest handoff](docs/handoffs/latest.md)
@@ -51,8 +52,14 @@ Start with:
 For a current filtered checkout tree, run:
 
 ```bash
-node scripts/print-project-tree.mjs
-node scripts/print-project-tree.mjs --depth=4
+npm run project:tree
+npm run project:tree -- --depth=4
+```
+
+Validate the structural agent entry points with:
+
+```bash
+npm run agent:check
 ```
 
 Focused architecture, privacy, QA, roadmap, release, and operations evidence remains under `docs/`.
