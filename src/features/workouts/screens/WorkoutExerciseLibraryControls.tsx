@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import type { Exercise } from '@/features/exercises';
+import { InteractiveMuscleFilter } from '@/features/exercises/components/InteractiveMuscleFilter';
 import { MuscleFilterThumbnail } from '@/features/exercises/components/MuscleFilterThumbnail';
 import {
   createFilterStyles,
@@ -160,6 +161,11 @@ export function FilterChips({
           );
         })}
       </ScrollView>
+      <InteractiveMuscleFilter
+        activeValue={activeValue}
+        onChange={onChange}
+        options={options}
+      />
     </View>
   );
 }

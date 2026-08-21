@@ -6,6 +6,13 @@ export const getWorkoutSessionExercisePickerCopy = (locale: SupportedLocale) => 
   addSelected: locale === 'ru' ? 'Добавить выбранные' : 'Add selected',
   all: locale === 'ru' ? 'Все' : 'All',
   allExercises: locale === 'ru' ? 'Все упражнения' : 'All exercises',
+  anatomyFilter: locale === 'ru' ? 'Карта мышц' : 'Muscle map',
+  anatomyFilterHint:
+    locale === 'ru'
+      ? 'Нажмите на доступную мышцу спереди или сзади, чтобы отфильтровать упражнения.'
+      : 'Tap an available muscle on the front or back view to filter exercises.',
+  anatomyFront: locale === 'ru' ? 'Спереди' : 'Front',
+  anatomyBack: locale === 'ru' ? 'Сзади' : 'Back',
   attribution:
     locale === 'ru'
       ? 'Данные упражнений и GIF предоставлены AscendAPI / ExerciseDB.'
