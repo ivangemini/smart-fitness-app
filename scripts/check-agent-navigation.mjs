@@ -21,6 +21,7 @@ const requiredFiles = [
   'docs/agent/change-impact.md',
   'docs/agent/validation-matrix.md',
   'config/agent-project-graph.json',
+  'config/cross-repo-contracts.json',
   'scripts/print-project-tree.mjs',
   'scripts/agent-toolkit.mjs',
   'scripts/agent-toolkit.test.mjs',
@@ -28,6 +29,9 @@ const requiredFiles = [
   'scripts/agent-impact.mjs',
   'scripts/agent-graph.mjs',
   'scripts/agent-validate.mjs',
+  'scripts/cross-repo-contracts.mjs',
+  'scripts/cross-repo-contracts.test.mjs',
+  'scripts/agent-crosscheck.mjs',
 ];
 
 const requiredReferences = [
@@ -56,7 +60,8 @@ const requiredPackageScripts = {
   'agent:impact': 'node scripts/agent-impact.mjs',
   'agent:graph': 'node scripts/agent-graph.mjs',
   'agent:validate': 'node scripts/agent-validate.mjs',
-  'agent:tooling:test': 'vitest run scripts/agent-toolkit.test.mjs',
+  'agent:crosscheck': 'node scripts/agent-crosscheck.mjs',
+  'agent:tooling:test': 'vitest run scripts/agent-toolkit.test.mjs scripts/cross-repo-contracts.test.mjs',
 };
 
 const boundedAgentDocs = [
@@ -167,6 +172,24 @@ if (fs.existsSync(absolute('scripts/agent-toolkit.mjs')) && fs.existsSync(absolu
     }
   } catch (error) {
     failures.push(`agent project graph is invalid: ${error instanceof Error ? error.message : error}`);
+  }
+}
+
+if (fs.existsSync(absolute('scripts/cross-repo-contracts.mjs')) && fs.existsSync(absolute('config/cross-repo-contracts.json'))) {
+  try {
+    const { loadContractRegistry, validateContractRegistry } = await import('./cross-repo-contracts.mjs');
+    const registry = loadContractRegistry(root);
+    validateContractRegistry(registry);
+    if (registry.backendRepository !== 'ivangemini/smart-fitness-backend') {
+      failures.push(`cross-repo registry backend is unexpected: ${registry.backendRepository ?? '<missing>'}`);
+    }
+    const requiredContracts = ['auth', 'sync', 'coach', 'labs', 'knowledge', 'social', 'foods', 'privacy-account'];
+    const ids = new Set(registry.contracts.map((contract) => contract.id));
+    for (const id of requiredContracts) {
+      if (!ids.has(id)) failures.push(`cross-repo contract registry is missing ${id}`);
+    }
+  } catch (error) {
+    failures.push(`cross-repo contract registry is invalid: ${error instanceof Error ? error.message : error}`);
   }
 }
 
