@@ -2,7 +2,7 @@ import { memo, useMemo } from 'react';
 import { Image, StyleSheet } from 'react-native';
 
 import { Colors } from '@/constants/theme';
-import { useWorkoutTheme } from '@/features/workouts/workoutTheme';
+import { useAppTheme } from '@/theme/AppThemeProvider';
 import { resolveLiquidGlassPalette, type LiquidGlassPalette } from '@/theme/liquidGlass';
 
 import {
@@ -75,10 +75,10 @@ const createSvgUri = (
 export const MuscleFilterThumbnail = memo(function MuscleFilterThumbnail({
   muscleName,
 }: MuscleFilterThumbnailProps) {
-  const { colors, isWorkoutDarkMode } = useWorkoutTheme();
+  const { colors, resolvedAppearance } = useAppTheme();
   const glass = useMemo(
-    () => resolveLiquidGlassPalette(isWorkoutDarkMode ? 'dark' : 'light'),
-    [isWorkoutDarkMode],
+    () => resolveLiquidGlassPalette(resolvedAppearance),
+    [resolvedAppearance],
   );
   const muscleId = mapMuscleNameToCanonicalId(muscleName);
   const muscle = muscleId
