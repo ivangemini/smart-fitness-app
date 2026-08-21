@@ -146,6 +146,10 @@ jobs:
         if: steps.validated-pr-merge.outputs.skip != 'true'
         run: node scripts/check-changed-file-lines.mjs
 
+      - name: Agent navigation integrity
+        if: steps.validated-pr-merge.outputs.skip != 'true'
+        run: npm run agent:check
+
       - name: TypeScript
         if: steps.validated-pr-merge.outputs.skip != 'true'
         run: npm run typecheck
