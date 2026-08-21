@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import type { Exercise } from '@/features/exercises';
+import { MuscleFilterThumbnail } from '@/features/exercises/components/MuscleFilterThumbnail';
 import {
   createFilterStyles,
   createRowStyles,
@@ -145,13 +146,16 @@ export function FilterChips({
                 active && styles.chipActive,
                 pressed && (active ? styles.chipActivePressed : styles.chipPressed),
               ]}>
-              <Text
-                style={[
-                  styles.chipLabel,
-                  active && styles.chipLabelActive,
-                ]}>
-                {option}
-              </Text>
+              <View style={styles.chipContent}>
+                <MuscleFilterThumbnail muscleName={option} />
+                <Text
+                  style={[
+                    styles.chipLabel,
+                    active && styles.chipLabelActive,
+                  ]}>
+                  {option}
+                </Text>
+              </View>
             </Pressable>
           );
         })}
