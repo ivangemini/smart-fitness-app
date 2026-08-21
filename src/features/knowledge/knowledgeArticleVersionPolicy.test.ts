@@ -8,11 +8,20 @@ const article = {
 } as PublishedKnowledgeArticle;
 
 describe('isExpectedKnowledgeArticleVersion', () => {
-  it('allows ordinary reader navigation without an exact-version expectation', () => {
+  it('allows ordinary Library navigation without a version pin', () => {
     expect(isExpectedKnowledgeArticleVersion(article, null)).toBe(true);
   });
 
-  it('fails closed when a path/recommendation expects another exact version', () => {
+  it('allows the exact pinned article version', () => {
+    expect(
+      isExpectedKnowledgeArticleVersion(
+        article,
+        '11111111-1111-4111-8111-111111111111',
+      ),
+    ).toBe(true);
+  });
+
+  it('fails closed when a material update changes the exact version', () => {
     expect(
       isExpectedKnowledgeArticleVersion(
         article,
