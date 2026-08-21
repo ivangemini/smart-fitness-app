@@ -23,6 +23,7 @@ import {
   getKnowledgeCategoryLabel,
   getKnowledgeCopy,
 } from '@/features/knowledge/knowledgeCopy';
+import { getKnowledgePathCopy } from '@/features/knowledge/knowledgePathCopy';
 import { useKnowledgeLibrary } from '@/features/knowledge/useKnowledgeLibrary';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
@@ -42,6 +43,7 @@ export default function KnowledgeLibraryScreen() {
   const safeAreaInsets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const copy = getKnowledgeCopy(locale);
+  const pathCopy = getKnowledgePathCopy(locale);
   const library = useKnowledgeLibrary(locale);
 
   const header = (
@@ -57,6 +59,10 @@ export default function KnowledgeLibraryScreen() {
         <Text style={styles.screenTitle}>{copy.libraryTitle}</Text>
         <Text style={styles.subtitle}>{copy.librarySubtitle}</Text>
       </View>
+      <AppButton
+        label={pathCopy.openPaths}
+        onPress={() => router.push('/knowledge/paths')}
+      />
       <TextInput
         accessibilityLabel={copy.searchPlaceholder}
         autoCapitalize="none"
@@ -134,9 +140,7 @@ export default function KnowledgeLibraryScreen() {
       keyExtractor={(article) => article.articleVersionId}
       ListEmptyComponent={
         library.loading ? (
-          <AppCard>
-            <Text style={styles.emptyTitle}>{copy.loading}</Text>
-          </AppCard>
+          <AppCard><Text style={styles.emptyTitle}>{copy.loading}</Text></AppCard>
         ) : library.error ? (
           <AppCard>
             <Text style={styles.emptyTitle}>{copy.errorTitle}</Text>
@@ -163,10 +167,7 @@ export default function KnowledgeLibraryScreen() {
           article={item}
           locale={locale}
           onOpen={() =>
-            router.push({
-              pathname: '/knowledge/[slug]',
-              params: { slug: item.slug },
-            })
+            router.push({ pathname: '/knowledge/[slug]', params: { slug: item.slug } })
           }
           onSelectConcept={library.setConceptId}
         />
@@ -175,12 +176,7 @@ export default function KnowledgeLibraryScreen() {
   );
 }
 
-function FilterChip({
-  label,
-  onPress,
-  selected,
-  styles,
-}: {
+function FilterChip({ label, onPress, selected, styles }: {
   label: string;
   onPress(): void;
   selected: boolean;
@@ -197,9 +193,7 @@ function FilterChip({
         pressed && styles.pressed,
       ]}
     >
-      <Text style={[styles.filterText, selected && styles.filterTextSelected]}>
-        {label}
-      </Text>
+      <Text style={[styles.filterText, selected && styles.filterTextSelected]}>{label}</Text>
     </Pressable>
   );
 }
@@ -215,25 +209,11 @@ const createStyles = (colors: Record<string, string>) =>
       gap: Spacing.four,
       backgroundColor: colors.background,
     },
-    headerContent: {
-      gap: Spacing.four,
-    },
-    topRow: {
-      minHeight: 44,
-      alignItems: 'flex-start',
-      justifyContent: 'center',
-    },
-    headingBlock: {
-      gap: Spacing.two,
-    },
-    screenTitle: {
-      ...Typography.screenTitle,
-      color: colors.textPrimary,
-    },
-    subtitle: {
-      ...Typography.body,
-      color: colors.textSecondary,
-    },
+    headerContent: { gap: Spacing.four },
+    topRow: { minHeight: 44, alignItems: 'flex-start', justifyContent: 'center' },
+    headingBlock: { gap: Spacing.two },
+    screenTitle: { ...Typography.screenTitle, color: colors.textPrimary },
+    subtitle: { ...Typography.body, color: colors.textSecondary },
     searchInput: {
       minHeight: 48,
       borderRadius: Radii.medium,
@@ -244,10 +224,7 @@ const createStyles = (colors: Record<string, string>) =>
       paddingHorizontal: Spacing.four,
       ...Typography.body,
     },
-    chipRow: {
-      gap: Spacing.two,
-      paddingRight: Spacing.four,
-    },
+    chipRow: { gap: Spacing.two, paddingRight: Spacing.four },
     filterChip: {
       minHeight: 40,
       justifyContent: 'center',
@@ -257,34 +234,12 @@ const createStyles = (colors: Record<string, string>) =>
       backgroundColor: colors.surfaceSecondary,
       paddingHorizontal: Spacing.four,
     },
-    filterChipSelected: {
-      backgroundColor: colors.accentSoft,
-      borderColor: colors.accent,
-    },
-    filterText: {
-      ...Typography.callout,
-      color: colors.textSecondary,
-      textTransform: 'capitalize',
-    },
-    filterTextSelected: {
-      color: colors.textPrimary,
-    },
-    conceptSection: {
-      gap: Spacing.two,
-    },
-    sectionLabel: {
-      ...Typography.sectionTitle,
-      color: colors.textMuted,
-    },
-    emptyTitle: {
-      ...Typography.cardTitle,
-      color: colors.textPrimary,
-    },
-    emptyBody: {
-      ...Typography.body,
-      color: colors.textSecondary,
-    },
-    pressed: {
-      opacity: 0.7,
-    },
+    filterChipSelected: { backgroundColor: colors.accentSoft, borderColor: colors.accent },
+    filterText: { ...Typography.callout, color: colors.textSecondary, textTransform: 'capitalize' },
+    filterTextSelected: { color: colors.textPrimary },
+    conceptSection: { gap: Spacing.two },
+    sectionLabel: { ...Typography.sectionTitle, color: colors.textMuted },
+    emptyTitle: { ...Typography.cardTitle, color: colors.textPrimary },
+    emptyBody: { ...Typography.body, color: colors.textSecondary },
+    pressed: { opacity: 0.7 },
   });

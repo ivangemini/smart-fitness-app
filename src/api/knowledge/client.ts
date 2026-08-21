@@ -8,6 +8,14 @@ import {
   type KnowledgeListInput,
 } from './contracts';
 import {
+  KNOWLEDGE_PATH_LIST_MAX_LIMIT,
+  type KnowledgePathApi,
+} from './pathContracts';
+import {
+  parsePublishedKnowledgePath,
+  parsePublishedKnowledgePathList,
+} from './pathParsers';
+import {
   parsePublishedKnowledgeArticle,
   parsePublishedKnowledgeArticleList,
 } from './parsers';
@@ -24,6 +32,7 @@ const defaultApiClient = createApiClient({
 });
 
 const CONCEPT_PATTERN = /^[a-z0-9_]+$/;
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 const normalizeListInput = (input: KnowledgeListInput): KnowledgeListInput => {
   const query = input.query?.trim();
@@ -56,25 +65,44 @@ const normalizeListInput = (input: KnowledgeListInput): KnowledgeListInput => {
 const buildListPath = (input: KnowledgeListInput): string => {
   const normalized = normalizeListInput(input);
   const params: string[] = [`locale=${encodeURIComponent(normalized.locale)}`];
-  if (normalized.category) {
-    params.push(`category=${encodeURIComponent(normalized.category)}`);
-  }
-  if (normalized.conceptId) {
-    params.push(`conceptId=${encodeURIComponent(normalized.conceptId)}`);
-  }
-  if (normalized.query) {
-    params.push(`query=${encodeURIComponent(normalized.query)}`);
-  }
-  if (normalized.limit !== undefined) {
-    params.push(`limit=${normalized.limit}`);
-  }
+  if (normalized.category) params.push(`category=${encodeURIComponent(normalized.category)}`);
+  if (normalized.conceptId) params.push(`conceptId=${encodeURIComponent(normalized.conceptId)}`);
+  if (normalized.query) params.push(`query=${encodeURIComponent(normalized.query)}`);
+  if (normalized.limit !== undefined) params.push(`limit=${normalized.limit}`);
   return `/v1/knowledge/articles?${params.join('&')}`;
+};
+
+const normalizeSlug = (slug: string, noun: string): string => {
+  const normalized = slug.trim();
+  if (!SLUG_PATTERN.test(normalized)) {
+    throw new Error(`Knowledge ${noun} identifier is invalid.`);
+  }
+  return normalized;
+};
+
+const buildPathListPath = (input: {
+  locale: 'en' | 'ru';
+  limit?: number;
+}): string => {
+  if (
+    input.limit !== undefined &&
+    (!Number.isInteger(input.limit) ||
+      input.limit < 1 ||
+      input.limit > KNOWLEDGE_PATH_LIST_MAX_LIMIT)
+  ) {
+    throw new Error(
+      `Knowledge path result limit must be between 1 and ${KNOWLEDGE_PATH_LIST_MAX_LIMIT}.`,
+    );
+  }
+  const params = [`locale=${encodeURIComponent(input.locale)}`];
+  if (input.limit !== undefined) params.push(`limit=${input.limit}`);
+  return `/v1/knowledge/paths?${params.join('&')}`;
 };
 
 export const createKnowledgeApi = (
   auth: KnowledgeApiAuth,
   apiClient: ApiClient = defaultApiClient,
-): KnowledgeApi => {
+): KnowledgeApi & KnowledgePathApi => {
   const requestWithAuth = async <T>(
     request: (accessToken: string) => Promise<T>,
   ): Promise<T> => {
@@ -102,14 +130,30 @@ export const createKnowledgeApi = (
         ),
       ),
     getArticle: async ({ slug, locale }) => {
-      const normalizedSlug = slug.trim();
-      if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(normalizedSlug)) {
-        throw new Error('Knowledge article identifier is invalid.');
-      }
+      const normalizedSlug = normalizeSlug(slug, 'article');
       return requestWithAuth(async (accessToken) =>
         parsePublishedKnowledgeArticle(
           await apiClient.get<unknown>(
             `/v1/knowledge/articles/${encodeURIComponent(normalizedSlug)}?locale=${encodeURIComponent(locale)}`,
+            { headers: { authorization: `Bearer ${accessToken}` } },
+          ),
+        ),
+      );
+    },
+    listPaths: async (input) =>
+      requestWithAuth(async (accessToken) =>
+        parsePublishedKnowledgePathList(
+          await apiClient.get<unknown>(buildPathListPath(input), {
+            headers: { authorization: `Bearer ${accessToken}` },
+          }),
+        ),
+      ),
+    getPath: async ({ slug, locale }) => {
+      const normalizedSlug = normalizeSlug(slug, 'path');
+      return requestWithAuth(async (accessToken) =>
+        parsePublishedKnowledgePath(
+          await apiClient.get<unknown>(
+            `/v1/knowledge/paths/${encodeURIComponent(normalizedSlug)}?locale=${encodeURIComponent(locale)}`,
             { headers: { authorization: `Bearer ${accessToken}` } },
           ),
         ),
