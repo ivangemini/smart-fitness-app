@@ -1,6 +1,6 @@
 # Smart Fitness Roadmap Progress
 
-Updated: 2026-08-21
+Updated: 2026-08-22
 
 This is the canonical cross-program roadmap index for mobile `ivangemini/smart-fitness-app` and backend `ivangemini/smart-fitness-backend`. Exact source, tests, migrations, CI and Git history override stale prose.
 
@@ -9,7 +9,8 @@ Focused roadmap references:
 - `docs/roadmap/release-and-account.md`;
 - `docs/roadmap/localization-settings.md`;
 - `docs/roadmap/data-quality-and-scale.md`;
-- `docs/roadmap/knowledge-learning.md`.
+- `docs/roadmap/knowledge-learning.md`;
+- `docs/roadmap/training-intelligence.md`.
 
 ## Verified phase baseline
 
@@ -21,7 +22,9 @@ Focused roadmap references:
 - **Phase 15 — Coach Intelligence & Data Access + Progress UX/Analytics:** source/CI-complete for the reviewed scope.
 - **Phase 16 — Proactive Coach:** deterministic foreground v1 source/CI-complete.
 - **Phase 17 — Goals & Planning:** P17-A through P17-D source/CI-complete; richer P17-E remains requirement-gated.
-- **Phase 18 — Knowledge & Learning:** **P18-A through P18-H are source/CI-complete and merged for the reviewed scope.**
+- **Phase 18 — Knowledge & Learning:** P18-A through P18-H are source/CI-complete and merged for the reviewed scope.
+- **Phase 19 — Exercise + Training Intelligence:** active; P19-A is the first implementation target.
+- **Phase 20 — Progress Photos / Body Composition:** approved roadmap scope, queued after the Phase 19 training-intelligence foundation.
 
 There is no approved P18-I.
 
@@ -29,14 +32,15 @@ There is no approved P18-I.
 
 ### Mobile
 
-Current `main`: `ea080ecb170d8399fe4d534692dc3ed771121174`.
+Current `main`: `d0ea13038d9b46dc8b77b9fe6575689f4c044c1d`.
 
 Recent Phase 18 closure path:
 
 - #793 — Knowledge Library and immutable Reader;
 - #794 — account-scoped exact-version learning state;
 - #795 — reviewed learning paths;
-- #797 — optional Coach → Learn mobile consumer.
+- #797 — optional Coach → Learn mobile consumer;
+- #796 — documentation closure for P18-A through P18-H.
 
 #797 exact head `3d88b6b4f28349b6c11c5302e865e156b81c17d5` passed Mobile CI #2680 before merge.
 
@@ -81,121 +85,66 @@ Not included: background/push generation, provider/model-triggered proactive gen
 
 ## Phase 17 — Goals & Planning
 
-### P17-A — canonical authority and typed goal facts
-
-Existing fitness-profile goal fields remain canonical. Deterministic typed goal facts and neutral Progress presentation are established.
-
-**Status:** source/CI-complete.
-
-### P17-B — Goal context handoff
-
-Progress passes only reviewed intent/time context to Companion; canonical facts are rebuilt from state rather than serialized through navigation.
-
-**Status:** source/CI-complete.
-
-### P17-C — Goal-aware Coach questions
-
-Backend purpose-specific goal retrieval and mobile Ask Coach UI remain read-only, bounded and capability-visible.
-
-**Status:** source/CI-complete for the reviewed first scope.
-
-### P17-D — Planning/proposal preview
-
-Flow remains:
-
-`editable goal form → explicit current→proposed preview → guarded canonical apply → applied | stale`
-
-The proposal is ephemeral, source-snapshot guarded and changes only reviewed goal fields. No second goal store or hidden nutrition/program mutation is introduced.
-
-**Status:** source/CI-complete.
-
-### P17-E — richer goal model threshold
-
-**Inactive.** Revisit only when a reviewed product requirement needs semantics the current profile cannot safely express, such as multiple simultaneous independent goals, deadlines/status or lifecycle history.
-
-Do not create a new goal persistence domain solely because P17-D is complete.
+P17-A through P17-D remain source/CI-complete. Existing profile goal fields remain canonical and P17-E remains inactive until a reviewed requirement genuinely needs richer persisted goal semantics.
 
 ## Phase 18 — Knowledge & Learning
 
-Focused architecture: `docs/architecture/phase18-knowledge-learning-system.md`.
 Focused roadmap: `docs/roadmap/knowledge-learning.md`.
 
-Canonical content pipeline:
+P18-A through P18-H are closed for the reviewed source/CI scope. The production recommendation-rule registry may remain intentionally empty until reviewed canonical `findingCode → articleId` mappings exist; that content-activation boundary does not reopen Phase 18 runtime work.
 
-`topic → curated evidence pack → AI-assisted draft → claim/source verification → validated quiz bank → reviewed published article version`
+Do not invent P18-I merely to continue development.
 
-User loop:
+## Phase 19 — Exercise + Training Intelligence
 
-`bounded evidence → deterministic trusted Coach finding → reviewed allowlisted article mapping → exact canonical article version → validated quiz → informational learning state`
+Focused roadmap: `docs/roadmap/training-intelligence.md`.
 
-No Knowledge XP, levels, streaks, badges, leaderboards, punishment or engagement-reward loops are allowed in the reviewed scope.
+Product objective: make exercise anatomy and training history understandable through reusable visual anatomy, deterministic analytics and evidence-backed training findings.
 
-### P18-A — Knowledge/content/evidence foundation
+### P19-A — Exercise Intelligence foundation
 
-Canonical stable identities, immutable versions, reviewed evidence linkage, risk/review state, deterministic publication eligibility, relational persistence and authenticated reader authority.
+Approved scope includes:
 
-**Status:** merged through backend #285.
+- canonical reusable muscle taxonomy;
+- reusable local SVG anatomy for front/back body views;
+- stable muscle IDs;
+- primary/secondary muscle highlighting;
+- compact SVG muscle thumbnails in exercise-library filters such as `Chest`;
+- interactive body-map filtering as a follow-up slice;
+- exercise-detail anatomy using the same authority;
+- accessible text fallback and no runtime dependency on remote anatomy images.
 
-### P18-B — Editorial generation pipeline
+**Status:** active. First slice is SVG muscle thumbnails in exercise-library filters, reusing the existing taxonomy rather than adding a parallel naming system.
 
-Provider-neutral evidence-pack → draft → claims → verification → review-ready/rejected workflow. Generator/provider output cannot publish directly.
+### P19-B — Training analytics foundation
 
-**Status:** merged through backend #290.
+Planned deterministic analytics include exercise performance trends, suitable-input e1RM trends, PR detection, volume, muscle-group exposure and bounded 7/30/90-day comparisons.
 
-### P18-C — Library and Reader
+Do not introduce a universal fitness/readiness score or represent estimates as measured maxes.
 
-Mobile category/concept browse, bounded search, strict versioned parsing, immutable article detail and reviewed source visibility.
+**Status:** queued after P19-A foundation.
 
-**Status:** merged through mobile #793.
+### P19-C — Plateau / PR / progression findings
 
-### P18-D — Quiz authority
+Planned deterministic, versioned findings over trusted workout history include PRs, plateaus, regression, volume spikes, exposure imbalance and long exercise/muscle gaps. Model prose may explain a structured finding but is not finding authority.
 
-Reviewed exact-version quiz banks and backend-only canonical evaluation with hidden answer-key isolation.
+**Status:** queued.
 
-**Status:** merged through backend #294.
+### P19-D — Training Intelligence UX
 
-### P18-E — Learning state
+Primary surfaces are Progress and exercise detail, with optional bounded Coach explanation. Planned UX includes exercise drill-downs, SVG muscle heatmaps, PR/plateau history and exact evidence behind each insight.
 
-Private account-owned `unseen | read | understood | refresh_useful` state with exact-version semantics, backend quiz authority, deletion/export/privacy and bounded mobile replay.
+**Status:** queued.
 
-**Status:** merged through backend #296 and mobile #794.
+## Phase 20 — Progress Photos / Body Composition
 
-### P18-F — Coach → Learn deterministic selector
+Focused roadmap: `docs/roadmap/training-intelligence.md`.
 
-Strict normalized finding and versioned rule contracts, exact canonical article hydration, publication/risk/version checks, learning-state-aware ranking/suppression and deterministic bounded output.
+Approved scope includes private account-owned standardized front/side/back progress photos, repeatable capture guidance, comparison/overlay tooling, timeline selection and pairing with real stored measurements such as weight and waist.
 
-**Status:** merged through backend #306.
+The product must not present photo-estimated body-fat percentage as exact measurement-grade truth. Any future model/vision estimation requires a separate uncertainty/privacy contract.
 
-### P18-G — Coach/report integration
-
-Trusted finding provenance is merged through backend #308. Optional run-detail Learn projection is merged through backend #309. Strict optional mobile rendering/exact-version navigation is merged through mobile #797.
-
-The production recommendation-rule registry is intentionally empty because no reviewed canonical `findingCode → articleId` mappings exist. Do not invent mappings or placeholder UUIDs. This is an editorial/content activation gate, not unfinished runtime infrastructure.
-
-**Status:** source/CI-complete and merged for reviewed runtime scope; content activation remains separately reviewed.
-
-### P18-H — Curriculum / learning paths
-
-Stable shared path identity, immutable localized versions, exact ordered article-version steps, fail-closed publication rules and mobile navigation with P18-E-derived step decoration.
-
-No duplicate path-progress/mastery authority or gamification.
-
-**Status:** merged through backend #307 and mobile #795.
-
-## Phase 18 closure boundary
-
-P18-A through P18-H are closed for the reviewed source/CI scope.
-
-Do not reopen Phase 18 merely because:
-
-- the reviewed mapping registry is empty;
-- provider-generated content is not activated;
-- production publication has not occurred;
-- device/OTA evidence is not complete.
-
-Those are separate authority/rollout gates.
-
-A new Phase 18 slice requires an explicit reviewed product requirement. There is no current P18-I.
+**Status:** approved roadmap scope; implementation queued after the Phase 19 foundation unless explicitly reprioritized.
 
 ## Remaining Phase 14 gates
 
@@ -206,13 +155,16 @@ A new Phase 18 slice requires an explicit reviewed product requirement. There is
 
 ## Next execution order
 
-1. Keep P18-A through P18-H closed unless a reproduced defect or newly reviewed requirement appears.
-2. Do not invent P18-I.
-3. If reviewed canonical articles and Coach finding mappings are approved, add only the reviewed mapping/content-activation delta and run exact-version end-to-end validation.
-4. Keep P17-E inactive without a richer-goal requirement.
-5. Execute remaining Phase 14 provider/native/device evidence independently when external prerequisites are available.
-6. Repair reproduced defects; do not manufacture unrelated cleanup work.
+1. Implement and validate the P19-A reusable SVG muscle-filter slice.
+2. Continue P19-A with interactive front/back anatomy and body-map exercise filtering without duplicating muscle authority.
+3. Build P19-B deterministic training analytics over trusted completed-session history.
+4. Add P19-C versioned PR/plateau/progression findings and P19-D Progress/Coach presentation.
+5. Start Phase 20 standardized private progress photos and comparison UX after the Phase 19 foundation unless explicitly reprioritized.
+6. Keep P18-A through P18-H closed unless a reproduced defect or newly reviewed requirement appears; do not invent P18-I.
+7. Keep P17-E inactive without a richer-goal requirement.
+8. Execute remaining Phase 14 provider/native/device evidence independently when external prerequisites are available.
+9. Repair reproduced defects and keep source/CI, deployment, provider activation, OTA/native release and physical-device evidence as separate claims.
 
 ## Authorization / release boundary
 
-Source/CI closure does not relax provider, native/device, production, editorial-publication or medical-safety controls. Production deployment, production migrations, OTA/native publication, provider activation, canonical content publication and physical-device validation remain separately authorized/evidenced claims.
+Source/CI progress does not relax provider, native/device, production, editorial-publication or medical-safety controls. Production deployment, production migrations, OTA/native publication, provider activation, canonical content publication and physical-device validation remain separately authorized/evidenced claims.
