@@ -17,14 +17,16 @@ Do not introduce Supabase, Firebase, a second backend, or direct provider calls 
 Read before changing code:
 
 1. `AGENTS.md`;
-2. `docs/project-context.md`;
-3. `docs/current-status.md`;
-4. `docs/handoffs/latest.md`;
-5. `PROJECT_LEARNINGS.md`;
-6. `docs/implementation-plan.md`;
-7. relevant focused documents under `docs/architecture/`, `docs/privacy/`, `docs/roadmap/`, `docs/qa/`, and `docs/release/`.
+2. `PROJECT_MAP.md` — fast repository/file navigation and high-fan-out areas;
+3. `docs/agent/README.md` — session bootstrap and operational routing;
+4. `docs/project-context.md`;
+5. `docs/current-status.md`;
+6. `docs/handoffs/latest.md`;
+7. `PROJECT_LEARNINGS.md`;
+8. `docs/implementation-plan.md`;
+9. the relevant `docs/agent/ownership-map.md`, `docs/agent/change-impact.md`, `docs/agent/validation-matrix.md`, and focused documents under `docs/architecture/`, `docs/privacy/`, `docs/roadmap/`, `docs/qa/`, and `docs/release/`.
 
-Exact code, migrations, tests and current Git history override stale prose. Update canonical status/handoff/roadmap documentation when a change materially alters architecture, supported product scope, blockers or continuation state.
+Use the agent maps for navigation/impact/validation routing, not as replacements for canonical focused architecture or exact source. Exact code, migrations, tests and current Git history override stale prose. Update canonical status/handoff/roadmap documentation when a change materially alters architecture, supported product scope, blockers or continuation state.
 
 ## Autonomous execution policy
 
@@ -200,7 +202,7 @@ npx tsc --noEmit
 npm test
 ```
 
-Authoritative Mobile CI also includes repository/changed-file line limits, expanded-model smoke, Expo export and Expo Doctor. Do not claim source completion while required exact-head CI is failing.
+Authoritative Mobile CI also includes repository/changed-file line limits, agent navigation integrity, expanded-model smoke, Expo export and Expo Doctor. Do not claim source completion while required exact-head CI is failing.
 
 Backend routine CI uses its separate `[self-hosted, linux, x64, hermes-backend-ci]` registration. Never substitute the mobile/backend labels for one another.
 
@@ -268,11 +270,14 @@ Before changes:
 
 1. inspect exact current `main` in mobile and backend;
 2. inspect open PRs;
-3. read the source-of-truth docs;
-4. read `DEBUGGING_SKILL.md` for failures/regressions;
-5. inspect relevant files for each workstream;
-6. branch each independent workstream from exact current `main`;
-7. avoid overlapping changed files/contracts across active PRs unless dependency coordination is explicit.
+3. read `PROJECT_MAP.md`, `docs/agent/README.md`, and the source-of-truth docs;
+4. use `docs/agent/ownership-map.md` to establish the source-of-truth owner;
+5. use `docs/agent/change-impact.md` to determine the initial blast radius and expand it from source evidence;
+6. use `docs/agent/validation-matrix.md` to select the required evidence class before implementation;
+7. read `DEBUGGING_SKILL.md` for failures/regressions;
+8. inspect relevant files/callers/tests for each workstream;
+9. branch each independent workstream from exact current `main`;
+10. avoid overlapping changed files/contracts across active PRs unless dependency coordination is explicit.
 
 For approved changes: implement coherent scope, validate exact head, inspect review threads and merge only the validated head. Queued/running CI on one head is not a reason to stop unrelated work.
 

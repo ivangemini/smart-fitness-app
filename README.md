@@ -37,6 +37,8 @@ Physical standalone validation for offline termination/restart, reconnect, recov
 Start with:
 
 - [Agent instructions](AGENTS.md)
+- [Project map](PROJECT_MAP.md) — fast cross-repository/file navigation
+- [Agent operating guide](docs/agent/README.md) — ownership, change-impact, validation, and session startup routing
 - [Project context](docs/project-context.md)
 - [Current status](docs/current-status.md)
 - [Latest handoff](docs/handoffs/latest.md)
@@ -46,6 +48,19 @@ Start with:
 - [Disaster recovery readiness](docs/operations/disaster-recovery-readiness.md)
 - [External recovery registry](docs/operations/external-recovery-registry.md)
 - [Project learnings](PROJECT_LEARNINGS.md)
+
+For a current filtered checkout tree, run:
+
+```bash
+npm run project:tree
+npm run project:tree -- --depth=4
+```
+
+Validate the structural agent entry points with:
+
+```bash
+npm run agent:check
+```
 
 Focused architecture, privacy, QA, roadmap, release, and operations evidence remains under `docs/`.
 
