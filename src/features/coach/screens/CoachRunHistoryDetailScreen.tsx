@@ -17,6 +17,7 @@ import { useAppTheme } from '@/theme/AppThemeProvider';
 import { getCoachHistoryCopy } from '../coachHistoryCopy';
 import { CoachAppliedChangeCard } from '../components/CoachAppliedChangeCard';
 import { CoachInputSummaryCard } from '../components/CoachInputSummaryCard';
+import { CoachLearnCard } from '../components/CoachLearnCard';
 import { CoachRunTrustCard } from '../components/CoachRunTrustCard';
 
 export default function CoachRunHistoryDetailScreen() {
@@ -160,6 +161,8 @@ export default function CoachRunHistoryDetailScreen() {
               </AppCard>
 
               <CoachRunTrustCard run={run} locale={locale} />
+
+              {run.learn ? <CoachLearnCard learn={run.learn} locale={locale} /> : null}
 
               <CoachInputSummaryCard
                 summary={run.inputSummary}

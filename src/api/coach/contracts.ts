@@ -1,4 +1,5 @@
 import type { CoachRunInputSummary } from './inputSummary';
+import type { CoachLearnSelection } from './learn';
 import type { CoachQuestionResponse, CoachQuestionScope } from './questions';
 
 export type CoachRunStatus = 'queued' | 'running' | 'completed' | 'rejected' | 'failed';
@@ -136,6 +137,8 @@ export type CoachRunEnvelope = {
   trustValidationFailed?: true;
   inputSummary?: CoachRunInputSummary;
   inputSummaryValidationFailed?: true;
+  learn?: CoachLearnSelection;
+  learnValidationFailed?: true;
 };
 
 export type StartStrengthCoachRunInput = {

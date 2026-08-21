@@ -10,6 +10,7 @@ import type {
   StartSafetyRecoveryRunInput,
 } from './contracts';
 import { parseCoachRunInputSummary } from './inputSummary';
+import { parseCoachLearnSelection } from './learn';
 import { parseCoachCapabilities, parseCoachRunEnvelope } from './parsers';
 import {
   COACH_QUESTION_MAX_LENGTH,
@@ -55,6 +56,13 @@ const parseCoachRunDetailEnvelope = (value: unknown): CoachRunEnvelope => {
       };
     } catch {
       envelope = { ...envelope, inputSummaryValidationFailed: true };
+    }
+  }
+  if (value.learn !== undefined) {
+    try {
+      envelope = { ...envelope, learn: parseCoachLearnSelection(value.learn) };
+    } catch {
+      envelope = { ...envelope, learnValidationFailed: true };
     }
   }
   return envelope;

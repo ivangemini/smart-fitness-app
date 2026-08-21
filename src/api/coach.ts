@@ -2,6 +2,10 @@ export { createCoachApi } from './coach/client';
 export { parseCoachCapabilities, parseCoachRunEnvelope } from './coach/parsers';
 export { parseCoachRunInputSummary } from './coach/inputSummary';
 export {
+  COACH_LEARN_SCHEMA_VERSION,
+  parseCoachLearnSelection,
+} from './coach/learn';
+export {
   COACH_QUESTION_ANSWER_SCHEMA_VERSION,
   COACH_QUESTION_MAX_LENGTH,
   parseCoachQuestionResponse,
@@ -31,6 +35,10 @@ export type {
   StartStrengthCoachRunInput,
   StrengthCoachRequestType,
 } from './coach/contracts';
+export type {
+  CoachLearnRecommendation,
+  CoachLearnSelection,
+} from './coach/learn';
 export type {
   CoachInputCoverage,
   CoachRunInputSummary,
