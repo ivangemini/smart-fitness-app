@@ -1,8 +1,12 @@
-import { describe, expect, it } from 'vitest';
-import { dirname, resolve } from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { describe, expect, it } from 'vitest';
 import {
   classifyChangedFiles,
+  getChangedFiles,
   globToRegExp,
   loadProjectGraph,
   matchesPath,
@@ -61,6 +65,13 @@ describe('agent project graph', () => {
     expect(impact.validationProfiles).toContain('expo-doctor');
   });
 
+  it('does not infer OTA safety from an asset path alone', () => {
+    const impact = classifyChangedFiles(graph, ['assets/images/icon.png']);
+    expect(impact.matchedNodes).toContain('assets');
+    expect(impact.flags.otaSafeCandidate).toBe(false);
+    expect(impact.otaReason).toContain('usage inspection');
+  });
+
   it('recognizes documentation-only changes', () => {
     const impact = classifyChangedFiles(graph, ['docs/agent/README.md']);
     expect(impact.flags.docsOnly).toBe(true);
@@ -72,5 +83,23 @@ describe('agent project graph', () => {
   it('reports unmatched paths rather than silently dropping them', () => {
     const impact = classifyChangedFiles(graph, ['unexpected/new-surface.xyz']);
     expect(impact.unmatchedFiles).toEqual(['unexpected/new-surface.xyz']);
+  });
+
+  it('keeps deleted paths in the changed-file impact set', () => {
+    const root = mkdtempSync(join(tmpdir(), 'agent-toolkit-delete-'));
+    try {
+      execFileSync('git', ['init', '-q'], { cwd: root });
+      execFileSync('git', ['config', 'user.email', 'agent@example.test'], { cwd: root });
+      execFileSync('git', ['config', 'user.name', 'Agent Test'], { cwd: root });
+      writeFileSync(join(root, 'deleted.ts'), 'export const value = 1;\n');
+      execFileSync('git', ['add', 'deleted.ts'], { cwd: root });
+      execFileSync('git', ['commit', '-qm', 'base'], { cwd: root });
+      execFileSync('git', ['branch', 'main'], { cwd: root });
+      rmSync(join(root, 'deleted.ts'));
+
+      expect(getChangedFiles({ root, baseRef: 'main' })).toContain('deleted.ts');
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 });
