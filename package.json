@@ -64,7 +64,8 @@
     "agent:impact": "node scripts/agent-impact.mjs",
     "agent:graph": "node scripts/agent-graph.mjs",
     "agent:validate": "node scripts/agent-validate.mjs",
-    "agent:tooling:test": "vitest run scripts/agent-toolkit.test.mjs"
+    "agent:crosscheck": "node scripts/agent-crosscheck.mjs",
+    "agent:tooling:test": "vitest run scripts/agent-toolkit.test.mjs scripts/cross-repo-contracts.test.mjs"
   },
   "private": true
 }
