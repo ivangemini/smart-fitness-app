@@ -58,6 +58,15 @@ const measurements: BodyMeasurement[] = [
     createdAt: '2026-08-20T12:00:00.000Z',
   },
   {
+    id: 'invalid-waist-percent',
+    label: 'Waist',
+    value: '20%',
+    metric: 'waist',
+    numericValue: 20,
+    unit: 'percent',
+    createdAt: '2026-08-21T23:00:00.000Z',
+  },
+  {
     id: 'chest-near',
     label: 'Chest',
     value: '100',

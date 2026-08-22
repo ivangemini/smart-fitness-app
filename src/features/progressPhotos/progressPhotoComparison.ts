@@ -81,29 +81,34 @@ const hasStandardAspect = (photo: ProgressPhotoRecord) => {
   return Math.abs(photo.width / photo.height - STANDARD_ASPECT_RATIO) <= OVERLAY_ASPECT_TOLERANCE;
 };
 
+const isComparableWaistMeasurement = (measurement: BodyMeasurement): boolean => {
+  if (measurement.metric !== 'waist') return false;
+  const resolved = resolveBodyMeasurementStructuredValue(measurement);
+  return Boolean(
+    resolved &&
+      resolved.canonicalUnit === 'cm' &&
+      resolved.canonicalNumericValue !== null &&
+      Number.isFinite(resolved.canonicalNumericValue) &&
+      resolved.canonicalNumericValue > 0,
+  );
+};
+
 const buildEndpointEvidence = (
   photo: ProgressPhotoRecord,
   weightHistory: readonly WeightEntry[],
   bodyMeasurements: readonly BodyMeasurement[],
-): ProgressPhotoEndpointEvidence => {
-  const waistMeasurements = bodyMeasurements.filter(
-    (measurement) =>
-      measurement.metric === 'waist' &&
-      resolveBodyMeasurementStructuredValue(measurement) !== null,
-  );
-  return {
-    weight: pickNearest(
-      weightHistory,
-      photo.capturedAt,
-      PROGRESS_PHOTO_WEIGHT_EVIDENCE_WINDOW_DAYS,
-    ),
-    waist: pickNearest(
-      waistMeasurements,
-      photo.capturedAt,
-      PROGRESS_PHOTO_MEASUREMENT_EVIDENCE_WINDOW_DAYS,
-    ),
-  };
-};
+): ProgressPhotoEndpointEvidence => ({
+  weight: pickNearest(
+    weightHistory,
+    photo.capturedAt,
+    PROGRESS_PHOTO_WEIGHT_EVIDENCE_WINDOW_DAYS,
+  ),
+  waist: pickNearest(
+    bodyMeasurements.filter(isComparableWaistMeasurement),
+    photo.capturedAt,
+    PROGRESS_PHOTO_MEASUREMENT_EVIDENCE_WINDOW_DAYS,
+  ),
+});
 
 export const getProgressPhotoComparisonCandidates = (
   photos: readonly ProgressPhotoRecord[],
