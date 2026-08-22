@@ -2,7 +2,7 @@
 
 Updated: 2026-08-22
 
-Exact source, tests, CI and Git history override prose if this handoff becomes stale. **Resolve live refs/open-PR/CI state from Git/GitHub before acting.** Use `docs/current-status.md` for the last verified mutable checkpoint and `docs/project-context.md` for stable architecture.
+Exact source, tests, CI and Git history override prose if this handoff becomes stale. **Resolve live refs/open-PR/CI state from Git/GitHub before acting.** Use `docs/current-status.md` for the mutable checkpoint and `docs/project-context.md` for stable architecture.
 
 ## Restart checkpoint
 
@@ -12,8 +12,9 @@ Exact source, tests, CI and Git history override prose if this handoff becomes s
 - Phase 19 reviewed Exercise + Training Intelligence scope is merged through #803/#807;
 - Phase 20 P20-A/P20-B/P20-C is merged through #804/#805/#806 and source/CI-complete for reviewed scope;
 - CI guard repair #812 is merged and long-lived PR validation uses the live remote base branch;
-- Phase 21 mobile implementation is PR #810 on `phase-21-workout-assistant-p21a`;
-- pre-documentation Phase 21 code head at this checkpoint is `2b4afbab5c071fa7d692b11c59fc651860bd3565`; query GitHub for the final head and exact-head Mobile CI before merge.
+- Phase 21 Workout Assistant P21-A through P21-E exact PR head `94f70355fe4b4b22240d2c90f1bd861f5bc6d068` passed Mobile CI #2806;
+- PR #810 was squash-merged to `main` as `a2abde02e31b5ed1207e67835144e9359aea711e` after the production backend compatibility gate was cleared;
+- merge commit message contains `[ota]`, so the existing `Publish EAS Update` workflow is eligible to publish iOS to the production branch/channel; actual workflow success/update metadata still needs explicit evidence.
 
 ### Backend
 
@@ -21,8 +22,10 @@ Exact source, tests, CI and Git history override prose if this handoff becomes s
 - Phase 21 sync dependency #332 is merged to `main` as `b5a054e49e795a75f19c16ba85f507396e4598b6`;
 - #332 exact head `1a0bf3319db094aed14b7e397242250f30dc087d` passed Backend CI #2435 and Backend PostgreSQL CI #798;
 - #332 has no database migration;
-- source merge is **not** production API deployment evidence;
-- the automatic Admin deploy workflow is scoped to Admin/compose changes and does not prove the Fastify API was rebuilt with #332.
+- production backend is deployed from `main` at `8a2c539ecfbf7842bf37a02491de9f844ec83c81`, with `b5a054e49e795a75f19c16ba85f507396e4598b6` in its ancestry;
+- backend container and PostgreSQL were reported healthy; `https://api.peptonio.com/health` returned HTTP 200;
+- bounded sync smoke passed for legacy v1, v2 `setType: warmup` + `supersetId`, v1 rejection of v2-only fields, and rejection of unknown `setType`;
+- startup migration step completed successfully with no reported errors.
 
 ## Current authority
 
@@ -44,7 +47,7 @@ Exact source, tests, CI and Git history override prose if this handoff becomes s
 
 ### Phase 21 Workout Assistant
 
-P21-A through P21-E are implemented in #810:
+P21-A through P21-E are merged:
 
 - Previous + Today guidance is row-aligned, exact-ID based and read-only until user input;
 - rest timer starts only on explicit set completion and uses configured `restSeconds`;
@@ -58,33 +61,29 @@ P21-A through P21-E are implemented in #810:
 
 ## Remaining evidence / release gates
 
-Immediate Phase 21 gate:
+The backend deployment, compatibility, exact-head mobile CI and mobile merge gates are closed.
 
-1. deploy backend `main` containing `b5a054e49e795a75f19c16ba85f507396e4598b6` to production VPS;
-2. verify `api.peptonio.com/health` and bounded authenticated workout-session sync v1/v2 compatibility;
-3. re-check #810 exact head + Mobile CI;
-4. merge #810 only after production backend evidence exists;
-5. keep OTA/native publication separate;
-6. perform a real-device active-workout smoke after publication/build installation.
+Still required before calling Phase 21 user-facing release fully verified:
+
+1. confirm the `Publish EAS Update` run for merge commit `a2abde02e31b5ed1207e67835144e9359aea711e` succeeded;
+2. record EAS update ID/group/runtime (`1.0.3`) and production branch/channel evidence;
+3. perform a real-device active-workout smoke covering Previous/Today, rest timer, warm-ups, set types/supersets, contextual Apply/Ignore, session persistence and sync sanity.
 
 Still separate:
 
 - Phase 14 configured-provider/native/device evidence;
 - P20-A camera/photo-library lifecycle evidence;
 - P20-B real-device comparison/overlay evidence;
-- backend production deployment evidence;
-- OTA/native publication and physical-device behavior evidence.
+- OTA/native publication evidence and physical-device behavior evidence.
 
 Use `docs/qa/progress-photo-device-validation.md` for P20-A/P20-B real-device evidence. A prepared checklist is not proof of a completed run.
 
 ## Immediate continuation
 
-1. Resolve exact mobile #810 head and current CI state from GitHub.
-2. Deploy merged backend #332 to the production VPS using the normal backend production process; do not substitute Admin deploy evidence.
-3. Verify production backend health + workout-session sync compatibility.
-4. Merge/publish mobile #810 only after that backend evidence exists, then run the Phase 21 real-device smoke.
-5. Run the Phase 20 signed-iPhone validation checklist when the intended build is available.
-6. Continue Phase 14 external evidence only when prerequisites are actually present.
-7. Do not invent P21-F/Phase 22 or reopen closed Phase 18/19/20 source slices without a reproduced defect or newly reviewed requirement.
-8. Keep the Coach → Learn production mapping registry fail closed until approved canonical mappings exist.
-9. Keep source completion, deployment, migration execution, provider activation, OTA/native publication and device validation as separate claims.
+1. Verify the EAS OTA publication corresponding to `a2abde02e31b5ed1207e67835144e9359aea711e`.
+2. Run the Phase 21 real-iPhone smoke and record dated evidence.
+3. Run the Phase 20 signed-iPhone validation checklist when the intended build is available.
+4. Continue Phase 14 external evidence only when prerequisites are actually present.
+5. Do not invent P21-F/Phase 22 or reopen closed Phase 18/19/20 source slices without a reproduced defect or newly reviewed requirement.
+6. Keep the Coach → Learn production mapping registry fail closed until approved canonical mappings exist.
+7. Keep source completion, deployment, migration execution, provider activation, OTA/native publication and device validation as separate claims.
