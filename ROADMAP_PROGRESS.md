@@ -2,7 +2,7 @@
 
 Updated: 2026-08-22
 
-This is the canonical cross-program roadmap index for mobile `ivangemini/smart-fitness-app` and backend `ivangemini/smart-fitness-backend`. Exact source, tests, migrations, CI and Git history override stale prose.
+This is the canonical cross-program roadmap index for mobile `ivangemini/smart-fitness-app` and backend `ivangemini/smart-fitness-backend`. Exact source, tests, migrations, CI and Git history override stale prose. **Do not treat a SHA copied into roadmap prose as live Git state; query Git/GitHub for current refs.**
 
 Focused roadmap references:
 
@@ -15,7 +15,7 @@ Focused roadmap references:
 ## Verified phase baseline
 
 - **Phases 1–10:** complete for established source/CI scope.
-- **Phase 11 — Liquid Glass + Home:** source/CI-complete for the reviewed convergence scope.
+- **Phase 11 — Liquid Glass + Home:** source/CI-complete for reviewed convergence scope.
 - **Phase 12 — Labs + Settings:** provider-neutral source/runtime preparation complete; configured-provider/device evidence remains.
 - **Phase 13 — Companion v1:** retained; Companion remains presentation over Coach, not a second assistant authority.
 - **Phase 14:** ordinary autonomous source/runtime preparation is exhausted for current contracts; external provider/native/physical-device evidence remains.
@@ -23,78 +23,62 @@ Focused roadmap references:
 - **Phase 16 — Proactive Coach:** deterministic foreground v1 source/CI-complete.
 - **Phase 17 — Goals & Planning:** P17-A through P17-D source/CI-complete; richer P17-E remains requirement-gated.
 - **Phase 18 — Knowledge & Learning:** P18-A through P18-H source/CI-complete and merged. There is no approved P18-I.
-- **Phase 19 — Exercise + Training Intelligence:** base scope merged through #803; reviewed Exercise Intelligence completion merged through #807 without creating a new phase.
-- **Phase 20 — Progress Photos / Body Composition:** P20-A through P20-C merged through #804/#805/#806 and source/CI-complete for reviewed scope.
+- **Phase 19 — Exercise + Training Intelligence:** P19-A through P19-D merged through #803; reviewed Exercise Intelligence completion merged through #807.
+- **Phase 20 — Progress Photos / Body Composition:** P20-A/P20-B/P20-C merged through #804/#805/#806 and source/CI-complete for reviewed scope.
 
-## Current verified checkpoint
+## Current checkpoints
 
 ### Mobile
 
-`main` includes Exercise Intelligence completion through PR #807, merge commit `371e1cdfc09aeffd93f4664cabbb4a777f19e1b0`.
+Checkpoint observed after #808, a documentation-only sync. Reviewed runtime/product closure remains the #807 merge commit `371e1cdfc09aeffd93f4664cabbb4a777f19e1b0` plus the already merged Phase 20 sequence.
 
-#807 evidence:
-
-- code head `32221db92dcaae78bb38b96ad1ff358cea0877d5` passed Mobile CI #2731 across repository line audit, changed-file line limit, agent navigation integrity, TypeScript, full regression suite, expanded-model smoke, Expo export and Expo Doctor;
-- final closure head `da4064e6c4e805a4395cce3fb84ce55fddc21e96` passed Mobile CI #2732 across the same complete gate set;
-- PR #807 merged with exact expected head into `main` as `371e1cdfc09aeffd93f4664cabbb4a777f19e1b0`.
+Phase 19 reviewed scope is complete, including canonical SVG muscle anatomy, deterministic training analytics and reviewed `exercise-intelligence-v1` metadata. Phase 20 source scope is complete through #806.
 
 ### Backend
 
-Current known Phase 18 baseline: `a6179aff35093325f0571139d6ced7e3987a2f10`.
+Checkpoint observed after #330.
 
-The Exercise Intelligence completion and Phase 20 add no backend persistence/schema/provider-upload authority.
+Admin v5-v12 #305 is merged. PR #330 disabled automatic Vercel Git deployments; the VPS/GitHub Actions Admin path is authoritative. #324 and #325 were open at this checkpoint and are not roadmap completion evidence until merged; re-check their current GitHub state before acting.
 
-## Exercise + Personal Training Intelligence
+## Phase 18 activation boundary
 
-Stable reviewed scope includes:
+The reviewed Coach → Learn runtime is complete, but production content mappings remain editorial/product authority. No Learn recommendation is expected when no approved `findingCode → articleId` rule exists. Runtime code must not invent mappings, article IDs or provider-selected fallback lessons.
 
-- canonical reusable SVG muscle anatomy, body thumbnails, filtering and muscle drill-downs;
-- deterministic completed-session analytics with explicit 7/30/90-day windows;
-- load/reps/e1RM/session-volume PRs and `training-intelligence-v1` evidence findings;
-- reviewed `exercise-intelligence-v1` metadata for all 15 canonical local exercises;
-- movement pattern, technique cues, common errors and controlled ROM guidance;
-- qualitative low/moderate/high fatigue cost with explicit non-measurement disclaimer;
-- reviewed substitution links/rationales with no automatic workout mutation;
-- EN/RU presentation;
-- unknown/remote-only records fail closed instead of receiving guessed intelligence.
+## Phase 19 stable authority
 
-An OSS exercise only receives reviewed intelligence when existing normalization reuses a reviewed canonical local identity. Do not infer this metadata from runtime names, body-part labels or muscles.
+Reviewed scope includes:
 
-## Phase 20 — Progress Photos / Body Composition
+- canonical muscle taxonomy and reusable local SVG anatomy;
+- exact/fail-closed muscle mapping, filtering and drill-downs;
+- deterministic completed-session 7/30/90-day analytics;
+- explicit load/reps/e1RM/session-volume PR types and evidence-backed findings;
+- reviewed movement pattern, technique cues, common errors, ROM, qualitative fatigue cost and substitutions for 15 canonical local exercises;
+- EN/RU presentation and fail-closed behavior for unknown/remote-only records.
 
-### P20-A
+## Phase 20 stable authority
 
-Merged through #804: private account-owned front/side/back photos, camera/library input, re-encoding before persistence, deterministic local app-owned storage, durable deletion/account cleanup, privacy inventory and no photo-derived body-fat estimate.
-
-### P20-B
-
-Merged through #805: deterministic same-pose comparison, strict chronology, `contain` rendering, fail-closed 3:4 overlay, visible date/source identity, nearby stored weight/waist as separate evidence, no AI vision or comparison persistence.
-
-### P20-C
-
-Merged through #806: read-only 30/90-day body-composition view reusing existing weight/measurement authorities plus private period-bounded photo timeline. Stored body-fat remains user-entered measurement evidence and is never image inference.
-
-**Status:** Phase 20 source/CI-complete through #806.
+- private standardized front/side/back progress photos with app-owned local storage;
+- camera/library intake with re-encoding before persistence;
+- durable deletion/account cleanup and privacy coverage;
+- deterministic same-pose comparison with non-cropping rendering and fail-closed overlay;
+- nearby stored weight/waist only as separate evidence;
+- read-only 30/90-day body-composition progress using existing calculation authorities;
+- no cloud/provider/social photo upload, AI vision or photo-derived body-fat estimate.
 
 ## Remaining independent evidence
 
-Phase 14 configured-provider/native/device evidence remains separate.
+- Phase 14 configured-provider/native/device evidence;
+- Phase 20 P20-A real-device camera/photo-library lifecycle evidence;
+- Phase 20 P20-B real-device side-by-side/overlay rendering evidence.
 
-Phase 20 release evidence remains separate:
-
-- P20-A real-device camera permission/capture/import/persistence/delete/account-cleanup behavior;
-- P20-B real-device side-by-side/overlay rendering and visual-quality evidence.
-
-Use `docs/qa/progress-photo-device-validation.md` for the exact device run. The checklist itself is preparation, not proof that the run occurred.
+Use `docs/qa/progress-photo-device-validation.md` for the Phase 20 run. The checklist itself is preparation, not proof.
 
 ## Next execution order
 
-1. Treat requested source/CI scope for Personal Training Intelligence and Exercise Intelligence as complete through #807.
-2. Run Phase 20 physical-device validation only on an actual intended signed iPhone build and record dated evidence.
-3. Keep Phase 14 configured-provider/native/device evidence independent.
-4. Do not create P20-D, Phase 21 or another Exercise Intelligence phase without a reviewed requirement or reproduced defect.
-5. Keep source/CI, deployment, provider activation, OTA/native publication and physical-device evidence as separate claims.
-
-## Authorization / release boundary
-
-Source/CI completion does not imply deployment, OTA/native publication, provider activation or physical-device validation. Progress photos remain private by default and no image-derived body-fat inference is authorized.
+1. Query exact current Git/GitHub state before using this roadmap operationally.
+2. Run Phase 20 physical-device validation on the intended signed iPhone build.
+3. Continue Phase 14 external/provider/device evidence when prerequisites are available.
+4. Activate Coach → Learn mappings only from reviewed canonical content authority.
+5. Keep P17-E inactive until a richer-goal requirement crosses its documented threshold.
+6. Do not create P20-D or Phase 21 without a reviewed requirement or reproduced defect.
+7. Keep source/CI, deployment, migration execution, provider/content activation, OTA/native publication and physical-device evidence as separate claims.
