@@ -81,7 +81,7 @@ Reading an insight never automatically modifies a workout, program, goal, nutrit
 
 ### P20-A — Standardized private progress photos
 
-Implemented reviewed source/CI scope in PR #804:
+Implemented and merged through PR #804 for the reviewed source/CI scope:
 
 - private account-owned front / side / back photo slots;
 - camera capture and photo-library import;
@@ -101,28 +101,32 @@ Source/config CI passing does not constitute physical-device camera/photo eviden
 
 ### P20-B — Visual comparison
 
-Next implementation scope:
+Implemented reviewed source/CI scope in PR #805:
 
-- side-by-side comparison for two selected photos of the same pose;
-- overlay/ghost comparison only where technically reliable;
-- deterministic timeline selection;
-- stable crop/scale semantics so visual differences are not created by arbitrary fit behavior;
-- clear before/after date labels and source identity;
-- pair each comparison endpoint with nearby stored weight/body measurements when available, while keeping those measurements distinct from visual evidence;
-- fail closed when the two images cannot be meaningfully aligned rather than fabricating a precise comparison.
+- deterministic selection of two private ready photos from the same pose;
+- latest chronological pair is the default while explicit Before/After selection remains user-controlled;
+- same-photo, pose-mismatch and reversed chronology states fail closed;
+- side-by-side rendering uses non-cropping `contain` semantics;
+- 50/50 ghost overlay is available only when both records retain the standardized 3:4 aspect ratio within a bounded tolerance;
+- overlay is explicitly presented as a visual aid, not body registration, image-derived measurement or precise alignment;
+- before/after date and camera/library source identity remain visible;
+- each endpoint can show the nearest stored weight within ±7 days and canonical waist measurement within ±14 days as separate evidence;
+- malformed/non-length waist records are rejected rather than coerced;
+- comparison is read-only and creates no new persistence/derived comparison state;
+- no AI vision analysis, photo-derived body-fat estimate or automatic state mutation is introduced.
 
-P20-B does not introduce AI vision analysis or body-fat estimation.
+Source/CI validation does not prove real-device visual rendering or alignment quality. Physical-device comparison evidence remains a separate release gate.
 
 ### P20-C — Body-composition progress surface
 
-Combine reliable longitudinal signals without fabricating precision.
+Next implementation scope combines reliable longitudinal signals without fabricating precision:
 
-Scope:
-
-- weight trend;
-- waist and other stored measurements;
-- progress-photo timeline;
-- optional derived trends that can be reproduced from stored inputs.
+- period-bounded weight trend using the existing weight analytics authority;
+- waist and other stored measurements using the existing canonical measurement-series authority;
+- private ready progress-photo timeline using existing P20-A ownership/storage;
+- clear distinction between user-entered measurements and visual evidence;
+- reproducible derived summaries only from stored inputs and an explicit `endAt` boundary;
+- read-only navigation into existing photo comparison and measurement drill-downs.
 
 Do not present photo-estimated body-fat percentage as an exact measurement. Any future vision/model estimate requires a separately reviewed uncertainty and privacy contract and must not be represented as clinical or measurement-grade truth.
 
@@ -143,14 +147,14 @@ Do not present photo-estimated body-fat percentage as an exact measurement. Any 
 2. P19-B deterministic training analytics — implemented and merged in #803.
 3. P19-C versioned PR/plateau/progression findings — implemented and merged in #803.
 4. P19-D Progress presentation, heatmaps and evidence drill-downs — implemented and merged in #803.
-5. P20-A private standardized progress photos — implementation complete in PR #804; exact-head CI/merge history is closure authority.
-6. P20-B comparison/overlay UX — next.
-7. P20-C combined body-composition progress surface — after stable comparison semantics.
+5. P20-A private standardized progress photos — implemented and merged in #804.
+6. P20-B deterministic side-by-side/overlay comparison — source implementation complete in #805; exact closure-head CI/merge history is authority.
+7. P20-C combined body-composition progress surface — next.
 
 ## Current state
 
-Phase 19 is merged on `main` through PR #803.
+Phase 19 is merged on `main` through PR #803. P20-A is merged on `main` through PR #804.
 
-P20-A implementation is complete for the reviewed mobile source/CI scope in PR #804. The code head before closure documentation is `8d20cb49d227f85c24fe37109b15c021997100d4`; Mobile CI #2716 passed repository line audits, agent navigation integrity, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor on that head. The final documentation head and merge history remain authoritative for closure.
+P20-B code head `44231980f4bbfd6a40e9e89510c42ab411b83db4` passed Mobile CI #2724 across repository/changed-file line audits, agent navigation integrity, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor. The final closure-documentation head and PR #805 merge history remain authoritative for source/CI closure.
 
-P20-B is the next normal source implementation step. Native/physical-device evidence for P20-A remains a separate release gate and does not block beginning deterministic P20-B source work.
+P20-C is the next normal source implementation step. Native/physical-device evidence for P20-A camera/media lifecycle and P20-B visual comparison quality remains a separate release gate and does not block deterministic P20-C source work.

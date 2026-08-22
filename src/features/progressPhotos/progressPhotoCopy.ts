@@ -28,6 +28,10 @@ export const getProgressPhotoCopy = (locale: SupportedLocale) => {
     selectedPose: ru ? 'Выбранный ракурс' : 'Selected pose',
     takePhoto: ru ? 'Снять фото' : 'Take photo',
     importPhoto: ru ? 'Выбрать из медиатеки' : 'Choose from library',
+    comparePhotos: ru ? 'Сравнить фото' : 'Compare photos',
+    compareNeedsTwo: ru
+      ? 'Для сравнения добавьте минимум два фото одного ракурса.'
+      : 'Add at least two photos from the same pose to compare them.',
     latestByPose: ru ? 'Последние ракурсы' : 'Latest by pose',
     noPhoto: ru ? 'Нет фото' : 'No photo',
     timeline: ru ? 'История фото' : 'Photo history',

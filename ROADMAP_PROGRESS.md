@@ -24,7 +24,7 @@ Focused roadmap references:
 - **Phase 17 — Goals & Planning:** P17-A through P17-D source/CI-complete; richer P17-E remains requirement-gated.
 - **Phase 18 — Knowledge & Learning:** P18-A through P18-H source/CI-complete and merged for the reviewed scope.
 - **Phase 19 — Exercise + Training Intelligence:** merged through PR #803 for the reviewed mobile source scope.
-- **Phase 20 — Progress Photos / Body Composition:** P20-A implementation complete in PR #804 for reviewed source/CI scope; P20-B is next.
+- **Phase 20 — Progress Photos / Body Composition:** P20-A merged through #804; P20-B source implementation is complete in #805 and P20-C is next.
 
 There is no approved P18-I.
 
@@ -32,9 +32,9 @@ There is no approved P18-I.
 
 ### Mobile
 
-Phase 19 is merged on `main` through PR #803.
+Phase 19 is merged on `main` through PR #803. P20-A is merged on `main` through PR #804.
 
-P20-A implementation lives in PR #804. Code head before closure documentation: `8d20cb49d227f85c24fe37109b15c021997100d4`. Mobile CI #2716 passed repository file line audit, changed file line limit, agent navigation integrity, TypeScript, full regression suite, expanded-model smoke, Expo export and Expo Doctor on that head. Exact final documentation head and merge history remain authoritative.
+P20-B code head `44231980f4bbfd6a40e9e89510c42ab411b83db4` passed Mobile CI #2724 across repository file line audit, changed file line limit, agent navigation integrity, TypeScript, full regression suite, expanded-model smoke, Expo export and Expo Doctor. Exact final documentation head and PR #805 merge history remain authoritative for closure.
 
 ### Backend
 
@@ -79,7 +79,7 @@ Focused roadmap: `docs/roadmap/training-intelligence.md`.
 
 ### P20-A — Private standardized progress photos
 
-Implemented reviewed source/CI scope in #804:
+Implemented and merged through #804 for the reviewed source/CI scope:
 
 - private account-owned front/side/back slots;
 - camera capture and photo-library import;
@@ -94,25 +94,36 @@ Implemented reviewed source/CI scope in #804:
 - no cloud/provider/social upload;
 - no photo-derived body-fat estimate.
 
-**Status:** implementation complete for reviewed source/CI scope in #804. Physical-device/native runtime evidence remains a separate release gate.
+**Status:** source/CI implementation merged in #804. Physical-device/native runtime evidence remains a separate release gate.
 
 ### P20-B — Visual comparison
 
-Next implementation scope:
+Implemented reviewed source/CI scope in #805:
 
-- deterministic before/after selection from the private photo timeline;
-- same-pose side-by-side comparison;
-- overlay/ghost comparison only when crop/scale semantics are stable;
-- explicit dates/source identity;
-- nearby real weight/body measurements shown as separate evidence;
-- no AI vision/body-fat inference;
-- fail closed when images are not meaningfully comparable.
+- deterministic Before/After selection from private ready photos;
+- same-pose requirement and strict chronological validation;
+- non-cropping side-by-side comparison;
+- fail-closed 3:4 ghost overlay with explicit non-measurement disclosure;
+- before/after date and camera/library source identity;
+- nearest stored weight within ±7 days and canonical waist measurement within ±14 days as separate evidence;
+- malformed/non-length waist records rejected rather than coerced;
+- no new persistence or derived comparison state;
+- no AI vision/body-fat inference or hidden mutation.
 
-**Status:** next normal source implementation step after #804 merge.
+**Status:** code head `44231980f4bbfd6a40e9e89510c42ab411b83db4` passed Mobile CI #2724. Final closure-doc head and #805 merge history are source/CI authority. Physical-device visual evidence remains separate.
 
 ### P20-C — Body-composition progress
 
-After stable P20-B comparison semantics, combine real stored weight/measurements/photo history without fabricating body-fat precision. Any future vision/model estimate requires separate privacy and uncertainty review.
+Next source scope combines real stored evidence without fabricating body-fat precision:
+
+- period-bounded existing weight analytics;
+- canonical waist and other stored measurement series;
+- private ready photo timeline;
+- explicit distinction between user-entered measurements and visual evidence;
+- reproducible summaries under one explicit `endAt` boundary;
+- read-only links to existing measurement/photo comparison drill-downs.
+
+Any future vision/model body-fat estimate requires separate privacy and uncertainty review.
 
 ## Remaining Phase 14 gates
 
@@ -123,10 +134,10 @@ After stable P20-B comparison semantics, combine real stored weight/measurements
 
 ## Next execution order
 
-1. Merge P20-A only after final exact-head CI confirms the closure documentation head.
-2. Start P20-B comparison/overlay from the merged P20-A baseline.
-3. Keep comparison deterministic and private; do not add vision/body-fat inference.
-4. Build P20-C only from real stored measurements/photos and reproducible derived trends.
+1. Finalize #805 closure documentation and exact-head CI, then merge P20-B.
+2. Start P20-C from the merged P20-B baseline.
+3. Reuse existing weight/measurement analytics and P20-A private-photo authority; do not create a second calculation/storage system.
+4. Keep user-entered body-fat measurements distinct from any photo evidence; do not add image-derived body-fat estimation.
 5. Keep P18 closed unless a reproduced defect or newly reviewed requirement appears; do not invent P18-I.
 6. Keep P17-E inactive without a richer-goal requirement.
 7. Continue Phase 14 provider/native/device evidence independently when prerequisites are available.
@@ -134,4 +145,4 @@ After stable P20-B comparison semantics, combine real stored weight/measurements
 
 ## Authorization / release boundary
 
-Source/CI progress does not relax provider, native/device, production, editorial-publication or medical-safety controls. P20-A source/CI completion does not imply native/OTA publication or physical-device validation.
+Source/CI progress does not relax provider, native/device, production, editorial-publication or medical-safety controls. P20-A/P20-B source/CI completion does not imply native/OTA publication or physical-device validation.
