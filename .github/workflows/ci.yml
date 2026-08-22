@@ -101,12 +101,12 @@ jobs:
           if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
             PR_NUMBER='${{ github.event.pull_request.number }}'
             PR_HEAD_SHA='${{ github.event.pull_request.head.sha }}'
-            PR_BASE_SHA='${{ github.event.pull_request.base.sha }}'
+            PR_BASE_REF='${{ github.base_ref }}'
             git fetch --prune --no-tags origin \
               '+refs/heads/*:refs/remotes/origin/*' \
               "+refs/pull/${PR_NUMBER}/merge:refs/remotes/pull/${PR_NUMBER}/merge"
             git checkout --detach "refs/remotes/pull/${PR_NUMBER}/merge"
-            test "$(git rev-parse HEAD^1)" = "$PR_BASE_SHA"
+            test "$(git rev-parse HEAD^1)" = "$(git rev-parse "refs/remotes/origin/${PR_BASE_REF}")"
             test "$(git rev-parse HEAD^2)" = "$PR_HEAD_SHA"
           else
             git fetch --prune --no-tags origin \
