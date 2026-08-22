@@ -1,4 +1,5 @@
 import { Image } from 'expo-image';
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -87,15 +88,19 @@ export default function ProgressPhotosScreen() {
     setBusy(true);
     setMessage(null);
     try {
+      const sanitized = await manipulateAsync(asset.uri, [], {
+        compress: 0.9,
+        format: SaveFormat.JPEG,
+      });
       await progressPhotoRepository.add({
         userId: user.id,
         photoId: createUuid(),
         pose: selectedPose,
         source,
-        sourceUri: asset.uri,
-        width: asset.width,
-        height: asset.height,
-        mimeType: asset.mimeType ?? 'image/jpeg',
+        sourceUri: sanitized.uri,
+        width: sanitized.width,
+        height: sanitized.height,
+        mimeType: 'image/jpeg',
         now: new Date().toISOString(),
       });
       await load();
@@ -119,7 +124,7 @@ export default function ProgressPhotosScreen() {
         aspect: [3, 4],
         exif: false,
         mediaTypes: ['images'],
-        quality: 0.9,
+        quality: 1,
       });
       if (!result.canceled && result.assets[0]) {
         await addAsset(result.assets[0], 'camera');
@@ -137,7 +142,7 @@ export default function ProgressPhotosScreen() {
       aspect: [3, 4],
       exif: false,
       mediaTypes: ['images'],
-      quality: 0.9,
+      quality: 1,
     });
     if (!result.canceled && result.assets[0]) {
       await addAsset(result.assets[0], 'library');
