@@ -24,6 +24,7 @@ import { useAppTheme } from '@/theme/AppThemeProvider';
 import { useUnitPreferences, weightFromKg } from '@/units';
 
 import { ExerciseDetailTextList } from '../components/ExerciseDetailTextList';
+import { ExerciseIntelligenceSection } from '../components/ExerciseIntelligenceSection';
 import { ExerciseMediaPreview } from '../components/ExerciseMediaPreview';
 import { MuscleMap } from '../components/MuscleMap';
 import { loadFavoriteExerciseIds, saveFavoriteExerciseIds } from '../favoritesRepository';
@@ -300,6 +301,17 @@ export default function ExerciseDetailScreen() {
                 {copy.aliases}: {exercise.aliases.join(', ') || copy.none}
               </Text>
             </AppCard>
+            <ExerciseIntelligenceSection
+              exerciseId={exercise.id}
+              locale={locale}
+              onOpenExercise={(nextExerciseId) =>
+                router.push({
+                  pathname: '/exercises/[exerciseId]',
+                  params: { exerciseId: nextExerciseId },
+                })
+              }
+              styles={styles}
+            />
             <AppCard>
               <Text style={styles.cardTitle}>{copy.instructions}</Text>
               <ExerciseDetailTextList
