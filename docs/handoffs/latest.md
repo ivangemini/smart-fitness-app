@@ -10,63 +10,62 @@ Exact source, tests, migrations, CI and Git history override prose if this hando
 
 Repository: `ivangemini/smart-fitness-app`.
 
-- main baseline before Phase 19 closure: `0cfcac732b570f58ee7860b5a317ddd4e856a147`;
-- Phase 18 P18-A through P18-H remains closed;
-- #802 added cross-repository contract verification;
-- #803 carries the Phase 19 Exercise + Training Intelligence closure implementation;
-- implementation head before closure documentation: `6e017b18fdeba3e1d47a2ce7191cd343743cf3f5`;
-- exact-head CI and merge history are the authoritative closure evidence.
+- Phase 19 is merged through PR #803;
+- PR #804 carries Phase 20 P20-A private standardized progress photos;
+- P20-A code head before closure documentation: `8d20cb49d227f85c24fe37109b15c021997100d4`;
+- Mobile CI #2716 is green on that code head across line audits, agent integrity, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor;
+- final documentation-head CI and merge history are closure authority.
 
 ### Backend
 
 Repository: `ivangemini/smart-fitness-backend`.
 
 - current known Phase 18 baseline: `a6179aff35093325f0571139d6ced7e3987a2f10`;
-- no backend persistence/schema/provider change is required by the reviewed Phase 19 mobile scope.
+- P20-A adds no backend storage/schema/provider upload behavior.
 
-## Phase 19 handoff state
+## Phase 20 P20-A handoff state
 
-P19-A through P19-D are implemented for the reviewed mobile source scope. Do not resume the old “thumbnail first slice” sequence; that checkpoint is historical.
+P20-A is implemented for the reviewed mobile source/CI scope in #804.
 
-### Stable anatomy authority
+### Stable progress-photo ownership/storage authority
 
-- `src/features/exercises/muscleTaxonomy.ts` remains canonical muscle naming/mapping authority;
-- `src/features/exercises/muscleAnatomy.ts` owns shared SVG region geometry;
-- `BodyMuscleSvg` renders that geometry for thumbnails, exercise detail, interactive filters and heatmaps;
-- unknown provider names remain text/unmapped instead of being guessed;
-- exercise detail and canonical muscle detail reuse the same anatomy/mapping authority.
+- `src/features/progressPhotos/progressPhotoTypes.ts` defines private photo identity, pose/source/lifecycle and account-scoped snapshot semantics;
+- `progressPhotoStore.ts` owns strict metadata parsing and account-scoped metadata persistence;
+- `progressPhotoFileStore.native.ts` owns native app-document media storage;
+- persisted files live under a deterministic account-owned progress-photo directory rather than picker/cache URIs;
+- captured/imported images are re-encoded before persistence so imported EXIF/location metadata is not copied into app-owned media;
+- non-native runtime does not pretend to provide durable native photo storage.
 
-### Stable training-intelligence authority
+### Stable deletion/privacy authority
 
-- completed workout sessions are the history authority;
-- mapped exercise metadata, not name heuristics, drives muscle analytics;
-- 7/30/90-day windows use explicit `endAt` and immediately preceding equal comparison windows;
-- PR types remain explicit: load, reps, estimated 1RM, session volume;
-- `training-intelligence-v1` findings remain deterministic and evidence-backed;
-- supported findings include PR, plateau, stable-load rep progression, bounded regression, volume spike, muscle exposure concentration, muscle gap and exercise gap;
-- missing/ambiguous mapping remains missing/unmapped;
-- model prose is not finding authority.
+- per-photo deletion transitions metadata to a durable `deleting` state before deleting the file;
+- interrupted deletion is recovered on the next repository read;
+- account deletion and cleanup-resume remove progress-photo metadata plus the deterministic account-owned photo directory;
+- cleanup-marker completion remains dependent on successful account-data/file cleanup;
+- mobile privacy inventory explicitly names progress-photo metadata/files;
+- data-access/export remains blocked under the existing export contract rather than exposing raw private paths or pretending export is complete;
+- no cloud/provider/social upload is part of P20-A.
 
-### Stable UX boundaries
+### Stable P20-A UX
 
-- Training Progress owns the Phase 19 muscle heatmap and structured finding presentation;
-- exact evidence remains visible under findings;
-- heatmap taps open the canonical muscle detail drill-down;
-- exercise trend/raw workout history remain available as evidence paths;
-- no finding automatically modifies workouts, programs, goals, nutrition, Labs, recovery or safety state;
-- Phase 19 adds no production/provider/release authorization.
+- Progress links to `/progress-photos`;
+- the screen provides front/side/back selection, repeatability guidance, camera capture and library import;
+- latest pose slots and a virtualized history are visible;
+- imported records use explicit added-at time, not inferred EXIF capture time;
+- deletion is explicit and user-controlled;
+- no AI/vision body-fat estimate exists.
 
 ## What to do next
 
-1. Treat Phase 19 as closed for normal source implementation once #803 exact-head CI/merge history confirms closure; reopen only for a reproduced defect or newly reviewed requirement.
-2. Start Phase 20 with P20-A private standardized progress photos.
-3. Define and review photo ownership, storage, deletion/export and account-boundary semantics before implementing cloud/provider behavior.
-4. Add front/side/back capture/import guidance with repeatable framing/pose/lighting semantics.
-5. Require physical-device camera/photo evidence before release-ready claims.
-6. Add P20-B comparison/overlay only after stable photo identity/crop/scale semantics exist.
-7. Build P20-C body-composition progress from real measurements/photos without presenting photo-estimated body-fat percentage as exact truth.
-8. Keep P18 closed and do not manufacture P18-I.
-9. Continue remaining independent Phase 14 provider/native/device evidence when prerequisites are available.
+1. Treat P20-A as source/CI-complete once #804 final documentation-head CI and merge history confirm closure.
+2. Start P20-B on a new branch from the merged #804 baseline.
+3. Implement deterministic selection of two private photos and require matching pose for direct visual comparison.
+4. Add side-by-side before/after first.
+5. Add overlay/ghost only with stable crop/scale semantics; fail closed when images are not meaningfully comparable.
+6. Show nearby stored weight/body measurements as separate evidence, never as photo-derived values.
+7. Do not add AI vision or body-fat estimation in P20-B.
+8. Keep physical-device camera/photo validation as a separate release evidence stream; source/CI completion does not satisfy it.
+9. Build P20-C after P20-B comparison semantics are stable.
 
 ## Remaining independent external evidence
 
@@ -75,6 +74,7 @@ Phase 14 configured-provider/native/device evidence remains separate:
 - Labs configured provider + physical device;
 - Push provider + physical device;
 - Steps signed native/physical device;
-- Stories remaining mobile/physical-device evidence.
+- Stories remaining mobile/physical-device evidence;
+- P20-A native/physical-device camera, permission, import, persistence and deletion evidence.
 
-No source/CI result implies production migration execution, provider activation, canonical content publication, OTA/native publication or physical-device validation.
+No source/CI result implies production migration execution, provider activation, OTA/native publication or physical-device validation.

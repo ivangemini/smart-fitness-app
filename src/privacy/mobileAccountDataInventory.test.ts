@@ -6,6 +6,7 @@ import { getProactivePresentationStorageKey } from '@/features/companion/proacti
 import { getKnowledgeLearningStorageKey } from '@/features/knowledge/knowledgeLearningStore';
 import { getNutritionFavoritesStorageKey } from '@/features/nutrition/nutritionFavorites';
 import { getNutritionFoodLibraryStorageKey } from '@/features/nutrition/nutritionFoodLibrary';
+import { getProgressPhotoStorageKey } from '@/features/progressPhotos/progressPhotoStore';
 import { getSocialFollowingFeedCacheStorageKey } from '@/features/social/socialFollowingFeedCache';
 import * as storageExports from '@/storage';
 
@@ -54,7 +55,7 @@ describe('mobile account data inventory', () => {
     }
   });
 
-  it('covers every account-scoped static key in the documented surfaces', () => {
+  it('covers every account-scoped static key and explicit progress-photo surfaces', () => {
     const inventoriedKeys = new Set(
       MOBILE_ACCOUNT_DATA_SURFACES.flatMap((surface) => surface.storageKeys),
     );
@@ -74,6 +75,16 @@ describe('mobile account data inventory', () => {
         (surface) => surface.id === 'knowledge_learning_local_state',
       ),
     ).toBe(true);
+    expect(
+      MOBILE_ACCOUNT_DATA_SURFACES.find(
+        (surface) => surface.id === 'progress_photo_metadata',
+      ),
+    ).toMatchObject({ storage: 'async_storage', transmission: 'none' });
+    expect(
+      MOBILE_ACCOUNT_DATA_SURFACES.find(
+        (surface) => surface.id === 'progress_photo_files',
+      ),
+    ).toMatchObject({ storage: 'file_system', transmission: 'none' });
   });
 
   it('uses the inventory as the complete local account cleanup boundary', () => {
@@ -83,6 +94,7 @@ describe('mobile account data inventory', () => {
       getKnowledgeLearningStorageKey(userId),
       getNutritionFavoritesStorageKey(userId),
       getNutritionFoodLibraryStorageKey(userId),
+      getProgressPhotoStorageKey(userId),
       getProactivePresentationStorageKey(userId),
       getSocialFollowingFeedCacheStorageKey(userId),
     ]);
@@ -95,6 +107,7 @@ describe('mobile account data inventory', () => {
     );
     expect(actual).toContain(storageExports.LOCAL_STATE_DIAGNOSTICS_STORAGE_KEY);
     expect(actual).toContain(getKnowledgeLearningStorageKey(userId));
+    expect(actual).toContain(getProgressPhotoStorageKey(userId));
     expect(actual).not.toContain(PENDING_ACCOUNT_DELETION_RECEIPT_STORAGE_KEY);
   });
 

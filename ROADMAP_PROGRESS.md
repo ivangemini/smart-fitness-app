@@ -23,8 +23,8 @@ Focused roadmap references:
 - **Phase 16 — Proactive Coach:** deterministic foreground v1 source/CI-complete.
 - **Phase 17 — Goals & Planning:** P17-A through P17-D source/CI-complete; richer P17-E remains requirement-gated.
 - **Phase 18 — Knowledge & Learning:** P18-A through P18-H source/CI-complete and merged for the reviewed scope.
-- **Phase 19 — Exercise + Training Intelligence:** implementation complete for the reviewed mobile source scope; PR #803 is the closure vehicle.
-- **Phase 20 — Progress Photos / Body Composition:** approved next product phase after Phase 19 closure.
+- **Phase 19 — Exercise + Training Intelligence:** merged through PR #803 for the reviewed mobile source scope.
+- **Phase 20 — Progress Photos / Body Composition:** P20-A implementation complete in PR #804 for reviewed source/CI scope; P20-B is next.
 
 There is no approved P18-I.
 
@@ -32,24 +32,15 @@ There is no approved P18-I.
 
 ### Mobile
 
-Main baseline before the Phase 19 closure PR: `0cfcac732b570f58ee7860b5a317ddd4e856a147`.
+Phase 19 is merged on `main` through PR #803.
 
-Recent closure path:
-
-- #793 — Knowledge Library and immutable Reader;
-- #794 — account-scoped exact-version learning state;
-- #795 — reviewed learning paths;
-- #797 — optional Coach → Learn mobile consumer;
-- #802 — cross-repository mobile/backend contract checks;
-- #803 — Phase 19 Exercise + Training Intelligence closure change.
-
-Phase 19 implementation head before closure documentation: `6e017b18fdeba3e1d47a2ce7191cd343743cf3f5`. Exact-head CI and merge history are authoritative for the final closure result.
+P20-A implementation lives in PR #804. Code head before closure documentation: `8d20cb49d227f85c24fe37109b15c021997100d4`. Mobile CI #2716 passed repository file line audit, changed file line limit, agent navigation integrity, TypeScript, full regression suite, expanded-model smoke, Expo export and Expo Doctor on that head. Exact final documentation head and merge history remain authoritative.
 
 ### Backend
 
 Current known Phase 18 baseline: `a6179aff35093325f0571139d6ced7e3987a2f10`.
 
-Recent Phase 18 closure path:
+Recent Phase 18 closure path remains:
 
 - #285 — canonical Knowledge persistence/published reader;
 - #290 — provider-neutral editorial orchestration;
@@ -72,57 +63,56 @@ Do not invent P18-I merely to continue development.
 
 Focused roadmap: `docs/roadmap/training-intelligence.md`.
 
-Product objective: make exercise anatomy and training history understandable through reusable visual anatomy, deterministic analytics and evidence-backed training findings.
+P19-A through P19-D are implemented and merged in #803. Stable Phase 19 authority remains:
 
-### P19-A — Exercise Intelligence foundation
-
-Implemented reviewed scope:
-
-- one canonical muscle taxonomy and stable muscle IDs;
-- one reusable local SVG geometry/rendering authority for thumbnails, full-size anatomy, exercise detail, interactive filtering and heatmaps;
-- front/back tappable body-map filtering wired to the existing exercise-library muscle filter;
-- text/accessibility retained as primary meaning alongside SVG;
-- canonical muscle detail with exactly mapped exercises and completed user history;
-- unknown provider names fail closed instead of being guessed.
-
-**Status:** implementation complete in #803.
-
-### P19-B — Training analytics foundation
-
-Implemented reviewed scope:
-
-- completed session history remains authority;
-- conservative comparable e1RM/exercise trends;
-- explicit load/reps/estimated-e1RM/session-volume PR types;
-- mapped muscle primary sets/volume, secondary exposure, frequency and last exposure;
-- deterministic equal-window 7/30/90-day comparisons with explicit `endAt`;
-- visible insufficient/unmapped states.
-
-No universal fitness/readiness score is introduced and estimates are not represented as measured maxes.
-
-**Status:** implementation complete in #803.
-
-### P19-C — Plateau / PR / progression findings
-
-`training-intelligence-v1` provides deterministic, evidence-backed findings for PRs, plateaus, stable-load rep progression, bounded regression, volume spikes, exposure concentration and long exercise/muscle gaps. Findings are bounded to the selected period and model prose is not finding authority.
-
-**Status:** implementation complete in #803.
-
-### P19-D — Training Intelligence UX
-
-Training Progress now carries the reviewed 7/30/90 period model, shared SVG muscle heatmaps, mapped muscle facts and exact finding evidence. Tapping mapped muscle regions opens the canonical muscle detail surface. Existing exercise progress/raw-history paths remain available and no insight mutates workouts/programs/goals automatically.
-
-**Status:** implementation complete in #803.
+- one canonical muscle taxonomy and reusable local SVG anatomy authority;
+- exact/fail-closed muscle mapping;
+- deterministic completed-session analytics with explicit 7/30/90 windows;
+- explicit load/reps/e1RM/session-volume PR types;
+- `training-intelligence-v1` deterministic findings with exact evidence;
+- no universal readiness score or hidden state mutation;
+- model prose is never finding authority.
 
 ## Phase 20 — Progress Photos / Body Composition
 
 Focused roadmap: `docs/roadmap/training-intelligence.md`.
 
-Approved scope includes private account-owned standardized front/side/back progress photos, repeatable capture guidance, comparison/overlay tooling, timeline selection and pairing with real stored measurements such as weight and waist.
+### P20-A — Private standardized progress photos
 
-The product must not present photo-estimated body-fat percentage as exact measurement-grade truth. Any future model/vision estimation requires a separate uncertainty/privacy contract.
+Implemented reviewed source/CI scope in #804:
 
-**Status:** next planned implementation phase. P20-A private standardized progress photos is first.
+- private account-owned front/side/back slots;
+- camera capture and photo-library import;
+- repeatable pose/framing/lighting guidance;
+- explicit added-at date/time identity;
+- image re-encoding before persistence so embedded EXIF/location metadata is not copied to the app-owned photo;
+- deterministic app-owned local document storage keyed by account;
+- account-scoped metadata and durable per-photo deletion recovery;
+- account-deletion/resume cleanup covers both metadata and photo directory;
+- Progress entry point plus virtualized history;
+- privacy inventory/export-contract coverage;
+- no cloud/provider/social upload;
+- no photo-derived body-fat estimate.
+
+**Status:** implementation complete for reviewed source/CI scope in #804. Physical-device/native runtime evidence remains a separate release gate.
+
+### P20-B — Visual comparison
+
+Next implementation scope:
+
+- deterministic before/after selection from the private photo timeline;
+- same-pose side-by-side comparison;
+- overlay/ghost comparison only when crop/scale semantics are stable;
+- explicit dates/source identity;
+- nearby real weight/body measurements shown as separate evidence;
+- no AI vision/body-fat inference;
+- fail closed when images are not meaningfully comparable.
+
+**Status:** next normal source implementation step after #804 merge.
+
+### P20-C — Body-composition progress
+
+After stable P20-B comparison semantics, combine real stored weight/measurements/photo history without fabricating body-fat precision. Any future vision/model estimate requires separate privacy and uncertainty review.
 
 ## Remaining Phase 14 gates
 
@@ -133,15 +123,15 @@ The product must not present photo-estimated body-fat percentage as exact measur
 
 ## Next execution order
 
-1. Treat P19-A through P19-D as implemented for the reviewed source scope; use PR/CI/Git history as closure authority.
-2. Start P20-A with a reviewed private progress-photo storage/ownership contract before camera/import UI claims.
-3. Continue P20-B comparison/overlay only after stable photo identity/crop semantics exist.
-4. Build P20-C body-composition progress from stored measurements/photos without fabricating body-fat precision.
-5. Keep P18-A through P18-H closed unless a reproduced defect or newly reviewed requirement appears; do not invent P18-I.
+1. Merge P20-A only after final exact-head CI confirms the closure documentation head.
+2. Start P20-B comparison/overlay from the merged P20-A baseline.
+3. Keep comparison deterministic and private; do not add vision/body-fat inference.
+4. Build P20-C only from real stored measurements/photos and reproducible derived trends.
+5. Keep P18 closed unless a reproduced defect or newly reviewed requirement appears; do not invent P18-I.
 6. Keep P17-E inactive without a richer-goal requirement.
-7. Execute remaining Phase 14 provider/native/device evidence independently when external prerequisites are available.
-8. Repair reproduced defects and keep source/CI, deployment, provider activation, OTA/native release and physical-device evidence as separate claims.
+7. Continue Phase 14 provider/native/device evidence independently when prerequisites are available.
+8. Keep source/CI, deployment, provider activation, OTA/native publication and physical-device evidence as separate claims.
 
 ## Authorization / release boundary
 
-Source/CI progress does not relax provider, native/device, production, editorial-publication or medical-safety controls. Production deployment, production migrations, OTA/native publication, provider activation, canonical content publication and physical-device validation remain separately authorized/evidenced claims.
+Source/CI progress does not relax provider, native/device, production, editorial-publication or medical-safety controls. P20-A source/CI completion does not imply native/OTA publication or physical-device validation.

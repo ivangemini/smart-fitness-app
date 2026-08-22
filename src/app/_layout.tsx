@@ -117,6 +117,7 @@ function RootNavigator() {
                     <Stack.Screen name="exercises/[exerciseId]" options={{ headerShown: false }} />
                     <Stack.Screen name="nutrition/add-food" options={{ headerShown: false }} />
                     <Stack.Screen name="nutrition/date-picker" options={{ headerShown: false }} />
+                    <Stack.Screen name="progress-photos" options={{ headerShown: false }} />
                     <Stack.Screen name="workout-session" options={{ headerShown: false }} />
                     <Stack.Screen name="workout-session/exercises" options={{ headerShown: false }} />
                     <Stack.Screen name="workout-session-finish" options={{ headerShown: false }} />

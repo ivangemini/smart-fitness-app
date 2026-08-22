@@ -25,6 +25,7 @@ import {
 import { getProgressOverviewCopy } from '@/features/progress/progressOverviewCopy';
 import { buildProgressOverview } from '@/features/progress/progressOverviewModel';
 import { getBodyMeasurementError } from '@/features/progress/progressLocalization';
+import { getProgressPhotoCopy } from '@/features/progressPhotos/progressPhotoCopy';
 import { createUuid } from '@/lib/ids';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
@@ -55,6 +56,7 @@ export default function ProgressScreen() {
   const safeAreaInsets = useSafeAreaInsets();
   const copy = getProgressOverviewCopy(locale);
   const goalCopy = getGoalProgressCopy(locale);
+  const progressPhotoCopy = getProgressPhotoCopy(locale);
   const [anchorAt] = useState(() => new Date().toISOString());
   const [measurementDraft, setMeasurementDraft] = useState(() =>
     createBodyMeasurementDraft(lengthUnit),
@@ -313,11 +315,18 @@ export default function ProgressScreen() {
 
         <ProgressOverviewCard
           actions={
-            <AppButton
-              label={t('progress.weightDetails')}
-              onPress={() => router.push('/weight-details')}
-              variant="secondary"
-            />
+            <View style={styles.inlineActions}>
+              <AppButton
+                label={t('progress.weightDetails')}
+                onPress={() => router.push('/weight-details')}
+                variant="secondary"
+              />
+              <AppButton
+                label={progressPhotoCopy.title}
+                onPress={() => router.push('/progress-photos')}
+                variant="secondary"
+              />
+            </View>
           }
           emptyMessage={copy.noBodyData}
           rows={bodyRows}

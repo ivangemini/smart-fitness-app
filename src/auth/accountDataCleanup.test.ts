@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
 import { getKnowledgeLearningStorageKey } from '@/features/knowledge/knowledgeLearningStore';
+import { getProgressPhotoStorageKey } from '@/features/progressPhotos/progressPhotoStore';
 import type { StorageAdapter } from '@/storage';
 
 import {
   PENDING_ACCOUNT_CLEANUP_STORAGE_KEY,
+  PROGRESS_PHOTO_FILE_CLEANUP_FAILURE,
   clearLocalAccountData,
   completeLocalAccountCleanup,
   getLocalAccountDataStorageKeys,
@@ -36,6 +38,7 @@ describe('local account data cleanup', () => {
     const userId = 'user-1';
     const accountKeys = getLocalAccountDataStorageKeys(userId);
     expect(accountKeys).toContain(getKnowledgeLearningStorageKey(userId));
+    expect(accountKeys).toContain(getProgressPhotoStorageKey(userId));
     const storage = createMemoryStorage({
       ...Object.fromEntries(accountKeys.map((key) => [key, 'private account data'])),
       '@smart_fitness_theme_mode': 'dark',
@@ -66,6 +69,28 @@ describe('local account data cleanup', () => {
 
     await completeLocalAccountCleanup(markerStorage);
     expect(markerStorage.values.has(PENDING_ACCOUNT_CLEANUP_STORAGE_KEY)).toBe(false);
+  });
+
+  it('runs account file cleanup and retains the recovery marker if file deletion fails', async () => {
+    const userId = 'user-photo-files';
+    const dataStorage = createMemoryStorage();
+    const markerStorage = createMemoryStorage();
+    const cleaned: string[] = [];
+
+    await clearLocalAccountData(dataStorage, userId, markerStorage, async (id) => {
+      cleaned.push(id);
+    });
+    expect(cleaned).toEqual([userId]);
+
+    await expect(
+      clearLocalAccountData(dataStorage, userId, markerStorage, async () => {
+        throw new Error('file cleanup failed');
+      }),
+    ).rejects.toMatchObject({
+      name: 'AccountDataCleanupError',
+      failedKeys: [PROGRESS_PHOTO_FILE_CLEANUP_FAILURE],
+    });
+    expect(markerStorage.values.has(PENDING_ACCOUNT_CLEANUP_STORAGE_KEY)).toBe(true);
   });
 
   it('continues removing account data when the secure marker cannot be written', async () => {
@@ -103,7 +128,7 @@ describe('local account data cleanup', () => {
     expect(storage.values.has(PENDING_ACCOUNT_CLEANUP_STORAGE_KEY)).toBe(true);
   });
 
-  it('resumes pending cleanup but retains the marker until auth cleanup finishes', async () => {
+  it('resumes pending cleanup including account files but retains the marker until auth cleanup finishes', async () => {
     const userId = 'user-3';
     const keys = getLocalAccountDataStorageKeys(userId);
     const dataStorage = createMemoryStorage(
@@ -115,9 +140,19 @@ describe('local account data cleanup', () => {
         requestedAt: '2026-07-25T00:00:00.000Z',
       }),
     });
+    const cleaned: string[] = [];
 
-    expect(await resumePendingLocalAccountCleanup(dataStorage, markerStorage)).toBe(true);
+    expect(
+      await resumePendingLocalAccountCleanup(
+        dataStorage,
+        markerStorage,
+        async (id) => {
+          cleaned.push(id);
+        },
+      ),
+    ).toBe(true);
     for (const key of keys) expect(dataStorage.values.has(key), key).toBe(false);
+    expect(cleaned).toEqual([userId]);
     expect(markerStorage.values.has(PENDING_ACCOUNT_CLEANUP_STORAGE_KEY)).toBe(true);
 
     await completeLocalAccountCleanup(markerStorage);

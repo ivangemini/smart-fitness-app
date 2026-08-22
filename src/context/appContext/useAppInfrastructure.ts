@@ -15,6 +15,7 @@ import { createCapabilityService } from '@/capabilities';
 import { createSyncCoordinator, type SyncCoordinator } from '@/cloud';
 import { createProductionCloudProvider } from '@/cloud/createProductionCloudProvider';
 import { defaultState as defaultAppState } from '@/data/defaults';
+import { deleteProgressPhotoAccountFiles } from '@/features/progressPhotos/progressPhotoFiles';
 import { createRepositoryFactory } from '@/repositories';
 import { createAsyncStorageAdapter } from '@/storage';
 import { createAsyncStorageOperationQueueStore } from '@/storage/AsyncStorageOperationQueueStore';
@@ -42,7 +43,12 @@ export function useAppInfrastructure(
     async (userId: string) => {
       setState(defaultAppState);
       setIsRestoringState(false);
-      await clearLocalAccountData(storageAdapter, userId, secureTokenStorage);
+      await clearLocalAccountData(
+        storageAdapter,
+        userId,
+        secureTokenStorage,
+        deleteProgressPhotoAccountFiles,
+      );
     },
     [secureTokenStorage, setIsRestoringState, setState, storageAdapter],
   );
@@ -96,6 +102,7 @@ export function useAppInfrastructure(
         const cleanupResumed = await resumePendingLocalAccountCleanup(
           storageAdapter,
           secureTokenStorage,
+          deleteProgressPhotoAccountFiles,
         );
         if (cleanupResumed) {
           const authCleanupResults = await Promise.allSettled([
