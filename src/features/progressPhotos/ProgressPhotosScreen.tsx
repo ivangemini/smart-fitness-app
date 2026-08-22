@@ -23,6 +23,7 @@ import { createUuid } from '@/lib/ids';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 
+import { getFirstComparableProgressPhotoPose } from './progressPhotoComparison';
 import { getProgressPhotoCopy } from './progressPhotoCopy';
 import { progressPhotoRepository } from './progressPhotoRepository';
 import type {
@@ -76,6 +77,10 @@ export default function ProgressPhotosScreen() {
     }
     return next;
   }, [photos]);
+  const comparablePose = useMemo(
+    () => getFirstComparableProgressPhotoPose(photos),
+    [photos],
+  );
 
   const addAsset = async (
     asset: ImagePicker.ImagePickerAsset,
@@ -239,6 +244,15 @@ export default function ProgressPhotosScreen() {
             );
           })}
         </View>
+        <AppButton
+          disabled={!comparablePose}
+          label={copy.comparePhotos}
+          onPress={() => router.push('/progress-photo-compare')}
+          variant="secondary"
+        />
+        {photos.length > 0 && !comparablePose ? (
+          <Text style={styles.detail}>{copy.compareNeedsTwo}</Text>
+        ) : null}
       </View>
 
       <Text style={styles.cardTitle}>{copy.timeline}</Text>
