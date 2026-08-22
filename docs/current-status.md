@@ -10,30 +10,33 @@ This is the short mutable cross-repository checkpoint. **Live branch/commit/PR/C
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Checkpoint verified against GitHub after the merge of CI guard PR #812.
+Checkpoint verified during Phase 21 closure work after CI guard PR #812.
 
 - Phase 18 Knowledge & Learning remains closed for P18-A through P18-H.
-- Phase 19 Exercise + Training Intelligence base scope is merged through #803.
-- The reviewed Exercise Intelligence completion is merged through #807; merge commit `371e1cdfc09aeffd93f4664cabbb4a777f19e1b0`. Final closure head `da4064e6c4e805a4395cce3fb84ce55fddc21e96` passed Mobile CI #2732 before merge.
-- Phase 20 P20-A/P20-B/P20-C is merged through #804/#805/#806 and is source/CI-complete for the reviewed scope.
-- PR #811 makes `Mobile CI / validate` appear on every pull request while preserving a lightweight docs-only path and the full validation path for non-documentation changes.
-- PR #812 makes pull-request validation compare the merge ref against the live remote base branch, so long-lived PRs do not fail merely because `main` advanced after their original event payload was created.
-- Phase 21 Workout Assistant is now an active reviewed workstream. Mobile draft PR #810 is the current mobile implementation branch at this checkpoint; re-check its exact head, scope and CI state in GitHub before acting.
+- Phase 19 Exercise + Training Intelligence reviewed scope is merged through #803/#807.
+- Phase 20 P20-A/P20-B/P20-C is merged through #804/#805/#806 and source/CI-complete for the reviewed scope.
+- #811/#812 keep `Mobile CI / validate` present on PRs and validate long-lived PR merge refs against the live remote base branch.
+- Phase 21 Workout Assistant P21-A through P21-E is implemented on mobile PR #810.
+- Phase 21 code includes Smart Previous/Today guidance, explicit-completion rest timer, deterministic warm-up proposal, typed set semantics/supersets and rare contextual Apply/Ignore adjustment.
+- Warm-up rows are excluded from working-set Previous/Today indexing and from live/history Progress analytics including PR/e1RM/volume, exercise progress and weekly muscle volume.
+- Workout-session sync remains v1 for legacy sessions and uses additive schema v2 only when `setType`/`supersetId` semantics are present; malformed v1/v2 envelopes fail closed.
+- Pre-documentation Phase 21 code head at this checkpoint is `2b4afbab5c071fa7d692b11c59fc651860bd3565`; re-check the exact final PR head and Mobile CI before merge.
 
 ### Backend
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-Checkpoint verified against GitHub after the merge of backend agent-tooling PR #324.
-
-- Admin v5-v12 PR #305 is merged; it is no longer a pending merge gate.
-- PR #330 disabled automatic Vercel Git deployments for Admin. The VPS/GitHub Actions Admin deployment path is authoritative; Vercel is retained only as temporary rollback infrastructure.
-- PR #324 is merged and establishes the backend impact-aware agent tooling and agent navigation integrity gate.
-- Open backend workstreams at this checkpoint include #325 (audited Admin write-plane) and draft #332 (Phase 21 workout-set semantics support). Re-check their exact current state in GitHub before acting.
+- Admin v5-v12 #305 and backend agent-tooling #324 are merged.
+- #330 disabled automatic Vercel Git deployments for Admin; the VPS/GitHub Actions Admin path remains authoritative for Admin deployment.
+- Phase 21 sync dependency #332 is merged to backend `main` as `b5a054e49e795a75f19c16ba85f507396e4598b6`.
+- #332 exact PR head `1a0bf3319db094aed14b7e397242250f30dc087d` passed Backend CI #2435 and Backend PostgreSQL CI #798 before merge.
+- #332 requires no database migration.
+- **Backend source merge is not production API deployment evidence.** The automatic `Admin Production Deploy` workflow only deploys `admin-console/`/compose changes; it does not prove that the Fastify API containing #332 was rebuilt on the production VPS.
+- #325 remains an independent Admin write-plane workstream; re-check its exact GitHub state before acting.
 
 ## Stable Exercise + Training Intelligence scope
 
-The reviewed mobile authority now includes:
+The reviewed mobile authority includes:
 
 - canonical muscle taxonomy and reusable local front/back SVG anatomy;
 - exact/fail-closed muscle mapping, filtering, detail drill-downs and Progress heatmaps;
@@ -71,16 +74,20 @@ Unknown or remote-only exercise IDs do not receive guessed intelligence. Runtime
 - private ready-photo timeline remains period-bounded;
 - no new sync/provider upload/AI vision authority.
 
-## Phase 21 active workstream
+## Phase 21 release boundary
 
-Phase 21 is no longer hypothetical. At this checkpoint:
+Phase 21 source work is coordinated across mobile #810 and merged backend #332. The remaining boundary is operational, not a reason to duplicate implementation.
 
-- mobile draft #810 is implementing the reviewed Workout Assistant scope in the existing workout-session surface;
-- backend draft #332 provides the additive workout-set semantics dependency required by the coordinated mobile work;
-- released compatibility remains mandatory: do not treat either draft as merged, deployed or available to released clients until exact-head CI, merge and deployment sequencing are complete;
-- the focused Phase 21 roadmap authority belongs to the roadmap file changed by the active workstream, not to this checkpoint summary.
+Required before mobile schema-v2 behavior is released:
 
-Do not duplicate or fork the Phase 21 implementation into another branch without first checking #810/#332 and their exact changed-file overlap.
+1. deliberately deploy backend `main` containing `b5a054e49e795a75f19c16ba85f507396e4598b6` to the production VPS;
+2. verify `api.peptonio.com` health and bounded authenticated workout-session sync v1/v2 compatibility;
+3. re-check exact mobile #810 head and exact-head Mobile CI;
+4. merge mobile #810;
+5. treat OTA/native publication as a separate explicit action;
+6. run a real-device active-workout smoke before calling the user-facing release verified.
+
+Do not duplicate or fork Phase 21 into another branch without first checking #810 and the merged backend contract.
 
 ## Remaining physical-device evidence
 
@@ -95,14 +102,15 @@ Phase 14 configured-provider/native/device evidence remains independent and is n
 
 ## Next execution order
 
-1. Re-read exact mobile/backend GitHub state before starting work from this checkpoint.
-2. Continue the approved Phase 21 workstream from #810/#332 without duplicating its active files or broadening its reviewed authority.
-3. Keep backend/mobile compatibility and deployment sequencing explicit before any Phase 21 schema-version-dependent mobile behavior is released.
-4. Run Phase 20 physical-device validation only on the intended signed iPhone build and record dated evidence.
-5. Continue Phase 14 provider/native/device evidence when external prerequisites are available.
-6. Treat P18-A through P18-H, Phase 19 reviewed scope and Phase 20 source scope as closed unless a reproduced defect or newly reviewed requirement appears.
-7. Activate real Coach → Learn content mappings only when approved canonical `findingCode → articleId` rules exist; runtime must remain fail closed without them.
-8. Review backend #325 independently against its exact current head and deployment/migration boundaries.
+1. Deploy backend `main` containing merged #332 to the production VPS through the normal backend production path.
+2. Verify production health and workout-session sync v1/v2 compatibility without weakening fail-closed behavior.
+3. Re-check exact mobile #810 head/CI; merge only after backend deployment evidence exists.
+4. Publish OTA/native output only as an explicit separate action, then run the intended real-device Phase 21 smoke.
+5. Run Phase 20 physical-device validation on the intended signed iPhone build and record dated evidence.
+6. Continue Phase 14 provider/native/device evidence when external prerequisites are available.
+7. Keep P18-A through P18-H, Phase 19 reviewed scope and Phase 20 source scope closed unless a reproduced defect or newly reviewed requirement appears.
+8. Activate real Coach → Learn content mappings only when approved canonical `findingCode → articleId` rules exist.
+9. Review backend #325 independently against its exact current head and deployment/migration boundaries.
 
 ## Release boundary
 

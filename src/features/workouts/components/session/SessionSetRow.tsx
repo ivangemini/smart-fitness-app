@@ -5,7 +5,7 @@ import { Colors } from '@/constants/theme';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import { resolveLiquidGlassPalette, type LiquidGlassPalette } from '@/theme/liquidGlass';
-import type { WorkoutRpe } from '@/types';
+import type { WorkoutRpe, WorkoutSetType } from '@/types';
 import { useUnitPreferences } from '@/units';
 
 import { SESSION_TABLE_COLUMNS, SESSION_TABLE_GAPS, SESSION_TABLE_TOTAL_WIDTH } from './sessionTableLayout';
@@ -22,6 +22,17 @@ type SessionSetRowProps = {
   onToggle: () => void;
   onWeightChange: (value: string) => void;
   previousLabel: string;
+  setType?: WorkoutSetType;
+  supersetLinked?: boolean;
+  targetValue?: { reps?: string; weight?: string };
+};
+
+const setTypePrefix = (setType?: WorkoutSetType) => {
+  if (setType === 'warmup') return 'W';
+  if (setType === 'backoff') return 'B';
+  if (setType === 'drop') return 'D';
+  if (setType === 'amrap') return 'A';
+  return '';
 };
 
 export const SessionSetRow = memo(function SessionSetRow({
@@ -36,6 +47,9 @@ export const SessionSetRow = memo(function SessionSetRow({
   onToggle,
   onWeightChange,
   previousLabel,
+  setType,
+  supersetLinked = false,
+  targetValue,
 }: SessionSetRowProps) {
   const { colors, resolvedAppearance } = useAppTheme();
   const { formatNumber, t } = useLocalization();
@@ -46,7 +60,10 @@ export const SessionSetRow = memo(function SessionSetRow({
   );
   const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const isDark = colors.background === Colors.dark.background;
-  const setLabel = formatNumber(index + 1, { maximumFractionDigits: 0 });
+  const ordinal = formatNumber(index + 1, { maximumFractionDigits: 0 });
+  const setLabel = `${setTypePrefix(setType)}${ordinal}${supersetLinked ? '↔' : ''}`;
+  const weightPlaceholder = targetValue?.weight ? `→${targetValue.weight}` : '—';
+  const repsPlaceholder = targetValue?.reps ? `→${targetValue.reps}` : '—';
 
   return (
     <View style={styles.rowWrap}>
@@ -74,8 +91,8 @@ export const SessionSetRow = memo(function SessionSetRow({
           blurOnSubmit
           value={draftValue.weight}
           keyboardType="decimal-pad"
-          placeholder="—"
-          placeholderTextColor={colors.textSecondary}
+          placeholder={weightPlaceholder}
+          placeholderTextColor={targetValue?.weight ? colors.accent : colors.textSecondary}
           selectionColor={colors.accent}
           style={[styles.inputCell, completed && styles.inputCellCompleted, styles.colWeight]}
           onChangeText={onWeightChange}
@@ -90,8 +107,8 @@ export const SessionSetRow = memo(function SessionSetRow({
             blurOnSubmit
             value={draftValue.reps}
             keyboardType="number-pad"
-            placeholder="—"
-            placeholderTextColor={colors.textSecondary}
+            placeholder={repsPlaceholder}
+            placeholderTextColor={targetValue?.reps ? colors.accent : colors.textSecondary}
             selectionColor={colors.accent}
             style={[styles.inputCell, styles.repsInput, completed && styles.inputCellCompleted]}
             onChangeText={onRepsChange}
@@ -122,7 +139,7 @@ export const SessionSetRow = memo(function SessionSetRow({
             )}
             accessibilityRole="checkbox"
             accessibilityState={{ checked: completed }}
-            onLongPress={actualRpe !== undefined ? onEditRpe : onLongPress}
+            onLongPress={onLongPress}
             onPress={onToggle}
             style={({ pressed }) => [
               styles.iconCell,
@@ -249,7 +266,8 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
     },
     previousCell: {
       color: colors.textMuted,
-      fontSize: 15,
+      fontSize: 14,
+      fontVariant: ['tabular-nums'],
       lineHeight: 48,
     },
     row: {

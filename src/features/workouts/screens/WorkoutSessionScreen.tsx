@@ -29,10 +29,18 @@ import {
 } from '@/features/workouts/storage';
 import { createStyles } from '@/features/workouts/styles/workoutSessionScreenStyles';
 import {
+  addWorkoutWarmupSets,
+  applyWorkoutAdjustmentToRemainingSets,
+  toggleWorkoutSessionSuperset,
+  updateWorkoutSessionSetType,
+} from '@/features/workouts/workoutSessionAssistantModel';
+import {
   buildVisibleSessionExercises,
   buildWorkoutSessionLiveSummary,
 } from '@/features/workouts/workoutSessionScreenViewModel';
+import type { WorkoutWarmupSetProposal } from '@/features/workouts/workoutWarmupGuide';
 import { getWorkoutsHubWorkoutTitle } from '@/features/workouts/workoutsHubLocalization';
+import { createUuid } from '@/lib/ids';
 import {
   getActiveWorkoutSessionDraft,
   getWorkoutTemplateById,
@@ -41,7 +49,7 @@ import {
 } from '@/lib/workouts';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
-import type { WorkoutRpe } from '@/types';
+import type { WorkoutRpe, WorkoutSetType } from '@/types';
 
 type ExerciseTarget = { exerciseId: string; exerciseName: string };
 
@@ -233,7 +241,9 @@ export default function WorkoutSessionScreen() {
   const addSet = (exerciseId: string) => {
     const exercise = visibleExercises.find((item) => item.id === exerciseId);
     if (!exercise) return;
-    const previousSet = [...draft.sets].filter((set) => set.exerciseId === exerciseId).at(-1);
+    const previousSet = [...draft.sets]
+      .filter((set) => set.exerciseId === exerciseId && set.setType !== 'warmup')
+      .at(-1);
     setDraft(
       addWorkoutSessionSet(
         draft,
@@ -246,17 +256,19 @@ export default function WorkoutSessionScreen() {
   const ensurePlannedSet = (exerciseId: string, index: number) => {
     const exercise = visibleExercises.find((item) => item.id === exerciseId);
     if (!exercise) return null;
-    const exerciseSets = draft.sets.filter((set) => set.exerciseId === exerciseId);
-    if (exerciseSets[index]) return exerciseSets[index];
+    const workingSets = draft.sets.filter(
+      (set) => set.exerciseId === exerciseId && set.setType !== 'warmup',
+    );
+    if (workingSets[index]) return workingSets[index];
 
     let nextDraft = draft;
-    for (let currentIndex = exerciseSets.length; currentIndex <= index; currentIndex += 1) {
+    for (let currentIndex = workingSets.length; currentIndex <= index; currentIndex += 1) {
       nextDraft = {
         ...nextDraft,
         sets: [
           ...nextDraft.sets.map((set) => ({ ...set })),
           {
-            id: `${Date.now()}-${exercise.id}-${currentIndex}`,
+            id: createUuid(),
             exerciseId: exercise.id,
             exerciseName: exercise.name,
             weight: 0,
@@ -267,7 +279,9 @@ export default function WorkoutSessionScreen() {
       };
     }
     setDraft(nextDraft);
-    return nextDraft.sets.filter((set) => set.exerciseId === exerciseId)[index] ?? null;
+    return nextDraft.sets.filter(
+      (set) => set.exerciseId === exerciseId && set.setType !== 'warmup',
+    )[index] ?? null;
   };
 
   const updatePlannedSet = (
@@ -289,7 +303,9 @@ export default function WorkoutSessionScreen() {
 
   const toggleSetCompletion = (setId: string) => {
     const set = draft.sets.find((item) => item.id === setId);
-    const shouldAskForRpe = Boolean(trackRpeEnabled && set && set.completed === false);
+    const shouldAskForRpe = Boolean(
+      trackRpeEnabled && set && set.completed === false && set.setType !== 'warmup',
+    );
     setDraft(toggleWorkoutSessionSetCompletion(draft, setId));
     if (shouldAskForRpe) {
       Keyboard.dismiss();
@@ -312,7 +328,7 @@ export default function WorkoutSessionScreen() {
 
   const editSetRpe = (setId: string) => {
     const set = draft.sets.find((item) => item.id === setId);
-    if (!set || set.completed === false) return;
+    if (!set || set.completed === false || set.setType === 'warmup') return;
     Keyboard.dismiss();
     setRpeSetId(setId);
   };
@@ -348,6 +364,24 @@ export default function WorkoutSessionScreen() {
     setExerciseOverflow(null);
   };
 
+  const addWarmups = (exerciseId: string, proposal: readonly WorkoutWarmupSetProposal[]) => {
+    const exercise = visibleExercises.find((item) => item.id === exerciseId);
+    if (!exercise) return;
+    setDraft(addWorkoutWarmupSets(draft, exercise, proposal));
+  };
+
+  const setSetType = (setId: string, setType: WorkoutSetType) =>
+    setDraft(updateWorkoutSessionSetType(draft, setId, setType));
+
+  const toggleSuperset = (sourceSetId: string, partnerSetId: string) =>
+    setDraft(toggleWorkoutSessionSuperset(draft, sourceSetId, partnerSetId));
+
+  const applyAdjustment = (
+    setId: string,
+    adjustedWeight: number,
+    options: { targetReps?: number; targetSetCount?: number },
+  ) => setDraft(applyWorkoutAdjustmentToRemainingSets(draft, setId, adjustedWeight, options));
+
   const { completedReps, completedSets, completedVolume, rpeSet, rpeSetLabel } =
     buildWorkoutSessionLiveSummary(draft, rpeSetId);
   const displayWorkoutTitle = isEmptyWorkout
@@ -373,6 +407,8 @@ export default function WorkoutSessionScreen() {
         isEmptyWorkout={isEmptyWorkout}
         onAddExercises={openAddExercises}
         onAddSet={addSet}
+        onAddWarmupSets={addWarmups}
+        onApplyAdjustment={applyAdjustment}
         onBack={() => router.replace('/workouts')}
         onEditSetRpe={editSetRpe}
         onFinish={() => canFinish && router.push('/workout-session-finish')}
@@ -384,11 +420,13 @@ export default function WorkoutSessionScreen() {
         onPlannedToggleSetCompletion={togglePlannedSetCompletion}
         onRemoveSet={(setId) => setDraft(removeWorkoutSessionSet(draft, setId))}
         onSetChange={updateSet}
+        onSetTypeChange={setSetType}
         onTestGif={openTestGif}
         onToggleExpanded={(exerciseId) =>
           setExpandedExerciseId((current) => (current === exerciseId ? null : exerciseId))
         }
         onToggleSetCompletion={toggleSetCompletion}
+        onToggleSuperset={toggleSuperset}
         styles={styles}
         visibleExercises={visibleExercises}
         workoutSessions={workoutSessions}

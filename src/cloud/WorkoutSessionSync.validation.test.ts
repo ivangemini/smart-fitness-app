@@ -56,7 +56,7 @@ describe('remote workout session validation', () => {
           entityType: 'workoutSessions',
           entityId: sessionId,
           revision: 8,
-          payload: { ...validPayload, schemaVersion: 2 },
+          payload: { ...validPayload, schemaVersion: 3 },
         },
       ],
     );

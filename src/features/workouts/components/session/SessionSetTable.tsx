@@ -3,8 +3,10 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { WorkoutSet } from '@/context/AppContext';
 import { Colors } from '@/constants/theme';
+import { buildWorkoutAssistantSetGuides } from '@/features/workouts/workoutAssistantGuide';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import type { WorkoutPrescriptionSet } from '@/types';
 import { displayWeightInputToKg, formatWeightValue, useUnitPreferences } from '@/units';
 
 import { SessionEmptySets } from './SessionEmptySets';
@@ -14,6 +16,7 @@ import type { SessionDraftInputs } from './types';
 
 type SessionSetTableProps = {
   draftInputs: SessionDraftInputs;
+  exerciseId: string;
   onCommitRowInputs: (setId: string) => void;
   onEditSetRpe: (setId: string) => void;
   onLongPressRow: (setId: string) => void;
@@ -23,13 +26,16 @@ type SessionSetTableProps = {
   onRepsChange: (setId: string, value: string) => void;
   onToggleSetCompletion: (setId: string) => void;
   onWeightChange: (setId: string, value: string) => void;
-  previousSets?: Array<{ reps: number; weight: number }>;
+  plannedTargetReps?: number;
+  prescription?: readonly WorkoutPrescriptionSet[];
+  previousSets?: Array<{ actualRpe?: WorkoutSet['actualRpe']; reps: number; weight: number }>;
   sets: WorkoutSet[];
   targetSetCount: number;
 };
 
 export const SessionSetTable = memo(function SessionSetTable({
   draftInputs,
+  exerciseId,
   onCommitRowInputs,
   onEditSetRpe,
   onLongPressRow,
@@ -39,6 +45,8 @@ export const SessionSetTable = memo(function SessionSetTable({
   onRepsChange,
   onToggleSetCompletion,
   onWeightChange,
+  plannedTargetReps,
+  prescription = [],
   previousSets = [],
   sets,
   targetSetCount,
@@ -47,13 +55,77 @@ export const SessionSetTable = memo(function SessionSetTable({
   const { formatNumber, t } = useLocalization();
   const { weight: weightUnit } = useUnitPreferences();
   const styles = useMemo(() => createStyles(colors), [colors]);
-  const rowCount = Math.max(sets.length, targetSetCount);
-  const previousLabel = (index: number) =>
-    previousSets[index]
-      ? `${formatWeightValue(previousSets[index].weight, weightUnit)} ${weightUnit} × ${formatNumber(previousSets[index].reps, { maximumFractionDigits: 0 })}`
-      : '—';
+  const warmupSets = sets.filter((set) => set.setType === 'warmup');
+  const workingSets = sets.filter((set) => set.setType !== 'warmup');
+  const prescriptionSetCount = prescription.filter((set) => set.exerciseId === exerciseId).length;
+  const workingRowCount = Math.max(workingSets.length, targetSetCount, prescriptionSetCount);
+  const guides = useMemo(
+    () =>
+      buildWorkoutAssistantSetGuides({
+        exerciseId,
+        plannedTargetReps,
+        prescription,
+        previousSets,
+        rowCount: workingRowCount,
+      }),
+    [exerciseId, plannedTargetReps, prescription, previousSets, workingRowCount],
+  );
+  const previousLabel = (index: number) => {
+    const previous = guides[index]?.previous;
+    if (!previous) return '—';
+    const rpe = previous.actualRpe !== undefined
+      ? ` @${formatNumber(previous.actualRpe, { maximumFractionDigits: 1 })}`
+      : '';
+    return `${formatWeightValue(previous.weight, weightUnit)}×${formatNumber(previous.reps, { maximumFractionDigits: 0 })}${rpe}`;
+  };
+  const targetValue = (index: number) => {
+    const guide = guides[index];
+    if (!guide) return undefined;
+    const weight = guide.targetWeight !== null
+      ? formatWeightValue(guide.targetWeight, weightUnit)
+      : undefined;
+    const reps = guide.targetReps !== null
+      ? formatNumber(guide.targetReps, { maximumFractionDigits: 0 })
+      : undefined;
+    return weight || reps ? { weight, reps } : undefined;
+  };
+  const renderStoredSet = (set: WorkoutSet, index: number, workingIndex?: number) => {
+    const canonicalDraft = draftInputs[set.id] ?? {
+      reps: `${set.reps}`,
+      weight: `${set.weight}`,
+    };
+    const numericWeight = Number(canonicalDraft.weight);
+    const displayDraft = {
+      reps: canonicalDraft.reps,
+      weight: Number.isFinite(numericWeight)
+        ? formatWeightValue(numericWeight, weightUnit)
+        : canonicalDraft.weight,
+    };
 
-  if (rowCount === 0) return <SessionEmptySets />;
+    return (
+      <SessionSetRow
+        key={set.id}
+        completed={set.completed !== false}
+        draftValue={displayDraft}
+        index={index}
+        actualRpe={set.actualRpe}
+        onCommit={() => onCommitRowInputs(set.id)}
+        onEditRpe={() => onEditSetRpe(set.id)}
+        onLongPress={() => onLongPressRow(set.id)}
+        onRepsChange={(value) => onRepsChange(set.id, value)}
+        onToggle={() => onToggleSetCompletion(set.id)}
+        onWeightChange={(value) =>
+          onWeightChange(set.id, displayWeightInputToKg(value, weightUnit))
+        }
+        previousLabel={workingIndex === undefined ? '—' : previousLabel(workingIndex)}
+        setType={set.setType}
+        supersetLinked={Boolean(set.supersetId)}
+        targetValue={workingIndex === undefined ? undefined : targetValue(workingIndex)}
+      />
+    );
+  };
+
+  if (warmupSets.length === 0 && workingRowCount === 0) return <SessionEmptySets />;
 
   return (
     <View style={styles.table}>
@@ -82,55 +154,26 @@ export const SessionSetTable = memo(function SessionSetTable({
       </View>
 
       <View style={styles.tableBody}>
-        {Array.from({ length: rowCount }, (_, index) => {
-          const set = sets[index];
-          if (!set) {
-            return (
-              <SessionSetRow
-                key={`planned-${index}`}
-                completed={false}
-                draftValue={{ reps: '', weight: '' }}
-                index={index}
-                onCommit={() => undefined}
-                onLongPress={() => undefined}
-                onRepsChange={(value) => onPlannedRepsChange(index, value)}
-                onToggle={() => onPlannedToggleSetCompletion(index)}
-                onWeightChange={(value) =>
-                  onPlannedWeightChange(index, displayWeightInputToKg(value, weightUnit))
-                }
-                previousLabel={previousLabel(index)}
-              />
-            );
-          }
-
-          const canonicalDraft = draftInputs[set.id] ?? {
-            reps: `${set.reps}`,
-            weight: `${set.weight}`,
-          };
-          const numericWeight = Number(canonicalDraft.weight);
-          const displayDraft = {
-            reps: canonicalDraft.reps,
-            weight: Number.isFinite(numericWeight)
-              ? formatWeightValue(numericWeight, weightUnit)
-              : canonicalDraft.weight,
-          };
+        {warmupSets.map((set, index) => renderStoredSet(set, index))}
+        {Array.from({ length: workingRowCount }, (_, index) => {
+          const set = workingSets[index];
+          if (set) return renderStoredSet(set, index, index);
 
           return (
             <SessionSetRow
-              key={set.id}
-              completed={set.completed !== false}
-              draftValue={displayDraft}
+              key={`planned-${index}`}
+              completed={false}
+              draftValue={{ reps: '', weight: '' }}
               index={index}
-              actualRpe={set.actualRpe}
-              onCommit={() => onCommitRowInputs(set.id)}
-              onEditRpe={() => onEditSetRpe(set.id)}
-              onLongPress={() => onLongPressRow(set.id)}
-              onRepsChange={(value) => onRepsChange(set.id, value)}
-              onToggle={() => onToggleSetCompletion(set.id)}
+              onCommit={() => undefined}
+              onLongPress={() => undefined}
+              onRepsChange={(value) => onPlannedRepsChange(index, value)}
+              onToggle={() => onPlannedToggleSetCompletion(index)}
               onWeightChange={(value) =>
-                onWeightChange(set.id, displayWeightInputToKg(value, weightUnit))
+                onPlannedWeightChange(index, displayWeightInputToKg(value, weightUnit))
               }
               previousLabel={previousLabel(index)}
+              targetValue={targetValue(index)}
             />
           );
         })}

@@ -13,6 +13,7 @@ const makeSet = ({
   exerciseName = 'Bench Press',
   id,
   reps,
+  setType,
   weight,
 }: {
   completed?: boolean;
@@ -20,6 +21,7 @@ const makeSet = ({
   exerciseName?: string;
   id: string;
   reps: number;
+  setType?: WorkoutSet['setType'];
   weight: number;
 }): WorkoutSet => ({
   id,
@@ -28,6 +30,7 @@ const makeSet = ({
   weight,
   reps,
   completed,
+  ...(setType ? { setType } : {}),
 });
 
 const makeSession = ({
@@ -119,6 +122,34 @@ describe('trainingAnalytics', () => {
       allTimeBestWeight: 120,
       allTimeBestEstimated1Rm: 132,
       allTimeEstimated1RmRecordAt: '2026-06-01T10:00:00.000Z',
+    });
+  });
+
+  it('keeps warm-up sets out of working volume and strength records', () => {
+    const analytics = buildTrainingProgressAnalytics(
+      [
+        makeSession({
+          id: 'mixed',
+          finishedAt: '2026-08-15T10:00:00.000Z',
+          sets: [
+            makeSet({ id: 'warmup', reps: 10, weight: 200, setType: 'warmup' }),
+            makeSet({ id: 'working', reps: 5, weight: 100 }),
+          ],
+        }),
+      ],
+      { endAt: '2026-08-18T12:00:00.000Z', periodDays: 28 },
+    );
+
+    expect(analytics.volume.totalVolume).toBe(500);
+    expect(analytics.evidence).toMatchObject({
+      workingSetCount: 1,
+      weightedSetCount: 1,
+      estimated1RmSetCount: 1,
+    });
+    expect(analytics.exercises[0]).toMatchObject({
+      workingSetCount: 1,
+      periodBestWeight: 100,
+      allTimeBestWeight: 100,
     });
   });
 

@@ -58,6 +58,7 @@ export type {
   WorkoutSafetyReviewStatus,
   WorkoutSession,
   WorkoutSet,
+  WorkoutSetType,
 } from './workouts';
 export type {
   TrainingProgram,

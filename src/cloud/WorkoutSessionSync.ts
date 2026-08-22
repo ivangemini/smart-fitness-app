@@ -1,4 +1,10 @@
-import type { AppState, WorkoutRpe, WorkoutSession, WorkoutSet } from '@/types';
+import type {
+  AppState,
+  WorkoutRpe,
+  WorkoutSession,
+  WorkoutSet,
+  WorkoutSetType,
+} from '@/types';
 import { cloneWorkoutSafetyMetadata, parseWorkoutSafetyMetadata } from '@/features/workouts/workoutSafetySessionMetadata';
 import { ensureUuid, isUuid } from '@/lib/ids';
 import type {
@@ -30,12 +36,25 @@ export type WorkoutSessionSyncResult = {
 };
 
 const WORKOUT_RPE_VALUES: readonly WorkoutRpe[] = [6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10];
+const WORKOUT_SET_TYPES: readonly WorkoutSetType[] = [
+  'working',
+  'warmup',
+  'backoff',
+  'drop',
+  'amrap',
+];
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
 const isWorkoutRpe = (value: unknown): value is WorkoutRpe =>
   typeof value === 'number' && WORKOUT_RPE_VALUES.includes(value as WorkoutRpe);
+
+const isWorkoutSetType = (value: unknown): value is WorkoutSetType =>
+  typeof value === 'string' && WORKOUT_SET_TYPES.includes(value as WorkoutSetType);
+
+const hasWorkoutSetSemantics = (value: unknown): boolean =>
+  isRecord(value) && (value.setType !== undefined || value.supersetId !== undefined);
 
 const isValidTimestamp = (value: string): boolean =>
   Number.isFinite(new Date(value).getTime());
@@ -54,6 +73,7 @@ const normalizeSet = (
   const exerciseName = typeof value.exerciseName === 'string' ? value.exerciseName.trim() : '';
   const weight = typeof value.weight === 'number' ? value.weight : Number(value.weight);
   const reps = typeof value.reps === 'number' ? value.reps : Number(value.reps);
+  const supersetId = typeof value.supersetId === 'string' ? value.supersetId.trim() : '';
 
   if (
     !isUuid(value.id) ||
@@ -65,7 +85,9 @@ const normalizeSet = (
     reps < 0 ||
     (value.completed !== undefined && typeof value.completed !== 'boolean') ||
     (value.targetRpe !== undefined && !isWorkoutRpe(value.targetRpe)) ||
-    (value.actualRpe !== undefined && !isWorkoutRpe(value.actualRpe))
+    (value.actualRpe !== undefined && !isWorkoutRpe(value.actualRpe)) ||
+    (value.setType !== undefined && !isWorkoutSetType(value.setType)) ||
+    (value.supersetId !== undefined && !supersetId)
   ) {
     return null;
   }
@@ -84,6 +106,12 @@ const normalizeSet = (
   }
   if (isWorkoutRpe(value.actualRpe)) {
     set.actualRpe = value.actualRpe;
+  }
+  if (isWorkoutSetType(value.setType)) {
+    set.setType = value.setType;
+  }
+  if (supersetId) {
+    set.supersetId = supersetId;
   }
 
   return set;
@@ -125,6 +153,9 @@ export const createWorkoutSessionQueueOperation = (input: {
     number: input.baseRevision,
     createdAt: input.previous?.syncedAt ?? now,
   };
+  const usesSetSemantics = session.sets.some(
+    (set) => set.setType !== undefined || set.supersetId !== undefined,
+  );
   const payload =
     input.action === 'delete'
       ? {
@@ -134,7 +165,7 @@ export const createWorkoutSessionQueueOperation = (input: {
           deviceId: input.deviceId,
         }
       : {
-          schemaVersion: 1,
+          schemaVersion: usesSetSemantics ? 2 : 1,
           id: session.id,
           workoutId: session.workoutId,
           workoutTitle: session.workoutTitle,
@@ -196,7 +227,7 @@ const parseRemoteSession = (
   },
 ): WorkoutSession | null => {
   const payload = isRecord(entity.payload) ? entity.payload : null;
-  if (!payload || payload.schemaVersion !== 1) {
+  if (!payload || (payload.schemaVersion !== 1 && payload.schemaVersion !== 2)) {
     return null;
   }
 
@@ -215,6 +246,10 @@ const parseRemoteSession = (
     new Date(finishedAt).getTime() < new Date(startedAt).getTime() ||
     !Array.isArray(payload.sets)
   ) {
+    return null;
+  }
+
+  if (payload.schemaVersion === 1 && payload.sets.some(hasWorkoutSetSemantics)) {
     return null;
   }
 
