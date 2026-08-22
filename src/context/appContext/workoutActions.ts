@@ -64,6 +64,7 @@ export function updateCustomWorkoutTemplateInState(
     workout,
     updatedTemplate,
     fallbackCreatedAt,
+    currentState.exercises,
   );
 
   if (nextWorkout === workout) {

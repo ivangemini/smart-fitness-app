@@ -59,6 +59,7 @@ type WorkoutTemplateExerciseInput =
   | string
   | {
       name: string;
+      replacementExerciseId?: string;
       sourceExerciseId?: string;
     };
 
