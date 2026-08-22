@@ -36,9 +36,11 @@ describe('progress photo comparison UI contract', () => {
     expect(modelSource).toContain('OVERLAY_ASPECT_TOLERANCE');
   });
 
-  it('keeps nearby measurements separate from photo-derived evidence', () => {
+  it('shows date/source identity and keeps nearby facts separate from image evidence', () => {
+    expect(screenSource).toContain("photo.source === 'camera'");
     expect(modelSource).toContain('PROGRESS_PHOTO_WEIGHT_EVIDENCE_WINDOW_DAYS = 7');
     expect(modelSource).toContain('PROGRESS_PHOTO_MEASUREMENT_EVIDENCE_WINDOW_DAYS = 14');
+    expect(modelSource).toContain("resolved.canonicalUnit === 'cm'");
     expect(modelSource).not.toMatch(/body.?fat/i);
     expect(screenSource).not.toMatch(/vision|model estimate|body.?fat/i);
   });
