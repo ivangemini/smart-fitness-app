@@ -129,6 +129,10 @@ export function WorkoutSessionBody({
     () => new Set(),
   );
   const prescription = workouts.find((workout) => workout.id === draft.workoutId)?.prescription ?? [];
+  const visibleExerciseIds = useMemo(
+    () => Array.from(visibleExercises, (exercise) => exercise.id),
+    [visibleExercises],
+  );
   const restRemainingSeconds = restTimer
     ? getWorkoutRestTimerRemainingSeconds(restTimer, restNowMs)
     : 0;
@@ -208,7 +212,7 @@ export function WorkoutSessionBody({
     const partner = findWorkoutSupersetPartnerSet(
       draft,
       setId,
-      visibleExercises.map((exercise) => exercise.id),
+      visibleExerciseIds,
     );
     const openEditActions = () =>
       Alert.alert(t('workouts.session.setActions'), undefined, [
