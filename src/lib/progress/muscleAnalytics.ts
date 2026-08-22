@@ -227,7 +227,7 @@ const aggregateWeek = (
     }
 
     session.sets.forEach((set) => {
-      if (set.weight <= 0 || set.reps <= 0) {
+      if (set.setType === 'warmup' || set.weight <= 0 || set.reps <= 0) {
         return;
       }
 
