@@ -406,7 +406,7 @@ const createStyles = (colors: typeof Colors.light) =>
       position: 'relative',
       width: '100%',
     },
-    overlayImage: StyleSheet.absoluteFillObject,
+    overlayImage: StyleSheet.absoluteFill,
     screen: { backgroundColor: colors.background, flex: 1 },
     section: { gap: Spacing.two },
     sectionTitle: { color: colors.textPrimary, fontSize: 17, fontWeight: '800' },
