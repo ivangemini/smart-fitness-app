@@ -1,7 +1,14 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
-
 import { describe, expect, it } from 'vitest';
+
+declare const __dirname: string;
+declare const require: any;
+
+const { readFileSync } = require('node:fs') as {
+  readFileSync(path: string, encoding: string): string;
+};
+const { resolve } = require('node:path') as {
+  resolve(...parts: string[]): string;
+};
 
 describe('progress photo comparison UI contract', () => {
   const featureDir = resolve(__dirname);
