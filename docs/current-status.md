@@ -12,12 +12,19 @@ Repository: `ivangemini/smart-fitness-app`.
 
 - Phase 18 Knowledge & Learning remains closed for P18-A through P18-H.
 - Phase 19 Exercise + Training Intelligence base scope is merged through #803.
+- Reviewed Exercise Intelligence completion is merged through #807 without creating a new roadmap phase.
 - Phase 20 P20-A private standardized progress photos is merged through #804.
 - Phase 20 P20-B deterministic visual comparison is merged through #805.
-- Phase 20 P20-C body-composition progress is merged through #806; `main` merge commit `6e287c64d4fcdcd604e78de6ae911510ddf604bb`.
+- Phase 20 P20-C body-composition progress is merged through #806.
 - Phase 20 is source/CI-complete for the reviewed roadmap scope.
-- PR #807 completes the deferred reviewed Exercise Intelligence metadata without creating a new phase.
-- #807 code head: `32221db92dcaae78bb38b96ad1ff358cea0877d5`; Mobile CI #2731 is code-head validation authority and final closure-head CI/merge history remains final authority.
+- Current `main` merge checkpoint after #807: `371e1cdfc09aeffd93f4664cabbb4a777f19e1b0`.
+
+#807 validation authority:
+
+- code head `32221db92dcaae78bb38b96ad1ff358cea0877d5` passed Mobile CI #2731;
+- final closure head `da4064e6c4e805a4395cce3fb84ce55fddc21e96` passed Mobile CI #2732;
+- both runs passed repository line audits, agent navigation integrity, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor;
+- #807 merged with exact expected head into `main` as `371e1cdfc09aeffd93f4664cabbb4a777f19e1b0`.
 
 ### Backend repository
 
@@ -28,7 +35,7 @@ Repository: `ivangemini/smart-fitness-backend`.
 
 ## Exercise Intelligence stable scope
 
-The app now has two distinct reviewed authorities that must not be conflated:
+The app has two distinct reviewed authorities that must not be conflated:
 
 1. canonical muscle taxonomy/SVG anatomy and deterministic training analytics from #803;
 2. `exercise-intelligence-v1` reviewed static metadata for the 15 canonical local exercises from #807.
@@ -95,10 +102,10 @@ The checklist is preparation, not physical-device evidence by itself.
 
 ## Next execution order
 
-1. Finish #807 final exact-head CI/merge.
-2. Do not create another Exercise Intelligence phase merely to continue development; future additions require reviewed canonical data or a reproduced defect.
-3. Keep Phase 20 physical-device validation separate and evidence it only on an actual signed device build.
-4. Keep Phase 14 configured-provider/native/device evidence independent.
+1. Treat Exercise + Personal Training Intelligence source/CI work as complete through #807.
+2. Keep Phase 20 physical-device validation separate and evidence it only on an actual signed iPhone build.
+3. Keep Phase 14 configured-provider/native/device evidence independent.
+4. Do not create another Exercise Intelligence phase, P20-D or Phase 21 merely to continue development; require a reviewed requirement or reproduced defect.
 
 ## Production / rollout boundary
 

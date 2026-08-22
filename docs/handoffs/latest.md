@@ -11,11 +11,11 @@ Exact source, tests, CI and Git history override prose if this handoff becomes s
 Repository: `ivangemini/smart-fitness-app`.
 
 - Phase 19 base Exercise + Training Intelligence is merged through #803;
-- Phase 20 P20-A/P20-B/P20-C are merged through #804/#805/#806;
-- #806 merge commit on `main`: `6e287c64d4fcdcd604e78de6ae911510ddf604bb`;
-- Phase 20 is source/CI-complete for reviewed scope;
-- PR #807 completes the previously deferred reviewed Exercise Intelligence metadata without creating a new roadmap phase;
-- #807 code head `32221db92dcaae78bb38b96ad1ff358cea0877d5` uses Mobile CI #2731 as code-head authority; final docs-head CI and #807 merge history remain final closure authority.
+- reviewed Exercise Intelligence completion is merged through #807 without creating a new roadmap phase;
+- Phase 20 P20-A/P20-B/P20-C are merged through #804/#805/#806 and source/CI-complete;
+- #807 code head `32221db92dcaae78bb38b96ad1ff358cea0877d5` passed Mobile CI #2731;
+- #807 final closure head `da4064e6c4e805a4395cce3fb84ce55fddc21e96` passed Mobile CI #2732;
+- #807 merged with exact expected head into `main` as merge commit `371e1cdfc09aeffd93f4664cabbb4a777f19e1b0`.
 
 ### Backend
 
@@ -79,13 +79,11 @@ Important: the checklist is not evidence until a dated run is completed on the i
 
 ## What to do next
 
-1. Complete #807 code-head CI #2731.
-2. Commit canonical closure docs and the physical-device checklist in one docs-only commit.
-3. Run final exact-head Mobile CI on that docs head.
-4. Update #807 evidence, mark ready and merge with expected-head SHA.
-5. Confirm `main` merge commit.
-6. Do not invent P20-D/Phase 21 or another Exercise Intelligence phase without reviewed new requirements.
-7. Keep physical-device evidence, OTA/native publication, deployment and provider activation separate from source/CI.
+1. Treat requested source/CI scope for Exercise + Personal Training Intelligence as complete through #807.
+2. Run the Phase 20 progress-photo checklist on an actual intended signed iPhone build and record dated evidence.
+3. Keep Phase 14 configured-provider/native/device evidence independent.
+4. Do not invent P20-D/Phase 21 or another Exercise Intelligence phase without reviewed new requirements or reproduced defects.
+5. Keep physical-device evidence, OTA/native publication, deployment and provider activation separate from source/CI.
 
 ## Remaining external/release evidence
 

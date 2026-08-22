@@ -27,7 +27,7 @@ Stable Phase 19 authority includes:
 
 ### Reviewed Exercise Intelligence completion
 
-The richer metadata originally left requirement/data-authority-dependent after #803 is completed separately in PR #807 without creating a new roadmap phase.
+The richer metadata originally left requirement/data-authority-dependent after #803 is completed and merged through PR #807 without creating a new roadmap phase.
 
 `exercise-intelligence-v1` is a reviewed static authority for all 15 canonical local exercises and provides:
 
@@ -47,7 +47,13 @@ Safety and authority boundaries:
 - fatigue cost is qualitative programming guidance, not a measured physiological/readiness value;
 - substitutions are reviewed alternatives, not exact-equivalence claims and never automatically modify a workout.
 
-P19 source/CI completion plus #807 therefore covers the originally requested SVG/muscle layer and the reviewed movement/substitution/technique/ROM/fatigue layer while preserving fail-closed behavior.
+#807 validation/merge authority:
+
+- code head `32221db92dcaae78bb38b96ad1ff358cea0877d5` passed Mobile CI #2731;
+- final closure head `da4064e6c4e805a4395cce3fb84ce55fddc21e96` passed Mobile CI #2732;
+- #807 merged with exact expected head into `main` as `371e1cdfc09aeffd93f4664cabbb4a777f19e1b0`.
+
+P19 source/CI completion plus #807 therefore covers the requested SVG/muscle layer and the reviewed movement/substitution/technique/ROM/fatigue layer while preserving fail-closed behavior.
 
 ## Phase 20 — Progress Photos / Body Composition
 
@@ -117,10 +123,10 @@ A prepared checklist is not evidence of a completed device run.
 ## Current execution state
 
 1. P19-A through P19-D — merged in #803.
-2. P20-A — merged in #804.
-3. P20-B — merged in #805.
-4. P20-C — merged in #806; Phase 20 source/CI-complete.
-5. Deferred reviewed Exercise Intelligence metadata — implemented in #807; code head `32221db92dcaae78bb38b96ad1ff358cea0877d5`, with Mobile CI #2731 as code-head validation authority and final closure-head CI/merge history as final authority.
+2. Deferred reviewed Exercise Intelligence metadata — merged in #807; current `main` merge checkpoint `371e1cdfc09aeffd93f4664cabbb4a777f19e1b0`.
+3. P20-A — merged in #804.
+4. P20-B — merged in #805.
+5. P20-C — merged in #806; Phase 20 source/CI-complete.
 6. P20 physical-device validation remains a separate release-evidence workstream.
 
 There is no approved P20-D or Phase 21. Do not invent one merely to continue development.
