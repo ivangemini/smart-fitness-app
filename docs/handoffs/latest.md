@@ -2,7 +2,7 @@
 
 Updated: 2026-08-22
 
-Exact source, tests, migrations, CI and Git history override prose if this handoff becomes stale.
+Exact source, tests, CI and Git history override prose if this handoff becomes stale.
 
 ## Repository checkpoint
 
@@ -10,80 +10,85 @@ Exact source, tests, migrations, CI and Git history override prose if this hando
 
 Repository: `ivangemini/smart-fitness-app`.
 
-- Phase 19 is merged through PR #803;
-- Phase 20 P20-A private standardized progress photos is merged through PR #804;
-- Phase 20 P20-B deterministic visual comparison is merged through PR #805 (`c5074f006fd67cdaf5a485a8c4b8a4b78b1340a7`);
-- PR #806 carries P20-C body-composition progress;
-- P20-C code head `54cf667c5280e089ca81bb1c8c4335fbda43e8ec` passed Mobile CI #2726 across line audits, agent integrity, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor;
-- final documentation-head CI and #806 merge history are Phase 20 source/CI closure authority.
+- Phase 19 base Exercise + Training Intelligence is merged through #803;
+- Phase 20 P20-A/P20-B/P20-C are merged through #804/#805/#806;
+- #806 merge commit on `main`: `6e287c64d4fcdcd604e78de6ae911510ddf604bb`;
+- Phase 20 is source/CI-complete for reviewed scope;
+- PR #807 completes the previously deferred reviewed Exercise Intelligence metadata without creating a new roadmap phase;
+- #807 code head `32221db92dcaae78bb38b96ad1ff358cea0877d5` uses Mobile CI #2731 as code-head authority; final docs-head CI and #807 merge history remain final closure authority.
 
 ### Backend
 
 Repository: `ivangemini/smart-fitness-backend`.
 
 - current known Phase 18 baseline: `a6179aff35093325f0571139d6ced7e3987a2f10`;
-- Phase 20 adds no backend storage/schema/provider upload behavior.
+- #807 and Phase 20 add no backend storage/schema/provider-upload behavior.
 
-## Stable Phase 20 handoff state
+## Exercise Intelligence authority
 
-### P20-A ownership/storage/privacy authority
+### Existing #803 authority
 
-- progress-photo metadata is private/account-scoped;
-- native app-document storage owns deterministic account photo paths;
-- picker/cache URIs are not durable storage authority;
-- captured/imported images are re-encoded before persistence so imported EXIF/location metadata is not copied into app-owned media;
-- durable deleting state supports interrupted per-photo deletion recovery;
-- account deletion/resume cleanup covers metadata and deterministic account-owned photo files;
-- data access/export stays governed by the existing blocked export contract;
-- no cloud/provider/social upload is introduced.
+- canonical muscle taxonomy;
+- reusable local front/back SVG anatomy;
+- exact/fail-closed muscle mapping;
+- muscle filtering, detail drill-down and Progress heatmaps;
+- deterministic 7/30/90-day training analytics and evidence-backed findings.
 
-### P20-B comparison authority
+### #807 reviewed metadata authority
 
-- `progressPhotoComparison.ts` is the deterministic comparison model;
-- candidates are ready private records filtered by pose and chronology;
-- default pair is the latest two chronological same-pose records;
-- same-photo, pose mismatch and non-increasing chronology fail closed;
-- side-by-side uses non-cropping `contain` semantics;
-- overlay requires standardized 3:4 aspect semantics and remains a 50/50 visual aid rather than registration/measurement;
-- date and camera/library source identity stay visible;
-- endpoint evidence uses nearest stored weight within ±7 days and canonical waist length within ±14 days;
-- malformed/non-length waist records are excluded;
-- no comparison state is persisted and no AI vision/photo-derived body-fat estimate exists.
+`src/features/exercises/exerciseIntelligence.ts` owns `exercise-intelligence-v1` reviewed static metadata for all 15 canonical local exercise runtime IDs.
 
-### P20-C body-composition authority
+Each reviewed exercise may expose:
 
-- `bodyCompositionProgress.ts` composes existing authorities rather than reimplementing them;
-- `getWeightAnalytics` remains weight-summary authority;
-- `getWeightTrendEntries` remains weight trend/dedup authority for the 30/90-day UI periods;
-- `buildBodyMeasurementProgressAnalytics` remains canonical measurement-series authority;
-- one explicit `endAt`/period boundary is applied to longitudinal evidence;
-- canonical waist and other stored measurements remain user-entered evidence;
-- stored `body_fat` measurements remain stored measurements and are never relabeled as image estimates;
-- only ready progress photos inside the selected period are included in the private timeline;
-- timeline items preserve pose/date/source identity and link read-only to existing photo/comparison surfaces;
-- no new persistence, sync, provider upload, hidden state mutation, AI vision or photo-derived body-fat estimate exists.
+- movement pattern;
+- EN/RU technique cues;
+- EN/RU common errors;
+- controlled ROM guidance;
+- qualitative low/moderate/high fatigue cost;
+- reviewed substitution targets and rationale.
+
+`ExerciseIntelligenceSection` presents that authority read-only inside Exercise Detail. Substitution buttons only navigate to another exercise detail; they do not rewrite the workout.
+
+Fail-closed behavior is permanent:
+
+- unknown/remote-only IDs return no reviewed intelligence;
+- OSS rows inherit reviewed intelligence only when existing normalization reuses a reviewed local canonical identity;
+- do not add runtime guesses based on names, body-part labels or muscles;
+- fatigue cost is not physiological/readiness measurement;
+- substitution metadata does not claim exact equivalence.
+
+## Phase 20 authority
+
+### P20-A
+
+Private/account-owned progress-photo metadata and app-owned native file storage remain authority. Re-encoding prevents imported EXIF/location metadata from becoming durable app metadata; deletion/account cleanup covers app-owned media. No cloud/provider/social upload exists.
+
+### P20-B
+
+`progressPhotoComparison.ts` remains deterministic comparison authority: same-pose chronology, non-cropping side-by-side, fail-closed reviewed-aspect overlay, separate nearby stored weight/waist evidence, and no persisted comparison or AI vision.
+
+### P20-C
+
+`bodyCompositionProgress.ts` composes existing weight/measurement/photo authorities under one explicit period boundary. Stored body-fat remains user-entered evidence and is never image inference.
+
+## Physical-device validation
+
+Use `docs/qa/progress-photo-device-validation.md` for P20-A/P20-B real-device validation.
+
+Important: the checklist is not evidence until a dated run is completed on the intended signed iPhone build with device/iOS/build identity and scenario results.
 
 ## What to do next
 
-1. Commit the four canonical Phase 20 closure docs only after P20-C code-head CI #2726 is fully green.
-2. Run final exact-head Mobile CI on that documentation head.
-3. Update #806 with code-head and final closure-head evidence, mark ready, and merge with exact expected head SHA.
-4. Confirm `main` merge commit; then Phase 20 is source/CI-complete for the reviewed roadmap scope.
-5. Do not invent P20-D or Phase 21 merely to continue development; require a reviewed new requirement or reproduced defect.
-6. Continue native/physical-device evidence separately.
+1. Complete #807 code-head CI #2731.
+2. Commit canonical closure docs and the physical-device checklist in one docs-only commit.
+3. Run final exact-head Mobile CI on that docs head.
+4. Update #807 evidence, mark ready and merge with expected-head SHA.
+5. Confirm `main` merge commit.
+6. Do not invent P20-D/Phase 21 or another Exercise Intelligence phase without reviewed new requirements.
+7. Keep physical-device evidence, OTA/native publication, deployment and provider activation separate from source/CI.
 
-## Remaining independent external/release evidence
+## Remaining external/release evidence
 
-Phase 14 configured-provider/native/device evidence remains separate:
-
-- Labs configured provider + physical device;
-- Push provider + physical device;
-- Steps signed native/physical device;
-- Stories remaining mobile/physical-device evidence.
-
-Phase 20 release evidence remains separate:
-
-- P20-A real-device camera permission/capture/import/persistence/delete/account-cleanup behavior;
-- P20-B real-device side-by-side/overlay rendering and visual-quality evidence.
-
-No source/CI result implies production migration execution, provider activation, OTA/native publication or physical-device validation.
+- Phase 14 configured-provider/native/device evidence remains separate;
+- P20-A real-device camera permission/capture/import/persistence/delete/account-cleanup behavior remains unvalidated until the checklist is run;
+- P20-B real-device comparison rendering/overlay/visual quality remains unvalidated until the checklist is run.
