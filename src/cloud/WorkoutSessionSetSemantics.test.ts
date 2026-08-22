@@ -95,6 +95,39 @@ describe('workout session set semantics sync contract', () => {
     );
   });
 
+  it('fails closed when schema v1 carries v2 set semantics', () => {
+    const state = { workoutSessions: [] } as unknown as AppState;
+    const result = applyRemoteWorkoutSessionChanges(state, [
+      {
+        entityType: 'workoutSessions',
+        entityId: SESSION_ID,
+        revision: 1,
+        payload: {
+          schemaVersion: 1,
+          id: SESSION_ID,
+          workoutId: 'push',
+          workoutTitle: 'Push',
+          startedAt: '2026-08-22T08:00:00.000Z',
+          finishedAt: '2026-08-22T09:00:00.000Z',
+          sets: [
+            {
+              id: SET_ID,
+              exerciseId: 'bench',
+              exerciseName: 'Bench Press',
+              weight: 40,
+              reps: 10,
+              completed: true,
+              setType: 'warmup',
+            },
+          ],
+        },
+      },
+    ]);
+
+    expect(result.appliedRecordIds).toEqual([]);
+    expect(result.nextState.workoutSessions).toEqual([]);
+  });
+
   it('fails closed on unknown set semantics', () => {
     const state = { workoutSessions: [] } as unknown as AppState;
     const result = applyRemoteWorkoutSessionChanges(state, [
