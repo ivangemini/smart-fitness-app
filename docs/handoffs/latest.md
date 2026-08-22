@@ -16,18 +16,24 @@ Exact source, tests, CI and Git history override prose if this handoff becomes s
 - PR #810 was squash-merged to `main` as `a2abde02e31b5ed1207e67835144e9359aea711e` after the production backend compatibility gate was cleared;
 - merge commit message contains `[ota]`, so the existing `Publish EAS Update` workflow is eligible to publish iOS to the production branch/channel; actual workflow success/update metadata still needs explicit evidence.
 
-### Backend
+### Backend / Admin
 
 - repository: `ivangemini/smart-fitness-backend`;
-- Phase 21 sync dependency #332 is merged to `main` as `b5a054e49e795a75f19c16ba85f507396e4598b6`;
-- #332 exact head `1a0bf3319db094aed14b7e397242250f30dc087d` passed Backend CI #2435 and Backend PostgreSQL CI #798;
-- #332 has no database migration;
-- Admin write-plane #325 is merged as `a3f260aca1089548202eeeee8b96624e931b7efc`; exact PR head `621efecbe5a62a3a8873e005ead65ffd49f5641c` passed Backend CI #2422, PostgreSQL CI #791 and Account Deletion Receipt CI #699;
+- Phase 21 sync dependency #332 is merged as `b5a054e49e795a75f19c16ba85f507396e4598b6` and requires no database migration;
+- Admin write-plane #325 is merged as `a3f260aca1089548202eeeee8b96624e931b7efc`; its exact head passed Backend CI #2422, PostgreSQL CI #791 and Account Deletion Receipt CI #699;
 - follow-up Admin hardening #335/#336/#337 is merged;
-- production backend is deployed from `main` at `8a2c539ecfbf7842bf37a02491de9f844ec83c81`, with both #325 and #332 in its ancestry;
-- backend container and PostgreSQL were reported healthy; `https://api.peptonio.com/health` returned HTTP 200;
-- bounded sync smoke passed for legacy v1, v2 `setType: warmup` + `supersetId`, v1 rejection of v2-only fields, and rejection of unknown `setType`;
-- startup migration step completed successfully with no reported errors.
+- #340 Administration navigation activation merged as `75c47a2a8973e41146c98d78cab07baa007f1274` after Backend CI #2453;
+- #342 Admin session-v2 repair passed Backend CI #2458 and merged as `62cb9846b3ba644b8f5e2a7ffcc520d7bfc9058c`;
+- #343 browser-login session-v2 repair passed Backend CI #2461 and merged as `5a2ff9bb0bb006522576ff2eb3c588bf3d08fd50`;
+- production backend is deployed at exact SHA `62cb9846b3ba644b8f5e2a7ffcc520d7bfc9058c`;
+- production Admin-console is deployed at exact SHA `5a2ff9bb0bb006522576ff2eb3c588bf3d08fd50`;
+- backend container/PostgreSQL health and `/health` HTTP 200 are verified;
+- migration `0056_admin_control_plane.sql` is applied and expected Admin tables/constraints exist;
+- authorized Admin session is schema v2 with resolved `owner / bootstrap` principal and permissions;
+- account search, roles, feature flags, audit reads and ordinary-user 403 gating were verified;
+- no safe reversible production mutation target existed, so destructive/live write smoke was intentionally not performed;
+- final browser smoke passed for authorized login, global Administration navigation, `/administration`, `/administration/audit`, refresh persistence and direct-navigation persistence with 0 browser JS exceptions;
+- **Admin production activation is closed.**
 
 ## Current authority
 
@@ -63,10 +69,17 @@ P21-A through P21-E are merged:
 
 ### Admin control plane
 
-- #325 source plus #335/#336/#337 hardening is merged;
-- deployed backend `8a2c539...` is a descendant of #325;
-- the standard production migration step reported success;
-- the global Administration navigation remains intentionally staged until explicit live control-plane verification is recorded.
+Production activation is closed for the reviewed scope:
+
+- migration `0056_admin_control_plane.sql` applied;
+- backend exact SHA `62cb9846b3ba644b8f5e2a7ffcc520d7bfc9058c`;
+- Admin-console exact SHA `5a2ff9bb0bb006522576ff2eb3c588bf3d08fd50`;
+- global `Администрирование` navigation is production-active;
+- `/administration` and `/administration/audit` work under authorized browser access;
+- authenticated session survives refresh and direct navigation;
+- browser JS exceptions: 0.
+
+Do not reopen this activation gate unless a reproduced production defect appears.
 
 ## Remaining evidence / release gates
 
@@ -82,11 +95,7 @@ Still required before calling the user-facing release fully verified:
 
 ### Admin
 
-Still required before exposing Administration as normal production navigation:
-
-1. explicitly verify production migration state for `0056_admin_control_plane.sql` if needed;
-2. verify representative live RBAC/account-control/feature-flag/audit/protected-target behavior under authorized Admin credentials;
-3. only then activate the staged global Administration sidebar/navigation in a small follow-up change and deploy through the existing Admin VPS/GitHub-Actions path.
+No remaining activation gate. Keep closed unless a reproduced production defect appears.
 
 ### Other independent evidence
 
@@ -102,8 +111,8 @@ Use `docs/qa/progress-photo-device-validation.md` for P20-A/P20-B real-device ev
 1. Verify the EAS OTA publication corresponding to `a2abde02e31b5ed1207e67835144e9359aea711e`.
 2. Run the Phase 21 real-iPhone smoke and record dated evidence.
 3. Run the Phase 20 signed-iPhone validation checklist.
-4. Verify live Admin control-plane/migration state; activate staged Administration navigation only after it passes.
-5. Continue Phase 14 external evidence only when prerequisites are actually present.
+4. Continue Phase 14 external evidence only when prerequisites are actually present.
+5. Keep Admin production activation closed unless a reproduced defect appears.
 6. Do not invent P21-F/Phase 22 or reopen closed Phase 18/19/20/21 source slices without a reproduced defect or newly reviewed requirement.
 7. Keep the Coach → Learn production mapping registry fail closed until approved canonical mappings exist.
 8. Keep source completion, deployment, migration execution, provider activation, OTA/native publication and device validation as separate claims.
