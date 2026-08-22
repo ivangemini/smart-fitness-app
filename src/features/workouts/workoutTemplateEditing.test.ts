@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { Workout } from '@/types';
+import type { Exercise, Workout } from '@/types';
 
 import {
   applyWorkoutTemplateEdit,
@@ -53,6 +53,16 @@ const workout = (): Workout => ({
     },
   ],
 });
+
+const replacement: Exercise = {
+  id: 'incline-dumbbell-press',
+  name: 'Incline Dumbbell Press',
+  isCustom: false,
+  createdAt: '2026-08-21T00:00:00.000Z',
+  equipment: ['dumbbell'],
+  primaryMuscles: ['upper-chest'],
+  secondaryMuscles: ['triceps'],
+};
 
 describe('workout template exercise identity', () => {
   it('keeps explicit source IDs when creating a template', () => {
@@ -139,6 +149,106 @@ describe('applyWorkoutTemplateEdit', () => {
       adjustment: 'maintain',
       rationaleCode: 'keep-load',
     });
+  });
+
+  it('replaces an exact source with canonical replacement metadata and remaps prescription identity', () => {
+    const source = workout();
+    const result = applyWorkoutTemplateEdit(
+      source,
+      {
+        title: source.title,
+        description: source.description,
+        exercises: [
+          {
+            sourceExerciseId: 'bench-row',
+            replacementExerciseId: replacement.id,
+            name: 'Untrusted display name',
+          },
+          { sourceExerciseId: 'row-row', name: 'Barbell Row' },
+        ],
+      },
+      '2026-08-22T12:00:00.000Z',
+      [replacement],
+    );
+
+    expect(result.exercises[0]).toEqual(replacement);
+    expect(result.exercises[1]).toEqual(source.exercises[1]);
+    expect(result.prescription?.[0]).toEqual({
+      sourceSetId: 'set-bench',
+      exerciseId: replacement.id,
+      exerciseName: replacement.name,
+      weight: 100,
+      reps: 5,
+      targetRpe: 8,
+      adjustment: 'maintain',
+      rationaleCode: 'keep-load',
+    });
+    expect(result.prescription?.[1]).toEqual(source.prescription?.[1]);
+  });
+
+  it('fails closed when a replacement ID cannot be resolved exactly', () => {
+    const source = workout();
+    const result = applyWorkoutTemplateEdit(
+      source,
+      {
+        title: source.title,
+        exercises: [
+          {
+            sourceExerciseId: 'bench-row',
+            replacementExerciseId: 'missing-replacement',
+            name: 'Missing',
+          },
+          { sourceExerciseId: 'row-row', name: 'Barbell Row' },
+        ],
+      },
+      '2026-08-22T12:00:00.000Z',
+      [replacement],
+    );
+
+    expect(result).toBe(source);
+  });
+
+  it('fails closed when a replacement would collide with another existing row', () => {
+    const source = workout();
+    const result = applyWorkoutTemplateEdit(
+      source,
+      {
+        title: source.title,
+        exercises: [
+          {
+            sourceExerciseId: 'bench-row',
+            replacementExerciseId: 'row-row',
+            name: 'Barbell Row',
+          },
+          { sourceExerciseId: 'row-row', name: 'Barbell Row' },
+        ],
+      },
+      '2026-08-22T12:00:00.000Z',
+      [source.exercises[1]!],
+    );
+
+    expect(result).toBe(source);
+  });
+
+  it('fails closed when a replacement is supplied without explicit source identity', () => {
+    const source = workout();
+    const result = applyWorkoutTemplateEdit(
+      source,
+      {
+        title: source.title,
+        exercises: [
+          {
+            replacementExerciseId: replacement.id,
+            name: replacement.name,
+          },
+          { sourceExerciseId: 'row-row', name: 'Barbell Row' },
+        ],
+      },
+      '2026-08-22T12:00:00.000Z',
+      [replacement],
+    );
+
+    expect(result).toBe(source);
   });
 
   it('drops prescription rows for removed exercises without mutating retained rows', () => {
