@@ -91,10 +91,8 @@ export default function WorkoutSessionScreen() {
     catalog: exercises,
     enabled: Boolean(
       replacementTarget &&
-        draft?.sets.some(
-          (set) =>
-            set.exerciseId === replacementTarget.exerciseId &&
-            set.completed === false,
+        draft?.sets.some((set) =>
+          set.exerciseId === replacementTarget.exerciseId && set.completed === false,
         ),
     ),
     locale,
