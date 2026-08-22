@@ -104,6 +104,8 @@ Phase 20 is source/CI-complete for the reviewed scope through #806.
 
 Approved product direction: make the active workout faster and more informative without adding a dense dashboard or an assistant that interrupts after every set.
 
+Source/CI status: **P21-A through P21-E are implemented on mobile PR #810.** The validated code head is `2b4afbab5c071fa7d692b11c59fc651860bd3565`; exact live CI/PR state must still be read from GitHub. Backend sync dependency PR #332 is merged to backend `main` as `b5a054e49e795a75f19c16ba85f507396e4598b6`. Production backend deployment remains a separate release gate before mobile schema-v2 behavior may ship.
+
 ### Permanent interaction rules
 
 - preserve the compact primary set table rather than adding large intelligence cards;
@@ -116,58 +118,63 @@ Approved product direction: make the active workout faster and more informative 
 
 ### P21-A — Smart Previous + Today’s Target
 
-First implementation slice:
+Implemented:
 
-- keep Previous directly aligned to each set rather than moving history into a separate card;
-- show previous load × reps and stored actual RPE when available;
-- use an exact confirmed `Workout.prescription` entry as the only authority for prescribed target load/reps/RPE;
-- use canonical template `targetReps` only as a reps fallback when no valid prescribed reps exist;
-- never infer a target load from previous history merely because a prior load exists;
+- Previous remains directly aligned to each working set;
+- previous load × reps and stored actual RPE are shown when available;
+- exact confirmed `Workout.prescription` is the only authority for prescribed target load/reps/RPE;
+- canonical template `targetReps` is a reps-only fallback when no valid prescribed reps exist;
+- no target load is inferred from previous history merely because a prior load exists;
 - exact `exerciseId` matching only; no runtime name-based target matching;
-- surface target load/reps as compact hints inside otherwise empty set inputs rather than another column/card;
-- hints remain read-only guidance and do not automatically populate, complete or persist a set.
-
-Status: **implementation in progress** on `phase-21-workout-assistant-p21a`.
+- target load/reps remain compact read-only hints and do not silently populate or complete a set.
 
 ### P21-B — Automatic Rest Timer
 
-Reviewed direction:
+Implemented:
 
-- start after an explicit set-completion action;
-- prefer existing exercise-level `restSeconds` when available;
-- allow quick pause/skip/manual override;
-- keep timer state distinct from workout-set truth;
-- do not require a new large card in every exercise section;
-- Live Activity / Dynamic Island is a later native-capability decision, not implied by source timer support.
+- starts only after an explicit set-completion action;
+- uses existing exercise-level `restSeconds`; no invented default;
+- real-clock countdown preserves elapsed background time;
+- pause/resume, ±15 seconds and skip are explicit controls;
+- timer state is transient UI state and remains separate from workout-set truth;
+- no Live Activity / Dynamic Island claim is made by source support.
 
 ### P21-C — Warm-up Sets
 
-Reviewed direction:
+Implemented:
 
-- deterministic warm-up proposal from the intended working load and exercise context;
-- warm-up sets remain explicitly distinct from working sets and working-volume analytics;
-- no guessed working load when no reviewed/prescribed target exists;
-- user can accept/edit/skip the proposed warm-up sequence.
+- deterministic proposal derives only from an explicit prescribed working load;
+- user can Add or Skip and can edit resulting rows through normal set controls;
+- warm-up sets persist explicitly as `setType: warmup`;
+- warm-up rows do not shift working-set Previous/Today indexing;
+- warm-up sets are excluded from live working totals, prior-set guidance, RPE prompting, training-intelligence PR/e1RM/volume calculations, exercise progress series and weekly muscle-volume analytics;
+- no working load is guessed when prescription authority is absent.
 
 ### P21-D — Set Types + Supersets
 
-Reviewed direction:
+Implemented contract:
 
-- support explicit working/warm-up/back-off/drop/AMRAP semantics and supersets;
-- design the persisted/synced contract before adding durable set-type fields;
-- do not encode durable semantics in UI-only strings or overloaded notes;
-- existing completed-history compatibility and sync authority must be preserved.
+- durable set types: `working | warmup | backoff | drop | amrap`;
+- durable optional `supersetId`;
+- compact row semantics and explicit set actions;
+- legacy sessions remain workout-sync schema v1 when no new semantics are present;
+- sessions using set semantics use additive workout-sync schema v2;
+- v1 envelopes carrying v2-only semantics fail closed instead of silently stripping fields;
+- backend #332 validates/materializes v2 while preserving v1 compatibility and requires no database migration.
+
+Release boundary: backend #332 source is merged, but mobile v2 must not ship until production `api.peptonio.com` is deliberately redeployed with the merged backend source and verified.
 
 ### P21-E — Rare Contextual Adjustment
 
-Reviewed direction, deliberately bounded:
+Implemented, deliberately bounded:
 
 - no suggestion after every set;
-- only surface when actual performance materially diverges from an explicit target under deterministic thresholds;
-- examples include substantially harder/easier than planned execution when sufficient RPE/reps evidence exists;
-- offer a compact suggestion with explicit Apply / Ignore semantics;
-- never rewrite remaining sets silently;
-- recovery-aware adaptation belongs to the dedicated adaptive/recovery engine rather than being approximated from one set.
+- suggestion appears only when actual performance materially diverges from an exact aligned prescription row under deterministic RPE/reps thresholds;
+- missing/insufficient evidence fails closed;
+- Apply / Ignore are explicit;
+- remaining sets are never rewritten silently;
+- Apply preserves per-set prescription shape through a bounded load multiplier;
+- recovery-aware adaptation remains the responsibility of the dedicated future adaptive/recovery engine.
 
 ## Approved expansion queue after the Workout Assistant foundation
 
@@ -242,7 +249,8 @@ A prepared checklist is not evidence of a completed device run.
 3. P20-A — merged in #804.
 4. P20-B — merged in #805.
 5. P20-C — merged in #806; Phase 20 source/CI-complete.
-6. P21-A Smart Previous + Today’s Target — implementation in progress.
-7. P20 physical-device validation remains a separate release-evidence workstream.
+6. P21-A through P21-E — mobile implementation complete on #810; final source merge/release remains gated by exact-head validation and backend production deployment sequencing.
+7. Backend P21-D dependency #332 — merged as `b5a054e49e795a75f19c16ba85f507396e4598b6`; production deployment is not yet implied by merge.
+8. P20 physical-device validation remains a separate release-evidence workstream.
 
-Phase 21 is now an explicitly reviewed product requirement dated 2026-08-22. Do not invent P21-F or a later phase merely to continue development; use the approved slices/queue above or require another reviewed requirement.
+Phase 21 is an explicitly reviewed product requirement dated 2026-08-22. Do not invent P21-F or Phase 22 merely to continue development; use the approved expansion queue above or require another reviewed requirement.

@@ -21,13 +21,28 @@ Reviewed local-state storage decision remains `docs/architecture/local-state-per
 - Phase 18 Knowledge & Learning: P18-A through P18-H complete; there is no approved P18-I.
 - Phase 19 Exercise + Training Intelligence: reviewed source/CI scope complete through #803 plus Exercise Intelligence completion #807.
 - Phase 20 Progress Photos / Body Composition: P20-A through P20-C complete for reviewed source/CI scope.
-- There is no approved P20-D or Phase 21.
+- Phase 21 Workout Assistant: P21-A through P21-E implemented on mobile PR #810; backend schema-v2 dependency #332 is merged, while production backend deployment and mobile merge/publication remain separate release actions.
 
 Use Git/GitHub for exact current refs and PR/CI state. Use `docs/current-status.md` for the last verified project checkpoint and known workstream boundaries.
 
 ## Active forward work
 
-### 1. Phase 20 physical-device evidence
+### 1. Phase 21 deployment and release sequencing
+
+Do not publish schema-v2 workout sessions before the backend that understands them is running in production.
+
+Required order:
+
+1. deploy backend `main` containing merged #332 (`b5a054e49e795a75f19c16ba85f507396e4598b6`) through the normal production VPS backend path;
+2. verify `https://api.peptonio.com/health` plus a bounded authenticated workout-session sync-v1/v2 compatibility smoke;
+3. re-check exact mobile #810 head and Mobile CI;
+4. merge mobile #810 only after the backend deployment is verified;
+5. publish OTA/native output only as an explicit separate action;
+6. perform a real-device active-workout smoke for Previous/Today, rest timer, warm-ups, set types/supersets and contextual Apply/Ignore behavior.
+
+Backend #332 has no database migration. Source merge is not deployment evidence. The existing `Admin Production Deploy` workflow is scoped to `admin-console/`/compose changes and is not evidence that the Fastify API was redeployed for #332.
+
+### 2. Phase 20 physical-device evidence
 
 Source/CI closure does not prove native camera/photo behavior. Run `docs/qa/progress-photo-device-validation.md` on the intended signed iPhone build and record dated evidence for:
 
@@ -40,7 +55,7 @@ Source/CI closure does not prove native camera/photo behavior. Run `docs/qa/prog
 
 Do not claim this evidence before an actual device run.
 
-### 2. Phase 14 external evidence
+### 3. Phase 14 external evidence
 
 Continue only when prerequisites exist:
 
@@ -51,7 +66,7 @@ Continue only when prerequisites exist:
 
 Do not weaken fail-closed provider or HTTPS boundaries to bypass missing prerequisites.
 
-### 3. Phase 18 content activation
+### 4. Phase 18 content activation
 
 Coach → Learn runtime infrastructure is complete. Production mappings remain a separately reviewed editorial/product action.
 
@@ -66,18 +81,19 @@ A real mapping must reference an approved canonical article and preserve:
 
 No mapping means no Learn card. Runtime/model code must not synthesize fallback canonical lessons.
 
-### 4. Backend independent workstreams
+### 5. Backend independent workstreams
 
 Backend work is governed by the backend repository’s exact source, `AGENTS.md`, current GitHub state and branch CI.
 
-At the 2026-08-22 checkpoint:
+At the 2026-08-22 Phase 21 checkpoint:
 
-- #324 adds impact-aware backend agent tooling and should be reviewed/merged independently;
-- #325 adds an audited Admin write-plane, including a database migration and explicit production-backend rollout boundary.
+- #324 is merged and establishes impact-aware backend agent tooling;
+- #332 is merged and adds additive workout-session schema-v2 set semantics without a database migration;
+- #325 remains an independent audited Admin write-plane workstream and must keep its own migration/deployment boundary.
 
-Re-check those PRs before acting; this plan does not claim their live state indefinitely.
+Re-check live GitHub state before acting; this plan does not claim open/closed state indefinitely.
 
-Admin source deployment is now VPS/GitHub-Actions based; automatic Vercel Git deployments are disabled. A source merge is still not equivalent to backend deployment or migration execution.
+Admin source deployment is VPS/GitHub-Actions based; automatic Vercel Git deployments are disabled. A source merge is still not equivalent to backend deployment or migration execution.
 
 ## Permanent architecture boundaries
 
@@ -137,6 +153,18 @@ Permanent rules:
 - visual comparison is an aid, not geometric registration or measurement;
 - weight/measurement/body-fat values remain existing stored evidence authorities;
 - account cleanup and privacy lifecycle remain mandatory.
+
+### Workout Assistant
+
+- preserve the compact set table and progressive disclosure;
+- Previous and Today guidance is deterministic/read-only until explicit user input;
+- prescribed load authority comes only from exact `Workout.prescription` rows;
+- rest timer state is transient and not workout-set truth;
+- warm-up sets are durable but explicitly excluded from working-set analytics;
+- durable set semantics use typed `setType`/`supersetId`, never overloaded UI strings or notes;
+- workout-session sync v1 remains backward compatible and schema v2 is additive/fail-closed;
+- contextual adjustment requires material deterministic evidence and explicit Apply/Ignore;
+- no plate calculator, universal readiness score or per-set interruption loop is authorized by Phase 21.
 
 ## Validation policy
 

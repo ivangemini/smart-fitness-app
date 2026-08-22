@@ -25,20 +25,23 @@ Focused roadmap references:
 - **Phase 18 — Knowledge & Learning:** P18-A through P18-H source/CI-complete and merged. There is no approved P18-I.
 - **Phase 19 — Exercise + Training Intelligence:** P19-A through P19-D merged through #803; reviewed Exercise Intelligence completion merged through #807.
 - **Phase 20 — Progress Photos / Body Composition:** P20-A/P20-B/P20-C merged through #804/#805/#806 and source/CI-complete for reviewed scope.
+- **Phase 21 — Workout Assistant:** P21-A through P21-E implemented on mobile PR #810; backend sync-v2 dependency #332 is merged. Production backend deployment and mobile merge/publication remain explicit release gates.
 
 ## Current checkpoints
 
 ### Mobile
 
-Checkpoint observed after #808, a documentation-only sync. Reviewed runtime/product closure remains the #807 merge commit `371e1cdfc09aeffd93f4664cabbb4a777f19e1b0` plus the already merged Phase 20 sequence.
-
 Phase 19 reviewed scope is complete, including canonical SVG muscle anatomy, deterministic training analytics and reviewed `exercise-intelligence-v1` metadata. Phase 20 source scope is complete through #806.
+
+Phase 21 implementation lives on PR #810. Pre-documentation code head at this checkpoint is `2b4afbab5c071fa7d692b11c59fc651860bd3565`; exact final PR head and CI must be queried from GitHub before merge.
 
 ### Backend
 
-Checkpoint observed after #330.
+Phase 21 dependency #332 is merged to `main` as `b5a054e49e795a75f19c16ba85f507396e4598b6`. Its exact PR head `1a0bf3319db094aed14b7e397242250f30dc087d` passed Backend CI #2435 and Backend PostgreSQL CI #798. It introduces no database migration.
 
-Admin v5-v12 #305 is merged. PR #330 disabled automatic Vercel Git deployments; the VPS/GitHub Actions Admin path is authoritative. #324 and #325 were open at this checkpoint and are not roadmap completion evidence until merged; re-check their current GitHub state before acting.
+Admin v5-v12 #305 and backend agent-tooling #324 are merged. PR #330 disabled automatic Vercel Git deployments for Admin; the VPS/GitHub Actions Admin path is authoritative for Admin. #325 remains an independent Admin write-plane workstream and must be re-checked before acting.
+
+A backend source merge is not production API deployment evidence. The automatic Admin deploy workflow does not prove that the Fastify API was rebuilt with #332.
 
 ## Phase 18 activation boundary
 
@@ -65,8 +68,21 @@ Reviewed scope includes:
 - read-only 30/90-day body-composition progress using existing calculation authorities;
 - no cloud/provider/social photo upload, AI vision or photo-derived body-fat estimate.
 
+## Phase 21 stable authority
+
+- row-aligned Previous load/reps/RPE and exact prescribed Today guidance without inferred target loads;
+- rest timer only after explicit completion, using configured `restSeconds`, with transient pause/adjust/skip state;
+- deterministic prescribed-load warm-up proposal with explicit Add/Skip;
+- warm-up sets are durable but excluded from working-set Previous/indexing and all relevant live/historical working analytics;
+- typed set semantics `working | warmup | backoff | drop | amrap` plus optional `supersetId`;
+- additive workout-session sync schema v2 only when semantic fields are present, while legacy sessions remain v1 and malformed envelopes fail closed;
+- rare deterministic contextual adjustments from exact aligned RPE/reps divergence with explicit Apply/Ignore and no silent rewrite;
+- no plate calculator, universal readiness score or second assistant authority.
+
 ## Remaining independent evidence
 
+- Phase 21 production backend deployment of merged #332 plus bounded production workout-session sync v1/v2 verification;
+- Phase 21 mobile merge/publication and real-device active-workout smoke after backend compatibility is live;
 - Phase 14 configured-provider/native/device evidence;
 - Phase 20 P20-A real-device camera/photo-library lifecycle evidence;
 - Phase 20 P20-B real-device side-by-side/overlay rendering evidence.
@@ -76,9 +92,13 @@ Use `docs/qa/progress-photo-device-validation.md` for the Phase 20 run. The chec
 ## Next execution order
 
 1. Query exact current Git/GitHub state before using this roadmap operationally.
-2. Run Phase 20 physical-device validation on the intended signed iPhone build.
-3. Continue Phase 14 external/provider/device evidence when prerequisites are available.
-4. Activate Coach → Learn mappings only from reviewed canonical content authority.
-5. Keep P17-E inactive until a richer-goal requirement crosses its documented threshold.
-6. Do not create P20-D or Phase 21 without a reviewed requirement or reproduced defect.
-7. Keep source/CI, deployment, migration execution, provider/content activation, OTA/native publication and physical-device evidence as separate claims.
+2. Deploy backend `main` containing merged #332 to the production VPS through the normal Fastify backend production path.
+3. Verify production health and bounded authenticated workout-session sync v1/v2 compatibility.
+4. Re-check exact mobile #810 head/CI; merge only after backend deployment evidence exists.
+5. Publish OTA/native output only as a separate explicit action, then run the Phase 21 real-device smoke.
+6. Run Phase 20 physical-device validation on the intended signed iPhone build.
+7. Continue Phase 14 external/provider/device evidence when prerequisites are available.
+8. Activate Coach → Learn mappings only from reviewed canonical content authority.
+9. Keep P17-E inactive until a richer-goal requirement crosses its documented threshold.
+10. Do not create P21-F or Phase 22 without a reviewed requirement or reproduced defect.
+11. Keep source/CI, deployment, migration execution, provider/content activation, OTA/native publication and physical-device evidence as separate claims.
