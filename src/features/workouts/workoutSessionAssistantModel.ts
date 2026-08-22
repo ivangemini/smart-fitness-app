@@ -1,5 +1,5 @@
 import { createUuid } from '@/lib/ids';
-import type { WorkoutSetType } from '@/types';
+import type { WorkoutSet, WorkoutSetType } from '@/types';
 
 import type { WorkoutSessionDraft } from './types';
 import type { WorkoutWarmupSetProposal } from './workoutWarmupGuide';
@@ -21,14 +21,14 @@ export const addWorkoutWarmupSets = (
 ): WorkoutSessionDraft => {
   if (proposal.length === 0) return draft;
 
-  const warmups = proposal.map((set) => ({
+  const warmups: WorkoutSet[] = proposal.map((set) => ({
     id: createUuid(),
     exerciseId: exercise.id,
     exerciseName: exercise.name,
     weight: set.weight,
     reps: set.reps,
     completed: false,
-    setType: 'warmup' as const,
+    setType: 'warmup',
   }));
   const firstExerciseIndex = draft.sets.findIndex((set) => set.exerciseId === exercise.id);
   const insertionIndex = firstExerciseIndex >= 0 ? firstExerciseIndex : draft.sets.length;
@@ -170,7 +170,7 @@ export const applyWorkoutAdjustmentToRemainingSets = (
   };
 
   const missingCount = Math.max(0, requestedCount - currentWorkingSets.length);
-  const newWorkingSets = Array.from({ length: missingCount }, (_, offset) => {
+  const newWorkingSets: WorkoutSet[] = Array.from({ length: missingCount }, (_, offset) => {
     const workingIndex = currentWorkingSets.length + offset;
     return {
       id: createUuid(),
@@ -189,7 +189,7 @@ export const applyWorkoutAdjustmentToRemainingSets = (
       break;
     }
   }
-  const expandedSets = missingCount > 0
+  const expandedSets: WorkoutSet[] = missingCount > 0
     ? [
         ...draft.sets.slice(0, insertionIndex).map((set) => ({ ...set })),
         ...newWorkingSets,
