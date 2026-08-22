@@ -1,16 +1,17 @@
-# Training Intelligence & Body Composition Roadmap
+# Training Intelligence, Body Composition & Workout Assistant Roadmap
 
 Updated: 2026-08-22
 
-This roadmap defines the reviewed work for Exercise Intelligence, Personal Training Intelligence, and Progress Photos / Body Composition. Existing Coach, Progress, Workouts, privacy, sync and safety authority remain in force.
+This roadmap defines the reviewed work for Exercise Intelligence, Personal Training Intelligence, Progress Photos / Body Composition, and the active-workout assistance layer. Existing Coach, Progress, Workouts, privacy, sync and safety authority remain in force.
 
 ## Product objective
 
-Help the user answer three questions without duplicate authority or false precision:
+Help the user answer four questions without duplicate authority or false precision:
 
 1. What muscle and movement does this exercise train?
 2. How is training performance changing over time?
 3. How is physique/body-composition progress changing visually and through stored measurements?
+4. What should I know while performing the current workout without turning the session screen into a dashboard?
 
 ## Phase 19 — Exercise + Training Intelligence
 
@@ -99,6 +100,120 @@ Implemented and merged through PR #806; merge commit `6e287c64d4fcdcd604e78de6ae
 
 Phase 20 is source/CI-complete for the reviewed scope through #806.
 
+## Phase 21 — Workout Assistant
+
+Approved product direction: make the active workout faster and more informative without adding a dense dashboard or an assistant that interrupts after every set.
+
+### Permanent interaction rules
+
+- preserve the compact primary set table rather than adding large intelligence cards;
+- use progressive disclosure for secondary detail;
+- deterministic/reviewed facts precede Coach explanation;
+- a suggestion is not a mutation: workout/program changes require explicit user action;
+- normal execution should stay quiet; contextual intervention is reserved for meaningful evidence;
+- do not add a plate calculator to the reviewed scope;
+- do not introduce a universal recovery/readiness score.
+
+### P21-A — Smart Previous + Today’s Target
+
+First implementation slice:
+
+- keep Previous directly aligned to each set rather than moving history into a separate card;
+- show previous load × reps and stored actual RPE when available;
+- use an exact confirmed `Workout.prescription` entry as the only authority for prescribed target load/reps/RPE;
+- use canonical template `targetReps` only as a reps fallback when no valid prescribed reps exist;
+- never infer a target load from previous history merely because a prior load exists;
+- exact `exerciseId` matching only; no runtime name-based target matching;
+- surface target load/reps as compact hints inside otherwise empty set inputs rather than another column/card;
+- hints remain read-only guidance and do not automatically populate, complete or persist a set.
+
+Status: **implementation in progress** on `phase-21-workout-assistant-p21a`.
+
+### P21-B — Automatic Rest Timer
+
+Reviewed direction:
+
+- start after an explicit set-completion action;
+- prefer existing exercise-level `restSeconds` when available;
+- allow quick pause/skip/manual override;
+- keep timer state distinct from workout-set truth;
+- do not require a new large card in every exercise section;
+- Live Activity / Dynamic Island is a later native-capability decision, not implied by source timer support.
+
+### P21-C — Warm-up Sets
+
+Reviewed direction:
+
+- deterministic warm-up proposal from the intended working load and exercise context;
+- warm-up sets remain explicitly distinct from working sets and working-volume analytics;
+- no guessed working load when no reviewed/prescribed target exists;
+- user can accept/edit/skip the proposed warm-up sequence.
+
+### P21-D — Set Types + Supersets
+
+Reviewed direction:
+
+- support explicit working/warm-up/back-off/drop/AMRAP semantics and supersets;
+- design the persisted/synced contract before adding durable set-type fields;
+- do not encode durable semantics in UI-only strings or overloaded notes;
+- existing completed-history compatibility and sync authority must be preserved.
+
+### P21-E — Rare Contextual Adjustment
+
+Reviewed direction, deliberately bounded:
+
+- no suggestion after every set;
+- only surface when actual performance materially diverges from an explicit target under deterministic thresholds;
+- examples include substantially harder/easier than planned execution when sufficient RPE/reps evidence exists;
+- offer a compact suggestion with explicit Apply / Ignore semantics;
+- never rewrite remaining sets silently;
+- recovery-aware adaptation belongs to the dedicated adaptive/recovery engine rather than being approximated from one set.
+
+## Approved expansion queue after the Workout Assistant foundation
+
+These directions are approved for roadmap planning but remain separate implementation packages so authority, persistence, native and UX boundaries can be reviewed independently.
+
+### Adaptive Program + Recovery Engine
+
+Build two linked deterministic layers rather than a free-form Coach decision:
+
+1. **Training Progression Engine** — performance history, load/reps/RPE, e1RM, progression/regression, plateau, recent training load and program context.
+2. **Recovery Modifier** — local muscle recovery plus systemic evidence such as recovery check-ins and, when legitimately available, sleep/activity/resting-HR/HRV evidence.
+
+Additional context may include activity/cardio, nutrition context, schedule and evidence confidence. Missing signals remain unknown. Recovery is muscle-specific where possible and systemic where appropriate; it is not collapsed into a pseudo-precise universal score.
+
+Final proposals remain explicit suggestions. Coach may explain them but does not become the deterministic calculation authority and does not silently mutate a program.
+
+### Exercise Preferences + Smart Replace
+
+- user preference states such as prefer / neutral / avoid;
+- explicit reasons such as equipment, preference, discomfort or temporary exclusion;
+- combine user preference with existing reviewed substitutions;
+- no claim that two exercises are physiologically identical;
+- replacement remains explicit user action.
+
+### Weekly Training Review
+
+One compact weekly review over existing deterministic authorities:
+
+- completed versus planned workouts;
+- volume/performance direction and PRs;
+- muscle exposure/gaps;
+- meaningful changes only, with evidence drill-down;
+- optional Coach explanation over the deterministic review.
+
+### Apple Health / Apple Watch
+
+Future native workstream for reviewed, permission-bounded health/activity inputs and a focused workout companion. This requires signed native builds and physical-device evidence; source/OTA completion alone is insufficient.
+
+### Progress Stories / Share Cards
+
+User-initiated share artifacts for selected non-sensitive progress facts. Progress photos are included only when the user explicitly selects them for the share action. Private progress evidence is never silently published.
+
+### Trainer / Coach Layer
+
+Future server-authoritative collaboration layer for explicit coach/client relationships, scoped data access, program assignment and feedback. Marketplace/payments are not implied and require separate reviewed contracts.
+
 ## Physical-device release evidence
 
 Source/CI closure does not satisfy native photo validation. The exact checklist is `docs/qa/progress-photo-device-validation.md`.
@@ -123,10 +238,11 @@ A prepared checklist is not evidence of a completed device run.
 ## Current execution state
 
 1. P19-A through P19-D — merged in #803.
-2. Deferred reviewed Exercise Intelligence metadata — merged in #807; current `main` merge checkpoint `371e1cdfc09aeffd93f4664cabbb4a777f19e1b0`.
+2. Deferred reviewed Exercise Intelligence metadata — merged in #807; merge checkpoint `371e1cdfc09aeffd93f4664cabbb4a777f19e1b0`.
 3. P20-A — merged in #804.
 4. P20-B — merged in #805.
 5. P20-C — merged in #806; Phase 20 source/CI-complete.
-6. P20 physical-device validation remains a separate release-evidence workstream.
+6. P21-A Smart Previous + Today’s Target — implementation in progress.
+7. P20 physical-device validation remains a separate release-evidence workstream.
 
-There is no approved P20-D or Phase 21. Do not invent one merely to continue development.
+Phase 21 is now an explicitly reviewed product requirement dated 2026-08-22. Do not invent P21-F or a later phase merely to continue development; use the approved slices/queue above or require another reviewed requirement.

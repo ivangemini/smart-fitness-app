@@ -123,21 +123,27 @@ export const removeWorkoutSessionSet = (draft: WorkoutSessionDraft, setId: strin
 };
 
 export const getWorkoutSessionCompletedSetCount = (draft: WorkoutSessionDraft | null | undefined) => {
-  return draft?.sets.filter((set) => set.completed !== false).length ?? 0;
+  return draft?.sets.filter(
+    (set) => set.completed !== false && set.setType !== 'warmup',
+  ).length ?? 0;
 };
 
 export const getPreviousCompletedSetsForExercise = (
   exerciseId: string,
   workoutSessions: WorkoutSession[],
 ) => {
+  const isWorkingSet = (set: WorkoutSet) =>
+    set.exerciseId === exerciseId &&
+    set.completed !== false &&
+    set.setType !== 'warmup';
   const previousSession = [...workoutSessions]
     .sort((left, right) => new Date(right.finishedAt).getTime() - new Date(left.finishedAt).getTime())
-    .find((session) => session.sets.some((set) => set.exerciseId === exerciseId && set.completed !== false));
+    .find((session) => session.sets.some(isWorkingSet));
 
   return (
     previousSession?.sets
-      .filter((set) => set.exerciseId === exerciseId && set.completed !== false)
-      .map((set) => ({ reps: set.reps, weight: set.weight })) ?? []
+      .filter(isWorkingSet)
+      .map((set) => ({ reps: set.reps, weight: set.weight, actualRpe: set.actualRpe })) ?? []
   );
 };
 

@@ -35,6 +35,8 @@ export type Workout = {
 
 export type Exercise = DomainExercise;
 
+export type WorkoutSetType = 'working' | 'warmup' | 'backoff' | 'drop' | 'amrap';
+
 export type WorkoutSet = {
   id: string;
   exerciseId: string;
@@ -44,6 +46,8 @@ export type WorkoutSet = {
   completed?: boolean;
   targetRpe?: WorkoutRpe;
   actualRpe?: WorkoutRpe;
+  setType?: WorkoutSetType;
+  supersetId?: string;
 };
 
 export type WorkoutSafetyReviewStatus = 'ready' | 'needs_input' | 'modify' | 'blocked';

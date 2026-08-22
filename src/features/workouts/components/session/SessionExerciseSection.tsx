@@ -3,13 +3,16 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import type { WorkoutSet } from '@/context/AppContext';
 import { Colors } from '@/constants/theme';
+import type { WorkoutWarmupSetProposal } from '@/features/workouts/workoutWarmupGuide';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import { resolveLiquidGlassPalette, type LiquidGlassPalette } from '@/theme/liquidGlass';
+import type { WorkoutPrescriptionSet } from '@/types';
 import { formatWeightValue, useUnitPreferences } from '@/units';
 
 import { SessionSetTable } from './SessionSetTable';
 import type { SessionDraftInputs, SessionExercise } from './types';
+import { WorkoutWarmupSuggestion } from './WorkoutWarmupSuggestion';
 
 type SessionExerciseSectionProps = {
   draftInputs: SessionDraftInputs;
@@ -18,6 +21,7 @@ type SessionExerciseSectionProps = {
   exerciseSets: WorkoutSet[];
   expanded: boolean;
   onAddSet: (exerciseId: string) => void;
+  onAddWarmupSets?: () => void;
   onCommitRowInputs: (setId: string) => void;
   onEditSetRpe: (setId: string) => void;
   onLongPressExercise: (exerciseId: string, exerciseName: string) => void;
@@ -27,10 +31,13 @@ type SessionExerciseSectionProps = {
   onPlannedToggleSetCompletion: (exerciseId: string, index: number) => void;
   onPlannedWeightChange: (exerciseId: string, index: number, field: 'weight', value: string) => void;
   onRepsChange: (setId: string, value: string) => void;
+  onSkipWarmup?: () => void;
   onToggleExpanded: (exerciseId: string) => void;
   onToggleSetCompletion: (setId: string) => void;
   onWeightChange: (setId: string, value: string) => void;
-  previousSets?: Array<{ reps: number; weight: number }>;
+  prescriptionSets?: readonly WorkoutPrescriptionSet[];
+  previousSets?: Array<{ actualRpe?: WorkoutSet['actualRpe']; reps: number; weight: number }>;
+  warmupProposal?: readonly WorkoutWarmupSetProposal[];
 };
 
 export const SessionExerciseSection = memo(function SessionExerciseSection({
@@ -39,6 +46,7 @@ export const SessionExerciseSection = memo(function SessionExerciseSection({
   exerciseSets,
   expanded,
   onAddSet,
+  onAddWarmupSets,
   onCommitRowInputs,
   onEditSetRpe,
   onLongPressExercise,
@@ -48,10 +56,13 @@ export const SessionExerciseSection = memo(function SessionExerciseSection({
   onPlannedToggleSetCompletion,
   onPlannedWeightChange,
   onRepsChange,
+  onSkipWarmup,
   onToggleExpanded,
   onToggleSetCompletion,
   onWeightChange,
+  prescriptionSets = [],
   previousSets,
+  warmupProposal = [],
 }: SessionExerciseSectionProps) {
   const { colors, resolvedAppearance } = useAppTheme();
   const { formatNumber, formatPlural, t } = useLocalization();
@@ -61,7 +72,12 @@ export const SessionExerciseSection = memo(function SessionExerciseSection({
     [resolvedAppearance],
   );
   const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
-  const plannedSetCount = Math.max(exercise.targetSets ?? 0, exerciseSets.length);
+  const workingSetCount = exerciseSets.filter((set) => set.setType !== 'warmup').length;
+  const plannedSetCount = Math.max(
+    exercise.targetSets ?? 0,
+    workingSetCount,
+    prescriptionSets.length,
+  );
   const collapsedRows = exerciseSets.length > 0
     ? exerciseSets.map((set, index) => ({
         completed: set.completed !== false,
@@ -159,8 +175,16 @@ export const SessionExerciseSection = memo(function SessionExerciseSection({
             ]}>
             <Text style={styles.restTimerLabel}>{t('workouts.session.restTimerOff')}</Text>
           </Pressable>
+          {warmupProposal.length > 0 && onAddWarmupSets && onSkipWarmup ? (
+            <WorkoutWarmupSuggestion
+              onAdd={onAddWarmupSets}
+              onSkip={onSkipWarmup}
+              proposal={warmupProposal}
+            />
+          ) : null}
           <SessionSetTable
             draftInputs={draftInputs}
+            exerciseId={exercise.id}
             onCommitRowInputs={onCommitRowInputs}
             onEditSetRpe={onEditSetRpe}
             onLongPressRow={onLongPressRow}
@@ -176,6 +200,8 @@ export const SessionExerciseSection = memo(function SessionExerciseSection({
             onRepsChange={onRepsChange}
             onToggleSetCompletion={onToggleSetCompletion}
             onWeightChange={onWeightChange}
+            plannedTargetReps={exercise.targetReps}
+            prescription={prescriptionSets}
             previousSets={previousSets}
             targetSetCount={plannedSetCount}
             sets={exerciseSets}

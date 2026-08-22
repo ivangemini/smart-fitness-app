@@ -90,7 +90,9 @@ export const buildWorkoutSessionLiveSummary = (
   rpeSet: WorkoutSet | undefined;
   rpeSetLabel: string;
 } => {
-  const completedSets = draft.sets.filter((set) => set.completed !== false);
+  const completedSets = draft.sets.filter(
+    (set) => set.completed !== false && set.setType !== 'warmup',
+  );
   const rpeSet = rpeSetId ? draft.sets.find((set) => set.id === rpeSetId) : undefined;
   const rpeSetIndex = rpeSet
     ? draft.sets
