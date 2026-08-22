@@ -2,11 +2,11 @@
 
 Updated: 2026-08-22
 
-This roadmap defines the next reviewed product work after Phase 18. It intentionally focuses on three approved directions: Exercise Intelligence, Personal Training Intelligence, and Progress Photos / Body Composition. Existing Coach, Progress, Workouts, privacy, sync, safety and Liquid Glass authority remain in force.
+This roadmap defines the reviewed product work after Phase 18. It focuses on Exercise Intelligence, Personal Training Intelligence, and Progress Photos / Body Composition. Existing Coach, Progress, Workouts, privacy, sync, safety and Liquid Glass authority remain in force.
 
 ## Product objective
 
-Turn the existing workout/exercise data into a clearer visual and analytical training system without creating a second Coach authority, pseudo-precision scores, or hidden automatic mutations.
+Turn existing workout/exercise data into a clearer visual and analytical training system without creating a second Coach authority, pseudo-precision scores, or hidden automatic mutations.
 
 The product should help a user answer three questions:
 
@@ -18,77 +18,64 @@ The product should help a user answer three questions:
 
 ### P19-A — Exercise Intelligence foundation
 
-Build a canonical reusable exercise anatomy layer.
+Delivered reviewed scope:
 
-Scope:
+- canonical muscle taxonomy remains in `src/features/exercises/muscleTaxonomy.ts`;
+- one reusable local SVG anatomy geometry authority drives front/back body views;
+- supported muscle regions use stable canonical IDs;
+- primary/secondary highlights remain visually distinct;
+- full-size anatomy, exercise-detail anatomy, thumbnails, interactive filtering and Progress heatmaps reuse the same SVG renderer;
+- exercise-library muscle filters retain text labels while adding compact highlighted body thumbnails;
+- front/back body regions can be tapped to set the existing exercise-library muscle filter;
+- muscle detail drill-downs show exactly mapped exercises plus completed user training history;
+- unknown provider muscle names fail closed to text/unmapped behavior instead of being guessed;
+- no remote runtime anatomy images or one-off muscle PNG/JPEG assets are required.
 
-- retain and extend the canonical muscle taxonomy in `src/features/exercises/muscleTaxonomy.ts`;
-- provide one reusable SVG anatomy system for front/back body views;
-- every supported muscle region has a stable canonical ID;
-- support primary and secondary muscle highlighting with distinct visual emphasis;
-- use the same SVG authority at full-size and thumbnail sizes;
-- add compact muscle thumbnails to exercise-library muscle/body-part filters (for example `Chest` + a body silhouette with chest highlighted);
-- support exercise detail anatomy using the same canonical mapping;
-- preserve text labels and accessibility labels; SVG is additive, not the only source of meaning;
-- do not fetch remote anatomy images at runtime;
-- do not create one-off PNG/JPEG assets per muscle;
-- unknown provider muscle names must fail to an unhighlighted/text fallback rather than guessing.
-
-Follow-up P19-A slices:
-
-- interactive front/back body-map exercise filtering;
-- tap a muscle region to filter exercises;
-- muscle detail surface with relevant exercises and user history;
-- richer movement metadata: movement pattern, equipment, primary/secondary muscles, substitutions and technique metadata where reviewed data exists.
+Richer movement-pattern/substitution metadata remains data-authority-dependent: it should be added only when reviewed canonical data exists rather than inferred from exercise names.
 
 ### P19-B — Training analytics foundation
 
-Use existing completed workout/session history as the authority for deterministic analytics.
+Delivered reviewed scope:
 
-Scope:
+- completed workout/session history remains analytics authority;
+- existing exercise performance and comparable estimated-1RM trends remain reusable;
+- explicit PR types distinguish load, reps, estimated 1RM and session volume;
+- mapped primary-muscle working sets/volume, secondary exposure, frequency and last exposure are derived from reviewed exercise metadata;
+- current and immediately preceding equal 7/30/90-day windows are compared deterministically;
+- calculations take an explicit `endAt` boundary rather than hidden wall-clock state;
+- ambiguous exercise-name fallback and unknown muscle mappings fail closed;
+- insufficient/unmapped evidence stays visible rather than being silently fabricated.
 
-- exercise performance trend;
-- estimated 1RM trend where the input set is suitable;
-- rep-strength trend without pretending estimates are measured maxes;
-- personal-record detection with explicit PR type;
-- session and rolling training volume;
-- muscle-group volume derived from reviewed exercise-to-muscle mappings;
-- frequency and recent exposure by muscle group;
-- stable 7/30/90-day comparisons;
-- clear insufficient-data states.
-
-Do not create a universal fitness/readiness score.
+No universal fitness/readiness score is introduced, and estimated 1RM is never represented as a measured max.
 
 ### P19-C — Plateau and progression signals
 
-Provide deterministic training findings over trusted workout history.
+Delivered reviewed scope uses `training-intelligence-v1` deterministic rules with explicit evidence for:
 
-Possible findings include:
-
-- repeated performance plateau;
+- new load/reps/e1RM/session-volume PRs;
+- repeated comparable-performance plateau;
 - stable load with rising reps;
-- load/reps regression across multiple comparable exposures;
-- unusually large volume increase;
-- muscle-group exposure imbalance;
-- new PR;
-- long gap since a muscle/exercise was trained.
+- bounded comparable e1RM regression;
+- unusually large recent volume increase;
+- concentrated muscle-group exposure;
+- long gap since a mapped muscle was trained;
+- long gap since an exercise was trained.
 
-Rules must be versioned/tested and should use bounded evidence. Free-form model text is presentation/explanation only and is never finding authority.
+Findings are bounded to the selected analysis window, preserve their underlying evidence, and remain deterministic. Free-form/model text is presentation/explanation only and is never finding authority.
 
 ### P19-D — Training Intelligence UX
 
-Integrate the deterministic analytics primarily into Progress and exercise detail, with bounded Coach handoff where useful.
+Delivered reviewed scope:
 
-Scope:
+- Training Progress uses shared 7/30/90-day period selection;
+- reusable SVG front/back muscle heatmaps visualize mapped primary-muscle load intensity;
+- primary/secondary set counts, exposure sessions, mapped volume and previous-window change remain inspectable as facts;
+- progression findings display exact evidence rather than opaque scores;
+- tapping a mapped heatmap region opens the canonical muscle detail drill-down;
+- exercise progress retains conservative comparable-e1RM chart behavior and raw workout-history access;
+- Coach handoff remains optional/read-only and does not become finding authority.
 
-- exercise analytics drill-down;
-- muscle heatmap using the P19-A SVG map;
-- 7/30/90-day muscle-load visualization;
-- PR and plateau history;
-- exact evidence behind each insight;
-- optional Coach explanation over already-derived structured findings.
-
-Reading an insight must never automatically modify a workout, program or goal.
+Reading an insight never automatically modifies a workout, program, goal, nutrition, Labs, recovery or safety state.
 
 ## Phase 20 — Progress Photos / Body Composition
 
@@ -136,20 +123,21 @@ Do not present photo-estimated body-fat percentage as an exact measurement. Any 
 - Do not create a second Coach or recommendation authority.
 - Deterministic analytics precede model explanation.
 - Preserve offline/local behavior where current architecture requires it.
-- SVG anatomy must remain reusable, local, accessible and theme-compatible.
+- SVG anatomy remains reusable, local, accessible and theme-compatible.
 - Physical-device evidence is required for camera/photo workflows before release claims.
 
 ## Execution order
 
-1. P19-A first slice: reusable SVG muscle thumbnail + exercise-library visual muscle filters.
-2. P19-A full interactive anatomy/body-map filtering.
-3. P19-B deterministic training analytics.
-4. P19-C plateau/PR/progression findings.
-5. P19-D Progress + Coach presentation and muscle heatmaps.
-6. P20-A private standardized progress photos.
-7. P20-B comparison/overlay UX.
-8. P20-C combined body-composition progress surface.
+1. P19-A reusable anatomy/thumbnails/filtering — implemented in the Phase 19 closure change.
+2. P19-B deterministic training analytics — implemented.
+3. P19-C versioned PR/plateau/progression findings — implemented.
+4. P19-D Progress presentation, heatmaps and evidence drill-downs — implemented.
+5. P20-A private standardized progress photos.
+6. P20-B comparison/overlay UX.
+7. P20-C combined body-composition progress surface.
 
 ## Current state
 
-P19-A is active. The repository already contains a canonical muscle taxonomy and a full-size `MuscleMap`; the first implementation slice should reuse that authority rather than create a parallel muscle naming system.
+Phase 19 implementation is complete for the reviewed mobile source scope in PR #803. The implementation head before closure documentation is `6e017b18fdeba3e1d47a2ce7191cd343743cf3f5`; exact-head CI and merge history remain the final authority for closure evidence.
+
+Phase 20 is the next planned product phase. Camera/photo work must not be described as release-ready until its private-storage contract and physical-device evidence are separately satisfied.
