@@ -2,7 +2,7 @@
 
 Updated: 2026-08-22
 
-This file is the canonical **forward sequencing** document. The last verified mutable product/workstream checkpoint belongs in `docs/current-status.md`; **exact live refs, PR state and CI state come from Git/GitHub**; detailed stable architecture belongs in `docs/project-context.md`; focused phase detail belongs under `docs/roadmap/` and `docs/architecture/`.
+This file is the canonical **forward sequencing** document. Exact live refs, PR state and CI state come from Git/GitHub. The mutable checkpoint belongs in `docs/current-status.md`; stable architecture belongs in `docs/project-context.md`; focused phase detail belongs under `docs/roadmap/` and `docs/architecture/`.
 
 Exact code, tests, migrations, CI and current Git history override stale prose.
 
@@ -17,34 +17,37 @@ Reviewed local-state storage decision remains `docs/architecture/local-state-per
 - Phase 14: ordinary source/runtime preparation exhausted for current contracts; external provider/native/device evidence remains.
 - Phase 15 Coach Intelligence & Progress analytics: reviewed source/CI scope complete.
 - Phase 16 Proactive Coach foreground v1: complete for reviewed deterministic scope.
-- Phase 17 Goals & Planning: P17-A through P17-D complete; P17-E requirement-gated.
-- Phase 18 Knowledge & Learning: P18-A through P18-H complete; there is no approved P18-I.
-- Phase 19 Exercise + Training Intelligence: reviewed source/CI scope complete through #803 plus Exercise Intelligence completion #807.
-- Phase 20 Progress Photos / Body Composition: P20-A through P20-C complete for reviewed source/CI scope.
-- Phase 21 Workout Assistant: P21-A through P21-E implemented on mobile PR #810; backend schema-v2 dependency #332 is merged, while production backend deployment and mobile merge/publication remain separate release actions.
+- Phase 17 Goals & Planning: P17-A through P17-D complete; P17-E is requirement-gated.
+- Phase 18 Knowledge & Learning: P18-A through P18-H complete; production content mappings remain a separate activation action.
+- Phase 19 Exercise + Training Intelligence: reviewed source/CI scope complete through #803/#807.
+- Phase 20 Progress Photos / Body Composition: P20-A through P20-C complete for reviewed source/CI scope; physical-device evidence remains.
+- Phase 21 Workout Assistant: P21-A through P21-E are merged and backend schema-v2 compatibility is deployed/verified; OTA publication evidence and real-device smoke remain.
 
-Use Git/GitHub for exact current refs and PR/CI state. Use `docs/current-status.md` for the last verified project checkpoint and known workstream boundaries.
+There is no approved P21-F or Phase 22. New numbered phases require a reviewed requirement rather than automatic continuation.
 
 ## Active forward work
 
-### 1. Phase 21 deployment and release sequencing
+### 1. Phase 21 OTA + real-device closure
 
-Do not publish schema-v2 workout sessions before the backend that understands them is running in production.
+Closed gates:
 
-Required order:
+- backend #332 merged as `b5a054e49e795a75f19c16ba85f507396e4598b6`;
+- production backend deployed at `8a2c539ecfbf7842bf37a02491de9f844ec83c81`, with #332 in ancestry;
+- production health and bounded workout-session sync v1/v2 compatibility passed;
+- mobile #810 exact head `94f70355fe4b4b22240d2c90f1bd861f5bc6d068` passed Mobile CI #2806;
+- #810 squash-merged to mobile `main` as `a2abde02e31b5ed1207e67835144e9359aea711e`.
 
-1. deploy backend `main` containing merged #332 (`b5a054e49e795a75f19c16ba85f507396e4598b6`) through the normal production VPS backend path;
-2. verify `https://api.peptonio.com/health` plus a bounded authenticated workout-session sync-v1/v2 compatibility smoke;
-3. re-check exact mobile #810 head and Mobile CI;
-4. merge mobile #810 only after the backend deployment is verified;
-5. publish OTA/native output only as an explicit separate action;
-6. perform a real-device active-workout smoke for Previous/Today, rest timer, warm-ups, set types/supersets and contextual Apply/Ignore behavior.
+Remaining sequence:
 
-Backend #332 has no database migration. Source merge is not deployment evidence. The existing `Admin Production Deploy` workflow is scoped to `admin-console/`/compose changes and is not evidence that the Fastify API was redeployed for #332.
+1. confirm the `Publish EAS Update` workflow for `a2abde02...` completed successfully;
+2. record EAS update ID/group/runtime `1.0.3` plus production branch/channel evidence;
+3. on the intended iPhone run an active-workout smoke for Previous/Today, rest timer, warm-ups, set types/supersets, contextual Apply/Ignore, active-session persistence and sync sanity.
+
+Do not call Phase 21 user-facing release verified until those publication/device checks are recorded.
 
 ### 2. Phase 20 physical-device evidence
 
-Source/CI closure does not prove native camera/photo behavior. Run `docs/qa/progress-photo-device-validation.md` on the intended signed iPhone build and record dated evidence for:
+Run `docs/qa/progress-photo-device-validation.md` on the intended signed iPhone build and record dated evidence for:
 
 - camera permission and capture;
 - photo-library import;
@@ -53,20 +56,33 @@ Source/CI closure does not prove native camera/photo behavior. Run `docs/qa/prog
 - same-pose comparison;
 - fail-closed overlay behavior and visual quality.
 
-Do not claim this evidence before an actual device run.
+Source/CI closure is not native-device evidence.
 
-### 3. Phase 14 external evidence
+### 3. Admin production completion
+
+Backend Admin control-plane source through #325/#335/#336/#337 is merged. #325 merge `a3f260aca1089548202eeeee8b96624e931b7efc` is in the ancestry of production backend `8a2c539...`. The production deploy reported the standard migration step completed successfully.
+
+Remaining sequence:
+
+1. explicitly verify the live Admin control plane against production data/permissions, including RBAC/account controls, protected-target rules, feature flags, audit viewer and representative high-impact confirmation flows;
+2. confirm migration `0056_admin_control_plane.sql` is present/applied in production migration state if the normal deployment evidence is not considered sufficient;
+3. only after successful verification, activate the staged global Administration navigation in a small follow-up source change;
+4. validate/deploy that Admin UI change through the existing VPS/GitHub-Actions Admin path.
+
+Do not expose the navigation merely because source and migration code exist.
+
+### 4. Phase 14 external evidence
 
 Continue only when prerequisites exist:
 
-- Push: staging APNs/FCM material plus signed-device permission/token/delivery/tap evidence;
-- Labs: staging HTTPS S3-compatible storage + configured model material plus bounded synthetic lifecycle and physical-device picker evidence;
+- Push: staging/production APNs/FCM material plus signed-device permission/token/delivery/tap evidence;
+- Labs: HTTPS S3-compatible storage + configured model material plus bounded synthetic lifecycle and physical-device picker evidence;
 - Steps: signed HealthKit/Health Connect device evidence;
 - Stories: remaining mobile/device runtime evidence.
 
 Do not weaken fail-closed provider or HTTPS boundaries to bypass missing prerequisites.
 
-### 4. Phase 18 content activation
+### 5. Phase 18 content activation
 
 Coach → Learn runtime infrastructure is complete. Production mappings remain a separately reviewed editorial/product action.
 
@@ -81,19 +97,22 @@ A real mapping must reference an approved canonical article and preserve:
 
 No mapping means no Learn card. Runtime/model code must not synthesize fallback canonical lessons.
 
-### 5. Backend independent workstreams
+### 6. Conditional P17-E
 
-Backend work is governed by the backend repository’s exact source, `AGENTS.md`, current GitHub state and branch CI.
+P17-E is not ordinary backlog. Revisit richer persisted goal architecture only when an approved requirement needs semantics the current profile cannot safely express, such as multiple independently versioned simultaneous goals, explicit deadlines/status or historical lifecycle records.
 
-At the 2026-08-22 Phase 21 checkpoint:
+## Approved expansion queue after current closure
 
-- #324 is merged and establishes impact-aware backend agent tooling;
-- #332 is merged and adds additive workout-session schema-v2 set semantics without a database migration;
-- #325 remains an independent audited Admin write-plane workstream and must keep its own migration/deployment boundary.
+These directions are approved for roadmap planning, but each needs reviewed requirements before implementation:
 
-Re-check live GitHub state before acting; this plan does not claim open/closed state indefinitely.
+- Adaptive Program + Recovery Engine;
+- Exercise Preferences + Smart Replace;
+- Weekly Training Review;
+- Apple Health / Apple Watch expansion;
+- Progress Stories / Share Cards;
+- Trainer / Coach collaboration layer.
 
-Admin source deployment is VPS/GitHub-Actions based; automatic Vercel Git deployments are disabled. A source merge is still not equivalent to backend deployment or migration execution.
+Do not silently convert this queue into Phase 22.
 
 ## Permanent architecture boundaries
 
@@ -111,12 +130,6 @@ Permanent rules:
 - deterministic calculations and hard guardrails outside model prompts;
 - no pseudo-precision or universal readiness/scoring systems;
 - no automatic application of Coach proposals.
-
-### Goals
-
-The canonical fitness profile continues to own existing v1 goal fields. P17-E is not a default next phase.
-
-Revisit richer persisted goal architecture only when an approved requirement needs semantics the current profile cannot safely express, such as multiple independently versioned simultaneous goals, explicit deadlines/status or historical lifecycle records. Design identity, sync, migration, deletion/export/privacy and conflict authority before implementation.
 
 ### Knowledge & Learning
 
@@ -160,19 +173,19 @@ Permanent rules:
 - Previous and Today guidance is deterministic/read-only until explicit user input;
 - prescribed load authority comes only from exact `Workout.prescription` rows;
 - rest timer state is transient and not workout-set truth;
-- warm-up sets are durable but explicitly excluded from working-set analytics;
-- durable set semantics use typed `setType`/`supersetId`, never overloaded UI strings or notes;
+- warm-up sets are durable but excluded from working-set analytics;
+- durable set semantics use typed `setType`/`supersetId`;
 - workout-session sync v1 remains backward compatible and schema v2 is additive/fail-closed;
 - contextual adjustment requires material deterministic evidence and explicit Apply/Ignore;
 - no plate calculator, universal readiness score or per-set interruption loop is authorized by Phase 21.
 
 ## Validation policy
 
-Mobile runtime/code PRs require exact-head Mobile CI according to repository policy. Documentation-only changes require source/path/link/agent-navigation integrity; they must not claim provider, device or production evidence that did not run.
+Mobile runtime/code PRs require exact-head Mobile CI according to repository policy. Documentation-only changes require the repository's documentation/agent-navigation gates and must not claim provider, device or production evidence that did not run.
 
-Backend source changes require the applicable Backend CI, Backend PostgreSQL CI and account-lifecycle gates for their scope. Database migrations require forward-safe review and PostgreSQL evidence; migration execution remains a separate deployment action.
+Backend source changes require the applicable Backend CI, Backend PostgreSQL CI and account-lifecycle gates for their scope. Database migrations require forward-safe review and PostgreSQL evidence; migration execution remains a separate deployment claim.
 
-Native/provider behavior requires the corresponding physical-device or configured-staging evidence class. Source support is not activation evidence.
+Native/provider behavior requires corresponding physical-device or configured-environment evidence. Source support is not activation evidence.
 
 ## Release / deployment boundary
 

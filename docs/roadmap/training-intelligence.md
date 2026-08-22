@@ -15,46 +15,26 @@ Help the user answer four questions without duplicate authority or false precisi
 
 ## Phase 19 — Exercise + Training Intelligence
 
-P19-A through P19-D were implemented and merged through PR #803 for the reviewed mobile source/CI scope.
+P19-A through P19-D were implemented and merged through PR #803. The reviewed Exercise Intelligence completion was merged through PR #807.
 
-Stable Phase 19 authority includes:
+Stable authority includes:
 
 - one canonical muscle taxonomy and reusable local SVG anatomy authority;
 - exact/fail-closed muscle mapping, interactive muscle filtering, detail drill-downs and Progress heatmaps;
 - deterministic completed-session analytics under explicit 7/30/90-day windows;
 - explicit load/reps/e1RM/session-volume PR types;
 - `training-intelligence-v1` deterministic progression/plateau/regression/volume/gap findings with exact evidence;
+- reviewed `exercise-intelligence-v1` metadata for all 15 canonical local exercises;
+- movement pattern, bilingual EN/RU technique cues/common errors, controlled ROM guidance, qualitative fatigue cost and reviewed substitutions;
 - no universal readiness score, hidden state mutation or model-owned deterministic finding authority.
 
-### Reviewed Exercise Intelligence completion
+Unknown or remote-only exercise IDs fail closed. Runtime names/body-part/muscle labels are not authority for reviewed metadata.
 
-The richer metadata originally left requirement/data-authority-dependent after #803 is completed and merged through PR #807 without creating a new roadmap phase.
+Validation checkpoints:
 
-`exercise-intelligence-v1` is a reviewed static authority for all 15 canonical local exercises and provides:
-
-- movement pattern;
-- bilingual EN/RU technique cues;
-- bilingual EN/RU common errors;
-- controlled range-of-motion guidance;
-- qualitative `low` / `moderate` / `high` fatigue cost;
-- reviewed substitution targets plus explicit rationale;
-- read-only substitution navigation from Exercise Detail.
-
-Safety and authority boundaries:
-
-- unknown or remote-only exercise IDs return no reviewed intelligence;
-- an OSS ExerciseDB record receives reviewed intelligence only when existing normalization reuses a reviewed canonical local exercise identity;
-- do not infer movement pattern, substitutions, technique, ROM or fatigue cost from exercise names, body-part labels or muscle labels at runtime;
-- fatigue cost is qualitative programming guidance, not a measured physiological/readiness value;
-- substitutions are reviewed alternatives, not exact-equivalence claims and never automatically modify a workout.
-
-#807 validation/merge authority:
-
-- code head `32221db92dcaae78bb38b96ad1ff358cea0877d5` passed Mobile CI #2731;
-- final closure head `da4064e6c4e805a4395cce3fb84ce55fddc21e96` passed Mobile CI #2732;
-- #807 merged with exact expected head into `main` as `371e1cdfc09aeffd93f4664cabbb4a777f19e1b0`.
-
-P19 source/CI completion plus #807 therefore covers the requested SVG/muscle layer and the reviewed movement/substitution/technique/ROM/fatigue layer while preserving fail-closed behavior.
+- #807 code head `32221db92dcaae78bb38b96ad1ff358cea0877d5` passed Mobile CI #2731;
+- #807 closure head `da4064e6c4e805a4395cce3fb84ce55fddc21e96` passed Mobile CI #2732;
+- #807 merged as `371e1cdfc09aeffd93f4664cabbb4a777f19e1b0`.
 
 ## Phase 20 — Progress Photos / Body Composition
 
@@ -79,7 +59,7 @@ Implemented and merged through PR #805:
 - strict chronological validation and fail-closed invalid states;
 - non-cropping side-by-side rendering;
 - 50/50 ghost overlay only for reviewed 3:4 aspect tolerance;
-- overlay explicitly remains a visual aid, not registration or measurement;
+- overlay remains a visual aid, not registration or measurement;
 - visible date and camera/library source identity;
 - nearby stored weight (±7 days) and canonical waist length (±14 days) as separate evidence;
 - malformed/non-length waist values fail closed;
@@ -89,22 +69,28 @@ Implemented and merged through PR #805:
 
 Implemented and merged through PR #806; merge commit `6e287c64d4fcdcd604e78de6ae911510ddf604bb`:
 
-- read-only 30/90-day body-composition view under one explicit `endAt`/period boundary;
-- existing `getWeightAnalytics` remains weight-summary authority;
-- existing `getWeightTrendEntries` remains weight-trend selection/dedup authority;
-- existing `buildBodyMeasurementProgressAnalytics` remains measurement-series authority;
-- canonical waist and other stored measurements remain user-entered evidence;
-- stored body-fat remains a stored measurement and is never relabeled as a photo estimate;
+- read-only 30/90-day body-composition view under one explicit period boundary;
+- existing weight/trend/measurement analytics remain calculation authority;
+- canonical waist and other measurements remain user-entered evidence;
+- stored body-fat remains stored measurement evidence, never a photo estimate;
 - private ready-photo timeline remains period-bounded with pose/date/source identity;
 - no new persistence, sync, provider upload, AI vision or photo-derived body-fat estimate.
 
-Phase 20 is source/CI-complete for the reviewed scope through #806.
+Phase 20 is source/CI-complete. Physical-device evidence remains separate.
 
 ## Phase 21 — Workout Assistant
 
 Approved product direction: make the active workout faster and more informative without adding a dense dashboard or an assistant that interrupts after every set.
 
-Source/CI status: **P21-A through P21-E are implemented on mobile PR #810.** The validated code head is `2b4afbab5c071fa7d692b11c59fc651860bd3565`; exact live CI/PR state must still be read from GitHub. Backend sync dependency PR #332 is merged to backend `main` as `b5a054e49e795a75f19c16ba85f507396e4598b6`. Production backend deployment remains a separate release gate before mobile schema-v2 behavior may ship.
+### Verified source / compatibility state
+
+- P21-A through P21-E exact PR head `94f70355fe4b4b22240d2c90f1bd861f5bc6d068` passed Mobile CI #2806.
+- Mobile PR #810 was squash-merged to `main` as `a2abde02e31b5ed1207e67835144e9359aea711e`.
+- Backend sync dependency #332 was merged as `b5a054e49e795a75f19c16ba85f507396e4598b6`.
+- Production backend was deployed at `8a2c539ecfbf7842bf37a02491de9f844ec83c81`, with #332 in its ancestry.
+- Production verification reported backend/PostgreSQL healthy, `/health` HTTP 200 and bounded workout-session schema v1/v2 compatibility passing, including fail-closed invalid cases.
+
+The source, backend compatibility, exact-head CI and mobile merge gates are closed. Remaining Phase 21 evidence is OTA publication confirmation plus real-device active-workout smoke.
 
 ### Permanent interaction rules
 
@@ -113,41 +99,40 @@ Source/CI status: **P21-A through P21-E are implemented on mobile PR #810.** The
 - deterministic/reviewed facts precede Coach explanation;
 - a suggestion is not a mutation: workout/program changes require explicit user action;
 - normal execution should stay quiet; contextual intervention is reserved for meaningful evidence;
-- do not add a plate calculator to the reviewed scope;
-- do not introduce a universal recovery/readiness score.
+- no plate calculator in the reviewed scope;
+- no universal recovery/readiness score.
 
 ### P21-A — Smart Previous + Today’s Target
 
 Implemented:
 
-- Previous remains directly aligned to each working set;
-- previous load × reps and stored actual RPE are shown when available;
+- Previous directly aligned to each working set;
+- previous load × reps and stored actual RPE when available;
 - exact confirmed `Workout.prescription` is the only authority for prescribed target load/reps/RPE;
-- canonical template `targetReps` is a reps-only fallback when no valid prescribed reps exist;
-- no target load is inferred from previous history merely because a prior load exists;
-- exact `exerciseId` matching only; no runtime name-based target matching;
-- target load/reps remain compact read-only hints and do not silently populate or complete a set.
+- canonical template `targetReps` is a reps-only fallback;
+- no inferred target load from previous history;
+- exact `exerciseId` matching only;
+- target hints remain read-only/non-mutating until explicit user input.
 
 ### P21-B — Automatic Rest Timer
 
 Implemented:
 
-- starts only after an explicit set-completion action;
+- starts only after explicit set completion;
 - uses existing exercise-level `restSeconds`; no invented default;
 - real-clock countdown preserves elapsed background time;
 - pause/resume, ±15 seconds and skip are explicit controls;
-- timer state is transient UI state and remains separate from workout-set truth;
-- no Live Activity / Dynamic Island claim is made by source support.
+- timer state is transient UI state and separate from workout-set truth.
 
 ### P21-C — Warm-up Sets
 
 Implemented:
 
-- deterministic proposal derives only from an explicit prescribed working load;
-- user can Add or Skip and can edit resulting rows through normal set controls;
-- warm-up sets persist explicitly as `setType: warmup`;
-- warm-up rows do not shift working-set Previous/Today indexing;
-- warm-up sets are excluded from live working totals, prior-set guidance, RPE prompting, training-intelligence PR/e1RM/volume calculations, exercise progress series and weekly muscle-volume analytics;
+- deterministic proposal derives only from explicit prescribed working load;
+- user can Add or Skip and edit resulting rows normally;
+- warm-ups persist as `setType: warmup`;
+- warm-ups do not shift working-set Previous/Today indexing;
+- warm-ups are excluded from live working totals, prior guidance, RPE prompting, PR/e1RM/volume, exercise-progress series and weekly muscle-volume analytics;
 - no working load is guessed when prescription authority is absent.
 
 ### P21-D — Set Types + Supersets
@@ -157,12 +142,12 @@ Implemented contract:
 - durable set types: `working | warmup | backoff | drop | amrap`;
 - durable optional `supersetId`;
 - compact row semantics and explicit set actions;
-- legacy sessions remain workout-sync schema v1 when no new semantics are present;
-- sessions using set semantics use additive workout-sync schema v2;
-- v1 envelopes carrying v2-only semantics fail closed instead of silently stripping fields;
+- legacy sessions remain sync schema v1 when no new semantics are present;
+- sessions using set semantics use additive schema v2;
+- v1 envelopes carrying v2-only semantics fail closed;
 - backend #332 validates/materializes v2 while preserving v1 compatibility and requires no database migration.
 
-Release boundary: backend #332 source is merged, but mobile v2 must not ship until production `api.peptonio.com` is deliberately redeployed with the merged backend source and verified.
+Production backend compatibility for this contract is verified.
 
 ### P21-E — Rare Contextual Adjustment
 
@@ -174,11 +159,28 @@ Implemented, deliberately bounded:
 - Apply / Ignore are explicit;
 - remaining sets are never rewritten silently;
 - Apply preserves per-set prescription shape through a bounded load multiplier;
-- recovery-aware adaptation remains the responsibility of the dedicated future adaptive/recovery engine.
+- recovery-aware adaptation remains the responsibility of a future reviewed adaptive/recovery engine.
+
+## Remaining release evidence
+
+### Phase 21
+
+1. Confirm the `Publish EAS Update` run for merge `a2abde02e31b5ed1207e67835144e9359aea711e` succeeded.
+2. Record EAS update ID/group/runtime `1.0.3` and production branch/channel evidence.
+3. Run a real-iPhone active-workout smoke covering Previous/Today, rest timer, warm-ups, set types/supersets, contextual Apply/Ignore, active-session persistence and sync sanity.
+
+### Phase 20
+
+Use `docs/qa/progress-photo-device-validation.md` on the intended signed iPhone build for:
+
+- camera permission/capture/import/persistence/delete/account-cleanup behavior;
+- side-by-side/overlay rendering, fail-closed aspect behavior and visual quality.
+
+A prepared checklist is not evidence of a completed device run.
 
 ## Approved expansion queue after the Workout Assistant foundation
 
-These directions are approved for roadmap planning but remain separate implementation packages so authority, persistence, native and UX boundaries can be reviewed independently.
+These directions are approved for roadmap planning but remain separate requirement packages.
 
 ### Adaptive Program + Recovery Engine
 
@@ -187,16 +189,14 @@ Build two linked deterministic layers rather than a free-form Coach decision:
 1. **Training Progression Engine** — performance history, load/reps/RPE, e1RM, progression/regression, plateau, recent training load and program context.
 2. **Recovery Modifier** — local muscle recovery plus systemic evidence such as recovery check-ins and, when legitimately available, sleep/activity/resting-HR/HRV evidence.
 
-Additional context may include activity/cardio, nutrition context, schedule and evidence confidence. Missing signals remain unknown. Recovery is muscle-specific where possible and systemic where appropriate; it is not collapsed into a pseudo-precise universal score.
-
-Final proposals remain explicit suggestions. Coach may explain them but does not become the deterministic calculation authority and does not silently mutate a program.
+Missing signals remain unknown. Final proposals remain explicit suggestions; Coach may explain them but does not become the deterministic calculation authority and does not silently mutate a program.
 
 ### Exercise Preferences + Smart Replace
 
 - user preference states such as prefer / neutral / avoid;
 - explicit reasons such as equipment, preference, discomfort or temporary exclusion;
-- combine user preference with existing reviewed substitutions;
-- no claim that two exercises are physiologically identical;
+- combine preference with existing reviewed substitutions;
+- no exact-equivalence claim;
 - replacement remains explicit user action.
 
 ### Weekly Training Review
@@ -207,30 +207,19 @@ One compact weekly review over existing deterministic authorities:
 - volume/performance direction and PRs;
 - muscle exposure/gaps;
 - meaningful changes only, with evidence drill-down;
-- optional Coach explanation over the deterministic review.
+- optional Coach explanation over deterministic findings.
 
 ### Apple Health / Apple Watch
 
-Future native workstream for reviewed, permission-bounded health/activity inputs and a focused workout companion. This requires signed native builds and physical-device evidence; source/OTA completion alone is insufficient.
+Future native workstream for permission-bounded health/activity inputs and a focused workout companion. Requires signed native builds and physical-device evidence.
 
 ### Progress Stories / Share Cards
 
-User-initiated share artifacts for selected non-sensitive progress facts. Progress photos are included only when the user explicitly selects them for the share action. Private progress evidence is never silently published.
+User-initiated share artifacts for selected non-sensitive progress facts. Progress photos are included only when explicitly selected for sharing.
 
 ### Trainer / Coach Layer
 
-Future server-authoritative collaboration layer for explicit coach/client relationships, scoped data access, program assignment and feedback. Marketplace/payments are not implied and require separate reviewed contracts.
-
-## Physical-device release evidence
-
-Source/CI closure does not satisfy native photo validation. The exact checklist is `docs/qa/progress-photo-device-validation.md`.
-
-Still required on the intended signed iPhone build:
-
-- P20-A camera permission/capture/import/persistence/delete/account-cleanup behavior;
-- P20-B side-by-side/overlay rendering, fail-closed aspect behavior and visual-quality evidence.
-
-A prepared checklist is not evidence of a completed device run.
+Future server-authoritative collaboration for explicit coach/client relationships, scoped data access, program assignment and feedback. Marketplace/payments are not implied.
 
 ## Shared constraints
 
@@ -245,12 +234,11 @@ A prepared checklist is not evidence of a completed device run.
 ## Current execution state
 
 1. P19-A through P19-D — merged in #803.
-2. Deferred reviewed Exercise Intelligence metadata — merged in #807; merge checkpoint `371e1cdfc09aeffd93f4664cabbb4a777f19e1b0`.
-3. P20-A — merged in #804.
-4. P20-B — merged in #805.
-5. P20-C — merged in #806; Phase 20 source/CI-complete.
-6. P21-A through P21-E — mobile implementation complete on #810; final source merge/release remains gated by exact-head validation and backend production deployment sequencing.
-7. Backend P21-D dependency #332 — merged as `b5a054e49e795a75f19c16ba85f507396e4598b6`; production deployment is not yet implied by merge.
-8. P20 physical-device validation remains a separate release-evidence workstream.
+2. Reviewed Exercise Intelligence completion — merged in #807 as `371e1cdfc09aeffd93f4664cabbb4a777f19e1b0`.
+3. P20-A/P20-B/P20-C — merged through #804/#805/#806; Phase 20 source/CI-complete.
+4. P21-A through P21-E — merged through #810 as `a2abde02e31b5ed1207e67835144e9359aea711e` after exact-head Mobile CI #2806.
+5. Backend #332 — merged and deployed in production through descendant `8a2c539ecfbf7842bf37a02491de9f844ec83c81`; v1/v2 compatibility verified.
+6. Remaining Phase 21 work is OTA publication evidence plus real-device smoke.
+7. Remaining Phase 20 work is physical-device validation.
 
-Phase 21 is an explicitly reviewed product requirement dated 2026-08-22. Do not invent P21-F or Phase 22 merely to continue development; use the approved expansion queue above or require another reviewed requirement.
+Phase 21 is the latest explicitly reviewed numbered product requirement. Do not invent P21-F or Phase 22 merely to continue development; use the approved expansion queue only after a reviewed requirement is created.

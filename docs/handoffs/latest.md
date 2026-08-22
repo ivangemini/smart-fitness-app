@@ -22,7 +22,9 @@ Exact source, tests, CI and Git history override prose if this handoff becomes s
 - Phase 21 sync dependency #332 is merged to `main` as `b5a054e49e795a75f19c16ba85f507396e4598b6`;
 - #332 exact head `1a0bf3319db094aed14b7e397242250f30dc087d` passed Backend CI #2435 and Backend PostgreSQL CI #798;
 - #332 has no database migration;
-- production backend is deployed from `main` at `8a2c539ecfbf7842bf37a02491de9f844ec83c81`, with `b5a054e49e795a75f19c16ba85f507396e4598b6` in its ancestry;
+- Admin write-plane #325 is merged as `a3f260aca1089548202eeeee8b96624e931b7efc`; exact PR head `621efecbe5a62a3a8873e005ead65ffd49f5641c` passed Backend CI #2422, PostgreSQL CI #791 and Account Deletion Receipt CI #699;
+- follow-up Admin hardening #335/#336/#337 is merged;
+- production backend is deployed from `main` at `8a2c539ecfbf7842bf37a02491de9f844ec83c81`, with both #325 and #332 in its ancestry;
 - backend container and PostgreSQL were reported healthy; `https://api.peptonio.com/health` returned HTTP 200;
 - bounded sync smoke passed for legacy v1, v2 `setType: warmup` + `supersetId`, v1 rejection of v2-only fields, and rejection of unknown `setType`;
 - startup migration step completed successfully with no reported errors.
@@ -59,22 +61,39 @@ P21-A through P21-E are merged:
 - contextual adjustment requires material deterministic RPE/reps divergence and explicit Apply/Ignore;
 - no silent remaining-set rewrite, plate calculator or universal readiness score was added.
 
+### Admin control plane
+
+- #325 source plus #335/#336/#337 hardening is merged;
+- deployed backend `8a2c539...` is a descendant of #325;
+- the standard production migration step reported success;
+- the global Administration navigation remains intentionally staged until explicit live control-plane verification is recorded.
+
 ## Remaining evidence / release gates
+
+### Phase 21
 
 The backend deployment, compatibility, exact-head mobile CI and mobile merge gates are closed.
 
-Still required before calling Phase 21 user-facing release fully verified:
+Still required before calling the user-facing release fully verified:
 
 1. confirm the `Publish EAS Update` run for merge commit `a2abde02e31b5ed1207e67835144e9359aea711e` succeeded;
 2. record EAS update ID/group/runtime (`1.0.3`) and production branch/channel evidence;
 3. perform a real-device active-workout smoke covering Previous/Today, rest timer, warm-ups, set types/supersets, contextual Apply/Ignore, session persistence and sync sanity.
 
-Still separate:
+### Admin
+
+Still required before exposing Administration as normal production navigation:
+
+1. explicitly verify production migration state for `0056_admin_control_plane.sql` if needed;
+2. verify representative live RBAC/account-control/feature-flag/audit/protected-target behavior under authorized Admin credentials;
+3. only then activate the staged global Administration sidebar/navigation in a small follow-up change and deploy through the existing Admin VPS/GitHub-Actions path.
+
+### Other independent evidence
 
 - Phase 14 configured-provider/native/device evidence;
 - P20-A camera/photo-library lifecycle evidence;
 - P20-B real-device comparison/overlay evidence;
-- OTA/native publication evidence and physical-device behavior evidence.
+- Coach → Learn production mapping activation from approved canonical content only.
 
 Use `docs/qa/progress-photo-device-validation.md` for P20-A/P20-B real-device evidence. A prepared checklist is not proof of a completed run.
 
@@ -82,8 +101,9 @@ Use `docs/qa/progress-photo-device-validation.md` for P20-A/P20-B real-device ev
 
 1. Verify the EAS OTA publication corresponding to `a2abde02e31b5ed1207e67835144e9359aea711e`.
 2. Run the Phase 21 real-iPhone smoke and record dated evidence.
-3. Run the Phase 20 signed-iPhone validation checklist when the intended build is available.
-4. Continue Phase 14 external evidence only when prerequisites are actually present.
-5. Do not invent P21-F/Phase 22 or reopen closed Phase 18/19/20 source slices without a reproduced defect or newly reviewed requirement.
-6. Keep the Coach → Learn production mapping registry fail closed until approved canonical mappings exist.
-7. Keep source completion, deployment, migration execution, provider activation, OTA/native publication and device validation as separate claims.
+3. Run the Phase 20 signed-iPhone validation checklist.
+4. Verify live Admin control-plane/migration state; activate staged Administration navigation only after it passes.
+5. Continue Phase 14 external evidence only when prerequisites are actually present.
+6. Do not invent P21-F/Phase 22 or reopen closed Phase 18/19/20/21 source slices without a reproduced defect or newly reviewed requirement.
+7. Keep the Coach → Learn production mapping registry fail closed until approved canonical mappings exist.
+8. Keep source completion, deployment, migration execution, provider activation, OTA/native publication and device validation as separate claims.
