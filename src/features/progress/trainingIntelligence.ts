@@ -90,7 +90,12 @@ const timestamp = (value: string) => {
   return Number.isFinite(parsed) ? parsed : null;
 };
 const isWorkingSet = (set: WorkoutSet) =>
-  set.completed !== false && Number.isFinite(set.reps) && set.reps > 0 && Number.isFinite(set.weight) && set.weight >= 0;
+  set.setType !== 'warmup' &&
+  set.completed !== false &&
+  Number.isFinite(set.reps) &&
+  set.reps > 0 &&
+  Number.isFinite(set.weight) &&
+  set.weight >= 0;
 const latestTimestamp = (current: string | null, candidate: string) => {
   if (!current) return candidate;
   const currentAt = timestamp(current);
