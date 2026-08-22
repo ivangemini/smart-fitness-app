@@ -55,6 +55,15 @@ const sessions: WorkoutSession[] = [
     finishedAt: '2026-08-17T10:00:00.000Z',
     sets: [
       {
+        id: 'recent-bench-warmup',
+        exerciseId: 'bench',
+        exerciseName: 'Bench Press',
+        weight: 200,
+        reps: 10,
+        completed: true,
+        setType: 'warmup',
+      },
+      {
         id: 'recent-bench-1',
         exerciseId: 'bench',
         exerciseName: 'Bench Press',
