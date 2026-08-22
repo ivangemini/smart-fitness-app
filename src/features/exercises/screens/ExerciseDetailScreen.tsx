@@ -4,13 +4,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { ScrollView, Share, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { ProgressTrendChart } from '@/components/progress/ProgressTrendChart';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { MetricCard } from '@/components/ui/MetricCard';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Spacing } from '@/constants/theme';
 import { useWorkoutState } from '@/context/AppContext';
@@ -21,21 +19,17 @@ import {
 import { getExerciseLibraryCopy } from '@/localization/exerciseLibraryCopy';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
-import { useUnitPreferences, weightFromKg } from '@/units';
+import { useUnitPreferences } from '@/units';
 
 import { ExerciseDetailTextList } from '../components/ExerciseDetailTextList';
 import { ExerciseIntelligenceSection } from '../components/ExerciseIntelligenceSection';
 import { ExerciseMediaPreview } from '../components/ExerciseMediaPreview';
 import { ExercisePreferencesCard } from '../components/ExercisePreferencesCard';
+import { ExerciseProgressSection } from '../components/ExerciseProgressSection';
 import { MuscleMap } from '../components/MuscleMap';
-import { getExerciseProgressCopy } from '../exerciseProgressCopy';
 import { loadFavoriteExerciseIds, saveFavoriteExerciseIds } from '../favoritesRepository';
 import { selectCompletedSetsByExerciseId } from '../history';
 import { buildMuscleHighlights } from '../muscleTaxonomy';
-import {
-  calculateExerciseProgressMetrics,
-  type ExerciseProgressTopSet,
-} from '../progress';
 import { exerciseRepository, isOssExerciseDbEnabled } from '../repository';
 import type { Exercise } from '../types';
 import { createExerciseDetailStyles } from './ExerciseDetailScreen.styles';
@@ -50,7 +44,6 @@ export default function ExerciseDetailScreen() {
   const { formatDate, formatNumber, locale } = useLocalization();
   const { formatWeightValue, weight: weightUnit } = useUnitPreferences();
   const copy = useMemo(() => getExerciseDetailCopy(locale), [locale]);
-  const progressCopy = useMemo(() => getExerciseProgressCopy(locale), [locale]);
   const libraryCopy = useMemo(() => getExerciseLibraryCopy(locale), [locale]);
   const styles = useMemo(() => createExerciseDetailStyles(colors), [colors]);
   const detailTabs = useMemo<Array<{ label: string; value: DetailTab }>>(
@@ -111,49 +104,6 @@ export default function ExerciseDetailScreen() {
     () => (exercise ? selectCompletedSetsByExerciseId(workoutSessions, exercise.id) : []),
     [exercise, workoutSessions],
   );
-  const progressMetrics = useMemo(
-    () => calculateExerciseProgressMetrics(historyGroups),
-    [historyGroups],
-  );
-  const displayVolumeTrend = useMemo(
-    () =>
-      progressMetrics.volumeTrend.map((point) => {
-        const value = weightFromKg(point.value, weightUnit);
-        return {
-          key: point.key,
-          label: formatDate(point.finishedAt, { month: 'short', day: 'numeric' }),
-          value,
-          displayValue: `${formatNumber(value, { maximumFractionDigits: 0 })} ${weightUnit}`,
-        };
-      }),
-    [formatDate, formatNumber, progressMetrics.volumeTrend, weightUnit],
-  );
-  const displayLoadTrend = useMemo(
-    () =>
-      progressMetrics.loadTrend.map((point) => {
-        const value = weightFromKg(point.value, weightUnit);
-        return {
-          key: point.key,
-          label: formatDate(point.finishedAt, { month: 'short', day: 'numeric' }),
-          value,
-          displayValue: `${formatNumber(value, { maximumFractionDigits: 1 })} ${weightUnit}`,
-        };
-      }),
-    [formatDate, formatNumber, progressMetrics.loadTrend, weightUnit],
-  );
-  const displayEstimatedOneRepMaxTrend = useMemo(
-    () =>
-      progressMetrics.estimatedOneRepMaxTrend.map((point) => {
-        const value = weightFromKg(point.value, weightUnit);
-        return {
-          key: point.key,
-          label: formatDate(point.finishedAt, { month: 'short', day: 'numeric' }),
-          value,
-          displayValue: `${formatNumber(value, { maximumFractionDigits: 1 })} ${weightUnit}`,
-        };
-      }),
-    [formatDate, formatNumber, progressMetrics.estimatedOneRepMaxTrend, weightUnit],
-  );
   const highlights = useMemo(
     () =>
       exercise
@@ -163,26 +113,7 @@ export default function ExerciseDetailScreen() {
   );
   const isFavorite = Boolean(exercise && favoriteIds.has(exercise.id));
   const hasAnimation = Boolean(exercise?.media.animationUrl ?? exercise?.media.gifUri);
-  const formatWeight = (valueKg: number) =>
-    `${formatWeightValue(valueKg)} ${weightUnit}`;
-  const formatVolume = (valueKg: number) =>
-    `${formatNumber(weightFromKg(valueKg, weightUnit), {
-      maximumFractionDigits: 0,
-    })} ${weightUnit}`;
-  const formatTopSet = (topSet: ExerciseProgressTopSet | null) => {
-    if (!topSet) return progressCopy.notEnoughEvidence;
-    const rpe =
-      topSet.actualRpe === null
-        ? ''
-        : ` · RPE ${formatNumber(topSet.actualRpe, { maximumFractionDigits: 1 })}`;
-    return `${formatWeight(topSet.weight)} × ${formatNumber(topSet.reps, {
-      maximumFractionDigits: 0,
-    })}${rpe}`;
-  };
-  const formatPercentDelta = (value: number | null) =>
-    value === null
-      ? progressCopy.notEnoughEvidence
-      : `${value > 0 ? '+' : ''}${formatNumber(value, { maximumFractionDigits: 1 })}%`;
+  const formatWeight = (valueKg: number) => `${formatWeightValue(valueKg)} ${weightUnit}`;
 
   const toggleFavorite = () => {
     if (!exercise) return;
@@ -414,116 +345,7 @@ export default function ExerciseDetailScreen() {
         ) : null}
 
         {tab === 'progress' ? (
-          <View style={styles.stack}>
-            {progressMetrics.recentSessions.length === 0 ? (
-              <EmptyState
-                title={copy.noProgressTitle}
-                description={copy.noProgressDescription}
-              />
-            ) : (
-              <>
-                {progressMetrics.recentComparison ? (
-                  <AppCard>
-                    <Text style={styles.cardTitle}>{progressCopy.latestPerformance}</Text>
-                    <Text style={styles.secondaryText}>
-                      {formatDate(progressMetrics.recentComparison.latest.finishedAt, {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric',
-                      })}{' '}
-                      · {progressMetrics.recentComparison.latest.workoutTitle}
-                    </Text>
-                    <View style={styles.metricsGrid}>
-                      <MetricCard
-                        label={progressCopy.latestTopSet}
-                        value={formatTopSet(progressMetrics.recentComparison.latest.topSet)}
-                      />
-                      <MetricCard
-                        label={progressCopy.previousTopSet}
-                        value={
-                          progressMetrics.recentComparison.previous
-                            ? formatTopSet(progressMetrics.recentComparison.previous.topSet)
-                            : progressCopy.notEnoughEvidence
-                        }
-                      />
-                      <MetricCard
-                        label={progressCopy.averageRpe}
-                        value={
-                          progressMetrics.recentComparison.latest.averageActualRpe === null
-                            ? progressCopy.notRecorded
-                            : formatNumber(
-                                progressMetrics.recentComparison.latest.averageActualRpe,
-                                { maximumFractionDigits: 1 },
-                              )
-                        }
-                      />
-                      <MetricCard
-                        label={progressCopy.estimatedOneRepMaxChange}
-                        value={formatPercentDelta(
-                          progressMetrics.recentComparison.estimatedOneRepMaxDeltaPercent,
-                        )}
-                      />
-                      <MetricCard
-                        label={progressCopy.volumeChange}
-                        value={formatPercentDelta(
-                          progressMetrics.recentComparison.volumeDeltaPercent,
-                        )}
-                      />
-                    </View>
-                  </AppCard>
-                ) : null}
-                <View style={styles.metricsGrid}>
-                  <MetricCard
-                    label={copy.bestWeight}
-                    value={formatWeight(progressMetrics.bestWeight)}
-                  />
-                  <MetricCard
-                    label={copy.bestReps}
-                    value={formatNumber(progressMetrics.bestReps, {
-                      maximumFractionDigits: 0,
-                    })}
-                  />
-                  <MetricCard
-                    label={copy.volume}
-                    value={formatVolume(progressMetrics.totalVolume)}
-                  />
-                  <MetricCard
-                    label={copy.estimatedOneRepMax}
-                    value={formatWeight(progressMetrics.estimatedOneRepMax)}
-                  />
-                </View>
-                <AppCard>
-                  <Text style={styles.cardTitle}>{progressCopy.loadTrend}</Text>
-                  <ProgressTrendChart
-                    emptyLabel={progressCopy.trendEmpty}
-                    maxLabel={copy.high(weightUnit)}
-                    minLabel={copy.low(weightUnit)}
-                    points={displayLoadTrend}
-                  />
-                </AppCard>
-                <AppCard>
-                  <Text style={styles.cardTitle}>
-                    {progressCopy.estimatedOneRepMaxTrend}
-                  </Text>
-                  <ProgressTrendChart
-                    emptyLabel={progressCopy.trendEmpty}
-                    maxLabel={copy.high(weightUnit)}
-                    minLabel={copy.low(weightUnit)}
-                    points={displayEstimatedOneRepMaxTrend}
-                  />
-                </AppCard>
-                <AppCard>
-                  <Text style={styles.cardTitle}>{copy.volumeTrend}</Text>
-                  <ProgressTrendChart
-                    emptyLabel={copy.volumeTrendEmpty}
-                    maxLabel={copy.high(weightUnit)}
-                    minLabel={copy.low(weightUnit)}
-                    points={displayVolumeTrend}
-                  />
-                </AppCard>
-              </>
-            )}
-          </View>
+          <ExerciseProgressSection historyGroups={historyGroups} styles={styles} />
         ) : null}
       </View>
     </ScrollView>
