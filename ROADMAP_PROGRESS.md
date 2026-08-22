@@ -44,7 +44,10 @@ There is no approved P21-F or Phase 22. Do not invent a new numbered phase merel
 - Production backend was deployed from `main` at `8a2c539ecfbf7842bf37a02491de9f844ec83c81`; `b5a054e49e795a75f19c16ba85f507396e4598b6` is in its ancestry.
 - Production verification reported backend healthy, PostgreSQL healthy, `/health` HTTP 200 and successful bounded workout-session sync compatibility for schema v1/v2, including fail-closed invalid cases.
 - Admin write-plane PR #325 is merged as `a3f260aca1089548202eeeee8b96624e931b7efc`; that merge is also in the ancestry of deployed backend `8a2c539...`.
-- The deployment reported the standard migration step completed successfully. Admin control-plane production behavior and global Administration navigation still require explicit verification/activation evidence before being called released.
+- Migration `0056_admin_control_plane.sql`, Admin schema, authorized Admin session/RBAC reads, account search, roles, feature flags, audit reads and ordinary-user 403 gating were verified in production before navigation activation.
+- Administration navigation activation PR #340 exact head `4653d6bc105b00b5519e654f533d69b44a19983d` passed Backend CI #2453 and merged to backend `main` as `75c47a2a8973e41146c98d78cab07baa007f1274`.
+- Post-merge public Admin reachability returned HTTP 200 through Caddy; unauthenticated `GET /api/system/health` returned HTTP 401 `AUTH_REQUIRED`.
+- Exact-SHA `Admin Production Deploy` confirmation for `75c47a2a...` and an authorized console smoke remain separate evidence items.
 
 ## Stable delivered authority
 
@@ -116,7 +119,14 @@ Continue only when the external prerequisites exist:
 
 ### 4. Admin production completion
 
-Backend source through #325/#335/#336/#337 is merged. The deployed backend SHA is a descendant of #325 and the deployment migration step completed successfully. Remaining release evidence is explicit live verification of the Admin control plane and, only after that verification, activation of the staged global Administration navigation in a small follow-up change.
+Admin control-plane production verification is complete and the global Administration navigation source activation is merged through backend #340 / `75c47a2a8973e41146c98d78cab07baa007f1274` after Backend CI #2453.
+
+Remaining release evidence is now limited to:
+
+- confirm the permanent exact-SHA `Admin Production Deploy` succeeded for `75c47a2a8973e41146c98d78cab07baa007f1274`;
+- perform an authorized `admin.peptonio.com` smoke confirming the deployed Administration navigation/workspace.
+
+Public HTTP 200 reachability and unauthenticated `AUTH_REQUIRED` behavior are verified, but they must not be conflated with exact-SHA deployment or authorized-session evidence.
 
 ### 5. Phase 18 content activation
 
@@ -140,7 +150,7 @@ Each requires its own reviewed requirements/authority boundaries before implemen
 1. Confirm Phase 21 OTA publication metadata.
 2. Run Phase 21 real-iPhone smoke.
 3. Run Phase 20 signed-iPhone validation.
-4. Verify live Admin control-plane behavior; then activate staged Administration navigation if verification passes.
+4. Confirm backend #340 exact-SHA Admin Production Deploy and run the authorized Admin console smoke.
 5. Continue Phase 14 external/provider/device evidence when prerequisites are available.
 6. Activate Coach → Learn mappings only when approved content mappings exist.
 7. Do not create P21-F/Phase 22 or reopen closed source scopes without a reproduced defect or newly reviewed requirement.
