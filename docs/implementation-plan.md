@@ -6,7 +6,7 @@ This file is the canonical **forward sequencing** document. The last verified mu
 
 Exact code, tests, migrations, CI and current Git history override stale prose.
 
-Reviewed local-state storage decision remains `docs/architecture/local-state-performance-decision.md`; do not reopen it without new measured evidence or explicit reprioritization.
+Reviewed local-state storage decision remains `docs/architecture/local-state-performance-decision.md`; do not reopen that architecture without new measured evidence or explicit reprioritization.
 
 ## Current program state
 
