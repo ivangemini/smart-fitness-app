@@ -1,5 +1,6 @@
 export type DraftWorkoutExercise = {
   id: string;
+  sourceExerciseId?: string;
   name: string;
   notes: string;
   restSeconds: string;
