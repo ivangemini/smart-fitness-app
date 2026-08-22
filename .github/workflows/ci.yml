@@ -8,9 +8,6 @@ on:
       - 'docs/**'
       - '**/*.md'
   pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - '**/*.md'
 
 permissions:
   contents: read
@@ -119,6 +116,23 @@ jobs:
             test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           fi
 
+      - name: Determine validation scope
+        id: scope
+        if: steps.validated-pr-merge.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          full=true
+          if [ "$GITHUB_EVENT_NAME" = 'pull_request' ]; then
+            if git diff --name-only HEAD^1 HEAD^2 | grep -Ev '^(docs/|.*\.md$)' | grep -q .; then
+              full=true
+            else
+              full=false
+            fi
+          fi
+          echo "full=$full" >> "$GITHUB_OUTPUT"
+          echo "Full validation required: $full"
+
       - name: Set up Node.js
         if: steps.validated-pr-merge.outputs.skip != 'true'
         shell: bash
@@ -135,7 +149,7 @@ jobs:
           npm --version
 
       - name: Install dependencies
-        if: steps.validated-pr-merge.outputs.skip != 'true'
+        if: steps.validated-pr-merge.outputs.skip != 'true' && steps.scope.outputs.full == 'true'
         run: npm ci
 
       - name: Repository file line audit
@@ -151,15 +165,15 @@ jobs:
         run: npm run agent:check
 
       - name: TypeScript
-        if: steps.validated-pr-merge.outputs.skip != 'true'
+        if: steps.validated-pr-merge.outputs.skip != 'true' && steps.scope.outputs.full == 'true'
         run: npm run typecheck
 
       - name: Full regression suite
-        if: steps.validated-pr-merge.outputs.skip != 'true'
+        if: steps.validated-pr-merge.outputs.skip != 'true' && steps.scope.outputs.full == 'true'
         run: npm test
 
       - name: Smoke expanded model runner
-        if: steps.validated-pr-merge.outputs.skip != 'true'
+        if: steps.validated-pr-merge.outputs.skip != 'true' && steps.scope.outputs.full == 'true'
         env:
           EXPECTED_MOBILE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           SYNC_INTENT_PROPERTY_SEED_COUNT: '129'
@@ -167,9 +181,9 @@ jobs:
         run: node scripts/run-expanded-sync-intent-model.mjs
 
       - name: Expo export
-        if: steps.validated-pr-merge.outputs.skip != 'true'
+        if: steps.validated-pr-merge.outputs.skip != 'true' && steps.scope.outputs.full == 'true'
         run: npx expo export --clear
 
       - name: Expo Doctor
-        if: steps.validated-pr-merge.outputs.skip != 'true'
+        if: steps.validated-pr-merge.outputs.skip != 'true' && steps.scope.outputs.full == 'true'
         run: npx expo-doctor@1.20.1
