@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { Exercise } from '@/features/exercises/types';
-import type { WorkoutSession } from '@/types';
+import type { WorkoutSession, WorkoutSet } from '@/types';
 
 import {
   buildCanonicalTrainingIntelligence,
@@ -29,7 +29,13 @@ const exercise = (overrides: Partial<Exercise> & Pick<Exercise, 'id' | 'name'>):
 const session = (
   id: string,
   finishedAt: string,
-  sets: Array<{ exerciseId: string; exerciseName: string; weight: number; reps: number }>,
+  sets: Array<{
+    exerciseId: string;
+    exerciseName: string;
+    weight: number;
+    reps: number;
+    setType?: WorkoutSet['setType'];
+  }>,
 ): WorkoutSession => ({
   id,
   workoutId: `workout-${id}`,
@@ -112,6 +118,33 @@ describe('buildCanonicalTrainingIntelligence', () => {
     expect(prs.some((finding) => finding.prType === 'load')).toBe(true);
     expect(prs.some((finding) => finding.prType === 'estimated_1rm')).toBe(true);
     expect(prs.every((finding) => finding.rulesetVersion === TRAINING_INTELLIGENCE_RULESET_VERSION)).toBe(true);
+  });
+
+  it('excludes warm-ups from muscle load, volume, and PR evidence', () => {
+    const exercises = [exercise({ id: 'bench', name: 'Bench press', primaryMuscles: ['chest'] })];
+    const sessions = [
+      session('old', '2026-08-10T12:00:00.000Z', [
+        { exerciseId: 'bench', exerciseName: 'Bench press', weight: 100, reps: 5 },
+      ]),
+      session('new', '2026-08-20T12:00:00.000Z', [
+        { exerciseId: 'bench', exerciseName: 'Bench press', weight: 200, reps: 10, setType: 'warmup' },
+        { exerciseId: 'bench', exerciseName: 'Bench press', weight: 90, reps: 5 },
+      ]),
+    ];
+
+    const result = buildCanonicalTrainingIntelligence({
+      exercises,
+      sessions,
+      endAt: '2026-08-22T12:00:00.000Z',
+      windowDays: 30,
+    });
+    const chest = result.muscleLoad.find((fact) => fact.id === 'chest');
+    const prs = result.findings.filter((finding) => finding.kind === 'new_pr');
+
+    expect(chest).toMatchObject({ primarySets: 2, primaryVolume: 950, exposureSessions: 2 });
+    expect(prs.some((finding) => finding.prType === 'load')).toBe(false);
+    expect(prs.some((finding) => finding.prType === 'estimated_1rm')).toBe(false);
+    expect(prs.some((finding) => finding.prType === 'session_volume')).toBe(false);
   });
 
   it('detects rising reps at stable load without treating an estimate as a measured max', () => {
