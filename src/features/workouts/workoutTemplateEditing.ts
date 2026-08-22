@@ -19,6 +19,14 @@ type NormalizedExerciseEdit = {
   sourceExerciseId?: string;
 };
 
+export const buildWorkoutTemplateExerciseEdits = (
+  exercises: readonly Pick<Exercise, 'id' | 'name'>[],
+): WorkoutTemplateExerciseEdit[] =>
+  exercises.map((exercise) => ({
+    name: exercise.name,
+    sourceExerciseId: exercise.id,
+  }));
+
 const normalizeExerciseEdit = (
   exercise: WorkoutTemplateExerciseEdit,
 ): NormalizedExerciseEdit =>
