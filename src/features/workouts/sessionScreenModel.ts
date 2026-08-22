@@ -108,6 +108,44 @@ export const updateWorkoutSessionSetActualRpe = (draft: WorkoutSessionDraft, set
   } satisfies WorkoutSessionDraft;
 };
 
+export const canReplacePendingWorkoutSessionExercise = (
+  draft: WorkoutSessionDraft,
+  sourceExerciseId: string,
+  replacementExerciseId: string,
+) =>
+  Boolean(sourceExerciseId) &&
+  Boolean(replacementExerciseId) &&
+  sourceExerciseId !== replacementExerciseId &&
+  draft.sets.some(
+    (set) => set.exerciseId === sourceExerciseId && set.completed === false,
+  );
+
+export const replacePendingWorkoutSessionExercise = (
+  draft: WorkoutSessionDraft,
+  sourceExerciseId: string,
+  replacement: { id: string; name: string },
+): WorkoutSessionDraft => {
+  if (!canReplacePendingWorkoutSessionExercise(draft, sourceExerciseId, replacement.id)) {
+    return {
+      ...draft,
+      sets: draft.sets.map(cloneSet),
+    };
+  }
+
+  return {
+    ...draft,
+    sets: draft.sets.map((set) =>
+      set.exerciseId === sourceExerciseId && set.completed === false
+        ? {
+            ...set,
+            exerciseId: replacement.id,
+            exerciseName: replacement.name,
+          }
+        : cloneSet(set),
+    ),
+  } satisfies WorkoutSessionDraft;
+};
+
 export const clearWorkoutSessionSetsForExercise = (draft: WorkoutSessionDraft, exerciseId: string) => {
   return {
     ...draft,
