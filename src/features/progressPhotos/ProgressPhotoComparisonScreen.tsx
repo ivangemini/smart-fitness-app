@@ -149,11 +149,11 @@ export default function ProgressPhotoComparisonScreen() {
   const formatWaist = (measurement: BodyMeasurement | null) => {
     if (!measurement) return copy.noNearbyWaist;
     const resolved = resolveBodyMeasurementStructuredValue(measurement);
-    if (!resolved) return measurement.value;
+    if (!resolved) return copy.noNearbyWaist;
     if (resolved.canonicalUnit === 'cm' && resolved.canonicalNumericValue !== null) {
       return `${formatLengthValue(resolved.canonicalNumericValue)} ${length}`;
     }
-    return measurement.value;
+    return copy.noNearbyWaist;
   };
 
   const renderEndpointEvidence = (
@@ -216,6 +216,9 @@ export default function ProgressPhotoComparisonScreen() {
               />
             </View>
             <Text style={styles.dateText}>{formatPhotoDate(photo.capturedAt)}</Text>
+            <Text style={styles.dateText}>
+              {photo.source === 'camera' ? copy.sourceCamera : copy.sourceLibrary}
+            </Text>
           </View>
         ))}
       </View>

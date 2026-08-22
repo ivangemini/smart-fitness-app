@@ -20,7 +20,8 @@ export const getProgressPhotoComparisonCopy = (locale: SupportedLocale) => {
     selecting: ru ? 'Куда выбрать фото' : 'Selecting for',
     before: ru ? 'До' : 'Before',
     after: ru ? 'После' : 'After',
-    timeline: ru ? 'Выберите даты' : 'Choose dates',
+    sourceCamera: ru ? 'Камера' : 'Camera',
+    sourceLibrary: ru ? 'Медиатека' : 'Library',
     timelineHint: ru
       ? 'Сначала выберите «До» или «После», затем нажмите на фото этого же ракурса.'
       : 'Choose Before or After, then tap a photo from the same pose.',
