@@ -102,7 +102,12 @@ const getSessionTimestamp = (session: WorkoutSession) =>
   parseTimestamp(session.finishedAt) ?? parseTimestamp(session.startedAt);
 
 const isWorkingSet = (set: WorkoutSet) =>
-  set.completed !== false && Number.isFinite(set.reps) && set.reps > 0 && Number.isFinite(set.weight) && set.weight >= 0;
+  set.setType !== 'warmup' &&
+  set.completed !== false &&
+  Number.isFinite(set.reps) &&
+  set.reps > 0 &&
+  Number.isFinite(set.weight) &&
+  set.weight >= 0;
 
 const isWeightedSet = (set: WorkoutSet) => isWorkingSet(set) && set.weight > 0;
 
