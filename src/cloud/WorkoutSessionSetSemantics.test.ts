@@ -40,7 +40,7 @@ describe('workout session set semantics sync contract', () => {
       now: '2026-08-22T09:01:00.000Z',
     });
 
-    expect(operation.payload.schemaVersion).toBe(1);
+    expect(operation.payload?.schemaVersion).toBe(1);
   });
 
   it('uses schema v2 when set type or superset semantics are present', () => {
@@ -52,8 +52,8 @@ describe('workout session set semantics sync contract', () => {
       now: '2026-08-22T09:01:00.000Z',
     });
 
-    expect(operation.payload.schemaVersion).toBe(2);
-    expect(operation.payload.sets).toEqual([
+    expect(operation.payload?.schemaVersion).toBe(2);
+    expect(operation.payload?.sets).toEqual([
       expect.objectContaining({ setType: 'warmup', supersetId: 'pair-a' }),
     ]);
   });
