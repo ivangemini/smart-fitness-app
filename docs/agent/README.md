@@ -1,6 +1,6 @@
 # Agent Operating Guide
 
-Updated: 2026-08-21
+Updated: 2026-08-22
 
 ## Purpose
 
@@ -24,15 +24,33 @@ For a new agent/session:
 2. read `PROJECT_MAP.md`;
 3. read this guide;
 4. run `npm run agent:preflight`;
-5. read `docs/project-context.md`;
-6. read `docs/current-status.md`;
-7. read `docs/handoffs/latest.md`;
-8. read `docs/implementation-plan.md`;
-9. read `PROJECT_LEARNINGS.md`;
-10. inspect the relevant ownership/impact/validation rows and focused docs;
-11. inspect exact current mobile/backend Git, PR, and CI state before substantive edits.
+5. inspect exact current mobile/backend Git/GitHub refs, open PRs and CI state;
+6. read `docs/project-context.md`;
+7. read `docs/current-status.md`;
+8. read `docs/handoffs/latest.md`;
+9. read `docs/implementation-plan.md`;
+10. read `ROADMAP_PROGRESS.md` when roadmap completion/sequencing matters;
+11. read `PROJECT_LEARNINGS.md`;
+12. inspect the relevant ownership/impact/validation rows and focused docs.
 
 Do not read the whole repository by default. Build the smallest correct working set, then expand only when source evidence or the dependency graph shows a wider dependency.
+
+## Freshness contract
+
+**Git/GitHub is the only live authority for current branch heads, commit SHAs, open/merged PR state and CI status.** Version-controlled documentation must not pretend to be a live ref database because merging a docs change would make such values stale immediately.
+
+Mutable facts have these homes:
+
+- live refs / PR state / CI state → Git/GitHub;
+- last verified product/workstream checkpoint → `docs/current-status.md`;
+- continuation/restart checkpoint → `docs/handoffs/latest.md`;
+- forward sequencing → `docs/implementation-plan.md`;
+- cross-program phase ledger → `ROADMAP_PROGRESS.md` and focused roadmap files;
+- stable architecture/ownership → `docs/project-context.md`, focused architecture/privacy/operations docs and `docs/agent/*`.
+
+Historical merge or evidence SHAs are appropriate when they identify a durable reviewed checkpoint (for example, the commit that actually passed a named CI run). Do **not** copy a SHA merely to say “this is current main”.
+
+After a merge that invalidates a pending-PR instruction, reconcile `current-status`, handoff and the affected roadmap entry in the same closure change. At session start, treat any prose that says a PR is “open”, “ready to merge”, “pending CI” or “unmerged” as a dated claim that must be checked against GitHub before acting.
 
 ## Agent Tooling v2
 
@@ -171,6 +189,20 @@ feature
 → compatibility/conflict/restart tests
 ```
 
+### Private local media
+
+Progress Photos use a different authority shape from both revisioned fitness sync and backend-managed media:
+
+```text
+src/features/progressPhotos/
+→ app-owned metadata/storage helper
+→ native camera/photo-library capability
+→ privacy + account-cleanup lifecycle
+→ QA/device evidence
+```
+
+Do not silently add cloud upload, server sync, Social sharing, EXIF/location persistence, AI vision or image-derived body-fat authority. Any such expansion needs a separately reviewed architecture/privacy/storage contract.
+
 ### Server-authoritative domain
 
 For Labs, Social/Stories, Knowledge/Learning, authentication/session/device state, managed media, and backend Coach authority:
@@ -198,16 +230,16 @@ For `src/context/`, `src/cloud/`, shared `src/api/`, root navigation, auth/sessi
 
 ## Canonical documentation hierarchy
 
-When prose disagrees, prefer:
+Resolve conflicts by claim type rather than by copying one universal file everywhere:
 
-1. exact source, migrations, schemas, tests, and current Git history;
-2. `docs/implementation-plan.md`;
-3. `docs/current-status.md`;
-4. focused architecture/privacy/operations/QA/release documents;
-5. `docs/project-context.md`;
-6. `PROJECT_MAP.md` and `docs/agent/*`;
-7. `PROJECT_LEARNINGS.md`;
-8. historical PR descriptions, old handoffs, and chat summaries.
+1. exact source, migrations, schemas, tests and current Git/GitHub state;
+2. the focused canonical architecture/privacy/operations/QA document for the claim;
+3. `docs/current-status.md` for the last verified mutable checkpoint;
+4. `docs/implementation-plan.md` and focused roadmap for forward sequencing;
+5. `docs/project-context.md` for stable orientation;
+6. `PROJECT_MAP.md` and `docs/agent/*` for navigation/impact guidance;
+7. `PROJECT_LEARNINGS.md` for durable lessons;
+8. historical PR descriptions, old handoffs and chat summaries.
 
 `docs/handoffs/latest.md` is a restart checkpoint, not architecture authority.
 
@@ -291,9 +323,10 @@ For coordinated changes:
 - repository/file/authority navigation → `PROJECT_MAP.md`;
 - agent ownership/impact/validation/tooling → `docs/agent/*` and `config/agent-project-graph.json`;
 - stable architecture/product baseline → focused architecture or `docs/project-context.md`;
-- mutable state/blocker → `docs/current-status.md`;
+- last verified mutable product/workstream checkpoint → `docs/current-status.md`;
 - continuation checkpoint → `docs/handoffs/latest.md`;
-- forward sequence → `docs/implementation-plan.md` / focused roadmap;
+- forward sequence → `docs/implementation-plan.md`;
+- cross-program phase ledger → `ROADMAP_PROGRESS.md` plus focused roadmap;
 - durable lesson → `PROJECT_LEARNINGS.md`;
 - release/evidence result → relevant QA/release document.
 
@@ -310,4 +343,4 @@ Do not duplicate one mutable fact across several broad documents.
 - graph schema/node/edge/validation-profile integrity;
 - graph coverage for current top-level feature directories.
 
-The graph is structural. It cannot prove that prose matches implementation or that an external backend contract is current. Source inspection remains mandatory.
+The graph is structural. It cannot prove that prose matches implementation or that an external backend contract is current. Live ref/PR/CI truth therefore must come from Git/GitHub; source inspection remains mandatory.

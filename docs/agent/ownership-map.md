@@ -1,6 +1,6 @@
 # Agent Ownership Map
 
-Updated: 2026-08-21
+Updated: 2026-08-22
 
 ## Purpose
 
@@ -13,8 +13,6 @@ The most dangerous agent mistake in this project is creating a second source of 
 ### A. Private offline-first fitness state
 
 Mobile owns the local working copy. Backend owns synchronized revision/conflict/tombstone authority for the account copy.
-
-Required pattern:
 
 ```text
 focused mobile state
@@ -29,8 +27,6 @@ Do not add a parallel local store or bypass sync metadata for an existing synced
 ### B. Server-authoritative account/domain state
 
 Backend owns canonical rows and lifecycle. Mobile caches/presents bounded DTOs but must not fabricate server truth.
-
-Typical pattern:
 
 ```text
 mobile feature
@@ -49,81 +45,96 @@ Backend owns shared publication/content truth. Mobile renders immutable/bounded 
 
 Derived values may live on mobile when they can be recomputed deterministically from canonical inputs and are not a second persisted truth.
 
+### E. Private local media
+
+Some account-owned media is intentionally local and does **not** belong to revisioned fitness sync or backend-managed media. Phase 20 Progress Photos use this class.
+
+```text
+progress-photo metadata
+→ app-owned native document storage
+→ account cleanup/privacy lifecycle
+→ derived comparison/body-composition presentation
+```
+
+Do not silently convert this class into cloud sync, Social media, provider-managed media or AI-vision input. That requires a separately reviewed storage/privacy/sync contract.
+
 ## Domain matrix
 
-| Domain / entity | Mobile authority | Backend authority | Persistence / transport | Primary mobile entry | Primary backend entry | Key invariant |
-| --- | --- | --- | --- | --- | --- | --- |
-| Weight history | local working copy | revision/conflict/tombstone account authority | AsyncStorage + sync | progress/state/sync | sync contracts/repositories | stable IDs, timestamps, revisions |
-| Completed workout sessions/sets | local working copy; completed history semantics preserved | revisioned account authority | AsyncStorage + sync | workouts/state/sync | sync contracts/repositories | completed history is not casually rewritten |
-| Workout templates | local working copy | revisioned account authority | AsyncStorage + sync | workouts/state/sync | sync contracts/repositories | preserve template IDs and references |
-| Training programs | local working copy | revisioned account authority | AsyncStorage + sync | workouts/programs/state | sync contracts/repositories | coordinated lifecycle and IDs |
-| Custom exercises | local working copy | revisioned account authority | AsyncStorage + sync | exercises/state | sync contracts/repositories | canonical cross-entity references remain valid |
-| Food entries | local working copy | revisioned account authority | AsyncStorage + sync | nutrition/state | sync contracts/repositories | diary semantics and IDs remain stable |
-| Nutrition targets | local working copy | revisioned account authority | AsyncStorage + sync | nutrition/state | sync contracts/repositories | confirmation/application paths stay explicit |
-| Meal templates | local working copy | revisioned account authority | AsyncStorage + sync | nutrition/state | sync contracts/repositories | nested snapshots remain contract-valid |
-| Nutrition library items | local working copy | account-scoped revisioned authority | AsyncStorage + sync | nutrition/state | sync contracts/repositories | ownership and conflict semantics preserved |
-| Fitness profile | local working copy | revisioned account authority | AsyncStorage + sync | profile/goals/state | sync contracts/repositories | profile remains canonical input to derived logic |
-| User limitations | local working copy | revisioned account authority | AsyncStorage + sync | profile/safety state | sync contracts/repositories | safety inputs are never silently dropped |
-| Recovery check-ins | local working copy | revisioned account authority | AsyncStorage + sync | safety/recovery state | sync contracts/repositories | preserve timestamps and safety semantics |
-| Body measurements | local working copy | revisioned account authority | AsyncStorage + sync | progress/state | sync contracts/repositories | typed measurements and units remain explicit |
-| Authentication | bounded client session state only | canonical account/auth authority | API + SecureStore tokens | `src/auth/`, `src/api/` | auth routes/services/repositories | client payload never chooses ownership |
-| Access/refresh tokens | SecureStore only | session/token issuance and revocation authority | SecureStore + auth API | `src/auth/` | auth/session/device modules | tokens never enter ordinary AppState/cache |
-| Sessions/devices | display/actions only | canonical authority | authenticated API | settings/account/auth | auth/session/device modules | ownership derived from authenticated session |
-| Sync conflicts/revisions | local unresolved UI/recovery state | canonical revision/conflict authority | sync protocol | `SyncContext`, `src/cloud/` | sync repositories/services | cursor/revision safety; no silent overwrite |
-| Coach runs | render persisted result/provenance; explicit confirmation UI | canonical run/orchestration/provenance authority | authenticated API | `src/features/coach/` | Coach routes/orchestrator/services | model output is not direct mutation authority |
-| Coach calculations/guardrails | client may present bounded results | deterministic backend workers own authoritative orchestration calculations where server-run | API | Coach UI/helpers | deterministic workers/validators | hard guardrails stay outside free-form model prose |
-| Coach confirmations | explicit user action only | validates/applies server-authoritative mutation contract | authenticated API | Coach confirmation surfaces | Coach services | no automatic application |
-| Companion progression v1 | deterministic derived presentation from canonical completed workout days | no separate required persistence for v1 | recomputed locally | `src/features/companion/` | none for deterministic v1 | do not create duplicate persisted truth |
-| Labs documents | upload/review UI only | canonical private document authority | authenticated API / managed storage via backend | `src/features/labs/` | Labs routes/services/repositories | raw docs never ordinary AppState/Social truth |
-| Labs extraction drafts | reviewable draft presentation | canonical draft/job authority | authenticated API | Labs review flows | Labs processing domain | draft is not confirmed result |
-| Confirmed Labs results | render/query bounded structured facts | canonical confirmed result authority | authenticated API | Labs result/history/compare | Labs repositories/services | confirmed structured facts are authoritative |
-| Labs charts/classification | derived presentation from confirmed values/reference data | supplies confirmed facts/reference context | API + deterministic presentation | Labs trends/marker UI | Labs read services | descriptive, not diagnostic |
-| Social profile/relationships | render/actions | canonical authority | authenticated API | `src/features/social/` | Social routes/services/repositories | no fabricated follow/friend state |
-| Social workout posts | explicit sharing UI; render snapshots | canonical post/feed authority | authenticated API | Social/share flows | Social domain | sharing is explicit; private data not implicitly public |
-| Stories | render/create/reply/view actions | canonical lifecycle/audience/archive/highlight authority | authenticated API | Social/Stories | Stories services/repositories | visibility and expiry owned by backend |
-| Social notifications | render/read actions | canonical notification state | authenticated API | notifications/social | notification services | UI does not invent delivery state |
-| Managed media | local selection/upload progress only | canonical approval/object lifecycle authority | backend-managed upload/provider boundary | Social/Labs media flows | managed-media services/providers | provider object keys/secrets stay server-only |
-| Push registration | native permission/token acquisition + registration request | canonical device registration/outbox authority | notifications API/provider via backend | notifications capability | push registration/outbox services | provider credentials server-only |
-| Push delivery | local receipt/tap handling | canonical enqueue/retry/provider transport authority | APNs/FCM through backend | notification handlers | push worker/transport | source support does not prove external delivery |
-| HealthKit / Health Connect readings | platform permission/read boundary; bounded local derived integration | no invented server authority unless an explicit contract stores data | native platform APIs | `src/features/health/` | only if explicit backend contract exists | preserve platform privacy/permission rules |
-| Canonical Knowledge concepts/articles | render published immutable versions | shared canonical publication authority | authenticated/public bounded API as reviewed | `src/features/knowledge/` | `src/modules/knowledge/` | published versions are immutable evidence boundaries |
-| Knowledge sources/claims/quizzes | render only end-user-safe fields | canonical editorial/review authority | backend DTOs | Knowledge reader/quiz | Knowledge module/editorial services | editorial internals never leak to end-user DTOs |
-| Learning state | bounded account state UI/retry behavior | account-owned server authority | authenticated API + bounded retry queue | Knowledge state UI | Knowledge learning-state services | outside private fitness AppState sync |
-| Learning paths | render immutable reviewed path versions | canonical reviewed curriculum authority | backend DTOs | Knowledge navigation | Knowledge module | no XP/locks/punishment mechanics |
-| Coach → Learn mapping | render optional recommendation | deterministic allowlisted mapping authority | Coach/Knowledge backend contract | Coach run detail | Coach + Knowledge mapping services | no model-selected arbitrary article IDs |
-| App appearance | local user preference/presentation | none required | local app settings | settings/theme | none | not server truth unless explicit future contract |
-| Localization | presentation resources | none | bundled source | `src/localization/` | none | user-facing copy stays localized |
-| Observability/support diagnostics | bounded local collection/display | backend may own server diagnostics | privacy-safe diagnostics only | `src/observability/` | backend observability | no tokens/raw health/private provider payloads |
-| Provider credentials | none | backend/environment authority | server secrets only | never mobile | provider adapters/config | never `EXPO_PUBLIC_*`, source, logs, or UI |
-| Production deployment state | none | deployment/platform authority | CI/CD/runtime platform | release UI only if any | backend deployment config | merge is not deployment |
-| Admin/editorial actions | mobile has no implicit authority | backend/admin authorization boundary | admin surface/API | none unless explicit consumer | backend admin | ordinary authenticated user is not admin/editor |
+| Domain / entity | Mobile authority | Backend authority | Persistence / transport | Primary mobile entry | Key invariant |
+| --- | --- | --- | --- | --- | --- |
+| Weight history | local working copy | revision/conflict/tombstone account authority | AsyncStorage + sync | progress/state/sync | stable IDs, timestamps, revisions |
+| Completed workout sessions/sets | local working copy | revisioned account authority | AsyncStorage + sync | workouts/state/sync | completed history is not casually rewritten |
+| Workout templates | local working copy | revisioned account authority | AsyncStorage + sync | workouts/state/sync | preserve template IDs/references |
+| Training programs | local working copy | revisioned account authority | AsyncStorage + sync | workouts/programs/state | coordinated lifecycle and IDs |
+| Custom exercises | local working copy | revisioned account authority | AsyncStorage + sync | exercises/state | canonical cross-entity references remain valid |
+| Food entries | local working copy | revisioned account authority | AsyncStorage + sync | nutrition/state | diary semantics and IDs remain stable |
+| Nutrition targets | local working copy | revisioned account authority | AsyncStorage + sync | nutrition/state | confirmation/application stays explicit |
+| Meal templates | local working copy | revisioned account authority | AsyncStorage + sync | nutrition/state | nested snapshots remain contract-valid |
+| Nutrition library items | local working copy | account-scoped revisioned authority | AsyncStorage + sync | nutrition/state | ownership/conflict semantics preserved |
+| Fitness profile | local working copy | revisioned account authority | AsyncStorage + sync | profile/goals/state | canonical input to derived logic |
+| User limitations | local working copy | revisioned account authority | AsyncStorage + sync | profile/safety state | safety inputs are never silently dropped |
+| Recovery check-ins | local working copy | revisioned account authority | AsyncStorage + sync | safety/recovery state | preserve timestamps/safety semantics |
+| Body measurements | local working copy | revisioned account authority | AsyncStorage + sync | progress/state | typed measurements/units remain explicit |
+| Progress photos | private account-owned local-media authority | none in reviewed Phase 20 scope | app-owned native document storage + local metadata | `src/features/progressPhotos/` | private by default; re-encode imports; no cloud/social/provider upload or image-derived body-fat authority |
+| Progress-photo comparison | derived/read-only | none | none beyond source photos | progressPhotos comparison | same-pose/chronology/aspect checks fail closed; no registration/measurement claim |
+| Authentication | bounded client session state only | canonical account/auth authority | API + SecureStore tokens | `src/auth/`, `src/api/` | client payload never chooses ownership |
+| Access/refresh tokens | SecureStore only | issuance/revocation authority | SecureStore + auth API | `src/auth/` | tokens never enter ordinary AppState/cache |
+| Sessions/devices | display/actions only | canonical authority | authenticated API | settings/account/auth | ownership from authenticated session |
+| Sync conflicts/revisions | local unresolved UI/recovery state | canonical revision/conflict authority | sync protocol | `SyncContext`, `src/cloud/` | cursor/revision safety; no silent overwrite |
+| Coach runs | render result/provenance; explicit confirmation UI | canonical run/orchestration/provenance authority | authenticated API | `src/features/coach/` | model output is not direct mutation authority |
+| Coach calculations/guardrails | bounded presentation | deterministic backend workers own server-run authority | API | Coach UI/helpers | hard guardrails stay outside model prose |
+| Coach confirmations | explicit user action only | validates/applies server mutation contract | authenticated API | Coach confirmation surfaces | no automatic application |
+| Companion progression v1 | deterministic derived presentation from completed workout days | none required for v1 | recomputed locally | `src/features/companion/` | no duplicate persisted truth |
+| Labs documents | upload/review UI only | canonical private document authority | authenticated API / managed storage via backend | `src/features/labs/` | raw docs never ordinary AppState/Social truth |
+| Labs extraction drafts | reviewable draft presentation | canonical draft/job authority | authenticated API | Labs review flows | draft is not confirmed result |
+| Confirmed Labs results | render/query structured facts | canonical confirmed-result authority | authenticated API | Labs result/history/compare | confirmed facts authoritative |
+| Social profile/relationships | render/actions | canonical authority | authenticated API | `src/features/social/` | no fabricated relationship state |
+| Social workout posts | explicit sharing UI; render snapshots | canonical post/feed authority | authenticated API | Social/share flows | sharing is explicit |
+| Stories | render/create/reply/view actions | canonical lifecycle/audience/archive/highlight authority | authenticated API | Social/Stories | visibility/expiry owned by backend |
+| Social notifications | render/read actions | canonical notification state | authenticated API | notifications/social | UI does not invent delivery state |
+| Managed media | local selection/upload progress only | canonical approval/object lifecycle authority | backend-managed provider boundary | Social/Labs media | provider object keys/secrets server-only |
+| Push registration | native permission/token acquisition + request | canonical registration/outbox authority | notifications API/provider via backend | notifications | provider credentials server-only |
+| Push delivery | receipt/tap handling | canonical enqueue/retry/provider transport authority | APNs/FCM via backend | notification handlers | source support does not prove external delivery |
+| HealthKit / Health Connect readings | platform permission/read boundary | none unless explicit storage contract exists | native platform APIs | `src/features/health/` | preserve platform privacy/permission rules |
+| Canonical Knowledge concepts/articles | render immutable published versions | shared publication authority | bounded API | `src/features/knowledge/` | published versions are immutable evidence boundaries |
+| Knowledge sources/claims/quizzes | render end-user-safe fields | canonical editorial/review authority | backend DTOs | Knowledge reader/quiz | editorial internals never leak |
+| Learning state | bounded account-state UI/retry behavior | account-owned server authority | authenticated API + bounded retry queue | Knowledge state UI | outside private fitness AppState sync |
+| Learning paths | render immutable reviewed path versions | canonical reviewed curriculum authority | backend DTOs | Knowledge navigation | no XP/locks/punishment mechanics |
+| Coach → Learn mapping | render optional recommendation | deterministic allowlisted mapping authority | Coach/Knowledge backend contract | Coach run detail | no model-selected arbitrary article IDs |
+| App appearance | local preference/presentation | none required | local settings | settings/theme | not server truth unless explicit future contract |
+| Localization | presentation resources | none | bundled source | `src/localization/` | user-facing copy stays localized |
+| Observability/support diagnostics | bounded local collection/display | backend may own server diagnostics | privacy-safe diagnostics only | `src/observability/` | no tokens/raw health/provider payloads |
+| Provider credentials | none | backend/environment authority | server secrets only | never mobile | never `EXPO_PUBLIC_*`, source, logs or UI |
+| Production deployment state | none | deployment/platform authority | CI/CD/runtime platform | none | merge is not deployment |
+| Admin/editorial actions | no implicit mobile authority | backend/admin authorization boundary | admin surface/API | none | ordinary authenticated user is not admin/editor |
 
 ## Cross-domain ownership rules
 
-### Private fitness sync versus server-authoritative domains
+### Private fitness sync versus other authority classes
 
 Do not put these into private revisioned fitness `AppState` sync merely because the mobile UI needs them:
 
 - auth/session/device rows;
 - Labs documents/results/jobs;
 - Social/Stories/notifications;
-- managed media;
+- backend-managed media;
 - canonical Knowledge content;
 - account learning state;
 - canonical Coach run authority;
-- provider delivery/job state.
+- provider delivery/job state;
+- Progress Photo binary media.
+
+Progress Photos also must not be silently routed into backend-managed media. Their reviewed Phase 20 authority is local app-owned media with explicit account cleanup and privacy behavior.
 
 ### Derived state
 
 A derived value is safe to keep presentation-local only when all are true:
 
 - canonical inputs already exist;
-- the value can be deterministically recomputed;
-- no other device/service needs to treat the derived value as canonical;
-- losing the derived value does not lose user-authored meaning;
-- it does not become a hidden mutation authority.
-
-If any condition fails, inspect architecture before persisting it.
+- it can be deterministically recomputed;
+- no other device/service treats it as canonical;
+- losing it does not lose user-authored meaning;
+- it does not become hidden mutation authority.
 
 ### Ownership identifiers
 
@@ -134,12 +145,12 @@ Backend user-owned reads/writes derive ownership from the authenticated session.
 Ask in this order:
 
 1. Does an existing canonical entity already represent this fact?
-2. Is this merely presentation/derived state?
-3. Is it private offline-first fitness data or a server-authoritative domain?
+2. Is this presentation/derived state?
+3. Is it private offline-first fitness data, private local media or a server-authoritative domain?
 4. Does it need cross-device synchronization?
 5. Who owns deletion/export/privacy lifecycle?
 6. What happens during offline/retry/duplicate delivery/conflict?
-7. Does the backend need a schema/API contract before mobile persistence exists?
+7. Does backend schema/API authority need to exist before mobile persistence?
 
 If these questions are not answerable from current source and focused architecture, do not invent a new store ad hoc.
 
