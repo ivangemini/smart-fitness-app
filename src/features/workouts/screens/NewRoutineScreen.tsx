@@ -12,6 +12,7 @@ import {
 } from '@/features/workouts/components/NewRoutineModals';
 import { attachWorkoutsToProgramDraft } from '@/features/workouts/programEditorModel';
 import { createStyles } from '@/features/workouts/styles/newRoutineScreenStyles';
+import { buildWorkoutTemplateExerciseEdits } from '@/features/workouts/workoutTemplateEditing';
 import { formatWorkoutPlanDescription, getWorkoutProgramById } from '@/lib/workouts';
 import { useLocalization } from '@/localization';
 import { getProgramRoutineCopy } from '@/localization/programRoutineCopy';
@@ -117,7 +118,9 @@ export function NewRoutineScreen() {
 
     const now = new Date().toISOString();
     const workoutId = `workout-${Date.now()}`;
-    const exerciseNames = planExercises.map((item) => item.exercise.name);
+    const templateExerciseEdits = buildWorkoutTemplateExerciseEdits(
+      planExercises.map((item) => item.exercise),
+    );
     const description = formatWorkoutPlanDescription(
       notes,
       planExercises.map((item) => ({
@@ -132,7 +135,7 @@ export function NewRoutineScreen() {
       id: workoutId,
       title: title.trim(),
       description,
-      exercises: exerciseNames,
+      exercises: templateExerciseEdits,
       createdAt: now,
     });
 
@@ -140,7 +143,7 @@ export function NewRoutineScreen() {
       id: workoutId,
       title: title.trim(),
       description,
-      duration: `${Math.max(15, exerciseNames.length * 10)} min`,
+      duration: `${Math.max(15, planExercises.length * 10)} min`,
       exercises: planExercises.map((item) => ({ ...item.exercise })),
       createdAt: now,
       isCustom: true,
