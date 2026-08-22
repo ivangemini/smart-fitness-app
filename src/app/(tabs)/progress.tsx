@@ -17,6 +17,7 @@ import {
   getGoalProgressCopy,
   getGoalTypeCopy,
 } from '@/features/goals/goalProgressCopy';
+import { getBodyCompositionProgressCopy } from '@/features/progress/bodyCompositionProgressCopy';
 import {
   buildBodyMeasurement,
   createBodyMeasurementDraft,
@@ -57,6 +58,7 @@ export default function ProgressScreen() {
   const copy = getProgressOverviewCopy(locale);
   const goalCopy = getGoalProgressCopy(locale);
   const progressPhotoCopy = getProgressPhotoCopy(locale);
+  const bodyCompositionCopy = getBodyCompositionProgressCopy(locale);
   const [anchorAt] = useState(() => new Date().toISOString());
   const [measurementDraft, setMeasurementDraft] = useState(() =>
     createBodyMeasurementDraft(lengthUnit),
@@ -324,6 +326,11 @@ export default function ProgressScreen() {
               <AppButton
                 label={progressPhotoCopy.title}
                 onPress={() => router.push('/progress-photos')}
+                variant="secondary"
+              />
+              <AppButton
+                label={bodyCompositionCopy.title}
+                onPress={() => router.push('/body-composition-progress')}
                 variant="secondary"
               />
             </View>
