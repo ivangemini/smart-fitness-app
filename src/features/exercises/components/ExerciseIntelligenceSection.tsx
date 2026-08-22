@@ -9,6 +9,7 @@ import {
 } from '../exerciseIntelligence';
 import { getExerciseIntelligenceCopy } from '../exerciseIntelligenceCopy';
 import { ExerciseDetailTextList } from './ExerciseDetailTextList';
+import { SmartReplaceSection } from './SmartReplaceSection';
 
 type ExerciseIntelligenceSectionProps = {
   exerciseId: string;
@@ -81,6 +82,13 @@ export function ExerciseIntelligenceSection({
         )}
         <Text style={styles.secondaryText}>{copy.substitutionDisclaimer}</Text>
       </AppCard>
+
+      <SmartReplaceSection
+        exerciseId={exerciseId}
+        locale={locale}
+        onOpenExercise={onOpenExercise}
+        styles={styles}
+      />
     </>
   );
 }
