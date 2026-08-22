@@ -30,6 +30,7 @@ import {
   setActiveWorkoutSessionDraft,
 } from '@/features/workouts/storage';
 import { createStyles } from '@/features/workouts/styles/workoutSessionScreenStyles';
+import { useWorkoutSessionSmartReplaceOptions } from '@/features/workouts/useWorkoutSessionSmartReplaceOptions';
 import {
   addWorkoutWarmupSets,
   applyWorkoutAdjustmentToRemainingSets,
@@ -68,7 +69,7 @@ export default function WorkoutSessionScreen() {
   const { exercises, workoutSessions, workouts } = useWorkoutState();
   const { isRestoringState } = useAppInfrastructure();
   const { colors } = useAppTheme();
-  const { t } = useLocalization();
+  const { locale, t } = useLocalization();
   const insets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const [bootstrappedDraft, setBootstrappedDraft] = useState<
@@ -86,6 +87,19 @@ export default function WorkoutSessionScreen() {
   const [trackRpeEnabled, setTrackRpeEnabled] = useState(false);
   const [rpeSetId, setRpeSetId] = useState<string | null>(null);
   const didSetInitialExpandedExercise = useRef(false);
+  const replacementOptions = useWorkoutSessionSmartReplaceOptions({
+    catalog: exercises,
+    enabled: Boolean(
+      replacementTarget &&
+        draft?.sets.some(
+          (set) =>
+            set.exerciseId === replacementTarget.exerciseId &&
+            set.completed === false,
+        ),
+    ),
+    locale,
+    sourceExerciseId: replacementTarget?.exerciseId ?? null,
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -452,7 +466,7 @@ export default function WorkoutSessionScreen() {
         bottomInset={insets.bottom}
         colors={colors}
         exerciseOverflow={exerciseOverflow}
-        exercises={exercises}
+        exercises={replacementOptions}
         onClearExercise={clearExerciseSets}
         onCloseExerciseOverflow={(clearMessage) => {
           if (clearMessage) setOverflowMessage(null);
