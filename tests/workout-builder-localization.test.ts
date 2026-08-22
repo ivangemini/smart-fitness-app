@@ -92,7 +92,8 @@ describe('workout builder localization', () => {
     expect(editor).toContain('setDraftExercises(initialDraft.exercises)');
     expect(editor).toContain('duplicateExercise');
     expect(editor).toContain('moveExercise');
-    expect(editor).toContain('onSaveWorkout({');
+    expect(editor).toContain('onSaveWorkout(');
+    expect(editor).toContain('buildProgramWorkoutEditorSavePayload');
   });
 
   it('localizes controls and accessibility without literal English assertions', () => {

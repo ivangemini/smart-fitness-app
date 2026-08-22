@@ -53,7 +53,8 @@ describe('workout creation theme consistency', () => {
     expect(builder).toContain('automaticallyAdjustKeyboardInsets');
     expect(builder).toContain('keyboardShouldPersistTaps="handled"');
     expect(editor).toContain("workoutTitle.trim().length === 0 || draftExercises.length === 0");
-    expect(editor).toContain('onSaveWorkout({');
+    expect(editor).toContain('onSaveWorkout(');
+    expect(editor).toContain('buildProgramWorkoutEditorSavePayload');
     expect(editor).toContain('setDraftExercises((current) =>');
     expect(editor).toContain('onMoveExercise={moveExercise}');
     expect(editor).toContain('onDuplicateExercise={duplicateExercise}');

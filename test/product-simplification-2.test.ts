@@ -238,7 +238,8 @@ describe('product simplification 2.0', () => {
     expect(picker).toContain('onAddWorkouts(selectedIds)');
     expect(editor).toContain('copy.createNewWorkout');
     expect(editor).toContain('copy.save');
-    expect(editor).toContain('onSaveWorkout({');
+    expect(editor).toContain('onSaveWorkout(');
+    expect(editor).toContain('buildProgramWorkoutEditorSavePayload');
     expect(workoutBuilderCard).not.toContain('Save workout');
   });
 });
