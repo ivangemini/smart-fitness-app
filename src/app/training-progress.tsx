@@ -13,6 +13,8 @@ import { SectionHeader } from '@/components/ui/SectionHeader';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useWorkoutState } from '@/context/AppContext';
+import { TrainingIntelligenceSection } from '@/features/progress/TrainingIntelligenceSection';
+import type { TrainingIntelligenceWindowDays } from '@/features/progress/trainingIntelligence';
 import { getRequestedTrainingProgressExerciseKey } from '@/features/progress/trainingProgressSelection';
 import {
   buildExerciseProgressSeries,
@@ -23,7 +25,7 @@ import { getTrainingProgressCopy } from '@/localization/trainingProgressCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import { useUnitPreferences, weightFromKg } from '@/units';
 
-type PeriodKey = '28' | '90' | '180';
+type PeriodKey = '7' | '30' | '90';
 
 type TrainingProgressSearchParams = {
   exerciseId?: string | string[];
@@ -31,12 +33,16 @@ type TrainingProgressSearchParams = {
 };
 
 const PERIOD_OPTIONS = [
-  { label: '28D', value: '28' },
+  { label: '7D', value: '7' },
+  { label: '30D', value: '30' },
   { label: '90D', value: '90' },
-  { label: '180D', value: '180' },
 ] as const;
 
-const PERIOD_DAYS: Record<PeriodKey, number> = { '28': 28, '90': 90, '180': 180 };
+const PERIOD_DAYS: Record<PeriodKey, TrainingIntelligenceWindowDays> = {
+  '7': 7,
+  '30': 30,
+  '90': 90,
+};
 const getExerciseKey = (exercise: { exerciseId: string; exerciseName: string }) =>
   exercise.exerciseId.trim() || `name:${exercise.exerciseName.trim().toLocaleLowerCase()}`;
 
@@ -50,7 +56,7 @@ export default function TrainingProgressScreen() {
   const safeAreaInsets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const [anchorAt] = useState(() => new Date().toISOString());
-  const [periodKey, setPeriodKey] = useState<PeriodKey>('28');
+  const [periodKey, setPeriodKey] = useState<PeriodKey>('30');
   const [selectedExerciseKey, setSelectedExerciseKey] = useState<string | null>(null);
   const requestedExerciseKey = useMemo(
     () => getRequestedTrainingProgressExerciseKey(searchParams),
@@ -197,6 +203,12 @@ export default function TrainingProgressScreen() {
             ) : <Text selectable style={styles.detail}>{copy.chartNeedsData}</Text>}
           </AppCard>
         ) : null}
+
+        <TrainingIntelligenceSection
+          endAt={anchorAt}
+          windowDays={periodDays}
+          workoutSessions={workoutSessions}
+        />
 
         {analytics.frequency.sessionCount === 0 ? <AppCard><Text selectable style={styles.detail}>{copy.noTraining}</Text></AppCard> : null}
         {selectedExercise ? (

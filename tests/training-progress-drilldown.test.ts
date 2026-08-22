@@ -17,9 +17,14 @@ describe('Strength & Training drilldown', () => {
     expect(screen).toContain('buildExerciseProgressSeries({');
     expect(screen).toContain('maxExercises: 12');
     expect(screen).toContain('maxPoints: 24');
-    expect(screen).toContain("type PeriodKey = '28' | '90' | '180'");
+    expect(screen).toContain("type PeriodKey = '7' | '30' | '90'");
+    expect(screen).toContain("{ label: '7D', value: '7' }");
+    expect(screen).toContain("{ label: '30D', value: '30' }");
+    expect(screen).toContain("{ label: '90D', value: '90' }");
     expect(screen).toContain('<SegmentedControl');
     expect(screen).toContain('selected={key === selectedExerciseKey}');
+    expect(screen).toContain('<TrainingIntelligenceSection');
+    expect(screen).toContain('windowDays={periodDays}');
   });
 
   it('keeps unit conversion and conservative chart evidence explicit', () => {
