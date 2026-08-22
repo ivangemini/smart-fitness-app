@@ -119,7 +119,7 @@ export const calculateExerciseProgressMetrics = (
   );
   const bestWeight = sets.reduce((best, set) => Math.max(best, set.weight), 0);
   const bestReps = sets.reduce((best, set) => Math.max(best, set.reps), 0);
-  const trendSessions = [...recentSessions].reverse().slice(-6);
+  const trendSessions = recentSessions.slice(0, 6).reverse();
   const latest = recentSessions[0] ?? null;
   const previous = recentSessions[1] ?? null;
 
