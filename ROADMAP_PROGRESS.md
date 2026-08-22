@@ -10,7 +10,8 @@ Focused roadmap references:
 - `docs/roadmap/localization-settings.md`;
 - `docs/roadmap/data-quality-and-scale.md`;
 - `docs/roadmap/knowledge-learning.md`;
-- `docs/roadmap/training-intelligence.md`.
+- `docs/roadmap/training-intelligence.md`;
+- `docs/roadmap/exercise-preferences-smart-replace.md`.
 
 ## Verified phase baseline
 
@@ -132,28 +133,42 @@ Public HTTP 200 reachability and unauthenticated `AUTH_REQUIRED` behavior are ve
 
 Activate Coach → Learn mappings only from approved canonical content authority. This is editorial/product activation, not missing runtime infrastructure.
 
+### 6. Exercise Preferences + Smart Replace expansion
+
+The user-directed expansion is authorized only inside `docs/roadmap/exercise-preferences-smart-replace.md`; it remains outside the numbered phase sequence.
+
+The reviewed foundation slice may ship with:
+
+- local per-exercise `avoid` plus optional personal note;
+- fail-closed, feature-local persistence that remains separate from favorites;
+- explicit-save detail UI with RU/EN copy;
+- no automatic program/workout mutation, backend sync or opaque generated replacement IDs.
+
+Smart Replace may follow only through deterministic canonical substitution resolution, avoided-candidate exclusion, bounded reasons and explicit user application as defined by the focused roadmap document.
+
 ## Approved future expansion queue
 
 The following directions are approved for planning but are not automatically authorized as a new numbered phase:
 
 - Adaptive Program + Recovery Engine;
-- Exercise Preferences + Smart Replace;
+- Exercise Preferences + Smart Replace — foundation contract reviewed and authorized in `docs/roadmap/exercise-preferences-smart-replace.md`;
 - Weekly Training Review;
 - Apple Health / Apple Watch expansion;
 - Progress Stories / Share Cards;
 - Trainer / Coach collaboration layer.
 
-Each requires its own reviewed requirements/authority boundaries before implementation.
+Each direction still requires reviewed authority boundaries before work outside an already documented slice.
 
 ## Execution order
 
-1. Confirm Phase 21 OTA publication metadata.
+1. Confirm Phase 21 OTA publication metadata when the workflow evidence is observable.
 2. Run Phase 21 real-iPhone smoke.
 3. Run Phase 20 signed-iPhone validation.
 4. Confirm backend #340 exact-SHA Admin Production Deploy and run the authorized Admin console smoke.
 5. Continue Phase 14 external/provider/device evidence when prerequisites are available.
 6. Activate Coach → Learn mappings only when approved content mappings exist.
-7. Do not create P21-F/Phase 22 or reopen closed source scopes without a reproduced defect or newly reviewed requirement.
+7. Continue Exercise Preferences + Smart Replace only within `docs/roadmap/exercise-preferences-smart-replace.md`; do not reinterpret it as P21-F/Phase 22.
+8. Do not create P21-F/Phase 22 or reopen closed source scopes without a reproduced defect or newly reviewed requirement.
 
 ## Release boundary
 
