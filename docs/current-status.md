@@ -10,17 +10,15 @@ This is the short mutable cross-repository checkpoint. **Live branch/commit/PR/C
 
 Repository: `ivangemini/smart-fitness-app`.
 
-Checkpoint verified during Phase 21 closure work after CI guard PR #812.
-
 - Phase 18 Knowledge & Learning remains closed for P18-A through P18-H.
 - Phase 19 Exercise + Training Intelligence reviewed scope is merged through #803/#807.
 - Phase 20 P20-A/P20-B/P20-C is merged through #804/#805/#806 and source/CI-complete for the reviewed scope.
 - #811/#812 keep `Mobile CI / validate` present on PRs and validate long-lived PR merge refs against the live remote base branch.
-- Phase 21 Workout Assistant P21-A through P21-E is implemented on mobile PR #810.
-- Phase 21 code includes Smart Previous/Today guidance, explicit-completion rest timer, deterministic warm-up proposal, typed set semantics/supersets and rare contextual Apply/Ignore adjustment.
+- Phase 21 Workout Assistant P21-A through P21-E was validated on exact PR head `94f70355fe4b4b22240d2c90f1bd861f5bc6d068`; Mobile CI #2806 completed successfully.
+- Mobile PR #810 was squash-merged to `main` as `a2abde02e31b5ed1207e67835144e9359aea711e` after production backend compatibility was verified.
+- Phase 21 includes Smart Previous/Today guidance, explicit-completion rest timer, deterministic warm-up proposal, typed set semantics/supersets and rare contextual Apply/Ignore adjustment.
 - Warm-up rows are excluded from working-set Previous/Today indexing and from live/history Progress analytics including PR/e1RM/volume, exercise progress and weekly muscle volume.
 - Workout-session sync remains v1 for legacy sessions and uses additive schema v2 only when `setType`/`supersetId` semantics are present; malformed v1/v2 envelopes fail closed.
-- Pre-documentation Phase 21 code head at this checkpoint is `2b4afbab5c071fa7d692b11c59fc651860bd3565`; re-check the exact final PR head and Mobile CI before merge.
 
 ### Backend
 
@@ -31,7 +29,10 @@ Repository: `ivangemini/smart-fitness-backend`.
 - Phase 21 sync dependency #332 is merged to backend `main` as `b5a054e49e795a75f19c16ba85f507396e4598b6`.
 - #332 exact PR head `1a0bf3319db094aed14b7e397242250f30dc087d` passed Backend CI #2435 and Backend PostgreSQL CI #798 before merge.
 - #332 requires no database migration.
-- **Backend source merge is not production API deployment evidence.** The automatic `Admin Production Deploy` workflow only deploys `admin-console/`/compose changes; it does not prove that the Fastify API containing #332 was rebuilt on the production VPS.
+- Production backend was subsequently deployed from `main` at `8a2c539ecfbf7842bf37a02491de9f844ec83c81`; `b5a054e49e795a75f19c16ba85f507396e4598b6` is an ancestor of that deployed SHA.
+- Production verification reported backend healthy, PostgreSQL healthy and `https://api.peptonio.com/health` HTTP 200.
+- Bounded workout-session compatibility smoke passed: schema v1 accepted; schema v2 with `setType: warmup` plus `supersetId` accepted and preserved; v1 carrying v2-only semantics rejected; unknown `setType` rejected.
+- Backend startup/migration step completed successfully with no reported errors.
 - #325 remains an independent Admin write-plane workstream; re-check its exact GitHub state before acting.
 
 ## Stable Exercise + Training Intelligence scope
@@ -76,22 +77,30 @@ Unknown or remote-only exercise IDs do not receive guessed intelligence. Runtime
 
 ## Phase 21 release boundary
 
-Phase 21 source work is coordinated across mobile #810 and merged backend #332. The remaining boundary is operational, not a reason to duplicate implementation.
+Phase 21 source, backend compatibility and mobile merge gates are closed.
 
-Required before mobile schema-v2 behavior is released:
+Verified sequence:
 
-1. deliberately deploy backend `main` containing `b5a054e49e795a75f19c16ba85f507396e4598b6` to the production VPS;
-2. verify `api.peptonio.com` health and bounded authenticated workout-session sync v1/v2 compatibility;
-3. re-check exact mobile #810 head and exact-head Mobile CI;
-4. merge mobile #810;
-5. treat OTA/native publication as a separate explicit action;
-6. run a real-device active-workout smoke before calling the user-facing release verified.
+1. backend #332 merged and passed Backend CI/PostgreSQL CI;
+2. production backend deployed from `main` at `8a2c539ecfbf7842bf37a02491de9f844ec83c81` with `b5a054e49e795a75f19c16ba85f507396e4598b6` in its ancestry;
+3. production `/health` and bounded workout-session sync v1/v2 compatibility passed;
+4. exact mobile #810 head `94f70355fe4b4b22240d2c90f1bd861f5bc6d068` passed Mobile CI #2806;
+5. #810 merged to `main` as `a2abde02e31b5ed1207e67835144e9359aea711e`.
 
-Do not duplicate or fork Phase 21 into another branch without first checking #810 and the merged backend contract.
+The remaining Phase 21 release evidence is OTA publication confirmation plus real-device active-workout smoke. The repository `Publish EAS Update` workflow is configured to publish iOS to production on `main` pushes whose commit message contains `[ota]`; the Phase 21 merge commit contains that marker. Treat actual workflow success/publication metadata as separate evidence until observed.
 
 ## Remaining physical-device evidence
 
-Source/CI completion does not prove native camera/photo behavior. Use `docs/qa/progress-photo-device-validation.md` for a dated run on the intended signed iPhone build.
+Phase 21 still needs real-device smoke after the corresponding OTA/native output is available:
+
+- Previous/Today row alignment;
+- rest timer start/background/pause/adjust/skip behavior;
+- warm-up Add/Skip and working-index isolation;
+- set type/superset actions;
+- contextual Apply/Ignore behavior;
+- session persistence and sync sanity.
+
+Phase 20 source/CI completion still does not prove native camera/photo behavior. Use `docs/qa/progress-photo-device-validation.md` for a dated run on the intended signed iPhone build.
 
 Still unproven until that run is recorded:
 
@@ -102,15 +111,13 @@ Phase 14 configured-provider/native/device evidence remains independent and is n
 
 ## Next execution order
 
-1. Deploy backend `main` containing merged #332 to the production VPS through the normal backend production path.
-2. Verify production health and workout-session sync v1/v2 compatibility without weakening fail-closed behavior.
-3. Re-check exact mobile #810 head/CI; merge only after backend deployment evidence exists.
-4. Publish OTA/native output only as an explicit separate action, then run the intended real-device Phase 21 smoke.
-5. Run Phase 20 physical-device validation on the intended signed iPhone build and record dated evidence.
-6. Continue Phase 14 provider/native/device evidence when external prerequisites are available.
-7. Keep P18-A through P18-H, Phase 19 reviewed scope and Phase 20 source scope closed unless a reproduced defect or newly reviewed requirement appears.
-8. Activate real Coach → Learn content mappings only when approved canonical `findingCode → articleId` rules exist.
-9. Review backend #325 independently against its exact current head and deployment/migration boundaries.
+1. Confirm the `Publish EAS Update` run for merge commit `a2abde02e31b5ed1207e67835144e9359aea711e` succeeded and record its EAS update ID/group/runtime metadata.
+2. Run the intended real-iPhone Phase 21 active-workout smoke and record dated evidence.
+3. Run Phase 20 physical-device validation on the intended signed iPhone build and record dated evidence.
+4. Continue Phase 14 provider/native/device evidence when external prerequisites are available.
+5. Keep P18-A through P18-H, Phase 19 reviewed scope, Phase 20 source scope and Phase 21 source scope closed unless a reproduced defect or newly reviewed requirement appears.
+6. Activate real Coach → Learn content mappings only when approved canonical `findingCode → articleId` rules exist.
+7. Review backend #325 independently against its exact current head and deployment/migration boundaries.
 
 ## Release boundary
 
