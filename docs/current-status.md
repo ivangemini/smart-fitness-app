@@ -2,7 +2,7 @@
 
 Updated: 2026-08-22
 
-This is the short mutable cross-repository checkpoint. **Live branch/commit/PR/CI truth must be read from Git/GitHub, not copied from this file.** Exact source, tests, CI and Git history override this checkpoint if it becomes stale. Stable architecture belongs in `docs/project-context.md`; forward sequencing belongs in `docs/implementation-plan.md` and focused roadmap files.
+This is the short mutable cross-repository checkpoint. **Live branch/commit/PR/CI truth must be read from Git/GitHub, not copied from this file.** Exact source, tests, CI, deployments and Git history override this checkpoint if it becomes stale. Stable architecture belongs in `docs/project-context.md`; forward sequencing belongs in `ROADMAP_PROGRESS.md`, `docs/implementation-plan.md` and focused roadmap files.
 
 ## Current verified checkpoint
 
@@ -14,11 +14,14 @@ Repository: `ivangemini/smart-fitness-app`.
 - Phase 19 Exercise + Training Intelligence reviewed scope is merged through #803/#807.
 - Phase 20 P20-A/P20-B/P20-C is merged through #804/#805/#806 and source/CI-complete for the reviewed scope.
 - #811/#812 keep `Mobile CI / validate` present on PRs and validate long-lived PR merge refs against the live remote base branch.
-- Phase 21 Workout Assistant P21-A through P21-E was validated on exact PR head `94f70355fe4b4b22240d2c90f1bd861f5bc6d068`; Mobile CI #2806 completed successfully.
-- Mobile PR #810 was squash-merged to `main` as `a2abde02e31b5ed1207e67835144e9359aea711e` after production backend compatibility was verified.
-- Phase 21 includes Smart Previous/Today guidance, explicit-completion rest timer, deterministic warm-up proposal, typed set semantics/supersets and rare contextual Apply/Ignore adjustment.
-- Warm-up rows are excluded from working-set Previous/Today indexing and from live/history Progress analytics including PR/e1RM/volume, exercise progress and weekly muscle volume.
-- Workout-session sync remains v1 for legacy sessions and uses additive schema v2 only when `setType`/`supersetId` semantics are present; malformed v1/v2 envelopes fail closed.
+- Phase 21 Workout Assistant P21-A through P21-E exact PR head `94f70355fe4b4b22240d2c90f1bd861f5bc6d068` passed Mobile CI #2806 and #810 merged as `a2abde02e31b5ed1207e67835144e9359aea711e`.
+- Exercise Preferences foundation #816 merged as `99427b189792489c1977d96959a366bac05962b9`.
+- Read-only deterministic Smart Replace explorer #818 merged as `d396fc343019b96578f09fa2041dc6893bc5da9e`.
+- Active-session replacement safety #819 exact head `438ae2946abf58eec3dc8bd2da371b937a126cb2` passed Mobile CI #2823 and merged as `c52277f580b5255d801a8cc045b0d2d4d708dc54`.
+- Active-session reviewed Smart Replace Apply #820 exact head `fb70be57fe735e835494e6895a5016d35fe962bd` passed Mobile CI #2830 and merged as `872d0a677d85b0d856a9ab6df6e08d655e949739` with `[ota]`.
+- #820 maps reviewed candidates into the workout catalog by exact canonical ID only, keeps the manual catalog available and routes explicit selection through the pending-set-only replacement safety primitive.
+- Completed/legacy sets retain their original exercise identity; pending set IDs, load, reps, target/actual RPE, set type and superset membership are preserved when replaced.
+- No workout-template/program mutation or new workout-session sync schema was added by the Smart Replace expansion.
 
 ### Backend / Admin
 
@@ -26,8 +29,7 @@ Repository: `ivangemini/smart-fitness-backend`.
 
 - Admin v5-v12 #305 and backend agent-tooling #324 are merged.
 - #330 disabled automatic Vercel Git deployments for Admin; the VPS/GitHub Actions Admin path remains authoritative for Admin deployment.
-- Admin write-plane #325 is merged as `a3f260aca1089548202eeeee8b96624e931b7efc`; exact PR head `621efecbe5a62a3a8873e005ead65ffd49f5641c` passed Backend CI #2422, Backend PostgreSQL CI #791 and Account Deletion Receipt CI #699.
-- Follow-up Admin hardening #335/#336/#337 is merged, including RBAC search/mutation guardrails, high-impact confirmations and filtered/paginated audit viewer.
+- Admin write-plane #325 is merged as `a3f260aca1089548202eeeee8b96624e931b7efc`; follow-up hardening #335/#336/#337 is merged.
 - Phase 21 sync dependency #332 is merged as `b5a054e49e795a75f19c16ba85f507396e4598b6` and requires no database migration.
 - #340 activated global Administration navigation and merged as `75c47a2a8973e41146c98d78cab07baa007f1274` after Backend CI #2453.
 - #342 repaired the backend Admin session contract to schema v2 and merged as `62cb9846b3ba644b8f5e2a7ffcc520d7bfc9058c` after Backend CI #2458.
@@ -51,6 +53,22 @@ The reviewed mobile authority includes:
 - movement pattern, EN/RU technique cues, common errors, controlled ROM guidance, qualitative fatigue cost and reviewed substitutions.
 
 Unknown or remote-only exercise IDs do not receive guessed intelligence. Runtime names, body-part labels and muscle labels are not inference authority for reviewed metadata.
+
+## Exercise Preferences + Smart Replace boundary
+
+Source delivered through #820:
+
+- per-exercise device-local `avoid` and personal notes remain separate from favorites;
+- candidate ranking starts only from reviewed substitutions and fails closed for unresolved identities;
+- saved `avoid` filters the Smart Replace shortlist but never silently edits programs or blocks explicit manual selection;
+- read-only detail candidates remain bounded to three;
+- active-session Smart Replace appears only as an explicit replacement choice;
+- active-session candidate mapping is exact canonical ID only, with no name fallback;
+- active-session mutation requires at least one source set with `completed === false` and changes only those pending sets;
+- completed and legacy-completion evidence is immutable under replacement;
+- existing active-draft persistence is reused and no sync schema change was required.
+
+Program/template Smart Replace Apply remains gated. The current custom-template update path rebuilds exercise identities from names/indexes and lacks a reviewed `workout.prescription` remapping contract. Do not wire Smart Replace into that path until stable identity and deterministic prescription preservation are defined and tested.
 
 ## Phase 20 delivered scope
 
@@ -79,65 +97,46 @@ Unknown or remote-only exercise IDs do not receive guessed intelligence. Runtime
 - private ready-photo timeline remains period-bounded;
 - no new sync/provider upload/AI vision authority.
 
-## Phase 21 release boundary
+## Phase 21 / current OTA release boundary
 
-Phase 21 source, backend compatibility and mobile merge gates are closed.
+Phase 21 source, backend compatibility and mobile merge gates are closed. Smart Replace active-session source scope through #820 is also merged.
 
-Verified sequence:
+The latest current OTA-eligible merge is `872d0a677d85b0d856a9ab6df6e08d655e949739`; its commit message contains `[ota]`. The repository `Publish EAS Update` workflow is configured for iOS `production` branch/channel and expected runtime `1.0.3`.
 
-1. backend #332 merged and passed Backend CI/PostgreSQL CI;
-2. production backend compatibility passed for workout-session sync v1/v2 semantics;
-3. exact mobile #810 head `94f70355fe4b4b22240d2c90f1bd861f5bc6d068` passed Mobile CI #2806;
-4. #810 merged to `main` as `a2abde02e31b5ed1207e67835144e9359aea711e`.
-
-The remaining Phase 21 release evidence is OTA publication confirmation plus real-device active-workout smoke. The repository `Publish EAS Update` workflow is configured to publish iOS to production on `main` pushes whose commit message contains `[ota]`; the Phase 21 merge commit contains that marker. Treat actual workflow success/publication metadata as separate evidence until observed.
+Treat actual workflow success, EAS update ID/group/runtime and phone delivery as separate evidence until observed. A successful OTA from `872d0a677...` is the preferred current release checkpoint because that commit contains Phase 21 and the later Smart Replace merges in its ancestry. The old exact #810/a2ab OTA run remains an audit detail if historical run metadata is still needed.
 
 ## Admin release boundary
 
 **Closed.** Admin source, migration, backend deployment, Admin-console deployment and authorized production browser smoke are complete for the reviewed activation scope.
 
-Current production evidence:
-
-- backend exact SHA `62cb9846b3ba644b8f5e2a7ffcc520d7bfc9058c`;
-- Admin-console exact SHA `5a2ff9bb0bb006522576ff2eb3c588bf3d08fd50`;
-- migration `0056_admin_control_plane.sql` applied;
-- expected Admin schema/constraints present;
-- schema-v2 Admin session resolves `owner / bootstrap` with permissions;
-- global Administration navigation visible;
-- `/administration` and `/administration/audit` work under authorized browser access;
-- refresh/direct-navigation preserve the session;
-- browser JS exceptions: 0.
-
 Do not reopen Admin activation unless a reproduced production defect appears.
 
-## Remaining physical-device evidence
+## Remaining physical-device / external evidence
 
-Phase 21 still needs real-device smoke after the corresponding OTA/native output is available:
+Current active-workout iPhone smoke should cover:
 
 - Previous/Today row alignment;
 - rest timer start/background/pause/adjust/skip behavior;
 - warm-up Add/Skip and working-index isolation;
 - set type/superset actions;
 - contextual Apply/Ignore behavior;
+- Smart Replace reviewed shortlist versus manual catalog;
+- completed-set preservation when remaining pending sets are replaced;
 - session persistence and sync sanity.
 
 Phase 20 source/CI completion still does not prove native camera/photo behavior. Use `docs/qa/progress-photo-device-validation.md` for a dated run on the intended signed iPhone build.
 
-Still unproven until that run is recorded:
-
-- P20-A permission/capture/import/persistence/delete/account-cleanup behavior;
-- P20-B side-by-side/overlay rendering and visual quality.
-
-Phase 14 configured-provider/native/device evidence remains independent and is not implied by Phase 18–21 source work.
+Phase 14 configured-provider/native/device evidence remains independent and is not implied by Phase 18–21 or Smart Replace source work.
 
 ## Next execution order
 
-1. Confirm the `Publish EAS Update` run for merge commit `a2abde02e31b5ed1207e67835144e9359aea711e` succeeded and record its EAS update ID/group/runtime metadata.
-2. Run the intended real-iPhone Phase 21 active-workout smoke and record dated evidence.
-3. Run Phase 20 physical-device validation on the intended signed iPhone build and record dated evidence.
+1. Confirm the `Publish EAS Update` run for latest `[ota]` merge `872d0a677d85b0d856a9ab6df6e08d655e949739` and record update ID/group/runtime/production branch-channel evidence.
+2. Run the intended real-iPhone active-workout smoke against that current OTA and record dated evidence.
+3. Run Phase 20 physical-device validation on the intended signed iPhone build.
 4. Continue Phase 14 provider/native/device evidence when external prerequisites are available.
-5. Keep Admin production activation, P18-A through P18-H, Phase 19 reviewed scope, Phase 20 source scope and Phase 21 source scope closed unless a reproduced defect or newly reviewed requirement appears.
+5. Keep Admin production activation, P18-A through P18-H, Phase 19 reviewed scope, Phase 20 source scope, Phase 21 source scope and active-session Smart Replace source scope closed unless a reproduced defect or newly reviewed requirement appears.
 6. Activate real Coach → Learn content mappings only when approved canonical `findingCode → articleId` rules exist.
+7. Keep program/template Smart Replace Apply gated until stable identity and prescription-remapping rules are reviewed.
 
 ## Release boundary
 
