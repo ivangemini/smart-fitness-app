@@ -28,10 +28,14 @@ import { ExerciseIntelligenceSection } from '../components/ExerciseIntelligenceS
 import { ExerciseMediaPreview } from '../components/ExerciseMediaPreview';
 import { ExercisePreferencesCard } from '../components/ExercisePreferencesCard';
 import { MuscleMap } from '../components/MuscleMap';
+import { getExerciseProgressCopy } from '../exerciseProgressCopy';
 import { loadFavoriteExerciseIds, saveFavoriteExerciseIds } from '../favoritesRepository';
 import { selectCompletedSetsByExerciseId } from '../history';
 import { buildMuscleHighlights } from '../muscleTaxonomy';
-import { calculateExerciseProgressMetrics } from '../progress';
+import {
+  calculateExerciseProgressMetrics,
+  type ExerciseProgressTopSet,
+} from '../progress';
 import { exerciseRepository, isOssExerciseDbEnabled } from '../repository';
 import type { Exercise } from '../types';
 import { createExerciseDetailStyles } from './ExerciseDetailScreen.styles';
@@ -46,6 +50,7 @@ export default function ExerciseDetailScreen() {
   const { formatDate, formatNumber, locale } = useLocalization();
   const { formatWeightValue, weight: weightUnit } = useUnitPreferences();
   const copy = useMemo(() => getExerciseDetailCopy(locale), [locale]);
+  const progressCopy = useMemo(() => getExerciseProgressCopy(locale), [locale]);
   const libraryCopy = useMemo(() => getExerciseLibraryCopy(locale), [locale]);
   const styles = useMemo(() => createExerciseDetailStyles(colors), [colors]);
   const detailTabs = useMemo<Array<{ label: string; value: DetailTab }>>(
@@ -123,6 +128,32 @@ export default function ExerciseDetailScreen() {
       }),
     [formatDate, formatNumber, progressMetrics.volumeTrend, weightUnit],
   );
+  const displayLoadTrend = useMemo(
+    () =>
+      progressMetrics.loadTrend.map((point) => {
+        const value = weightFromKg(point.value, weightUnit);
+        return {
+          key: point.key,
+          label: formatDate(point.finishedAt, { month: 'short', day: 'numeric' }),
+          value,
+          displayValue: `${formatNumber(value, { maximumFractionDigits: 1 })} ${weightUnit}`,
+        };
+      }),
+    [formatDate, formatNumber, progressMetrics.loadTrend, weightUnit],
+  );
+  const displayEstimatedOneRepMaxTrend = useMemo(
+    () =>
+      progressMetrics.estimatedOneRepMaxTrend.map((point) => {
+        const value = weightFromKg(point.value, weightUnit);
+        return {
+          key: point.key,
+          label: formatDate(point.finishedAt, { month: 'short', day: 'numeric' }),
+          value,
+          displayValue: `${formatNumber(value, { maximumFractionDigits: 1 })} ${weightUnit}`,
+        };
+      }),
+    [formatDate, formatNumber, progressMetrics.estimatedOneRepMaxTrend, weightUnit],
+  );
   const highlights = useMemo(
     () =>
       exercise
@@ -138,6 +169,20 @@ export default function ExerciseDetailScreen() {
     `${formatNumber(weightFromKg(valueKg, weightUnit), {
       maximumFractionDigits: 0,
     })} ${weightUnit}`;
+  const formatTopSet = (topSet: ExerciseProgressTopSet | null) => {
+    if (!topSet) return progressCopy.notEnoughEvidence;
+    const rpe =
+      topSet.actualRpe === null
+        ? ''
+        : ` · RPE ${formatNumber(topSet.actualRpe, { maximumFractionDigits: 1 })}`;
+    return `${formatWeight(topSet.weight)} × ${formatNumber(topSet.reps, {
+      maximumFractionDigits: 0,
+    })}${rpe}`;
+  };
+  const formatPercentDelta = (value: number | null) =>
+    value === null
+      ? progressCopy.notEnoughEvidence
+      : `${value > 0 ? '+' : ''}${formatNumber(value, { maximumFractionDigits: 1 })}%`;
 
   const toggleFavorite = () => {
     if (!exercise) return;
@@ -370,13 +415,63 @@ export default function ExerciseDetailScreen() {
 
         {tab === 'progress' ? (
           <View style={styles.stack}>
-            {historyGroups.length === 0 ? (
+            {progressMetrics.recentSessions.length === 0 ? (
               <EmptyState
                 title={copy.noProgressTitle}
                 description={copy.noProgressDescription}
               />
             ) : (
               <>
+                {progressMetrics.recentComparison ? (
+                  <AppCard>
+                    <Text style={styles.cardTitle}>{progressCopy.latestPerformance}</Text>
+                    <Text style={styles.secondaryText}>
+                      {formatDate(progressMetrics.recentComparison.latest.finishedAt, {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                      })}{' '}
+                      · {progressMetrics.recentComparison.latest.workoutTitle}
+                    </Text>
+                    <View style={styles.metricsGrid}>
+                      <MetricCard
+                        label={progressCopy.latestTopSet}
+                        value={formatTopSet(progressMetrics.recentComparison.latest.topSet)}
+                      />
+                      <MetricCard
+                        label={progressCopy.previousTopSet}
+                        value={
+                          progressMetrics.recentComparison.previous
+                            ? formatTopSet(progressMetrics.recentComparison.previous.topSet)
+                            : progressCopy.notEnoughEvidence
+                        }
+                      />
+                      <MetricCard
+                        label={progressCopy.averageRpe}
+                        value={
+                          progressMetrics.recentComparison.latest.averageActualRpe === null
+                            ? progressCopy.notRecorded
+                            : formatNumber(
+                                progressMetrics.recentComparison.latest.averageActualRpe,
+                                { maximumFractionDigits: 1 },
+                              )
+                        }
+                      />
+                      <MetricCard
+                        label={progressCopy.estimatedOneRepMaxChange}
+                        value={formatPercentDelta(
+                          progressMetrics.recentComparison.estimatedOneRepMaxDeltaPercent,
+                        )}
+                      />
+                      <MetricCard
+                        label={progressCopy.volumeChange}
+                        value={formatPercentDelta(
+                          progressMetrics.recentComparison.volumeDeltaPercent,
+                        )}
+                      />
+                    </View>
+                  </AppCard>
+                ) : null}
                 <View style={styles.metricsGrid}>
                   <MetricCard
                     label={copy.bestWeight}
@@ -397,6 +492,26 @@ export default function ExerciseDetailScreen() {
                     value={formatWeight(progressMetrics.estimatedOneRepMax)}
                   />
                 </View>
+                <AppCard>
+                  <Text style={styles.cardTitle}>{progressCopy.loadTrend}</Text>
+                  <ProgressTrendChart
+                    emptyLabel={progressCopy.trendEmpty}
+                    maxLabel={copy.high(weightUnit)}
+                    minLabel={copy.low(weightUnit)}
+                    points={displayLoadTrend}
+                  />
+                </AppCard>
+                <AppCard>
+                  <Text style={styles.cardTitle}>
+                    {progressCopy.estimatedOneRepMaxTrend}
+                  </Text>
+                  <ProgressTrendChart
+                    emptyLabel={progressCopy.trendEmpty}
+                    maxLabel={copy.high(weightUnit)}
+                    minLabel={copy.low(weightUnit)}
+                    points={displayEstimatedOneRepMaxTrend}
+                  />
+                </AppCard>
                 <AppCard>
                   <Text style={styles.cardTitle}>{copy.volumeTrend}</Text>
                   <ProgressTrendChart
