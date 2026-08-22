@@ -1,6 +1,10 @@
 import type { TrainingProgram, TrainingProgramDay, Workout } from '@/types';
 import type { DraftWorkoutExercise } from '@/components/workouts/workout-builder-types';
 import { WEEKDAY_KEYS } from '@/domain/models/program';
+import {
+  formatWorkoutPlanDescription,
+  parseWorkoutPlanDescription,
+} from './historyModel';
 
 const cloneProgramDays = (days: TrainingProgramDay[]) => days.map((day) => ({ ...day }));
 
@@ -122,22 +126,67 @@ export const removeWorkoutFromProgramDraft = (program: TrainingProgram, dayId: s
   days: program.days.map((day) => (day.id === dayId ? getRestDayTemplate(day) : { ...day })),
 });
 
+const parseDraftNumber = (value: string, fallback: number) => {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+};
+
 export const createWorkoutDraftFromWorkout = (workout?: Workout | null): {
   editingWorkoutId?: string;
   title: string;
   description: string;
   exercises: DraftWorkoutExercise[];
-} => ({
-  editingWorkoutId: workout?.id,
-  title: workout?.title ?? '',
-  description: workout?.description ?? '',
-  exercises:
-    workout?.exercises.map((exercise) => ({
-      id: exercise.id,
+} => {
+  const plan = parseWorkoutPlanDescription(workout?.description);
+
+  return {
+    editingWorkoutId: workout?.id,
+    title: workout?.title ?? '',
+    description: plan.baseDescription,
+    exercises:
+      workout?.exercises.map((exercise, index) => {
+        const planExercise = plan.exercises[index];
+        return {
+          id: exercise.id,
+          sourceExerciseId: exercise.id,
+          name: exercise.name,
+          notes: planExercise?.notes ?? '',
+          restSeconds: String(planExercise?.restSeconds ?? 90),
+          targetReps: String(planExercise?.targetReps ?? 8),
+          targetSets: String(planExercise?.targetSets ?? 3),
+        };
+      }) ?? [],
+  };
+};
+
+export const buildProgramWorkoutEditorSavePayload = (
+  title: string,
+  description: string,
+  exercises: DraftWorkoutExercise[],
+) => {
+  const normalizedExercises = exercises
+    .map((exercise) => ({
+      ...exercise,
+      name: exercise.name.trim(),
+    }))
+    .filter((exercise) => exercise.name.length > 0);
+
+  return {
+    title: title.trim(),
+    description:
+      formatWorkoutPlanDescription(
+        description,
+        normalizedExercises.map((exercise) => ({
+          name: exercise.name,
+          notes: exercise.notes.trim() || undefined,
+          restSeconds: parseDraftNumber(exercise.restSeconds, 90),
+          targetReps: parseDraftNumber(exercise.targetReps, 8),
+          targetSets: parseDraftNumber(exercise.targetSets, 3),
+        })),
+      ) || undefined,
+    exercises: normalizedExercises.map((exercise) => ({
       name: exercise.name,
-      notes: '',
-      restSeconds: '90',
-      targetReps: '8',
-      targetSets: '3',
-    })) ?? [],
-});
+      sourceExerciseId: exercise.sourceExerciseId,
+    })),
+  };
+};

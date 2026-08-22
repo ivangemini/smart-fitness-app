@@ -194,7 +194,13 @@ export function WorkoutBuilderScreen() {
   const handleSaveWorkout = (payload: {
     title: string;
     description?: string;
-    exercises: string[];
+    exercises: Array<
+      | string
+      | {
+          name: string;
+          sourceExerciseId?: string;
+        }
+    >;
   }) => {
     if (!payload.title.trim()) return;
     const createdAt = new Date().toISOString();

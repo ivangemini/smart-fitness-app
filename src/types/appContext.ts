@@ -55,6 +55,13 @@ export type NutritionDataState = Pick<
   'foodEntries' | 'mealTemplates' | 'nutritionTargets'
 >;
 
+type WorkoutTemplateExerciseInput =
+  | string
+  | {
+      name: string;
+      sourceExerciseId?: string;
+    };
+
 export type AppActions = {
   addWeightEntry: (entry: WeightEntry) => void;
   updateWeightEntry: (entryId: string, entry: WeightEntry) => void;
@@ -74,7 +81,7 @@ export type AppActions = {
     id: string;
     title: string;
     description?: string;
-    exercises: string[];
+    exercises: WorkoutTemplateExerciseInput[];
     createdAt: string;
   }) => void;
   updateWorkoutTemplate: (
@@ -82,7 +89,7 @@ export type AppActions = {
     updatedTemplate: {
       title: string;
       description?: string;
-      exercises: string[];
+      exercises: WorkoutTemplateExerciseInput[];
     },
   ) => void;
   saveTrainingProgram: (program: TrainingProgram) => void;
