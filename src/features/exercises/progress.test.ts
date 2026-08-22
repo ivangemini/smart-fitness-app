@@ -104,4 +104,27 @@ describe('calculateExerciseProgressMetrics', () => {
     expect(metrics.estimatedOneRepMaxTrend).toEqual([]);
     expect(metrics.recentComparison).toBeNull();
   });
+
+  it('keeps trends to the six most recent eligible sessions in chronological order', () => {
+    const groups = Array.from({ length: 8 }, (_, index) => {
+      const day = 22 - index;
+      const finishedAt = `2026-08-${String(day).padStart(2, '0')}T18:00:00.000Z`;
+      return createGroup(`session-${index}`, finishedAt, [
+        createSet(`set-${index}`, finishedAt, 100 - index, 5, { setType: 'working' }),
+      ]);
+    });
+
+    const metrics = calculateExerciseProgressMetrics(groups);
+
+    expect(metrics.volumeTrend.map((point) => point.key)).toEqual([
+      'session-5',
+      'session-4',
+      'session-3',
+      'session-2',
+      'session-1',
+      'session-0',
+    ]);
+    expect(metrics.loadTrend).toHaveLength(6);
+    expect(metrics.estimatedOneRepMaxTrend).toHaveLength(6);
+  });
 });
