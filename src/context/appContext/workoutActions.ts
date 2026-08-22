@@ -1,20 +1,24 @@
 import type { AppState, Exercise, TrainingProgram, Workout, WorkoutSession } from '@/types';
-import { createExerciseId } from '@/lib/appState';
 import { clearActiveTrainingProgramForDeletedProgram } from '@/features/workouts/activeProgramSelection';
 import { enqueueWorkoutSessionSyncOperation } from '@/features/workouts/queueWorkoutSessionSyncOperation';
+import {
+  applyWorkoutTemplateEdit,
+  buildWorkoutTemplateExercises,
+  type WorkoutTemplateExerciseEdit,
+} from '@/features/workouts/workoutTemplateEditing';
 
 export type WorkoutTemplateInput = {
   id: string;
   title: string;
   description?: string;
-  exercises: string[];
+  exercises: WorkoutTemplateExerciseEdit[];
   createdAt: string;
 };
 
 export type WorkoutTemplateUpdate = {
   title: string;
   description?: string;
-  exercises: string[];
+  exercises: WorkoutTemplateExerciseEdit[];
 };
 
 export function buildWorkoutTemplate(template: WorkoutTemplateInput): Workout {
@@ -25,12 +29,7 @@ export function buildWorkoutTemplate(template: WorkoutTemplateInput): Workout {
     createdAt: template.createdAt,
     isCustom: true,
     duration: `${Math.max(15, template.exercises.length * 10)} min`,
-    exercises: template.exercises.map((exercise, index) => ({
-      id: `${createExerciseId(exercise)}-${index}`,
-      name: exercise,
-      isCustom: true,
-      createdAt: template.createdAt,
-    })),
+    exercises: buildWorkoutTemplateExercises(template.exercises, template.createdAt),
   };
 }
 
@@ -61,23 +60,16 @@ export function updateCustomWorkoutTemplateInState(
     return currentState;
   }
 
+  const nextWorkout = applyWorkoutTemplateEdit(
+    workout,
+    updatedTemplate,
+    fallbackCreatedAt,
+  );
+
   return {
     ...currentState,
     workouts: currentState.workouts.map((item) =>
-      item.id === templateId
-        ? {
-            ...item,
-            title: updatedTemplate.title,
-            description: updatedTemplate.description,
-            duration: `${Math.max(15, updatedTemplate.exercises.length * 10)} min`,
-            exercises: updatedTemplate.exercises.map((exercise, index) => ({
-              id: `${createExerciseId(exercise)}-${index}`,
-              name: exercise,
-              isCustom: true,
-              createdAt: item.createdAt ?? fallbackCreatedAt,
-            })),
-          }
-        : item
+      item.id === templateId ? nextWorkout : item
     ),
   };
 }
