@@ -18,6 +18,15 @@ const guardedHeavySteps = [
   'Expo Doctor',
 ];
 
+const fullValidationSteps = [
+  'Install dependencies',
+  'TypeScript',
+  'Full regression suite',
+  'Smoke expanded model runner',
+  'Expo export',
+  'Expo Doctor',
+];
+
 describe('Mobile CI merged-PR push deduplication', () => {
   it('resolves a squash-merged PR from the commit title and fails open to validation', () => {
     expect(workflow).toContain('Detect already-validated PR merge push');
@@ -44,8 +53,37 @@ describe('Mobile CI merged-PR push deduplication', () => {
       const marker = `- name: ${step}`;
       const start = workflow.indexOf(marker);
       expect(start).toBeGreaterThan(-1);
-      const snippet = workflow.slice(start, start + 240);
+      const snippet = workflow.slice(start, start + 280);
       expect(snippet).toContain("if: steps.validated-pr-merge.outputs.skip != 'true'");
+    }
+  });
+
+  it('always emits a pull-request check and runs heavyweight validation only for non-doc changes', () => {
+    expect(workflow).toContain('  pull_request:\n\npermissions:');
+    expect(workflow).not.toContain('  pull_request:\n    paths-ignore:');
+    expect(workflow).toContain('- name: Determine validation scope');
+    expect(workflow).toContain('git diff --name-only HEAD^1 HEAD^2');
+    expect(workflow).toContain("grep -Ev '^(docs/|.*\\.md$)'");
+    expect(workflow).toContain('echo "full=$full" >> "$GITHUB_OUTPUT"');
+
+    for (const step of fullValidationSteps) {
+      const marker = `- name: ${step}`;
+      const start = workflow.indexOf(marker);
+      expect(start).toBeGreaterThan(-1);
+      const snippet = workflow.slice(start, start + 320);
+      expect(snippet).toContain("steps.scope.outputs.full == 'true'");
+    }
+
+    for (const step of [
+      'Repository file line audit',
+      'Changed file line limit',
+      'Agent navigation integrity',
+    ]) {
+      const marker = `- name: ${step}`;
+      const start = workflow.indexOf(marker);
+      expect(start).toBeGreaterThan(-1);
+      const snippet = workflow.slice(start, start + 260);
+      expect(snippet).not.toContain("steps.scope.outputs.full == 'true'");
     }
   });
 
