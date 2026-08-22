@@ -26,6 +26,7 @@ import { useUnitPreferences, weightFromKg } from '@/units';
 import { ExerciseDetailTextList } from '../components/ExerciseDetailTextList';
 import { ExerciseIntelligenceSection } from '../components/ExerciseIntelligenceSection';
 import { ExerciseMediaPreview } from '../components/ExerciseMediaPreview';
+import { ExercisePreferencesCard } from '../components/ExercisePreferencesCard';
 import { MuscleMap } from '../components/MuscleMap';
 import { loadFavoriteExerciseIds, saveFavoriteExerciseIds } from '../favoritesRepository';
 import { selectCompletedSetsByExerciseId } from '../history';
@@ -301,6 +302,7 @@ export default function ExerciseDetailScreen() {
                 {copy.aliases}: {exercise.aliases.join(', ') || copy.none}
               </Text>
             </AppCard>
+            <ExercisePreferencesCard exerciseId={exercise.id} locale={locale} />
             <ExerciseIntelligenceSection
               exerciseId={exercise.id}
               locale={locale}
