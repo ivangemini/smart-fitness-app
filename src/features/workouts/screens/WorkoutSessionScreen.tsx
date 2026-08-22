@@ -55,13 +55,7 @@ import { useAppTheme } from '@/theme/AppThemeProvider';
 import type { WorkoutRpe, WorkoutSetType } from '@/types';
 
 type ExerciseTarget = { exerciseId: string; exerciseName: string };
-
-type ReplacementExercise = {
-  id: string;
-  name: string;
-  muscleGroup?: string;
-  category?: string;
-};
+type ReplacementExercise = { id: string; name: string; muscleGroup?: string; category?: string };
 
 export default function WorkoutSessionScreen() {
   const params = useLocalSearchParams<{ workoutId?: string }>();
