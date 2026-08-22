@@ -1,7 +1,7 @@
-import { Text, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+import { Text, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 
-import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
+import type { SupportedLocale } from '@/localization/messages';
 
 import {
   getReviewedExerciseIntelligence,
@@ -9,10 +9,11 @@ import {
 } from '../exerciseIntelligence';
 import { getExerciseIntelligenceCopy } from '../exerciseIntelligenceCopy';
 import { ExerciseDetailTextList } from './ExerciseDetailTextList';
+import { SmartReplacementSection } from './SmartReplacementSection';
 
 type ExerciseIntelligenceSectionProps = {
   exerciseId: string;
-  locale: string;
+  locale: SupportedLocale;
   onOpenExercise: (exerciseId: string) => void;
   styles: {
     bodyText: StyleProp<TextStyle>;
@@ -61,26 +62,14 @@ export function ExerciseIntelligenceSection({
 
         <Text style={styles.cardTitle}>{copy.rangeOfMotion}</Text>
         <ExerciseDetailTextList emptyLabel="" items={rangeOfMotion} styles={styles} />
-
-        <Text style={styles.cardTitle}>{copy.substitutions}</Text>
-        {intelligence.substitutions.length === 0 ? (
-          <Text style={styles.secondaryText}>{copy.noSubstitutions}</Text>
-        ) : (
-          <View style={styles.list}>
-            {intelligence.substitutions.map((substitution) => (
-              <View key={substitution.exerciseId}>
-                <AppButton
-                  label={localize(substitution.label)}
-                  onPress={() => onOpenExercise(substitution.exerciseId)}
-                  variant="secondary"
-                />
-                <Text style={styles.secondaryText}>{localize(substitution.rationale)}</Text>
-              </View>
-            ))}
-          </View>
-        )}
-        <Text style={styles.secondaryText}>{copy.substitutionDisclaimer}</Text>
       </AppCard>
+
+      <SmartReplacementSection
+        exerciseId={exerciseId}
+        locale={locale}
+        onOpenExercise={onOpenExercise}
+        styles={styles}
+      />
     </>
   );
 }
