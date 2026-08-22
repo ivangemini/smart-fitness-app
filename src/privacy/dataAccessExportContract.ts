@@ -97,13 +97,18 @@ export const DATA_ACCESS_EXPORT_SURFACES: readonly DataAccessExportSurface[] = [
     sourceAuthority: 'cross_surface',
     disposition: 'candidate_export',
     status: 'blocked',
-    purpose: 'User-entered progress, weight and body-measurement history.',
+    purpose: 'User-entered progress, weight, body-measurement and progress-photo metadata history.',
     candidateDataClasses: [
       'weight_history',
       'typed_body_measurements',
+      'progress_photo_metadata',
       'derived_user_facing_progress_summaries',
     ],
-    excludedDataClasses: ['internal_debug_metrics'],
+    excludedDataClasses: [
+      'internal_debug_metrics',
+      'unreviewed_embedded_exif',
+      'unreviewed_embedded_location_metadata',
+    ],
   },
   {
     id: 'limitations_recovery_and_safety_context',
@@ -146,9 +151,17 @@ export const DATA_ACCESS_EXPORT_SURFACES: readonly DataAccessExportSurface[] = [
     sourceAuthority: 'cross_surface',
     disposition: 'notice_only',
     status: 'blocked',
-    purpose: 'Explain managed-media records, lifecycle state and exceptional retention.',
-    candidateDataClasses: ['user_visible_media_metadata', 'lifecycle_status'],
-    excludedDataClasses: ['private_object_keys', 'moderation_provider_payloads'],
+    purpose: 'Explain managed-media records, local progress-photo lifecycle state and exceptional retention.',
+    candidateDataClasses: [
+      'user_visible_media_metadata',
+      'progress_photo_local_lifecycle_status',
+      'lifecycle_status',
+    ],
+    excludedDataClasses: [
+      'private_object_keys',
+      'moderation_provider_payloads',
+      'embedded_exif_and_location_metadata',
+    ],
   },
   {
     id: 'sync_conflict_and_recovery_metadata',

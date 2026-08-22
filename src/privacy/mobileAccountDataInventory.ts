@@ -26,7 +26,7 @@ export type MobileAccountDataDeletion =
 
 export type MobileAccountDataSurface = {
   id: string;
-  storage: 'async_storage' | 'secure_store';
+  storage: 'async_storage' | 'file_system' | 'secure_store';
   storageKeys: readonly string[];
   category: string;
   contains: string;
@@ -155,6 +155,34 @@ export const MOBILE_ACCOUNT_DATA_SURFACES: readonly MobileAccountDataSurface[] =
     deletion: 'account_cleanup',
     userControl:
       'Use the Knowledge learning flows or delete the account; confirmed account deletion removes the local cache and pending read queue.',
+  },
+  {
+    id: 'progress_photo_metadata',
+    storage: 'async_storage',
+    storageKeys: [],
+    category: 'progress_photos',
+    contains:
+      'Account-scoped progress-photo identity, front/side/back pose, app-owned local URI, dimensions, image MIME type, source class, lifecycle state and added timestamp. EXIF and location metadata are not retained.',
+    purpose:
+      'Index private local progress photos and preserve interruption-safe deletion state.',
+    transmission: 'none',
+    deletion: 'account_cleanup',
+    userControl:
+      'Delete individual progress photos or delete the account. This mobile flow does not upload photos.',
+  },
+  {
+    id: 'progress_photo_files',
+    storage: 'file_system',
+    storageKeys: [],
+    category: 'progress_photos',
+    contains:
+      'App-owned local image copies stored under the authenticated account progress-photo directory.',
+    purpose:
+      'Provide durable device-local media for standardized visual progress tracking.',
+    transmission: 'none',
+    deletion: 'account_cleanup',
+    userControl:
+      'Delete individual progress photos or delete the account. Account cleanup removes the deterministic account directory.',
   },
   {
     id: 'auth_session_metadata',

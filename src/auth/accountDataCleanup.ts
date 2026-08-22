@@ -2,6 +2,7 @@ import { getProactivePresentationStorageKey } from '@/features/companion/proacti
 import { getKnowledgeLearningStorageKey } from '@/features/knowledge/knowledgeLearningStore';
 import { getNutritionFavoritesStorageKey } from '@/features/nutrition/nutritionFavorites';
 import { getNutritionFoodLibraryStorageKey } from '@/features/nutrition/nutritionFoodLibrary';
+import { getProgressPhotoStorageKey } from '@/features/progressPhotos/progressPhotoStore';
 import { getSocialFollowingFeedCacheStorageKey } from '@/features/social/socialFollowingFeedCache';
 import { ACCOUNT_SCOPED_ASYNC_STORAGE_KEYS } from '@/privacy/mobileAccountDataStorageKeys';
 import type { StorageAdapter } from '@/storage';
@@ -10,8 +11,11 @@ import type { StorageAdapter } from '@/storage';
 // contain only alphanumeric characters, `.`, `-`, and `_`.
 export const PENDING_ACCOUNT_CLEANUP_STORAGE_KEY =
   'smart_fitness_pending_account_cleanup';
+export const PROGRESS_PHOTO_FILE_CLEANUP_FAILURE = 'progress_photo_files';
 
 const STATIC_ACCOUNT_DATA_KEYS = ACCOUNT_SCOPED_ASYNC_STORAGE_KEYS;
+
+export type AccountFileCleanup = (userId: string) => Promise<void>;
 
 type PendingAccountCleanup = {
   userId: string;
@@ -25,6 +29,7 @@ export const getLocalAccountDataStorageKeys = (userId: string): string[] =>
       getKnowledgeLearningStorageKey(userId),
       getNutritionFavoritesStorageKey(userId),
       getNutritionFoodLibraryStorageKey(userId),
+      getProgressPhotoStorageKey(userId),
       getProactivePresentationStorageKey(userId),
       getSocialFollowingFeedCacheStorageKey(userId),
     ]),
@@ -58,15 +63,24 @@ const parsePendingCleanup = (raw: string | null): PendingAccountCleanup | null =
   }
 };
 
-const removeAccountDataKeys = async (
+const removeAccountData = async (
   storage: StorageAdapter,
   userId: string,
+  fileCleanup?: AccountFileCleanup,
 ): Promise<void> => {
   const keys = getLocalAccountDataStorageKeys(userId);
   const results = await Promise.allSettled(keys.map((key) => storage.remove(key)));
   const failedKeys = results.flatMap((result, index) =>
     result.status === 'rejected' ? [keys[index] as string] : [],
   );
+
+  if (fileCleanup) {
+    try {
+      await fileCleanup(userId);
+    } catch {
+      failedKeys.push(PROGRESS_PHOTO_FILE_CLEANUP_FAILURE);
+    }
+  }
 
   if (failedKeys.length > 0) {
     throw new AccountDataCleanupError(failedKeys);
@@ -77,6 +91,7 @@ export const clearLocalAccountData = async (
   storage: StorageAdapter,
   userId: string,
   markerStorage: StorageAdapter = storage,
+  fileCleanup?: AccountFileCleanup,
 ): Promise<void> => {
   let markerWritten = false;
   try {
@@ -90,7 +105,7 @@ export const clearLocalAccountData = async (
   }
 
   try {
-    await removeAccountDataKeys(storage, userId);
+    await removeAccountData(storage, userId, fileCleanup);
   } catch (error) {
     if (markerWritten) throw error;
     if (error instanceof AccountDataCleanupError) {
@@ -112,6 +127,7 @@ export const completeLocalAccountCleanup = async (
 export const resumePendingLocalAccountCleanup = async (
   storage: StorageAdapter,
   markerStorage: StorageAdapter = storage,
+  fileCleanup?: AccountFileCleanup,
 ): Promise<boolean> => {
   const raw = await markerStorage.read(PENDING_ACCOUNT_CLEANUP_STORAGE_KEY);
   if (!raw) return false;
@@ -122,6 +138,6 @@ export const resumePendingLocalAccountCleanup = async (
     return false;
   }
 
-  await removeAccountDataKeys(storage, pending.userId);
+  await removeAccountData(storage, pending.userId, fileCleanup);
   return true;
 };
