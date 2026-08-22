@@ -27,6 +27,14 @@ const fullValidationSteps = [
   'Expo Doctor',
 ];
 
+const getStepBlock = (step) => {
+  const marker = `- name: ${step}`;
+  const start = workflow.indexOf(marker);
+  expect(start).toBeGreaterThan(-1);
+  const next = workflow.indexOf('\n      - name:', start + marker.length);
+  return workflow.slice(start, next === -1 ? workflow.length : next);
+};
+
 describe('Mobile CI merged-PR push deduplication', () => {
   it('resolves a squash-merged PR from the commit title and fails open to validation', () => {
     expect(workflow).toContain('Detect already-validated PR merge push');
@@ -50,11 +58,9 @@ describe('Mobile CI merged-PR push deduplication', () => {
 
   it('guards every heavyweight validation step with the detector result', () => {
     for (const step of guardedHeavySteps) {
-      const marker = `- name: ${step}`;
-      const start = workflow.indexOf(marker);
-      expect(start).toBeGreaterThan(-1);
-      const snippet = workflow.slice(start, start + 280);
-      expect(snippet).toContain("if: steps.validated-pr-merge.outputs.skip != 'true'");
+      expect(getStepBlock(step)).toContain(
+        "if: steps.validated-pr-merge.outputs.skip != 'true'",
+      );
     }
   });
 
@@ -67,11 +73,7 @@ describe('Mobile CI merged-PR push deduplication', () => {
     expect(workflow).toContain('echo "full=$full" >> "$GITHUB_OUTPUT"');
 
     for (const step of fullValidationSteps) {
-      const marker = `- name: ${step}`;
-      const start = workflow.indexOf(marker);
-      expect(start).toBeGreaterThan(-1);
-      const snippet = workflow.slice(start, start + 320);
-      expect(snippet).toContain("steps.scope.outputs.full == 'true'");
+      expect(getStepBlock(step)).toContain("steps.scope.outputs.full == 'true'");
     }
 
     for (const step of [
@@ -79,11 +81,9 @@ describe('Mobile CI merged-PR push deduplication', () => {
       'Changed file line limit',
       'Agent navigation integrity',
     ]) {
-      const marker = `- name: ${step}`;
-      const start = workflow.indexOf(marker);
-      expect(start).toBeGreaterThan(-1);
-      const snippet = workflow.slice(start, start + 260);
-      expect(snippet).not.toContain("steps.scope.outputs.full == 'true'");
+      expect(getStepBlock(step)).not.toContain(
+        "steps.scope.outputs.full == 'true'",
+      );
     }
   });
 
