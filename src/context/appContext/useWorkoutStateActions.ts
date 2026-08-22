@@ -2,6 +2,7 @@ import type { Dispatch, SetStateAction } from 'react';
 import { useCallback } from 'react';
 
 import { setActiveTrainingProgramInState } from '@/features/workouts/activeProgramSelection';
+import type { WorkoutTemplateExerciseEdit } from '@/features/workouts/workoutTemplateEditing';
 import { upsertWorkoutSessionById } from '@/lib/workouts';
 import type { AppState, TrainingProgram, WorkoutSession } from '@/types';
 
@@ -59,7 +60,7 @@ export function useWorkoutStateActions({
       id: string;
       title: string;
       description?: string;
-      exercises: string[];
+      exercises: WorkoutTemplateExerciseEdit[];
       createdAt: string;
     }) => {
       setState((currentState) => {
@@ -74,7 +75,11 @@ export function useWorkoutStateActions({
   const updateWorkoutTemplate = useCallback(
     (
       templateId: string,
-      updatedTemplate: { title: string; description?: string; exercises: string[] },
+      updatedTemplate: {
+        title: string;
+        description?: string;
+        exercises: WorkoutTemplateExerciseEdit[];
+      },
     ) => {
       setState((currentState) => {
         const nextState = updateCustomWorkoutTemplateInState(
