@@ -1,38 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import {
+  EMPTY_EXERCISE_PREFERENCE,
+  normalizeExercisePreference,
+  type ExercisePreference,
+} from './preferences';
+
 const PREFERENCE_STORAGE_PREFIX = 'exercise-preference-v1:';
-
-export const EXERCISE_PREFERENCE_NOTE_MAX_LENGTH = 240;
-
-export type ExercisePreference = {
-  avoid: boolean;
-  note: string;
-};
-
-export const EMPTY_EXERCISE_PREFERENCE: ExercisePreference = {
-  avoid: false,
-  note: '',
-};
 
 const storageKey = (exerciseId: string) =>
   `${PREFERENCE_STORAGE_PREFIX}${encodeURIComponent(exerciseId)}`;
-
-export const normalizeExercisePreference = (value: unknown): ExercisePreference => {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    return { ...EMPTY_EXERCISE_PREFERENCE };
-  }
-
-  const candidate = value as Record<string, unknown>;
-  const note =
-    typeof candidate.note === 'string'
-      ? candidate.note.trim().slice(0, EXERCISE_PREFERENCE_NOTE_MAX_LENGTH)
-      : '';
-
-  return {
-    avoid: candidate.avoid === true,
-    note,
-  };
-};
 
 export const loadExercisePreference = async (
   exerciseId: string,
