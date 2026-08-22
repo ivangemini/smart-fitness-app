@@ -53,6 +53,9 @@ const isWorkoutRpe = (value: unknown): value is WorkoutRpe =>
 const isWorkoutSetType = (value: unknown): value is WorkoutSetType =>
   typeof value === 'string' && WORKOUT_SET_TYPES.includes(value as WorkoutSetType);
 
+const hasWorkoutSetSemantics = (value: unknown): boolean =>
+  isRecord(value) && (value.setType !== undefined || value.supersetId !== undefined);
+
 const isValidTimestamp = (value: string): boolean =>
   Number.isFinite(new Date(value).getTime());
 
@@ -243,6 +246,10 @@ const parseRemoteSession = (
     new Date(finishedAt).getTime() < new Date(startedAt).getTime() ||
     !Array.isArray(payload.sets)
   ) {
+    return null;
+  }
+
+  if (payload.schemaVersion === 1 && payload.sets.some(hasWorkoutSetSemantics)) {
     return null;
   }
 
