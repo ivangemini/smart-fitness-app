@@ -7,7 +7,10 @@ import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { Colors, Spacing } from '@/constants/theme';
-import { createWorkoutDraftFromWorkout } from '@/features/workouts/programEditorModel';
+import {
+  buildProgramWorkoutEditorSavePayload,
+  createWorkoutDraftFromWorkout,
+} from '@/features/workouts/programEditorModel';
 import { useLocalization } from '@/localization';
 import { getWorkoutBuilderCopy } from '@/localization/workoutBuilderCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
@@ -20,11 +23,9 @@ type ProgramWorkoutEditorModalProps = {
   visible: boolean;
   workout?: Workout | null;
   onClose: () => void;
-  onSaveWorkout: (payload: {
-    title: string;
-    description?: string;
-    exercises: string[];
-  }) => void;
+  onSaveWorkout: (
+    payload: ReturnType<typeof buildProgramWorkoutEditorSavePayload>,
+  ) => void;
 };
 
 export function ProgramWorkoutEditorModal({
@@ -99,6 +100,7 @@ export function ProgramWorkoutEditorModal({
       next.splice(index + 1, 0, {
         ...source,
         id: `draft-exercise-${Date.now()}-${index + 1}`,
+        sourceExerciseId: undefined,
       });
       return next;
     });
@@ -120,11 +122,13 @@ export function ProgramWorkoutEditorModal({
   const saveDisabled = workoutTitle.trim().length === 0 || draftExercises.length === 0;
   const saveWorkout = () => {
     if (saveDisabled) return;
-    onSaveWorkout({
-      title: workoutTitle.trim(),
-      description: workoutDescription.trim() || undefined,
-      exercises: draftExercises.map((exercise) => exercise.name.trim()).filter(Boolean),
-    });
+    onSaveWorkout(
+      buildProgramWorkoutEditorSavePayload(
+        workoutTitle,
+        workoutDescription,
+        draftExercises,
+      ),
+    );
   };
 
   return (
