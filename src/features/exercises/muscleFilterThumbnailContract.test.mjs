@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import test from 'node:test';
-import assert from 'node:assert/strict';
+
+import { describe, expect, it } from 'vitest';
 
 const root = process.cwd();
 const anatomyPath = path.join(root, 'src/features/exercises/muscleAnatomy.ts');
@@ -18,27 +18,29 @@ const mapSource = fs.readFileSync(mapPath, 'utf8');
 const interactiveSource = fs.readFileSync(interactivePath, 'utf8');
 const controlsSource = fs.readFileSync(controlsPath, 'utf8');
 
-test('full and thumbnail anatomy reuse one canonical SVG geometry authority', () => {
-  assert.match(anatomySource, /MUSCLE_ANATOMY_REGIONS/);
-  assert.match(anatomySource, /id: 'side-delts'/);
-  assert.match(bodySvgSource, /MUSCLE_ANATOMY_REGIONS/);
-  assert.match(thumbnailSource, /BodyMuscleSvg/);
-  assert.match(mapSource, /BodyMuscleSvg/);
-  assert.doesNotMatch(thumbnailSource, /data:image\/svg\+xml/);
-  assert.doesNotMatch(mapSource, /data:image\/svg\+xml/);
-});
+describe('canonical muscle-map rendering contract', () => {
+  it('reuses one canonical SVG geometry authority for full and thumbnail anatomy', () => {
+    expect(anatomySource).toMatch(/MUSCLE_ANATOMY_REGIONS/);
+    expect(anatomySource).toMatch(/id: 'side-delts'/);
+    expect(bodySvgSource).toMatch(/MUSCLE_ANATOMY_REGIONS/);
+    expect(thumbnailSource).toMatch(/BodyMuscleSvg/);
+    expect(mapSource).toMatch(/BodyMuscleSvg/);
+    expect(thumbnailSource).not.toMatch(/data:image\/svg\+xml/);
+    expect(mapSource).not.toMatch(/data:image\/svg\+xml/);
+  });
 
-test('exercise filter chips retain text and add shared muscle thumbnails', () => {
-  assert.match(controlsSource, /MuscleFilterThumbnail muscleName=\{option\}/);
-  assert.match(controlsSource, /\{option\}/);
-  assert.match(controlsSource, /accessibilityState=\{\{ selected: active \}\}/);
-});
+  it('retains text labels while adding shared muscle thumbnails to filter chips', () => {
+    expect(controlsSource).toMatch(/MuscleFilterThumbnail muscleName=\{option\}/);
+    expect(controlsSource).toMatch(/\{option\}/);
+    expect(controlsSource).toMatch(/accessibilityState=\{\{ selected: active \}\}/);
+  });
 
-test('interactive body map resolves taps through exact canonical provider options', () => {
-  assert.match(controlsSource, /InteractiveMuscleFilter/);
-  assert.match(interactiveSource, /mapMuscleNameToCanonicalId/);
-  assert.match(interactiveSource, /optionByMuscleId\.get\(muscleId\)/);
-  assert.match(interactiveSource, /if \(!exactOption\) return/);
-  assert.match(interactiveSource, /onChange\(activeMuscleId === muscleId \? undefined : exactOption\)/);
-  assert.match(bodySvgSource, /onMusclePress\(region\.id\)/);
+  it('resolves interactive body-map taps through exact canonical provider options', () => {
+    expect(controlsSource).toMatch(/InteractiveMuscleFilter/);
+    expect(interactiveSource).toMatch(/mapMuscleNameToCanonicalId/);
+    expect(interactiveSource).toMatch(/optionByMuscleId\.get\(muscleId\)/);
+    expect(interactiveSource).toMatch(/if \(!exactOption\) return/);
+    expect(interactiveSource).toMatch(/onChange\(activeMuscleId === muscleId \? undefined : exactOption\)/);
+    expect(bodySvgSource).toMatch(/onMusclePress\(region\.id\)/);
+  });
 });

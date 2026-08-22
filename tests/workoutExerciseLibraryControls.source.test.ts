@@ -57,8 +57,8 @@ describe('workout exercise library controls', () => {
   it('keeps exercise library interactive controls at usable touch sizes', () => {
     expect(styles).toMatch(/retryButton:\s*\{[\s\S]*?minHeight:\s*44/);
     expect(styles).toMatch(/infoButton:\s*\{[\s\S]*?minHeight:\s*44/);
-    expect(styles).toMatch(/chip:\s*\{[\s\S]*?minHeight:\s*44/);
-    expect(styles).toMatch(/chipScroll:\s*\{[\s\S]*?maxHeight:\s*48/);
+    expect(styles).toMatch(/chip:\s*\{[\s\S]*?minHeight:\s*48/);
+    expect(styles).toMatch(/chipScroll:\s*\{[\s\S]*?maxHeight:\s*52/);
     expect(styles).not.toContain('minHeight: 34');
     expect(styles).not.toContain('minHeight: 40');
   });
