@@ -12,10 +12,12 @@ import type { SessionDraftInputs } from '@/features/workouts/components/session/
 import { resolveWorkoutSessionRouteState } from '@/features/workouts/routeResolution';
 import {
   addWorkoutSessionSet,
+  canReplacePendingWorkoutSessionExercise,
   clearWorkoutSessionSetsForExercise,
   createWorkoutSessionDraft,
   getWorkoutSessionCompletedSetCount,
   removeWorkoutSessionSet,
+  replacePendingWorkoutSessionExercise,
   toggleWorkoutSessionSetCompletion,
   updateWorkoutSessionSetActualRpe,
   updateWorkoutSessionSetField,
@@ -345,17 +347,30 @@ export default function WorkoutSessionScreen() {
 
   const replaceExercise = (replacement: ReplacementExercise) => {
     if (!replacementTarget) return;
-    setDraft({
-      ...draft,
-      sets: draft.sets.map((set) =>
-        set.exerciseId === replacementTarget.exerciseId
-          ? { ...set, exerciseId: replacement.id, exerciseName: replacement.name }
-          : { ...set },
-      ),
-    });
+    const sourceExerciseId = replacementTarget.exerciseId;
+    if (!canReplacePendingWorkoutSessionExercise(draft, sourceExerciseId, replacement.id)) {
+      setReplacementTarget(null);
+      setExerciseOverflow(null);
+      return;
+    }
+
+    const nextDraft = replacePendingWorkoutSessionExercise(
+      draft,
+      sourceExerciseId,
+      replacement,
+    );
+    const sourceStillHasSets = nextDraft.sets.some(
+      (set) => set.exerciseId === sourceExerciseId,
+    );
+
+    setDraft(nextDraft);
     setHiddenExerciseIds((current) => {
       const next = new Set(current);
-      next.add(replacementTarget.exerciseId);
+      if (sourceStillHasSets) {
+        next.delete(sourceExerciseId);
+      } else {
+        next.add(sourceExerciseId);
+      }
       next.delete(replacement.id);
       return next;
     });
