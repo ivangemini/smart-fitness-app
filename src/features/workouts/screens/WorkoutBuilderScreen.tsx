@@ -194,7 +194,13 @@ export function WorkoutBuilderScreen() {
   const handleSaveWorkout = (payload: {
     title: string;
     description?: string;
-    exercises: string[];
+    exercises: Array<
+      | string
+      | {
+          name: string;
+          sourceExerciseId?: string;
+        }
+    >;
   }) => {
     if (!payload.title.trim()) return;
     const createdAt = new Date().toISOString();
@@ -248,7 +254,9 @@ export function WorkoutBuilderScreen() {
               styles.primaryButton,
               pressed && styles.primaryButtonPressed,
             ]}>
-            <Text style={styles.primaryLabel}>{copy.back}</Text>
+            <Text numberOfLines={2} style={styles.primaryLabel}>
+              {copy.back}
+            </Text>
           </Pressable>
         </View>
       </View>
