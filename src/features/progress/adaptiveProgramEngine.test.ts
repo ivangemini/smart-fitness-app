@@ -38,7 +38,19 @@ describe('buildAdaptiveProgramReview', () => {
   it('proposes progress only for exact planned exercise identities', () => {
     const result = buildAdaptiveProgramReview({ endAt: '2026-08-23T12:00:00.000Z', findings: [finding('new_pr'), finding('new_pr', 'row')], program, recoveryCheckIns: [checkIn()], workouts: [workout] });
     expect(result.proposals).toHaveLength(1);
-    expect(result.proposals[0]).toMatchObject({ exerciseId: 'bench', baseAction: 'progress', action: 'progress', adjustedByRecovery: false });
+    expect(result.proposals[0]).toMatchObject({ exerciseId: 'bench', workoutTemplateIds: ['push'], baseAction: 'progress', action: 'progress', adjustedByRecovery: false });
+  });
+  it('retains all exact template identities when one planned exercise appears in multiple templates', () => {
+    const secondWorkout: Workout = { ...workout, id: 'push-2', title: 'Push 2' };
+    const multiProgram: TrainingProgram = {
+      ...program,
+      days: [
+        { id: 'm', weekday: 'monday', workoutTemplateId: 'push' },
+        { id: 't', weekday: 'tuesday', workoutTemplateId: 'push-2' },
+      ],
+    };
+    const result = buildAdaptiveProgramReview({ endAt: '2026-08-23T12:00:00.000Z', findings: [finding('new_pr')], program: multiProgram, recoveryCheckIns: [checkIn()], workouts: [workout, secondWorkout] });
+    expect(result.proposals[0].workoutTemplateIds).toEqual(['push', 'push-2']);
   });
   it('fails closed when a planned template cannot be resolved', () => {
     const result = buildAdaptiveProgramReview({ endAt: '2026-08-23T12:00:00.000Z', findings: [finding('new_pr')], program, recoveryCheckIns: [], workouts: [] });
