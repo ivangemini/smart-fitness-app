@@ -48,6 +48,27 @@ export const getTrainingIntelligenceCopy = (locale: SupportedLocale) => {
     subtitle: ru
       ? 'Детерминированные факты из завершённых тренировок.'
       : 'Deterministic facts from completed training history.',
+    review: ru ? 'Обзор тренировок' : 'Training review',
+    reviewHint: ru
+      ? 'Компактный обзор выбранного периода из сохранённого плана, истории и детерминированной аналитики. Это не оценка готовности и не автоматическая корректировка программы.'
+      : 'A compact review of the selected period from the saved plan, history and deterministic analytics. This is not a readiness score or an automatic plan adjustment.',
+    plannedVsCompleted: ru ? 'По плану записано' : 'Planned sessions recorded',
+    planUnavailable: ru
+      ? 'Нет канонического плана для сравнения. История и покрытие остаются доступными.'
+      : 'No canonical plan is available for comparison. History and coverage remain available.',
+    planPartial: ru
+      ? 'Часть запланированных дней не имеет канонического ID шаблона и исключена из сравнения.'
+      : 'Some planned days have no canonical template ID and are excluded from the comparison.',
+    unresolvedPlanSlots: ru ? 'Дней без ID шаблона' : 'Plan days without template ID',
+    otherCompletedSessions: ru ? 'Других завершённых сессий' : 'Other completed sessions',
+    reviewCoverage: ru ? 'Фактическое покрытие' : 'Recorded coverage',
+    activeMuscles: ru ? 'мышечных групп' : 'muscle groups',
+    reviewedPatterns: ru ? 'проверенных паттернов' : 'reviewed patterns',
+    topPatterns: ru ? 'Основные паттерны периода' : 'Top patterns in this period',
+    keySignals: ru ? 'Ключевые сигналы' : 'Key signals',
+    noKeySignals: ru
+      ? 'За выбранный период нет приоритетных детерминированных сигналов.'
+      : 'No priority deterministic signals in the selected period.',
     coverage: ru ? 'Покрытие тренировок' : 'Training coverage',
     coverageHint: ru
       ? 'Показывает только фактические завершённые рабочие подходы выбранного периода. Это журнал нагрузки, а не оценка оптимальности или восстановления.'
