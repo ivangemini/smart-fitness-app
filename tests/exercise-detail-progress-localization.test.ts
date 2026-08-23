@@ -30,16 +30,22 @@ describe('Exercise Detail localization and progress presentation', () => {
 
   it('uses locale and selected-unit boundaries without raw diagnostics', () => {
     const screen = readSource('src/features/exercises/screens/ExerciseDetailScreen.tsx');
+    const progress = readSource(
+      'src/features/exercises/components/ExerciseProgressSection.tsx',
+    );
 
     expect(screen).toContain('getExerciseDetailCopy(locale)');
     expect(screen).toContain('formatDate(group.finishedAt');
     expect(screen).toContain('formatNumber(set.reps');
     expect(screen).toContain('formatWeightValue(valueKg)');
-    expect(screen).toContain('weightFromKg(valueKg, weightUnit)');
-    expect(screen).toContain('displayValue: `${formatNumber(value');
-    expect(screen).not.toContain('new Intl.');
-    expect(screen).not.toContain('.toLocaleString(');
-    expect(screen).not.toContain('.toFixed(');
+    expect(progress).toContain('getExerciseDetailCopy(locale)');
+    expect(progress).toContain('weightFromKg(valueKg, weightUnit)');
+    expect(progress).toContain('displayValue: `${formatNumber(value');
+    for (const source of [screen, progress]) {
+      expect(source).not.toContain('new Intl.');
+      expect(source).not.toContain('.toLocaleString(');
+      expect(source).not.toContain('.toFixed(');
+    }
     expect(screen).not.toContain('Exercise media diagnostics');
     expect(screen).not.toContain('exercise.source.sourceId:');
     expect(screen).not.toContain('nativeImageError:');
@@ -49,6 +55,9 @@ describe('Exercise Detail localization and progress presentation', () => {
 
   it('does not retain audited hard-coded controls and empty states', () => {
     const screen = readSource('src/features/exercises/screens/ExerciseDetailScreen.tsx');
+    const progress = readSource(
+      'src/features/exercises/components/ExerciseProgressSection.tsx',
+    );
 
     for (const literal of [
       'Loading exercise',
@@ -62,21 +71,27 @@ describe('Exercise Detail localization and progress presentation', () => {
     ]) {
       expect(screen).not.toContain(`>${literal}<`);
       expect(screen).not.toContain(`"${literal}"`);
+      expect(progress).not.toContain(`>${literal}<`);
+      expect(progress).not.toContain(`"${literal}"`);
     }
     expect(screen).toContain('copy.sectionsAccessibility');
     expect(screen).toContain('copy.noHistoryTitle');
-    expect(screen).toContain('copy.noProgressTitle');
-    expect(screen).toContain('copy.bestWeight');
+    expect(progress).toContain('copy.noProgressTitle');
+    expect(progress).toContain('copy.bestWeight');
   });
 
   it('preserves exercise loading, media, favorites, share and analytics behavior', () => {
     const screen = readSource('src/features/exercises/screens/ExerciseDetailScreen.tsx');
+    const progress = readSource(
+      'src/features/exercises/components/ExerciseProgressSection.tsx',
+    );
 
     expect(screen).toContain('exerciseRepository.getExerciseById(exerciseId)');
     expect(screen).toContain('loadFavoriteExerciseIds()');
     expect(screen).toContain('saveFavoriteExerciseIds(nextFavoriteIds)');
     expect(screen).toContain('selectCompletedSetsByExerciseId(workoutSessions, exercise.id)');
-    expect(screen).toContain('calculateExerciseProgressMetrics(historyGroups)');
+    expect(progress).toContain('calculateExerciseProgressMetrics(historyGroups)');
+    expect(screen).toContain('<ExerciseProgressSection historyGroups={historyGroups}');
     expect(screen).toContain('<ExerciseMediaPreview');
     expect(screen).toContain('onMediaError={() => setMediaFailed(true)}');
     expect(screen).toContain('setPlaying((current) => !current)');
