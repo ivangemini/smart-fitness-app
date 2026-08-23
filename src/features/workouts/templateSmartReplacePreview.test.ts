@@ -21,9 +21,16 @@ const workout = (): Workout => ({
   id: 'template-1',
   title: 'Push A',
   description: 'Keep this note',
-  duration: '30 min',
+  duration: '47 min',
   createdAt: '2026-08-22T00:00:00.000Z',
   isCustom: true,
+  coachMetadata: {
+    schemaVersion: 1,
+    runId: 'coach-run',
+    sourceSessionId: 'session-1',
+    strategy: 'maintain',
+    confirmedAt: '2026-08-22T12:00:00.000Z',
+  },
   exercises: [
     {
       id: 'bench-press',
@@ -113,15 +120,23 @@ describe('buildTemplateSmartReplacePreview', () => {
     expect(preview.projectedWorkout.exercises[0]).toEqual(replacement);
     expect(preview.projectedWorkout.exercises[1]).toEqual(source.exercises[1]);
     expect(preview.projectedWorkout.prescription?.[0]).toEqual({
-      ...source.prescription?.[0],
+      sourceSetId: 'bench-set-1',
       exerciseId: replacement.id,
       exerciseName: replacement.name,
+      weight: 100,
+      reps: 5,
+      targetRpe: 8,
+      adjustment: 'maintain',
+      rationaleCode: 'keep-load',
     });
     expect(preview.projectedWorkout.prescription?.[1]).toEqual(
       source.prescription?.[1],
     );
     expect(preview.projectedWorkout.title).toBe(source.title);
     expect(preview.projectedWorkout.description).toBe(source.description);
+    expect(preview.projectedWorkout.duration).toBe(source.duration);
+    expect(preview.projectedWorkout.createdAt).toBe(source.createdAt);
+    expect(preview.projectedWorkout.coachMetadata).toEqual(source.coachMetadata);
     expect(source.exercises[0]?.id).toBe('bench-press');
     expect(source.prescription?.[0]?.exerciseId).toBe('bench-press');
   });
@@ -226,6 +241,14 @@ describe('buildTemplateSmartReplaceFingerprint', () => {
         prescription: source.prescription?.map((set, index) =>
           index === 0 ? { ...set, reps: set.reps + 1 } : set,
         ),
+      }),
+    ).not.toBe(fingerprint);
+    expect(
+      buildTemplateSmartReplaceFingerprint({
+        ...source,
+        coachMetadata: source.coachMetadata
+          ? { ...source.coachMetadata, runId: 'different-run' }
+          : undefined,
       }),
     ).not.toBe(fingerprint);
   });
