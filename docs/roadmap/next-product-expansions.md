@@ -7,8 +7,8 @@ This file defines the reviewed queue after completion of the Exercise & Training
 ## Execution order
 
 1. Custom-template Smart Replace UI — **delivered by #835; source/CI package closed**.
-2. Weekly Training Review — **current active source package**.
-3. Progress Stories / Share Cards.
+2. Weekly Training Review — **delivered by #837/#838; source/CI package closed**.
+3. Progress Stories / Share Cards — **current active source package**.
 4. Trainer / Coach collaboration layer.
 5. Apple Health / Apple Watch expansion.
 
@@ -32,38 +32,41 @@ The final contract is documented in `docs/roadmap/template-smart-replace.md` and
 - existing template persistence/sync authority remains the only mutation path;
 - no automatic program/template rewrite and no model mutation authority.
 
-## 2. Weekly Training Review
+## 2. Weekly Training Review — delivered
 
-### Objective
+### Delivery evidence
 
-Provide one compact weekly read-only review of what was planned, what was completed, what changed and what deserves attention next.
+W1/W2 were delivered by #837:
 
-### Input authority
+- exact validated head `39a133550607de1f79aa005f693dc9f201f5e9ff`;
+- Mobile CI #2885, run `32648145266`, job `97215495481`, fully green;
+- merged squash `447236cecacc17b26d1bf88774e7785ac2121dfe`.
 
-Reuse existing deterministic sources only:
+W3 was delivered by #838:
 
-- exact planned-versus-completed identity from Training Intelligence Loop;
+- exact validated head `eb034c796adfdb9b5aba6d96462700201709d5af`;
+- Mobile CI #2887, run `32648944883`, job `97217437867`, fully green;
+- merged squash `7a9fd9b8c734a6b2cd9354d12432a2d99715d43e`.
+
+W4 is documentation/evidence closure. No additional runtime authority is introduced by closure, and optional physical-device UX observation remains separate from source completion.
+
+### Delivered contract
+
+The package now provides one explicit 7-day read-only review composed from existing deterministic authorities:
+
+- exact planned-versus-completed identity from Training Intelligence Review;
 - `training-intelligence-v1` findings;
 - Training Coverage;
 - Adaptive Program proposals and recovery modifier evidence;
 - existing workout/session analytics.
 
-### Boundaries
+The main Progress surface shows compact plan completion, coverage, recovery context, adaptive action counts and bounded key findings. The detail action opens the existing Training Progress surface with an explicit 7-day period rather than creating duplicate analytics.
 
-- no second analytics persistence layer;
-- no universal readiness, recovery or quality score;
-- missing evidence stays unknown;
-- Coach may explain an already-derived review but cannot calculate the canonical review or mutate workouts/programs;
-- links should open inspectable evidence surfaces rather than duplicate detailed analytics.
+Missing program or recovery evidence stays unavailable/unknown. Source-window or recovery-evidence disagreement fails closed. There is no second analytics persistence layer, universal readiness/recovery/quality score, automatic program mutation or completed-history rewrite.
 
-### Candidate slices
+The optional W3 Coach explanation is user-triggered and read-only. It uses the existing structured question capability only when `readOnly=true` and `automaticApplication=false`, sends bounded already-derived weekly aggregates/signals rather than arbitrary raw evidence or mutation data, and cannot recalculate the canonical review or apply workout/program changes.
 
-- **W1 — weekly deterministic review model**;
-- **W2 — Progress presentation + drill-down links**;
-- **W3 — optional read-only Coach explanation**;
-- **W4 — package closure and device UX evidence where useful**.
-
-## 3. Progress Stories / Share Cards
+## 3. Progress Stories / Share Cards — current active package
 
 ### Objective
 
@@ -84,14 +87,17 @@ Let users explicitly create attractive, privacy-aware shareable cards from exist
 - no hidden cloud upload;
 - no AI-generated metric claims or fabricated before/after facts;
 - source dates, units and identities remain visible/traceable;
-- progress photos require a separate explicit inclusion decision and must preserve Phase 20 privacy boundaries.
+- progress photos require a separate explicit inclusion decision and must preserve Phase 20 privacy boundaries;
+- existing Social workout/story publishing is not implicit authorization for native share/export or for publishing a generated card.
 
-### Candidate slices
+### Execution slices
 
-- **S1 — deterministic share-card view models**;
-- **S2 — reusable visual card renderer**;
-- **S3 — explicit native share/export surface**;
-- **S4 — optional Social post handoff with explicit confirmation, if reviewed**.
+- **S1 — deterministic share-card view models:** pure deterministic composition over already-owned facts; no renderer, native share dependency, persistence layer or publication side effect. S1 must preserve source dates/units/identity and fail closed when required evidence is unresolved.
+- **S2 — reusable visual card renderer:** presentation only; it must render the S1 model rather than recalculate claims. The renderer/export technology choice is reviewed here, not smuggled into S1.
+- **S3 — explicit native share/export surface:** platform share/export only after explicit user action; no hidden upload or Social publication.
+- **S4 — optional Social post handoff:** implement only after separate review and explicit confirmation, reusing existing Social authority rather than bypassing it.
+
+Current dependency audit: the app already includes `@shopify/react-native-skia`, while `expo-sharing` and `react-native-view-shot` are not current dependencies. Therefore S1 adds no native dependency; image capture/export dependency decisions belong to S2/S3.
 
 ## 4. Trainer / Coach Collaboration
 
