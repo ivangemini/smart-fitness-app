@@ -6,6 +6,7 @@ import { AppCard } from '@/components/ui/AppCard';
 import { Colors, Spacing } from '@/constants/theme';
 import { exerciseRepository, type Exercise } from '@/features/exercises';
 import { MuscleMap } from '@/features/exercises/components/MuscleMap';
+import { getExerciseIntelligenceCopy } from '@/features/exercises/exerciseIntelligenceCopy';
 import { getCanonicalMuscleLabel } from '@/features/exercises/muscleLabels';
 import type { CanonicalMuscleId, MuscleHighlightMap } from '@/features/exercises/muscleTaxonomy';
 import { useLocalization } from '@/localization';
@@ -13,6 +14,7 @@ import { useAppTheme } from '@/theme/AppThemeProvider';
 import type { WorkoutSession } from '@/types';
 import { useUnitPreferences, weightFromKg } from '@/units';
 
+import { buildTrainingCoverage } from './trainingCoverage';
 import { getTrainingIntelligenceCopy } from './trainingIntelligenceCopy';
 import {
   buildCanonicalTrainingIntelligence,
@@ -33,6 +35,7 @@ export function TrainingIntelligenceSection({
   const { formatDate, formatNumber, locale } = useLocalization();
   const { weight: weightUnit } = useUnitPreferences();
   const copy = useMemo(() => getTrainingIntelligenceCopy(locale), [locale]);
+  const movementCopy = useMemo(() => getExerciseIntelligenceCopy(locale), [locale]);
   const styles = useMemo(() => createStyles(colors), [colors]);
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -63,31 +66,37 @@ export function TrainingIntelligenceSection({
         : null,
     [endAt, exercises, loadState, windowDays, workoutSessions],
   );
+  const coverage = useMemo(
+    () =>
+      loadState === 'ready'
+        ? buildTrainingCoverage({ exercises, sessions: workoutSessions, endAt, windowDays })
+        : null,
+    [endAt, exercises, loadState, windowDays, workoutSessions],
+  );
   const activeFacts = useMemo(
     () =>
-      analytics?.muscleLoad
+      coverage?.muscleExposure
         .filter((fact) => fact.primarySets > 0 || fact.secondarySets > 0)
-        .sort((a, b) => b.primaryVolume - a.primaryVolume || b.primarySets - a.primarySets)
         .slice(0, 6) ?? [],
-    [analytics],
+    [coverage],
   );
   const availableMuscleIds = useMemo(
-    () => analytics?.muscleLoad.filter((fact) => fact.lastTrainedAt).map((fact) => fact.id) ?? [],
-    [analytics],
+    () => coverage?.muscleExposure.filter((fact) => fact.lastTrainedAt).map((fact) => fact.id) ?? [],
+    [coverage],
   );
-  const maxVolume = Math.max(0, ...(analytics?.muscleLoad.map((fact) => fact.primaryVolume) ?? []));
-  const maxPrimarySets = Math.max(0, ...(analytics?.muscleLoad.map((fact) => fact.primarySets) ?? []));
+  const maxVolume = Math.max(0, ...(coverage?.muscleExposure.map((fact) => fact.primaryVolume) ?? []));
+  const maxPrimarySets = Math.max(0, ...(coverage?.muscleExposure.map((fact) => fact.primarySets) ?? []));
   const highlights = useMemo<MuscleHighlightMap>(() => {
     const next: MuscleHighlightMap = {};
-    for (const fact of analytics?.muscleLoad ?? []) {
+    for (const fact of coverage?.muscleExposure ?? []) {
       if (fact.primarySets > 0) next[fact.id] = 'primary';
       else if (fact.secondarySets > 0) next[fact.id] = 'secondary';
     }
     return next;
-  }, [analytics]);
+  }, [coverage]);
   const intensities = useMemo<Partial<Record<CanonicalMuscleId, number>>>(() => {
     const next: Partial<Record<CanonicalMuscleId, number>> = {};
-    for (const fact of analytics?.muscleLoad ?? []) {
+    for (const fact of coverage?.muscleExposure ?? []) {
       if (fact.primarySets > 0) {
         next[fact.id] = maxVolume > 0 ? fact.primaryVolume / maxVolume : fact.primarySets / Math.max(1, maxPrimarySets);
       } else if (fact.secondarySets > 0) {
@@ -95,7 +104,7 @@ export function TrainingIntelligenceSection({
       }
     }
     return next;
-  }, [analytics, maxPrimarySets, maxVolume]);
+  }, [coverage, maxPrimarySets, maxVolume]);
 
   const formatWeight = (value: number) =>
     `${formatNumber(weightFromKg(value, weightUnit), { maximumFractionDigits: 1 })} ${weightUnit}`;
@@ -138,14 +147,14 @@ export function TrainingIntelligenceSection({
   return (
     <View style={styles.stack}>
       <AppCard>
-        <Text selectable style={styles.title}>{copy.title}</Text>
-        <Text selectable style={styles.detail}>{copy.subtitle}</Text>
+        <Text selectable style={styles.title}>{copy.coverage}</Text>
+        <Text selectable style={styles.detail}>{copy.coverageHint}</Text>
         <Text selectable style={styles.sectionTitle}>{copy.muscleLoad}</Text>
         <Text selectable style={styles.detail}>{copy.muscleLoadHint}</Text>
         {loadState === 'loading' ? <Text selectable style={styles.detail}>{copy.loading}</Text> : null}
         {loadState === 'error' ? <Text selectable style={styles.detail}>{copy.unavailable}</Text> : null}
-        {analytics && activeFacts.length === 0 ? <Text selectable style={styles.detail}>{copy.noMappedData}</Text> : null}
-        {analytics && activeFacts.length > 0 ? (
+        {coverage && activeFacts.length === 0 ? <Text selectable style={styles.detail}>{copy.noMappedData}</Text> : null}
+        {coverage && activeFacts.length > 0 ? (
           <>
             <View style={styles.maps}>
               <MuscleMap
@@ -175,15 +184,51 @@ export function TrainingIntelligenceSection({
                     {formatNumber(fact.primarySets)} {copy.primarySets} · {formatNumber(fact.secondarySets)} {copy.secondarySets} · {formatNumber(fact.exposureSessions)} {copy.sessions}
                   </Text>
                   <Text selectable style={styles.detail}>
-                    {copy.mappedVolume}: {formatVolume(fact.primaryVolume)} · {fact.volumeChangePercent === null ? copy.newWindowData : `${fact.volumeChangePercent > 0 ? '+' : ''}${formatNumber(fact.volumeChangePercent, { maximumFractionDigits: 1 })}% ${copy.previousWindow}`}
+                    {copy.mappedVolume}: {formatVolume(fact.primaryVolume)}
                   </Text>
+                  {fact.contributors.length > 0 ? (
+                    <Text selectable style={styles.detail}>
+                      {copy.contributors}: {fact.contributors.map((item) => item.exerciseName).join(', ')}
+                    </Text>
+                  ) : null}
                 </View>
               ))}
             </View>
-            <Text selectable style={styles.detail}>
-              {copy.mappedExercises}: {formatNumber(analytics.mappedExerciseCount)} · {copy.unmappedSets}: {formatNumber(analytics.unmappedWorkingSetCount)}
-            </Text>
           </>
+        ) : null}
+
+        {coverage ? (
+          <View style={styles.rows}>
+            <Text selectable style={styles.detail}>
+              {copy.eligibleSets}: {formatNumber(coverage.eligibleWorkingSetCount)} · {copy.mappedMuscleSets}: {formatNumber(coverage.mappedMuscleSetCount)}
+            </Text>
+          </View>
+        ) : null}
+
+        <Text selectable style={styles.sectionTitle}>{copy.movementPatterns}</Text>
+        <Text selectable style={styles.detail}>{copy.movementPatternsHint}</Text>
+        {coverage && coverage.movementPatterns.length === 0 ? (
+          <Text selectable style={styles.detail}>{copy.noMovementPatterns}</Text>
+        ) : null}
+        {coverage && coverage.movementPatterns.length > 0 ? (
+          <View style={styles.rows}>
+            {coverage.movementPatterns.map((fact) => (
+              <View key={fact.pattern} style={styles.row}>
+                <Text selectable style={styles.rowTitle}>
+                  {movementCopy.movementPatterns[fact.pattern]}
+                </Text>
+                <Text selectable style={styles.detail}>
+                  {formatNumber(fact.workingSetCount)} {copy.workingSets} · {formatNumber(fact.exposureSessions)} {copy.sessions} · {copy.mappedVolume}: {formatVolume(fact.volume)}
+                </Text>
+                <Text selectable style={styles.detail}>
+                  {copy.contributors}: {fact.contributors.map((item) => item.exerciseName).join(', ')}
+                </Text>
+              </View>
+            ))}
+            <Text selectable style={styles.detail}>
+              {copy.reviewedPatternSets}: {formatNumber(coverage.reviewedPatternSetCount)} · {copy.unmappedPatternSets}: {formatNumber(coverage.unmappedPatternSetCount)}
+            </Text>
+          </View>
         ) : null}
       </AppCard>
 

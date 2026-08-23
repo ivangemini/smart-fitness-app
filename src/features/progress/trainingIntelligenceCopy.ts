@@ -48,12 +48,17 @@ export const getTrainingIntelligenceCopy = (locale: SupportedLocale) => {
     subtitle: ru
       ? 'Детерминированные факты из завершённых тренировок.'
       : 'Deterministic facts from completed training history.',
-    muscleLoad: ru ? 'Нагрузка по мышцам' : 'Muscle load',
+    coverage: ru ? 'Покрытие тренировок' : 'Training coverage',
+    coverageHint: ru
+      ? 'Показывает только фактические завершённые рабочие подходы выбранного периода. Это журнал нагрузки, а не оценка оптимальности или восстановления.'
+      : 'Shows only completed working-set evidence from the selected period. This is training exposure, not an optimality or recovery score.',
+    muscleLoad: ru ? 'Нагрузка по мышцам' : 'Muscle exposure',
     muscleLoadHint: ru
-      ? 'Цвет показывает относительный объём рабочих подходов, где мышца указана основной. Значения по мышцам не складываются в общий объём и не измеряют активацию мышцы.'
-      : 'Color shows relative working-set volume where a muscle is mapped as primary. Muscle values are not additive and do not measure muscle activation.',
+      ? 'Карта использует каноническую мышечную таксономию и точный ID упражнения. Цвет отражает относительный объём подходов, где мышца указана основной; значения не измеряют активацию мышцы.'
+      : 'The map uses the canonical muscle taxonomy and exact exercise ID. Color reflects relative volume where a muscle is primary; values do not measure muscle activation.',
     primarySets: ru ? 'основных подходов' : 'primary sets',
     secondarySets: ru ? 'доп. подходов' : 'secondary sets',
+    workingSets: ru ? 'рабочих подходов' : 'working sets',
     sessions: ru ? 'сессий' : 'sessions',
     mappedVolume: ru ? 'объём' : 'volume',
     previousWindow: ru ? 'к предыдущему периоду' : 'vs previous window',
@@ -61,6 +66,18 @@ export const getTrainingIntelligenceCopy = (locale: SupportedLocale) => {
     noMappedData: ru
       ? 'За этот период нет подходов с подтверждённым сопоставлением мышц.'
       : 'No sets with confirmed muscle mapping in this period.',
+    movementPatterns: ru ? 'Паттерны движений' : 'Movement patterns',
+    movementPatternsHint: ru
+      ? 'Паттерн засчитывается только при точном каноническом ID с проверенной записью exercise-intelligence-v1. Неизвестные и несопоставленные упражнения остаются неизвестными.'
+      : 'A pattern counts only for an exact canonical ID with reviewed exercise-intelligence-v1 data. Unknown and unmapped exercises remain unknown.',
+    noMovementPatterns: ru
+      ? 'За этот период нет подходов с проверенным паттерном движения.'
+      : 'No sets with a reviewed movement pattern in this period.',
+    contributors: ru ? 'Упражнения' : 'Exercises',
+    eligibleSets: ru ? 'Завершённых рабочих подходов' : 'Completed working sets',
+    mappedMuscleSets: ru ? 'С мышечным сопоставлением' : 'Muscle-mapped sets',
+    reviewedPatternSets: ru ? 'С проверенным паттерном' : 'Reviewed-pattern sets',
+    unmappedPatternSets: ru ? 'Без проверенного паттерна' : 'Unmapped-pattern sets',
     findings: ru ? 'Сигналы прогрессии' : 'Progression signals',
     findingsHint: ru
       ? 'Правила версии training-intelligence-v1. Это наблюдения по истории, а не автоматические рекомендации.'
