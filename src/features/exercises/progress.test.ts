@@ -8,14 +8,14 @@ const createSet = (
   finishedAt: string,
   weight: number,
   reps: number,
-  options: Pick<ExerciseHistorySet, 'actualRpe' | 'setType'> = {},
+  options: Pick<ExerciseHistorySet, 'actualRpe' | 'completed' | 'setType'> = {},
 ): ExerciseHistorySet => ({
   id,
   exerciseId: 'bench-press',
   exerciseName: 'Bench Press',
   weight,
   reps,
-  completed: true,
+  completed: options.completed ?? true,
   actualRpe: options.actualRpe,
   setType: options.setType,
   workoutId: 'workout-1',
@@ -126,5 +126,49 @@ describe('calculateExerciseProgressMetrics', () => {
     ]);
     expect(metrics.loadTrend).toHaveLength(6);
     expect(metrics.estimatedOneRepMaxTrend).toHaveLength(6);
+  });
+
+  it('sorts eligible sessions by finished time before selecting latest and previous', () => {
+    const latestAt = '2026-08-22T18:00:00.000Z';
+    const previousAt = '2026-08-15T18:00:00.000Z';
+    const metrics = calculateExerciseProgressMetrics([
+      createGroup('previous', previousAt, [
+        createSet('previous-1', previousAt, 90, 5, { setType: 'working' }),
+      ]),
+      createGroup('latest', latestAt, [
+        createSet('latest-1', latestAt, 100, 5, { setType: 'working' }),
+      ]),
+    ]);
+
+    expect(metrics.recentComparison?.latest.sessionId).toBe('latest');
+    expect(metrics.recentComparison?.previous?.sessionId).toBe('previous');
+    expect(metrics.volumeTrend.map((point) => point.key)).toEqual(['previous', 'latest']);
+  });
+
+  it('excludes explicitly incomplete sets and sessions from all progress evidence', () => {
+    const latestAt = '2026-08-22T18:00:00.000Z';
+    const previousAt = '2026-08-15T18:00:00.000Z';
+    const metrics = calculateExerciseProgressMetrics([
+      createGroup('incomplete-only', latestAt, [
+        createSet('incomplete-heavy', latestAt, 200, 10, {
+          completed: false,
+          setType: 'working',
+        }),
+      ]),
+      createGroup('eligible', previousAt, [
+        createSet('eligible-1', previousAt, 100, 5, { setType: 'working' }),
+        createSet('incomplete-2', previousAt, 180, 12, {
+          completed: false,
+          setType: 'working',
+        }),
+      ]),
+    ]);
+
+    expect(metrics.bestWeight).toBe(100);
+    expect(metrics.bestReps).toBe(5);
+    expect(metrics.totalVolume).toBe(500);
+    expect(metrics.recentSessions.map((session) => session.sessionId)).toEqual(['eligible']);
+    expect(metrics.recentComparison?.latest.sessionId).toBe('eligible');
+    expect(metrics.recentComparison?.previous).toBeNull();
   });
 });
