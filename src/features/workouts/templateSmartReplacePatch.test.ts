@@ -17,7 +17,7 @@ const replacement: Exercise = {
 const workout = (): Workout => ({
   id: 'template-1',
   title: 'Push A',
-  duration: '20 min',
+  duration: '47 min',
   isCustom: true,
   createdAt: '2026-08-22T00:00:00.000Z',
   exercises: [
@@ -56,7 +56,7 @@ const patchFor = (source: Workout) => ({
 });
 
 describe('applyTemplateSmartReplacePatch', () => {
-  it('applies the exact replacement and preserves prescription targets', () => {
+  it('applies the exact replacement and preserves unrelated template state', () => {
     const source = workout();
     const result = applyTemplateSmartReplacePatch(
       source,
@@ -65,6 +65,7 @@ describe('applyTemplateSmartReplacePatch', () => {
     );
 
     expect(result.status).toBe('applied');
+    expect(result.workout.duration).toBe('47 min');
     expect(result.workout.exercises[0]).toEqual(replacement);
     expect(result.workout.exercises[1]).toEqual(source.exercises[1]);
     expect(result.workout.prescription?.[0]).toEqual({
