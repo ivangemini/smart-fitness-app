@@ -18,6 +18,8 @@ import type {
   WorkoutPrescriptionPatch,
   WorkoutPrescriptionPatchStatus,
   WorkoutSession,
+  WorkoutTemplateReplacementPatch,
+  WorkoutTemplateReplacementPatchStatus,
 } from './index';
 
 export type AppMutationStage = 'local_persistence' | 'outbox';
@@ -98,6 +100,9 @@ export type AppActions = {
   applyWorkoutPrescriptionPatch: (
     patch: WorkoutPrescriptionPatch,
   ) => Promise<WorkoutPrescriptionPatchStatus>;
+  applyWorkoutTemplateReplacementPatch: (
+    patch: WorkoutTemplateReplacementPatch,
+  ) => Promise<WorkoutTemplateReplacementPatchStatus>;
   saveTrainingProgram: (program: TrainingProgram) => void;
   deleteTrainingProgram: (programId: string) => void;
   setActiveTrainingProgram: (programId: string | null) => void;
