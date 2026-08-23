@@ -133,7 +133,7 @@ export function ProgressShareCardShareModal({
             </Text>
 
             {shareError ? (
-              <Text accessibilityRole="alert" style={[styles.error, { color: colors.danger }]}> 
+              <Text accessibilityRole="alert" style={[styles.error, { color: colors.error }]}>
                 {copy.shareFailed}
               </Text>
             ) : null}
