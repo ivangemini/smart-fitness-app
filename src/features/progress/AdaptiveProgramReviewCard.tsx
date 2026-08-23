@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { AppCard } from '@/components/ui/AppCard';
 import { Colors, Spacing } from '@/constants/theme';
+import { getCanonicalMuscleLabel } from '@/features/exercises/muscleLabels';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 
@@ -11,6 +12,7 @@ import type {
   AdaptiveProgramReview,
   RecoveryModifierEvidence,
 } from './adaptiveProgramEngine';
+import type { AdaptiveRecoveryEvidence } from './adaptiveRecoveryEvidence';
 import { getTrainingIntelligenceCopy } from './trainingIntelligenceCopy';
 
 const actionLabel = (action: AdaptiveProgramAction, ru: boolean) => {
@@ -42,12 +44,22 @@ const signalLabel = (signal: RecoveryModifierEvidence['signals'][number], ru: bo
   return labels[signal][ru ? 1 : 0];
 };
 
-export function AdaptiveProgramReviewCard({ review }: { review: AdaptiveProgramReview }) {
+const valueOrDash = (value: number | null, formatNumber: (value: number) => string) =>
+  value === null ? '—' : formatNumber(value);
+
+export function AdaptiveProgramReviewCard({
+  evidence,
+  review,
+}: {
+  evidence: AdaptiveRecoveryEvidence;
+  review: AdaptiveProgramReview;
+}) {
   const { colors } = useAppTheme();
   const { formatDate, formatNumber, locale } = useLocalization();
   const ru = locale === 'ru';
   const copy = useMemo(() => getTrainingIntelligenceCopy(locale), [locale]);
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const format = (value: number) => formatNumber(value, { maximumFractionDigits: 1 });
 
   return (
     <AppCard>
@@ -58,7 +70,7 @@ export function AdaptiveProgramReviewCard({ review }: { review: AdaptiveProgramR
           : 'Deterministic proposals from progress history and a fresh self-reported recovery check-in. Nothing is applied automatically.'}
       </Text>
 
-      <Text selectable style={styles.sectionTitle}>{ru ? 'Recovery modifier' : 'Recovery modifier'}</Text>
+      <Text selectable style={styles.sectionTitle}>Recovery modifier</Text>
       <Text selectable style={styles.rowTitle}>{recoveryLabel(review.recovery, ru)}</Text>
       {review.recovery.recordedAt ? (
         <Text selectable style={styles.detail}>
@@ -76,6 +88,34 @@ export function AdaptiveProgramReviewCard({ review }: { review: AdaptiveProgramR
           : 'This is a programming modifier from user-entered data, not a medical assessment or a universal readiness score.'}
       </Text>
 
+      <Text selectable style={styles.sectionTitle}>{ru ? 'Данные check-in' : 'Check-in evidence'}</Text>
+      {evidence.latestCheckIn ? (
+        <View style={styles.evidenceBlock}>
+          <Text selectable style={styles.detail}>
+            {formatDate(evidence.latestCheckIn.recordedAt, { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })}
+            {' · '}{format(evidence.latestCheckIn.ageHours)} {ru ? 'ч назад' : 'h ago'}
+          </Text>
+          <Text selectable style={styles.detail}>
+            {ru ? 'Сон' : 'Sleep'}: {valueOrDash(evidence.latestCheckIn.sleepDurationHours, format)} h
+            {' · '}{ru ? 'качество' : 'quality'}: {valueOrDash(evidence.latestCheckIn.sleepQuality, format)}/5
+          </Text>
+          <Text selectable style={styles.detail}>
+            {ru ? 'Усталость' : 'Fatigue'}: {valueOrDash(evidence.latestCheckIn.fatigue, format)}/5
+            {' · '}{ru ? 'болезненность' : 'soreness'}: {valueOrDash(evidence.latestCheckIn.soreness, format)}/5
+            {' · '}{ru ? 'стресс' : 'stress'}: {valueOrDash(evidence.latestCheckIn.stress, format)}/5
+          </Text>
+          <Text selectable style={styles.detail}>
+            {ru ? 'Влияние боли' : 'Pain interference'}: {valueOrDash(evidence.latestCheckIn.painInterference, format)}/5
+            {' · '}{ru ? 'субъективная готовность' : 'self-reported readiness'}: {valueOrDash(evidence.latestCheckIn.selfReportedReadiness, format)}/5
+          </Text>
+          <Text selectable style={styles.detail}>
+            {ru ? 'Check-in за 7 дней' : 'Check-ins in 7 days'}: {formatNumber(evidence.recentCheckInCount)}
+          </Text>
+        </View>
+      ) : (
+        <Text selectable style={styles.detail}>{ru ? 'Сохранённых check-in нет.' : 'No stored check-in evidence.'}</Text>
+      )}
+
       <Text selectable style={styles.sectionTitle}>{ru ? 'Предложения по упражнениям' : 'Exercise proposals'}</Text>
       {review.proposals.length === 0 ? (
         <Text selectable style={styles.detail}>
@@ -83,21 +123,46 @@ export function AdaptiveProgramReviewCard({ review }: { review: AdaptiveProgramR
         </Text>
       ) : (
         <View style={styles.rows}>
-          {review.proposals.slice(0, 6).map((proposal) => (
-            <View key={proposal.exerciseId} style={styles.row}>
-              <Text selectable style={styles.rowTitle}>{proposal.exerciseName}</Text>
-              <Text selectable style={styles.action}>{actionLabel(proposal.action, ru)}</Text>
-              <Text selectable style={styles.detail}>
-                {copy.findingTitle(proposal.finding.kind, proposal.finding.prType)}
-                {proposal.adjustedByRecovery
-                  ? ru ? ' · скорректировано recovery modifier' : ' · adjusted by recovery modifier'
-                  : ''}
-              </Text>
-            </View>
-          ))}
+          {review.proposals.slice(0, 6).map((proposal) => {
+            const exposure = evidence.proposalExposure.find((item) => item.exerciseId === proposal.exerciseId);
+            return (
+              <View key={proposal.exerciseId} style={styles.row}>
+                <Text selectable style={styles.rowTitle}>{proposal.exerciseName}</Text>
+                <Text selectable style={styles.action}>{actionLabel(proposal.action, ru)}</Text>
+                <Text selectable style={styles.detail}>
+                  {copy.findingTitle(proposal.finding.kind, proposal.finding.prType)}
+                  {proposal.adjustedByRecovery
+                    ? ru ? ' · скорректировано recovery modifier' : ' · adjusted by recovery modifier'
+                    : ''}
+                </Text>
+                {exposure ? (
+                  <View style={styles.evidenceBlock}>
+                    <Text selectable style={styles.detail}>
+                      {ru ? 'Primary muscles' : 'Primary muscles'}: {exposure.primaryMuscleIds.length > 0
+                        ? exposure.primaryMuscleIds.map((muscleId) => getCanonicalMuscleLabel(muscleId, locale)).join(', ')
+                        : '—'}
+                    </Text>
+                    <Text selectable style={styles.detail}>
+                      {ru ? 'Экспозиция за' : 'Exposure in'} {formatNumber(exposure.windowHours)}h: {formatNumber(exposure.workingSetCount)} {copy.workingSets} · {formatNumber(exposure.exposureSessionCount)} {copy.sessions}
+                    </Text>
+                    {exposure.lastExposureAt ? (
+                      <Text selectable style={styles.detail}>
+                        {ru ? 'Последняя экспозиция' : 'Last exposure'}: {formatDate(exposure.lastExposureAt, { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })}
+                      </Text>
+                    ) : null}
+                  </View>
+                ) : null}
+              </View>
+            );
+          })}
         </View>
       )}
 
+      <Text selectable style={styles.disclaimer}>
+        {ru
+          ? 'Окно 72 часа показывает только недавние завершённые рабочие подходы по primary muscles. Оно не является таймером восстановления и не меняет предложение A1.'
+          : 'The 72-hour window only shows recent completed working-set exposure for primary muscles. It is not a recovery timer and does not change the A1 proposal.'}
+      </Text>
       <Text selectable style={styles.detail}>
         {ru ? 'Упражнений в каноническом плане' : 'Canonical planned exercises'}: {formatNumber(review.plannedExerciseCount)}
         {review.unresolvedTemplateCount > 0
@@ -113,6 +178,7 @@ const createStyles = (colors: typeof Colors.light) =>
     action: { color: colors.textPrimary, fontSize: 14, fontWeight: '800' },
     detail: { color: colors.textSecondary, fontSize: 13, lineHeight: 19 },
     disclaimer: { color: colors.textSecondary, fontSize: 12, lineHeight: 17, marginTop: Spacing.one },
+    evidenceBlock: { gap: Spacing.one, marginTop: Spacing.one },
     row: { borderTopColor: colors.borderSubtle, borderTopWidth: StyleSheet.hairlineWidth, gap: Spacing.one, paddingTop: Spacing.two },
     rowTitle: { color: colors.textPrimary, fontSize: 14, fontWeight: '800' },
     rows: { gap: Spacing.two, marginTop: Spacing.two },
