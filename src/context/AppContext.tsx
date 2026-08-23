@@ -134,6 +134,7 @@ export function AppProvider({ children }: PropsWithChildren) {
   const {
     addExercise,
     addWorkoutTemplate,
+    applyWorkoutPrescriptionPatch,
     deleteExercise,
     deleteTrainingProgram,
     deleteWorkoutSession,
@@ -338,6 +339,7 @@ export function AppProvider({ children }: PropsWithChildren) {
       addMealTemplate,
       addWeightEntry,
       addWorkoutTemplate,
+      applyWorkoutPrescriptionPatch,
       completeOnboarding,
       deleteBodyMeasurement,
       deleteExercise,
@@ -374,6 +376,7 @@ export function AppProvider({ children }: PropsWithChildren) {
       addMealTemplate,
       addWeightEntry,
       addWorkoutTemplate,
+      applyWorkoutPrescriptionPatch,
       completeOnboarding,
       deleteBodyMeasurement,
       deleteExercise,

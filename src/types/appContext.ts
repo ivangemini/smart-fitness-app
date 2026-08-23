@@ -15,6 +15,8 @@ import type {
   UserLimitation,
   WeightEntry,
   Workout,
+  WorkoutPrescriptionPatch,
+  WorkoutPrescriptionPatchStatus,
   WorkoutSession,
 } from './index';
 
@@ -93,6 +95,9 @@ export type AppActions = {
       exercises: WorkoutTemplateExerciseInput[];
     },
   ) => void;
+  applyWorkoutPrescriptionPatch: (
+    patch: WorkoutPrescriptionPatch,
+  ) => Promise<WorkoutPrescriptionPatchStatus>;
   saveTrainingProgram: (program: TrainingProgram) => void;
   deleteTrainingProgram: (programId: string) => void;
   setActiveTrainingProgram: (programId: string | null) => void;

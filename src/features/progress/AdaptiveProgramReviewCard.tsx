@@ -6,7 +6,9 @@ import { Colors, Spacing } from '@/constants/theme';
 import { getCanonicalMuscleLabel } from '@/features/exercises/muscleLabels';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
+import type { Workout, WorkoutPrescriptionPatch, WorkoutPrescriptionPatchStatus } from '@/types';
 
+import { AdaptiveProgramApplyControls } from './AdaptiveProgramApplyControls';
 import type {
   AdaptiveProgramAction,
   AdaptiveProgramReview,
@@ -49,10 +51,14 @@ const valueOrDash = (value: number | null, formatNumber: (value: number) => stri
 
 export function AdaptiveProgramReviewCard({
   evidence,
+  onApplyPrescriptionPatch,
   review,
+  workouts,
 }: {
   evidence: AdaptiveRecoveryEvidence;
+  onApplyPrescriptionPatch: (patch: WorkoutPrescriptionPatch) => Promise<WorkoutPrescriptionPatchStatus>;
   review: AdaptiveProgramReview;
+  workouts: readonly Workout[];
 }) {
   const { colors } = useAppTheme();
   const { formatDate, formatNumber, locale } = useLocalization();
@@ -66,8 +72,8 @@ export function AdaptiveProgramReviewCard({
       <Text selectable style={styles.title}>{ru ? 'Адаптивная программа' : 'Adaptive program'}</Text>
       <Text selectable style={styles.detail}>
         {ru
-          ? 'Детерминированные предложения из истории прогресса и свежего self-reported recovery check-in. Ничего не применяется автоматически.'
-          : 'Deterministic proposals from progress history and a fresh self-reported recovery check-in. Nothing is applied automatically.'}
+          ? 'Детерминированные предложения из истории прогресса и свежего self-reported recovery check-in. Изменения шаблона требуют отдельного предпросмотра и подтверждения.'
+          : 'Deterministic proposals from progress history and a fresh self-reported recovery check-in. Template changes require a separate preview and confirmation.'}
       </Text>
 
       <Text selectable style={styles.sectionTitle}>Recovery modifier</Text>
@@ -152,6 +158,11 @@ export function AdaptiveProgramReviewCard({
                     ) : null}
                   </View>
                 ) : null}
+                <AdaptiveProgramApplyControls
+                  onApply={onApplyPrescriptionPatch}
+                  proposal={proposal}
+                  workouts={workouts}
+                />
               </View>
             );
           })}
@@ -160,8 +171,8 @@ export function AdaptiveProgramReviewCard({
 
       <Text selectable style={styles.disclaimer}>
         {ru
-          ? 'Окно 72 часа показывает только недавние завершённые рабочие подходы по primary muscles. Оно не является таймером восстановления и не меняет предложение A1.'
-          : 'The 72-hour window only shows recent completed working-set exposure for primary muscles. It is not a recovery timer and does not change the A1 proposal.'}
+          ? 'Окно 72 часа показывает только недавние завершённые рабочие подходы по primary muscles. Оно не является таймером восстановления и само по себе не меняет предложение.'
+          : 'The 72-hour window only shows recent completed working-set exposure for primary muscles. It is not a recovery timer and does not change the proposal by itself.'}
       </Text>
       <Text selectable style={styles.detail}>
         {ru ? 'Упражнений в каноническом плане' : 'Canonical planned exercises'}: {formatNumber(review.plannedExerciseCount)}

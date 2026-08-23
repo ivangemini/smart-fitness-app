@@ -4,11 +4,18 @@ import { useCallback } from 'react';
 import { setActiveTrainingProgramInState } from '@/features/workouts/activeProgramSelection';
 import type { WorkoutTemplateExerciseEdit } from '@/features/workouts/workoutTemplateEditing';
 import { upsertWorkoutSessionById } from '@/lib/workouts';
-import type { AppState, TrainingProgram, WorkoutSession } from '@/types';
+import type {
+  AppState,
+  TrainingProgram,
+  WorkoutPrescriptionPatch,
+  WorkoutPrescriptionPatchStatus,
+  WorkoutSession,
+} from '@/types';
 
 import type { ScheduleAppStateMutation } from './useAppMutationQueue';
 import {
   addWorkoutTemplateToState,
+  applyWorkoutPrescriptionPatchInState,
   deleteCustomExerciseFromState,
   deleteCustomWorkoutTemplateFromState,
   deleteTrainingProgramFromState,
@@ -94,6 +101,21 @@ export function useWorkoutStateActions({
         return nextState;
       });
     },
+    [scheduleStateMutation, setState],
+  );
+
+  const applyWorkoutPrescriptionPatch = useCallback(
+    (patch: WorkoutPrescriptionPatch): Promise<WorkoutPrescriptionPatchStatus> =>
+      new Promise((resolve) => {
+        setState((currentState) => {
+          const result = applyWorkoutPrescriptionPatchInState(currentState, patch);
+          if (result.status === 'applied') {
+            scheduleStateMutation({ label: 'Apply adaptive prescription change', nextState: result.nextState });
+          }
+          resolve(result.status);
+          return result.nextState;
+        });
+      }),
     [scheduleStateMutation, setState],
   );
 
@@ -216,6 +238,7 @@ export function useWorkoutStateActions({
   return {
     addExercise,
     addWorkoutTemplate,
+    applyWorkoutPrescriptionPatch,
     deleteExercise,
     deleteTrainingProgram,
     deleteWorkoutSession,

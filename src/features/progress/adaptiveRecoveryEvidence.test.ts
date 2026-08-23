@@ -23,6 +23,7 @@ const exercise = (id: string, name: string, primaryMuscles: string[]): Exercise 
 const proposal = (exerciseId = 'bench'): AdaptiveProgramProposal => ({
   exerciseId,
   exerciseName: 'Bench',
+  workoutTemplateIds: ['push'],
   baseAction: 'progress',
   action: 'progress',
   recoveryModifier: 'neutral',

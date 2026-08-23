@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Text } from 'react-native';
 
 import { AppCard } from '@/components/ui/AppCard';
+import { useAppActions } from '@/context/AppContext';
 import { exerciseRepository, type Exercise } from '@/features/exercises';
 import { useLocalization } from '@/localization';
 import type { RecoveryCheckIn, TrainingProgram, Workout, WorkoutSession } from '@/types';
@@ -30,6 +31,7 @@ export function AdaptiveProgramReviewSection({
   workoutSessions: WorkoutSession[];
 }) {
   const { locale } = useLocalization();
+  const { applyWorkoutPrescriptionPatch } = useAppActions();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
 
@@ -90,5 +92,12 @@ export function AdaptiveProgramReviewSection({
     );
   }
   if (!review || !evidence) return null;
-  return <AdaptiveProgramReviewCard evidence={evidence} review={review} />;
+  return (
+    <AdaptiveProgramReviewCard
+      evidence={evidence}
+      onApplyPrescriptionPatch={applyWorkoutPrescriptionPatch}
+      review={review}
+      workouts={workouts}
+    />
+  );
 }
