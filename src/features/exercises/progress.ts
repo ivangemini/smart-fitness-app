@@ -1,4 +1,4 @@
-import type { ExerciseHistoryGroup } from './history';
+import type { ExerciseHistoryGroup, ExerciseHistorySet } from './history';
 
 export type ExerciseProgressTrendPoint = {
   key: string;
@@ -58,10 +58,29 @@ const percentDelta = (current: number, previous: number) => {
   return ((current - previous) / previous) * 100;
 };
 
+const isEligibleProgressSet = (set: ExerciseHistorySet) =>
+  set.completed !== false && set.setType !== 'warmup';
+
+const compareHistoryGroupsMostRecentFirst = (
+  left: ExerciseHistoryGroup,
+  right: ExerciseHistoryGroup,
+) => {
+  const leftTime = Date.parse(left.finishedAt);
+  const rightTime = Date.parse(right.finishedAt);
+
+  if (Number.isFinite(leftTime) && Number.isFinite(rightTime) && leftTime !== rightTime) {
+    return rightTime - leftTime;
+  }
+
+  const timestampOrder = right.finishedAt.localeCompare(left.finishedAt);
+  if (timestampOrder !== 0) return timestampOrder;
+  return left.sessionId.localeCompare(right.sessionId);
+};
+
 const summarizeSession = (
   group: ExerciseHistoryGroup,
 ): ExerciseSessionPerformance | null => {
-  const sets = group.sets.filter((set) => set.setType !== 'warmup');
+  const sets = group.sets.filter(isEligibleProgressSet);
   if (sets.length === 0) return null;
 
   const rpeValues = sets.flatMap((set) =>
@@ -106,12 +125,11 @@ const summarizeSession = (
 export const calculateExerciseProgressMetrics = (
   historyGroups: ExerciseHistoryGroup[],
 ): ExerciseProgressMetrics => {
-  const recentSessions = historyGroups
+  const sortedGroups = [...historyGroups].sort(compareHistoryGroupsMostRecentFirst);
+  const recentSessions = sortedGroups
     .map(summarizeSession)
     .filter((session): session is ExerciseSessionPerformance => Boolean(session));
-  const sets = historyGroups.flatMap((group) =>
-    group.sets.filter((set) => set.setType !== 'warmup'),
-  );
+  const sets = sortedGroups.flatMap((group) => group.sets.filter(isEligibleProgressSet));
   const totalVolume = sets.reduce((total, set) => total + set.weight * set.reps, 0);
   const estimatedOneRepMax = sets.reduce(
     (best, set) => Math.max(best, calculateEstimatedOneRepMax(set.weight, set.reps)),
