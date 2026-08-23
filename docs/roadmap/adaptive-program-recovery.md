@@ -14,8 +14,8 @@ The engine is not a universal readiness score, medical assessment or autonomous 
 
 1. **A1 — Read-only progression proposal foundation — delivered by #829.**
 2. **A2 — Recovery modifier expansion and evidence drill-down — delivered by #830.**
-3. **A3 — Explicit proposal preview / Apply contract — active slice.**
-4. **A4 — Coach explanation over deterministic proposals.**
+3. **A3 — Explicit proposal preview / Apply contract — delivered by #831.**
+4. **A4 — Coach explanation over deterministic proposals — active slice.**
 
 ## A1 — delivered
 
@@ -69,7 +69,7 @@ Delivery evidence:
 - exact PR head `ef400c70eedc3b35f0f200af5e6fbda50e3ab4d2` passed Mobile CI #2871 including line audits, agent integrity, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor;
 - merged to `main` as `18d2d6de52f36313582e28272c6b36665e261ed7`.
 
-## A3 — active exact Apply contract
+## A3 — delivered
 
 A3 may mutate only a future custom workout template prescription after a separate preview and explicit confirmation.
 
@@ -104,6 +104,35 @@ Persistence / history boundary:
 - A3 does not change the TrainingProgram day/template links;
 - no backend schema change, provider/model call or automatic mutation is introduced.
 
-## A4 — future
+Delivery evidence:
 
-Coach may explain an already-derived deterministic proposal and its evidence, but must not become the calculation or mutation authority. A4 must not bypass the A3 preview/stale/confirmation gates.
+- implementation: #831 (`feat(progress): add explicit Adaptive Program Apply contract`);
+- exact PR head `3db9cc5b7be92bc066348a007eadb3a5936e3e18` passed Mobile CI #2874 including line audits, agent integrity, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor;
+- merged to `main` as `8216903f8c44df5a4109c6d7839bcbd5e0757a03`.
+
+## A4 — active Coach explanation contract
+
+A4 adds an explicit read-only explanation over an already-derived deterministic proposal. Coach is an explanation layer, not the proposal calculator or mutation authority.
+
+Explanation input:
+
+- exact proposal exercise display name, displayed `progress | maintain | review` action, deterministic finding kind / PR type and bounded known finding evidence;
+- current recovery modifier state, whether recovery changed the base action, and the deterministic recovery signal codes;
+- custom/user-authored display text is length-bounded and is explicitly labelled as data rather than instructions;
+- workout-template patch payloads, target prescription patches, source fingerprints and Apply functions are not sent to Coach.
+
+Runtime gate:
+
+- explanation runs only after an explicit user press on `Explain with Coach`;
+- authenticated Coach access is required;
+- the existing Coach capabilities endpoint must report structured questions with `readOnly === true` and `automaticApplication === false` before the question is sent;
+- the existing `/v1/coach/questions` route is reused; A4 adds no new backend endpoint or provider authority;
+- unsupported/unavailable Coach capability leaves the deterministic proposal unchanged.
+
+Authority boundary:
+
+- Coach is instructed to explain the displayed proposal rather than recalculate, replace or apply it;
+- Coach output is never parsed back into `AdaptiveProgramAction`, recovery modifier, prescription patch or TrainingProgram state;
+- A3 preview, stale fingerprint and explicit Apply confirmation remain the only mutation path;
+- completed workout history remains immutable;
+- a Coach explanation may add human-readable context and caveats, but cannot override the deterministic action.
