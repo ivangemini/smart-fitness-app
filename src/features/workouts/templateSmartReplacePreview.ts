@@ -59,17 +59,19 @@ const prescriptionRowsMatch = (
   JSON.stringify(normalizePrescriptionRow(left)) ===
   JSON.stringify(normalizePrescriptionRow(right));
 
+const valuesMatch = (left: unknown, right: unknown) =>
+  JSON.stringify(left ?? null) === JSON.stringify(right ?? null);
+
 export const buildTemplateSmartReplaceFingerprint = (workout: Workout) =>
   JSON.stringify({
     templateId: workout.id,
     title: workout.title,
     description: workout.description ?? null,
     duration: workout.duration,
+    createdAt: workout.createdAt ?? null,
     isCustom: workout.isCustom === true,
-    exercises: workout.exercises.map((exercise) => ({
-      id: exercise.id,
-      name: exercise.name,
-    })),
+    coachMetadata: workout.coachMetadata ?? null,
+    exercises: workout.exercises,
     prescription: workout.prescription?.map(normalizePrescriptionRow) ?? null,
   });
 
@@ -128,13 +130,28 @@ const projectedIdentityMatches = (
   const sourceIndex = workout.exercises.findIndex(
     (exercise) => exercise.id === sourceExerciseId,
   );
-  const projectedExercise = projected.exercises[sourceIndex];
+  if (sourceIndex < 0 || projected.exercises.length !== workout.exercises.length) {
+    return false;
+  }
+
+  const exercisesMatch = workout.exercises.every((exercise, index) => {
+    const next = projected.exercises[index];
+    if (!next) return false;
+    if (index === sourceIndex) {
+      return next.id === replacement.id && next.name === replacement.name;
+    }
+    return valuesMatch(next, exercise);
+  });
+  if (!exercisesMatch) return false;
+
   if (
-    sourceIndex < 0 ||
-    !projectedExercise ||
-    projectedExercise.id !== replacement.id ||
-    projectedExercise.name !== replacement.name ||
-    projected.exercises.length !== workout.exercises.length
+    projected.id !== workout.id ||
+    projected.title !== workout.title ||
+    projected.description !== workout.description ||
+    projected.duration !== workout.duration ||
+    projected.createdAt !== workout.createdAt ||
+    projected.isCustom !== workout.isCustom ||
+    !valuesMatch(projected.coachMetadata, workout.coachMetadata)
   ) {
     return false;
   }
@@ -194,12 +211,19 @@ export function buildTemplateSmartReplacePreview(input: {
   }
 
   const edit = buildReplacementEdit(workout, sourceExerciseId, replacement);
-  const projectedWorkout = applyWorkoutTemplateEdit(
+  const editedWorkout = applyWorkoutTemplateEdit(
     workout,
     edit,
     workout.createdAt ?? '1970-01-01T00:00:00.000Z',
     exerciseCatalog,
   );
+  const projectedWorkout =
+    editedWorkout === workout
+      ? workout
+      : {
+          ...editedWorkout,
+          duration: workout.duration,
+        };
 
   if (
     projectedWorkout === workout ||
