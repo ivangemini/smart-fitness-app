@@ -52,6 +52,13 @@ const normalizePrescriptionRow = (set: WorkoutPrescriptionSet) => ({
   rationaleCode: set.rationaleCode ?? null,
 });
 
+const prescriptionRowsMatch = (
+  left: WorkoutPrescriptionSet,
+  right: WorkoutPrescriptionSet,
+) =>
+  JSON.stringify(normalizePrescriptionRow(left)) ===
+  JSON.stringify(normalizePrescriptionRow(right));
+
 export const buildTemplateSmartReplaceFingerprint = (workout: Workout) =>
   JSON.stringify({
     templateId: workout.id,
@@ -139,19 +146,15 @@ const projectedIdentityMatches = (
   return beforePrescription.every((set, index) => {
     const next = afterPrescription[index];
     if (!next) return false;
-    if (set.exerciseId === sourceExerciseId) {
-      return (
-        next.exerciseId === replacement.id &&
-        next.exerciseName === replacement.name &&
-        next.weight === set.weight &&
-        next.reps === set.reps &&
-        next.targetRpe === set.targetRpe &&
-        next.sourceSetId === set.sourceSetId &&
-        next.adjustment === set.adjustment &&
-        next.rationaleCode === set.rationaleCode
-      );
-    }
-    return next === set;
+    const expected =
+      set.exerciseId === sourceExerciseId
+        ? {
+            ...set,
+            exerciseId: replacement.id,
+            exerciseName: replacement.name,
+          }
+        : set;
+    return prescriptionRowsMatch(next, expected);
   });
 };
 
