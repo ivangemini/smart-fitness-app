@@ -12,11 +12,13 @@ import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useAppActions, useWorkoutState } from '@/context/AppContext';
 import { useProfileState } from '@/context/ProfileStateContext';
 import { useProgressState } from '@/context/ProgressStateContext';
+import { useSafetyRecoveryState } from '@/context/SafetyRecoveryStateContext';
 import { buildGoalFacts } from '@/features/goals/goalFacts';
 import {
   getGoalProgressCopy,
   getGoalTypeCopy,
 } from '@/features/goals/goalProgressCopy';
+import { WeeklyTrainingReviewSection } from '@/features/progress/WeeklyTrainingReviewSection';
 import { getBodyCompositionProgressCopy } from '@/features/progress/bodyCompositionProgressCopy';
 import {
   buildBodyMeasurement,
@@ -27,6 +29,7 @@ import { getProgressOverviewCopy } from '@/features/progress/progressOverviewCop
 import { buildProgressOverview } from '@/features/progress/progressOverviewModel';
 import { getBodyMeasurementError } from '@/features/progress/progressLocalization';
 import { getProgressPhotoCopy } from '@/features/progressPhotos/progressPhotoCopy';
+import { resolveActiveTrainingProgram } from '@/features/workouts/activeProgramSelection';
 import { createUuid } from '@/lib/ids';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
@@ -47,7 +50,8 @@ export default function ProgressScreen() {
   const { addBodyMeasurement } = useAppActions();
   const { profile } = useProfileState();
   const { bodyMeasurements, weightHistory } = useProgressState();
-  const { workoutSessions } = useWorkoutState();
+  const { recoveryCheckIns } = useSafetyRecoveryState();
+  const { trainingPrograms, workouts, workoutSessions } = useWorkoutState();
   const { formatDate, formatNumber, locale, t } = useLocalization();
   const {
     formatWeightValue,
@@ -92,6 +96,15 @@ export default function ProgressScreen() {
         workoutSessions,
       }),
     [anchorAt, profile, weightHistory, workoutSessions],
+  );
+  const activeTrainingProgram = useMemo(
+    () =>
+      resolveActiveTrainingProgram({
+        activeTrainingProgramId: profile.activeTrainingProgramId,
+        trainingPrograms,
+        workouts,
+      }).program,
+    [profile.activeTrainingProgramId, trainingPrograms, workouts],
   );
 
   const isMeasurementDisabled =
@@ -383,6 +396,14 @@ export default function ProgressScreen() {
           rows={trainingRows}
           subtitle={t('progress.trainingSubtitle')}
           title={copy.strengthTraining}
+        />
+
+        <WeeklyTrainingReviewSection
+          endAt={anchorAt}
+          program={activeTrainingProgram}
+          recoveryCheckIns={recoveryCheckIns}
+          workouts={workouts}
+          workoutSessions={workoutSessions}
         />
 
         <ProgressOverviewCard
