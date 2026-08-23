@@ -1,25 +1,10 @@
-import type { Workout, WorkoutPrescriptionSet } from '@/types';
-
-export type WorkoutPrescriptionPatchStatus = 'applied' | 'stale' | 'blocked';
-
-export type WorkoutPrescriptionRowPatch = {
-  index: number;
-  exerciseId: string;
-  expectedWeight: number;
-  expectedReps: number;
-  expectedTargetRpe: WorkoutPrescriptionSet['targetRpe'];
-  nextWeight: number;
-  nextReps: number;
-  nextAdjustment?: WorkoutPrescriptionSet['adjustment'];
-  nextRationaleCode?: string;
-};
-
-export type WorkoutPrescriptionPatch = {
-  templateId: string;
-  exerciseId: string;
-  expectedFingerprint: string;
-  rows: WorkoutPrescriptionRowPatch[];
-};
+import type {
+  Workout,
+  WorkoutPrescriptionPatch,
+  WorkoutPrescriptionPatchStatus,
+  WorkoutPrescriptionRowPatch,
+  WorkoutPrescriptionSet,
+} from '@/types';
 
 export type WorkoutPrescriptionPatchResult = {
   status: WorkoutPrescriptionPatchStatus;
