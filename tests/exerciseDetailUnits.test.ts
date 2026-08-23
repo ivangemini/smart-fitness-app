@@ -11,29 +11,34 @@ const { resolve } = require('path') as {
 };
 
 const projectRoot = resolve(__dirname, '..');
-const source = readFileSync(
-  resolve(projectRoot, 'src/features/exercises/screens/ExerciseDetailScreen.tsx'),
-  'utf8',
+const readSource = (relativePath: string) =>
+  readFileSync(resolve(projectRoot, relativePath), 'utf8');
+const screenSource = readSource('src/features/exercises/screens/ExerciseDetailScreen.tsx');
+const progressSource = readSource(
+  'src/features/exercises/components/ExerciseProgressSection.tsx',
 );
 
 describe('exercise detail unit boundaries', () => {
   it('formats history and progress weights through the selected preference', () => {
-    expect(source).toContain('useUnitPreferences');
-    expect(source).toContain('formatWeightValue, weight: weightUnit');
-    expect(source).toContain('formatWeight(set.weight)');
-    expect(source).toContain('formatWeight(progressMetrics.bestWeight)');
-    expect(source).toContain('formatWeight(progressMetrics.estimatedOneRepMax)');
-    expect(source).not.toContain('{set.weight} kg');
-    expect(source).not.toContain('`${progressMetrics.bestWeight} kg`');
+    expect(screenSource).toContain('useUnitPreferences');
+    expect(screenSource).toContain('formatWeightValue, weight: weightUnit');
+    expect(screenSource).toContain('formatWeight(set.weight)');
+    expect(progressSource).toContain('useUnitPreferences');
+    expect(progressSource).toContain('formatWeightValue, weight: weightUnit');
+    expect(progressSource).toContain('formatWeight(metrics.bestWeight)');
+    expect(progressSource).toContain('formatWeight(metrics.estimatedOneRepMax)');
+    expect(screenSource).not.toContain('{set.weight} kg');
+    expect(progressSource).not.toContain('`${metrics.bestWeight} kg`');
   });
 
   it('converts volume metrics and chart points from canonical kilograms', () => {
-    expect(source).toContain('weightFromKg(valueKg, weightUnit)');
-    expect(source).toContain('weightFromKg(point.value, weightUnit)');
-    expect(source).toContain('points={displayVolumeTrend}');
-    expect(source).toContain('maxLabel={copy.high(weightUnit)}');
-    expect(source).toContain('minLabel={copy.low(weightUnit)}');
-    expect(source).toContain('formatNumber(value, { maximumFractionDigits: 0 })');
-    expect(source).not.toContain('Math.round(progressMetrics.totalVolume).toLocaleString()} kg');
+    expect(progressSource).toContain('weightFromKg(valueKg, weightUnit)');
+    expect(progressSource).toContain('weightFromKg(point.value, weightUnit)');
+    expect(progressSource).toContain('points={volumeTrend}');
+    expect(progressSource).toContain('unit={weightUnit}');
+    expect(progressSource).toContain('maxLabel={copy.high(unit)}');
+    expect(progressSource).toContain('minLabel={copy.low(unit)}');
+    expect(progressSource).toContain('formatNumber(value, { maximumFractionDigits: digits })');
+    expect(progressSource).not.toContain('Math.round(metrics.totalVolume).toLocaleString()} kg');
   });
 });
