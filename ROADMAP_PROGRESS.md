@@ -35,20 +35,21 @@ There is no approved P21-F or Phase 22. New product work continues as reviewed u
 
 ## Completed unnumbered packages
 
-### Exercise Preferences + Smart Replace foundation
+### Exercise Preferences + Smart Replace
 
-Delivered through #816/#818/#819/#820, with exact template identity/prescription remapping primitive added by #824.
+Foundation delivered through #816/#818/#819/#820, exact template identity/prescription remapping primitive by #824, and saved custom-template UI by #835 with docs closure #836.
 
 Stable boundaries:
 
 - preference state remains separate from favorites;
 - candidate ranking begins only from reviewed substitutions and exact canonical IDs;
 - active-session replacement changes only explicitly pending sets;
+- saved custom-template replacement is read-only until deterministic preview and explicit Apply;
+- collision/unresolved/stale identity fails closed;
+- matching prescription identity remaps while unrelated targets/metadata remain unchanged;
 - completed/legacy session evidence remains immutable;
-- #824 provides exact source/replacement template identity and deterministic `Workout.prescription` remapping while preserving unrelated fields;
-- no automatic active-session or template replacement is authorized.
-
-The remaining product work is a user-facing custom-template Smart Replace preview/confirm/apply surface over the #824 primitive. See `docs/roadmap/exercise-preferences-smart-replace.md`.
+- existing persistence/sync authority is reused;
+- no automatic active-session, template or program replacement is authorized.
 
 ### Exercise & Training Intelligence expansion
 
@@ -75,42 +76,53 @@ Delivered authority includes:
 
 See `docs/roadmap/adaptive-program-recovery.md`.
 
+### Weekly Training Review
+
+W1/W2 delivered by #837:
+
+- exact head `39a133550607de1f79aa005f693dc9f201f5e9ff`;
+- Mobile CI #2885 / run `32648145266` / job `97215495481` fully green;
+- merged `447236cecacc17b26d1bf88774e7785ac2121dfe`.
+
+W3 delivered by #838:
+
+- exact head `eb034c796adfdb9b5aba6d96462700201709d5af`;
+- Mobile CI #2887 / run `32648944883` / job `97217437867` fully green;
+- merged `7a9fd9b8c734a6b2cd9354d12432a2d99715d43e`.
+
+Delivered contract:
+
+- explicit deterministic 7-day review over existing planned/completed identity, findings, Coverage, recovery and Adaptive authorities;
+- compact Progress presentation and drill-down to existing 7-day Training Progress;
+- missing/mismatched evidence remains unknown/unavailable or fails closed;
+- no second analytics store or universal weekly/readiness score;
+- optional explicit read-only Coach explanation uses bounded already-derived evidence only;
+- no automatic workout/program mutation and no completed-history rewrite.
+
+W4 is documentation/evidence closure; optional device UX observation remains an independent evidence task rather than a source blocker.
+
 ## Current autonomous source work
 
-### 1. Custom-template Smart Replace UI — active next package
+### 1. Progress Stories / Share Cards — active package
 
-Build the explicit user-facing template replacement flow over the #824 exact-ID primitive.
+Create privacy-aware explicit share/export surfaces from existing deterministic progress evidence such as PRs, Weekly Training Review highlights, weight/body-measurement milestones and completed workouts.
 
-Required contract:
+Immediate S1 contract:
 
-- custom/editable workout template only;
-- exact source and replacement canonical IDs;
-- reviewed Smart Replace shortlist plus manual catalog remains available;
-- preview exact exercise/prescription identity changes before mutation;
-- explicit confirmation before Apply;
-- deterministic prescription-row remapping and preservation of unrelated workout metadata;
-- collision/unresolved/stale identity fails closed;
-- completed `WorkoutSession` history is never rewritten;
-- existing template persistence/sync authority is reused;
-- no automatic program rewrite.
+- pure deterministic share-card view models only;
+- reuse existing source authorities; do not create a second progress analytics truth;
+- preserve source date, unit and identity provenance;
+- unresolved required evidence fails closed;
+- no new persistence, renderer, upload, native share dependency or Social publication action in S1;
+- progress photos remain excluded unless separately and explicitly included under the Phase 20 privacy contract.
 
-### 2. Weekly Training Review — approved after template Smart Replace
+Then continue with S2 renderer, S3 explicit native share/export and only a separately reviewed S4 Social handoff.
 
-Package a weekly read-only review over existing deterministic authorities: planned-versus-completed identity, Training Intelligence findings, Coverage, Adaptive Program state and recovery evidence.
-
-Do not introduce a second analytics store, universal score or model calculation authority. Coach may explain bounded deterministic results only.
-
-### 3. Progress Stories / Share Cards
-
-Create privacy-aware explicit share/export surfaces from existing deterministic progress evidence such as PRs, weekly training summaries, weight/body-measurement milestones and completed workouts.
-
-Private source data must remain private until explicit share/export. No implicit social publication or photo-cloud migration is authorized.
-
-### 4. Trainer / Coach collaboration layer
+### 2. Trainer / Coach collaboration layer
 
 Requires a reviewed backend/mobile authority contract before writes. Expected direction: explicit trainer/client relationship, bounded read scopes, proposals/comments, owner confirmation before program mutation, auditability and revocation.
 
-### 5. Apple Health / Apple Watch expansion
+### 3. Apple Health / Apple Watch expansion
 
 Source planning may expand native health adapters and Watch-facing architecture, but signed-device/HealthKit/Watch evidence remains a separate release gate. Do not infer device behavior from source tests.
 
@@ -127,13 +139,14 @@ These are real remaining work but are not ordinary autonomous source backlog:
 ## Execution order
 
 1. Keep canonical docs synchronized with exact merged state and current unnumbered-package queue.
-2. Implement custom-template Smart Replace preview/confirm/apply.
-3. Implement Weekly Training Review.
-4. Implement Progress Stories / Share Cards.
-5. Define and then implement the Trainer / Coach collaboration package.
-6. Define and implement source-side Apple Health / Apple Watch expansion where it does not require unavailable device/provider evidence.
-7. Execute OTA/device/provider/content-activation gates when their prerequisites are actually available.
-8. Do not create P21-F/Phase 22 or reopen closed source scopes without a reproduced defect or newly reviewed requirement.
+2. Implement Progress Stories / Share Cards S1 deterministic view models.
+3. Implement S2 visual rendering without granting the renderer metric authority.
+4. Implement S3 explicit native share/export after reviewing the capture/share dependency path.
+5. Add S4 Social handoff only if separately reviewed and explicitly confirmed.
+6. Define and then implement the Trainer / Coach collaboration package.
+7. Define and implement source-side Apple Health / Apple Watch expansion where it does not require unavailable device/provider evidence.
+8. Execute OTA/device/provider/content-activation gates when their prerequisites are actually available.
+9. Do not create P21-F/Phase 22 or reopen closed source scopes without a reproduced defect or newly reviewed requirement.
 
 ## Release boundary
 
