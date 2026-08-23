@@ -26,6 +26,7 @@ export type RecoveryModifierEvidence = {
 export type AdaptiveProgramProposal = {
   exerciseId: string;
   exerciseName: string;
+  workoutTemplateIds: string[];
   baseAction: AdaptiveProgramAction;
   action: AdaptiveProgramAction;
   finding: TrainingFinding;
@@ -38,6 +39,11 @@ export type AdaptiveProgramReview = {
   proposals: AdaptiveProgramProposal[];
   plannedExerciseCount: number;
   unresolvedTemplateCount: number;
+};
+
+type PlannedExercise = {
+  name: string;
+  workoutTemplateIds: Set<string>;
 };
 
 const timestamp = (value: string) => {
@@ -138,7 +144,7 @@ export function buildAdaptiveProgramReview(input: {
 }): AdaptiveProgramReview {
   const recovery = buildRecoveryModifier(input.recoveryCheckIns, input.endAt);
   const workoutById = new Map(input.workouts.map((workout) => [workout.id, workout] as const));
-  const plannedExercises = new Map<string, string>();
+  const plannedExercises = new Map<string, PlannedExercise>();
   let unresolvedTemplateCount = 0;
 
   for (const day of input.program.days) {
@@ -155,7 +161,16 @@ export function buildAdaptiveProgramReview(input: {
     }
     for (const exercise of workout.exercises) {
       const id = exercise.id.trim();
-      if (id) plannedExercises.set(id, exercise.name);
+      if (!id) continue;
+      const existing = plannedExercises.get(id);
+      if (existing) {
+        existing.workoutTemplateIds.add(templateId);
+      } else {
+        plannedExercises.set(id, {
+          name: exercise.name,
+          workoutTemplateIds: new Set([templateId]),
+        });
+      }
     }
   }
 
@@ -176,11 +191,13 @@ export function buildAdaptiveProgramReview(input: {
 
   const proposals = [...latestFindingByExercise.entries()]
     .map(([exerciseId, finding]): AdaptiveProgramProposal => {
+      const planned = plannedExercises.get(exerciseId)!;
       const baseAction = actionForFinding(finding)!;
       const action = applyRecoveryModifier(baseAction, recovery.state);
       return {
         exerciseId,
-        exerciseName: plannedExercises.get(exerciseId) ?? finding.exerciseName ?? exerciseId,
+        exerciseName: planned.name || finding.exerciseName || exerciseId,
+        workoutTemplateIds: [...planned.workoutTemplateIds].sort(),
         baseAction,
         action,
         finding,
