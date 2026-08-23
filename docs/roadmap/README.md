@@ -4,10 +4,12 @@
 
 Current unnumbered-package references:
 
-- `exercise-preferences-smart-replace.md` — Exercise Preferences + Smart Replace; custom-template UI is the active package;
+- `exercise-preferences-smart-replace.md` — Exercise Preferences + Smart Replace foundation/history;
+- `template-smart-replace.md` — completed custom-template Smart Replace package;
 - `exercise-training-intelligence-expansion.md` — completed Exercise & Training Intelligence expansion;
 - `adaptive-program-recovery.md` — completed Adaptive Program + Recovery A1–A4 package;
-- `next-product-expansions.md` — reviewed queue after the current Smart Replace package.
+- `next-product-expansions.md` — reviewed current queue; Progress Stories / Share Cards is the active source package;
+- `trainer-coach-collaboration.md` — prepared human trainer/client authority and privacy contract for the later collaboration package; not active cross-account authorization by itself.
 
 Update rules:
 
