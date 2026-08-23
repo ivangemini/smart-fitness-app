@@ -10,12 +10,14 @@ Turn deterministic training-performance evidence into explicit program-progressi
 
 The engine is not a universal readiness score, medical assessment or autonomous coach. Missing evidence stays unknown and workout/program mutation requires a reviewed Apply contract and explicit user confirmation.
 
-## Execution sequence
+## Execution sequence — delivered
 
 1. **A1 — Read-only progression proposal foundation — delivered by #829.**
 2. **A2 — Recovery modifier expansion and evidence drill-down — delivered by #830.**
 3. **A3 — Explicit proposal preview / Apply contract — delivered by #831.**
-4. **A4 — Coach explanation over deterministic proposals — active slice.**
+4. **A4 — Coach explanation over deterministic proposals — delivered by #832.**
+
+The Adaptive Program + Recovery Engine package is complete. Any future expansion must be reviewed as a new unnumbered roadmap package rather than silently extending A1–A4.
 
 ## A1 — delivered
 
@@ -110,7 +112,7 @@ Delivery evidence:
 - exact PR head `3db9cc5b7be92bc066348a007eadb3a5936e3e18` passed Mobile CI #2874 including line audits, agent integrity, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor;
 - merged to `main` as `8216903f8c44df5a4109c6d7839bcbd5e0757a03`.
 
-## A4 — active Coach explanation contract
+## A4 — delivered
 
 A4 adds an explicit read-only explanation over an already-derived deterministic proposal. Coach is an explanation layer, not the proposal calculator or mutation authority.
 
@@ -118,7 +120,7 @@ Explanation input:
 
 - exact proposal exercise display name, displayed `progress | maintain | review` action, deterministic finding kind / PR type and bounded known finding evidence;
 - current recovery modifier state, whether recovery changed the base action, and the deterministic recovery signal codes;
-- custom/user-authored display text is length-bounded and is explicitly labelled as data rather than instructions;
+- custom/user-authored display text is length-bounded and explicitly labelled as data rather than instructions;
 - workout-template patch payloads, target prescription patches, source fingerprints and Apply functions are not sent to Coach.
 
 Runtime gate:
@@ -136,3 +138,9 @@ Authority boundary:
 - A3 preview, stale fingerprint and explicit Apply confirmation remain the only mutation path;
 - completed workout history remains immutable;
 - a Coach explanation may add human-readable context and caveats, but cannot override the deterministic action.
+
+Delivery evidence:
+
+- implementation: #832 (`feat(progress): add read-only Coach explanations for Adaptive Program`);
+- exact PR head `23ec7e692b305b1835b6b3e618243a785b5823f5` passed Mobile CI #2877 including line audits, agent integrity, TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor;
+- merged to `main` as `4bf3015b5b911df5ffe4c3634ef6872fce83ecbf`.
