@@ -34,6 +34,7 @@ type PeriodKey = '7' | '30' | '90';
 type TrainingProgressSearchParams = {
   exerciseId?: string | string[];
   exerciseName?: string | string[];
+  period?: string | string[];
 };
 
 const PERIOD_OPTIONS = [
@@ -49,6 +50,14 @@ const PERIOD_DAYS: Record<PeriodKey, TrainingIntelligenceWindowDays> = {
 };
 const getExerciseKey = (exercise: { exerciseId: string; exerciseName: string }) =>
   exercise.exerciseId.trim() || `name:${exercise.exerciseName.trim().toLocaleLowerCase()}`;
+const getRequestedPeriodKey = (
+  value: TrainingProgressSearchParams['period'],
+): PeriodKey | null => {
+  const requested = Array.isArray(value) ? value[0] : value;
+  return requested === '7' || requested === '30' || requested === '90'
+    ? requested
+    : null;
+};
 
 export default function TrainingProgressScreen() {
   const { colors } = useAppTheme();
@@ -62,7 +71,8 @@ export default function TrainingProgressScreen() {
   const safeAreaInsets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const [anchorAt] = useState(() => new Date().toISOString());
-  const [periodKey, setPeriodKey] = useState<PeriodKey>('30');
+  const requestedPeriodKey = getRequestedPeriodKey(searchParams.period);
+  const [periodKey, setPeriodKey] = useState<PeriodKey>(requestedPeriodKey ?? '30');
   const [selectedExerciseKey, setSelectedExerciseKey] = useState<string | null>(null);
   const requestedExerciseKey = useMemo(
     () => getRequestedTrainingProgressExerciseKey(searchParams),
@@ -83,6 +93,10 @@ export default function TrainingProgressScreen() {
     [anchorAt, periodDays, workoutSessions],
   );
   const exercises = analytics.exercises;
+
+  useEffect(() => {
+    if (requestedPeriodKey) setPeriodKey(requestedPeriodKey);
+  }, [requestedPeriodKey]);
 
   useEffect(() => {
     if (exercises.length === 0) {
