@@ -6,7 +6,7 @@ This file defines the reviewed queue after completion of the Exercise & Training
 
 ## Execution order
 
-1. Custom-template Smart Replace UI.
+1. Custom-template Smart Replace UI — **source implementation in progress; T1–T3 contract in `docs/roadmap/template-smart-replace.md`**.
 2. Weekly Training Review.
 3. Progress Stories / Share Cards.
 4. Trainer / Coach collaboration layer.
@@ -48,6 +48,8 @@ Allow a user to explicitly replace an exercise in a saved custom workout templat
 - **T2 — explicit custom-template UI:** surface Smart Replace from template editing/detail with reviewed shortlist + manual fallback.
 - **T3 — confirm/apply + stale gate:** explicit Apply, fail-closed stale/collision handling, persistence/sync regression coverage.
 - **T4 — package closure:** docs, CI evidence and optional Coach explanation only if a separate read-only need is demonstrated.
+
+Detailed T1–T3 source contract and validation requirements are in `docs/roadmap/template-smart-replace.md`.
 
 ## 2. Weekly Training Review
 

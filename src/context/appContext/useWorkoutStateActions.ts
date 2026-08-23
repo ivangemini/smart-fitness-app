@@ -10,12 +10,15 @@ import type {
   WorkoutPrescriptionPatch,
   WorkoutPrescriptionPatchStatus,
   WorkoutSession,
+  WorkoutTemplateReplacementPatch,
+  WorkoutTemplateReplacementPatchStatus,
 } from '@/types';
 
 import type { ScheduleAppStateMutation } from './useAppMutationQueue';
 import {
   addWorkoutTemplateToState,
   applyWorkoutPrescriptionPatchInState,
+  applyWorkoutTemplateReplacementPatchInState,
   deleteCustomExerciseFromState,
   deleteCustomWorkoutTemplateFromState,
   deleteTrainingProgramFromState,
@@ -101,6 +104,29 @@ export function useWorkoutStateActions({
         return nextState;
       });
     },
+    [scheduleStateMutation, setState],
+  );
+
+  const applyWorkoutTemplateReplacementPatch = useCallback(
+    (
+      patch: WorkoutTemplateReplacementPatch,
+    ): Promise<WorkoutTemplateReplacementPatchStatus> =>
+      new Promise((resolve) => {
+        setState((currentState) => {
+          const result = applyWorkoutTemplateReplacementPatchInState(
+            currentState,
+            patch,
+          );
+          if (result.status === 'applied') {
+            scheduleStateMutation({
+              label: 'Apply template exercise replacement',
+              nextState: result.nextState,
+            });
+          }
+          resolve(result.status);
+          return result.nextState;
+        });
+      }),
     [scheduleStateMutation, setState],
   );
 
@@ -239,6 +265,7 @@ export function useWorkoutStateActions({
     addExercise,
     addWorkoutTemplate,
     applyWorkoutPrescriptionPatch,
+    applyWorkoutTemplateReplacementPatch,
     deleteExercise,
     deleteTrainingProgram,
     deleteWorkoutSession,

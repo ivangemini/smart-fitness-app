@@ -34,6 +34,18 @@ export type WorkoutPrescriptionPatch = {
   rows: WorkoutPrescriptionRowPatch[];
 };
 
+export type WorkoutTemplateReplacementPatchStatus =
+  | 'applied'
+  | 'stale'
+  | 'blocked';
+
+export type WorkoutTemplateReplacementPatch = {
+  templateId: string;
+  sourceExerciseId: string;
+  replacementExerciseId: string;
+  expectedFingerprint: string;
+};
+
 export type WorkoutCoachMetadata = {
   schemaVersion: 1;
   runId: string;

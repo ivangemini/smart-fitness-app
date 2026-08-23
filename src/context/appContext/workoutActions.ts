@@ -1,5 +1,6 @@
 import { clearActiveTrainingProgramForDeletedProgram } from '@/features/workouts/activeProgramSelection';
 import { enqueueWorkoutSessionSyncOperation } from '@/features/workouts/queueWorkoutSessionSyncOperation';
+import { applyTemplateSmartReplacePatch } from '@/features/workouts/templateSmartReplacePatch';
 import {
   applyWorkoutPrescriptionPatch,
 } from '@/features/workouts/workoutPrescriptionPatch';
@@ -16,6 +17,8 @@ import type {
   WorkoutPrescriptionPatch,
   WorkoutPrescriptionPatchStatus,
   WorkoutSession,
+  WorkoutTemplateReplacementPatch,
+  WorkoutTemplateReplacementPatchStatus,
 } from '@/types';
 
 export type WorkoutTemplateInput = {
@@ -87,6 +90,33 @@ export function updateCustomWorkoutTemplateInState(
     workouts: currentState.workouts.map((item) =>
       item.id === templateId ? nextWorkout : item
     ),
+  };
+}
+
+export function applyWorkoutTemplateReplacementPatchInState(
+  currentState: AppState,
+  patch: WorkoutTemplateReplacementPatch,
+): { nextState: AppState; status: WorkoutTemplateReplacementPatchStatus } {
+  const workout = currentState.workouts.find((item) => item.id === patch.templateId);
+  if (!workout) return { nextState: currentState, status: 'blocked' };
+
+  const result = applyTemplateSmartReplacePatch(
+    workout,
+    patch,
+    currentState.exercises,
+  );
+  if (result.status !== 'applied') {
+    return { nextState: currentState, status: result.status };
+  }
+
+  return {
+    status: 'applied',
+    nextState: {
+      ...currentState,
+      workouts: currentState.workouts.map((item) =>
+        item.id === patch.templateId ? result.workout : item
+      ),
+    },
   };
 }
 

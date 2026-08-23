@@ -62,6 +62,8 @@ export type {
   WorkoutSession,
   WorkoutSet,
   WorkoutSetType,
+  WorkoutTemplateReplacementPatch,
+  WorkoutTemplateReplacementPatchStatus,
 } from './workouts';
 export type {
   TrainingProgram,

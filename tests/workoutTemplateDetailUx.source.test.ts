@@ -17,6 +17,9 @@ const readSource = (relativePath: string) =>
 const detail = readSource(
   'src/features/workouts/screens/WorkoutTemplateDetailScreen.tsx',
 );
+const smartReplaceModal = readSource(
+  'src/components/workouts/TemplateSmartReplaceModal.tsx',
+);
 
 describe('Workout template detail UX', () => {
   it('uses one top-level virtualized boundary for workout exercises', () => {
@@ -32,5 +35,21 @@ describe('Workout template detail UX', () => {
     expect(detail).toContain('toggleWorkoutTemplateFavorite(workout.id)');
     expect(detail).toContain('deleteWorkoutTemplate(workout.id)');
     expect(detail).toContain('<PrimaryButton');
+  });
+
+  it('offers Smart Replace only from custom template detail', () => {
+    expect(detail).toContain('workout.isCustom ?');
+    expect(detail).toContain('setSmartReplaceSourceId(exercise.id)');
+    expect(detail).toContain('<TemplateSmartReplaceModal');
+    expect(detail).toContain('onApply={applyWorkoutTemplateReplacementPatch}');
+  });
+
+  it('keeps selection, preview and stale-safe Apply as separate steps', () => {
+    expect(smartReplaceModal).toContain('buildSmartReplaceCandidates');
+    expect(smartReplaceModal).toContain('loadExercisePreference');
+    expect(smartReplaceModal).toContain('buildTemplateSmartReplacePreview');
+    expect(smartReplaceModal).toContain('selectedReplacementId ?');
+    expect(smartReplaceModal).toContain('expectedFingerprint: preview.expectedFingerprint');
+    expect(smartReplaceModal).not.toContain('updateWorkoutTemplate(');
   });
 });
