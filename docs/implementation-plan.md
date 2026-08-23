@@ -26,59 +26,71 @@ Reviewed local-state storage decision remains `docs/architecture/local-state-per
 - Exact template replacement identity/prescription remapping primitive: complete through #824.
 - Exercise & Training Intelligence expansion: complete through #825/#826/#828.
 - Adaptive Program + Recovery Engine A1–A4: complete through #829/#830/#831/#832, closure #833.
-- **Custom-template Smart Replace UI T1–T4: complete through #835, exact-head Mobile CI #2882, merged `1a9c1ca7d9300cbf25c526b69c653a5f82e30d40`.**
+- Custom-template Smart Replace UI T1–T4: complete through #835, exact-head Mobile CI #2882, merged `1a9c1ca7d9300cbf25c526b69c653a5f82e30d40`, docs closure #836.
+- **Weekly Training Review W1–W3: complete through #837/#838; exact-head Mobile CI #2885/#2887; latest merged source `7a9fd9b8c734a6b2cd9354d12432a2d99715d43e`. W4 is documentation/evidence closure.**
 
 There is no approved P21-F or Phase 22. New product work continues as reviewed unnumbered packages.
 
 ## Active forward source work
 
-### 1. Weekly Training Review
+### 1. Progress Stories / Share Cards
 
 This is the current implementation target.
 
-Reuse existing deterministic authorities rather than creating another analytics system:
-
-- exact planned-versus-completed identity from `TrainingIntelligenceReview`;
-- `training-intelligence-v1` findings;
-- Training Coverage;
-- existing Adaptive Program proposal actions;
-- existing recovery modifier evidence;
-- existing workout/session analytics.
+Build explicit privacy-aware share/export cards over existing deterministic evidence: PRs, completed workout summaries, Weekly Training Review highlights, weight/body-measurement milestones and other already-owned Progress facts.
 
 Required sequence:
 
-1. **W1 — weekly deterministic review model:** compose the already-derived authorities into one explicit 7-day read-only result; source windows/evidence must match or fail closed.
-2. **W2 — Progress presentation + drill-down:** compact main-Progress card with plan completion, coverage, recovery context, adaptive action counts and bounded key findings; drill down to existing 7-day Training Progress detail rather than duplicating analytics.
-3. **W3 — optional Coach explanation:** add only if a separate user-facing need is demonstrated; any model call remains read-only over the already-derived review.
-4. **W4 — package closure:** exact-head Mobile CI, docs/evidence sync and optional device UX evidence.
+1. **S1 — deterministic share-card view models.** Implement pure deterministic view models only. Reuse existing source authorities and preserve source dates, units and stable identities. Required evidence that cannot be resolved must fail closed. S1 adds no persistence layer, renderer, native share dependency, upload or Social publication action.
+2. **S2 — reusable visual card renderer.** Render an S1 view model without recalculating metric claims. The rendering technology must remain presentation-only. The app already has `@shopify/react-native-skia`; `expo-sharing` and `react-native-view-shot` are not current dependencies, so capture/render dependency decisions belong here or in S3 rather than S1.
+3. **S3 — explicit native share/export surface.** Export/share only after direct user action. No hidden cloud upload, no background publication and no implicit Social post.
+4. **S4 — optional Social handoff.** Implement only after separate review and explicit confirmation. Reuse existing Social publishing authority rather than bypassing it.
 
 Boundaries:
 
-- no second analytics persistence layer;
-- no universal readiness/recovery/quality score;
-- missing evidence stays unknown;
-- no hidden workout/program mutation;
-- Coach cannot calculate the canonical review or mutate from it.
+- private evidence remains private until explicit output;
+- no fabricated/AI-generated metric claims;
+- rendering cannot become analytics authority;
+- dates, units and source identity remain visible/traceable;
+- existing `/social/share-workout/[sessionId]` and story/post flows are separate Social authorities, not blanket authorization for native share/export;
+- progress photos are excluded by default and require a separate explicit inclusion decision preserving the Phase 20 privacy contract;
+- completed workout/session history remains immutable.
 
 Detailed queue: `docs/roadmap/next-product-expansions.md`.
 
-### 2. Progress Stories / Share Cards
-
-Build explicit privacy-aware share/export cards over existing evidence: PRs, completed workout summaries, weekly review highlights, weight/body-measurement milestones and other already-owned Progress facts.
-
-No automatic Social publication, hidden upload or fabricated metric claims.
-
-### 3. Trainer / Coach collaboration layer
+### 2. Trainer / Coach collaboration layer
 
 Before source implementation, write and review the cross-account authority/privacy contract covering relationship lifecycle, read scopes, proposals/comments, explicit owner confirmation before program mutation, auditability, revocation/deletion and backend isolation.
 
 Then implement as a backend + mobile package rather than adding ad-hoc trainer access to existing private state.
 
-### 4. Apple Health / Apple Watch expansion
+### 3. Apple Health / Apple Watch expansion
 
 Source-side planning and adapters may proceed where device evidence is not required. Any claim about HealthKit/Watch runtime behavior still requires signed native/device evidence.
 
 Do not create a synthetic readiness score or expose raw HealthKit payloads directly to models.
+
+## Recently completed package — Weekly Training Review
+
+W1/W2 #837:
+
+- exact validated head `39a133550607de1f79aa005f693dc9f201f5e9ff`;
+- Mobile CI #2885 / run `32648145266` / job `97215495481` fully green;
+- merged `447236cecacc17b26d1bf88774e7785ac2121dfe`.
+
+W3 #838:
+
+- exact validated head `eb034c796adfdb9b5aba6d96462700201709d5af`;
+- Mobile CI #2887 / run `32648944883` / job `97217437867` fully green;
+- merged `7a9fd9b8c734a6b2cd9354d12432a2d99715d43e`.
+
+Delivered behavior:
+
+- deterministic explicit 7-day composition over existing Training Intelligence Review, Coverage, recovery and Adaptive Program authorities;
+- compact Progress presentation plus drill-down into existing 7-day Training Progress;
+- missing/mismatched evidence remains unknown/unavailable or fails closed;
+- optional user-triggered read-only Coach explanation over bounded already-derived facts;
+- no second analytics store, universal readiness score, hidden mutation or completed-history rewrite.
 
 ## Recently completed package — Template Smart Replace
 

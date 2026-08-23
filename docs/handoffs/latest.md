@@ -22,18 +22,17 @@ Closed reviewed source scope includes:
 - Training Intelligence Loop #828;
 - Adaptive Program + Recovery A1–A4 #829/#830/#831/#832;
 - Adaptive package closure docs #833;
-- **Custom-template Smart Replace T1–T4 #835**.
+- Custom-template Smart Replace T1–T4 #835, docs closure #836;
+- **Weekly Training Review W1–W3 #837/#838; W4 is documentation/evidence closure.**
 
-Most recent Smart Replace package evidence:
+Most recent Weekly Training Review evidence:
 
-- #835 exact head `d915ed60cad9e59fe3966e34fab16d80c9c1f430`;
-- Mobile CI #2882 / run `32646591600` / job `97211677598` fully green;
-- merged squash `1a9c1ca7d9300cbf25c526b69c653a5f82e30d40`;
-- exact saved-template source/replacement IDs, reviewed suggestions plus explicit manual catalog fallback;
-- deterministic before/after preview;
-- stale/collision/unresolved states fail closed;
-- explicit Apply uses existing AppState persistence/sync authority;
-- completed history remains immutable.
+- #837 exact head `39a133550607de1f79aa005f693dc9f201f5e9ff`;
+- Mobile CI #2885 / run `32648145266` / job `97215495481` fully green;
+- #837 merged squash `447236cecacc17b26d1bf88774e7785ac2121dfe`;
+- #838 exact head `eb034c796adfdb9b5aba6d96462700201709d5af`;
+- Mobile CI #2887 / run `32648944883` / job `97217437867` fully green;
+- #838 merged squash `7a9fd9b8c734a6b2cd9354d12432a2d99715d43e`.
 
 ### Backend / Admin
 
@@ -48,7 +47,7 @@ Repository: `ivangemini/smart-fitness-backend`.
 
 ### Exercise Preferences + Smart Replace
 
-Delivered source scope now covers both active sessions and saved custom templates:
+Delivered source scope covers both active sessions and saved custom templates:
 
 - `avoid` and notes remain device-local and separate from favorites;
 - reviewed candidates originate only from exact canonical Exercise Intelligence substitutions;
@@ -56,12 +55,12 @@ Delivered source scope now covers both active sessions and saved custom template
 - active-session Apply changes only explicitly pending sets;
 - #824 established exact source/replacement custom-template identity and deterministic prescription remapping;
 - #835 exposes that primitive through an explicit saved-template preview/Apply flow;
-- manual catalog selection still resolves exact canonical IDs;
+- manual catalog selection resolves exact canonical IDs;
 - preview is read-only;
 - Apply rechecks current template fingerprint and returns `applied | stale | blocked`;
 - unrelated template/prescription fields and completed history remain unchanged.
 
-**Do not repeat the obsolete claim that custom-template Smart Replace is blocked or lacks a reviewed prescription-remapping/apply contract.**
+Do not repeat the obsolete claim that custom-template Smart Replace is blocked or lacks a reviewed prescription-remapping/apply contract.
 
 ### Exercise + Training Intelligence
 
@@ -83,16 +82,29 @@ A1–A4 are complete.
 
 Do not silently extend A1–A4; any future adaptive work is a new reviewed unnumbered package.
 
+### Weekly Training Review
+
+Weekly is now a completed read-only composition package:
+
+- exact explicit 7-day window;
+- planned/completed comparison reuses existing exact Training Intelligence identity;
+- Training Coverage, deterministic findings, recovery modifier and Adaptive Program proposals remain their own authorities;
+- compact Progress presentation links to existing 7-day Training Progress detail;
+- missing data remains unknown/unavailable and evidence mismatch fails closed;
+- no second analytics persistence layer or universal weekly/readiness score;
+- W3 Coach explanation is explicit user-triggered, bounded and read-only;
+- Coach cannot recalculate the canonical review or mutate workouts/programs;
+- completed history is unchanged.
+
 ## Immediate autonomous continuation
 
-1. Keep Template Smart Replace closure docs synchronized with #835 evidence.
-2. Implement **Weekly Training Review W1** as a 7-day read-only composition over existing Training Intelligence Review, Coverage and recovery/Adaptive evidence; do not create a second analytics truth.
-3. Continue **W2** with a compact Progress presentation and drill-down to existing 7-day training detail.
-4. Add W3 Coach explanation only if a separate product need is demonstrated; do not add model surface by default.
-5. Close the Weekly package after exact-head Mobile CI.
-6. Then implement Progress Stories / Share Cards.
-7. Define Trainer / Coach collaboration authority/privacy contract before collaboration implementation.
-8. Continue Apple Health / Apple Watch source expansion where device evidence is not required.
+1. Start **Progress Stories / Share Cards S1** as pure deterministic share-card view models over existing exact Progress evidence.
+2. Keep S1 free of renderer/native share dependencies, persistence, upload and Social publication side effects. Preserve source dates, units and identities; unresolved required evidence fails closed.
+3. Continue **S2** with a reusable visual renderer that consumes the S1 model without recalculating claims. Review renderer/capture technology separately; current app has Skia but not `expo-sharing` or `react-native-view-shot`.
+4. Continue **S3** with explicit native share/export only after a deliberate dependency/implementation decision; no hidden upload or automatic Social publication.
+5. Add **S4 Social handoff** only if separately reviewed and explicitly confirmed, reusing existing Social authority.
+6. Define Trainer / Coach collaboration authority/privacy contract before collaboration implementation.
+7. Continue Apple Health / Apple Watch source expansion where device evidence is not required.
 
 Detailed queue: `docs/roadmap/next-product-expansions.md`.
 
@@ -102,6 +114,7 @@ These can run whenever prerequisites exist and must not be confused with source 
 
 - relevant production EAS OTA metadata and real-iPhone active-workout smoke;
 - optional custom-template Smart Replace physical-device modal/search UX check;
+- optional Weekly Review physical-device UX observation;
 - Phase 20 signed-iPhone progress-photo validation;
 - Phase 14 configured APNs/FCM, Labs storage/model and native Health evidence;
 - Coach → Learn production mapping activation from approved canonical content;
@@ -110,8 +123,10 @@ These can run whenever prerequisites exist and must not be confused with source 
 ## Permanent continuation rules
 
 - Do not invent P21-F or Phase 22.
-- Do not reopen closed Phase 18/19/20/21, Adaptive A1–A4 or Template Smart Replace source scope without a reproduced defect or newly reviewed requirement.
+- Do not reopen closed Phase 18/19/20/21, Adaptive A1–A4, Template Smart Replace or Weekly Training Review source scope without a reproduced defect or newly reviewed requirement.
 - Completed workout/session history remains immutable.
 - Exact exercise/template identity is required for mutation; unknown identity fails closed.
 - Coach/model output may explain deterministic decisions but does not become calculation or mutation authority.
+- Existing Social publishing flows do not implicitly authorize native share/export or card publication.
+- Progress photos require separate explicit inclusion and remain under Phase 20 privacy boundaries.
 - Source merge, deployment, migration, provider activation, OTA/native publication and physical-device validation are separate claims.
