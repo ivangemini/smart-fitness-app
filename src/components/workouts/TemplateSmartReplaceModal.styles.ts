@@ -86,7 +86,7 @@ export const createTemplateSmartReplaceModalStyles = (
       fontWeight: '800',
     },
     overlay: {
-      ...StyleSheet.absoluteFillObject,
+      ...StyleSheet.absoluteFill,
       alignItems: 'center',
       backgroundColor: colors.overlay,
       justifyContent: 'center',
