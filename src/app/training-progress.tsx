@@ -14,6 +14,8 @@ import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useWorkoutState } from '@/context/AppContext';
 import { useProfileState } from '@/context/ProfileStateContext';
+import { useSafetyRecoveryState } from '@/context/SafetyRecoveryStateContext';
+import { AdaptiveProgramReviewSection } from '@/features/progress/AdaptiveProgramReviewSection';
 import { TrainingIntelligenceSection } from '@/features/progress/TrainingIntelligenceSection';
 import type { TrainingIntelligenceWindowDays } from '@/features/progress/trainingIntelligence';
 import { getRequestedTrainingProgressExerciseKey } from '@/features/progress/trainingProgressSelection';
@@ -52,6 +54,7 @@ export default function TrainingProgressScreen() {
   const { colors } = useAppTheme();
   const { trainingPrograms, workouts, workoutSessions } = useWorkoutState();
   const { profile } = useProfileState();
+  const { recoveryCheckIns } = useSafetyRecoveryState();
   const { formatDate, formatNumber, locale } = useLocalization();
   const { formatWeightValue, weight: weightUnit } = useUnitPreferences();
   const searchParams = useLocalSearchParams<TrainingProgressSearchParams>();
@@ -220,6 +223,15 @@ export default function TrainingProgressScreen() {
           endAt={anchorAt}
           trainingProgram={activeTrainingProgram}
           windowDays={periodDays}
+          workoutSessions={workoutSessions}
+        />
+
+        <AdaptiveProgramReviewSection
+          endAt={anchorAt}
+          program={activeTrainingProgram}
+          recoveryCheckIns={recoveryCheckIns}
+          windowDays={periodDays}
+          workouts={workouts}
           workoutSessions={workoutSessions}
         />
 

@@ -9,9 +9,9 @@ This is an approved unnumbered expansion package after the reviewed Phase 19/21 
 1. Exercise Preferences + Smart Replace — delivered through #816/#818/#819/#820, with exact template replacement identity established by #824.
 2. Exercise Intelligence 2.0 — delivered by #825.
 3. Training Coverage — delivered by #826.
-4. Training Intelligence Loop — **next active slice**.
+4. Training Intelligence Loop — delivered by #828.
 
-Template/program Smart Replace UI remains a separate explicit action surface; no automatic replacement is authorized.
+The reviewed Exercise & Training Intelligence expansion is now source/CI-complete. Template/program Smart Replace UI remains a separate explicit action surface; no automatic replacement is authorized.
 
 ## Exercise Intelligence 2.0 — delivered
 
@@ -53,26 +53,29 @@ Delivery evidence:
 - repository line audits, agent navigation integrity, TypeScript, full regression suite, expanded-model smoke, Expo export and Expo Doctor all passed before merge;
 - merged to `main` as `96606bbd4ada9545eec6532f338cc5ab687b2ed7`.
 
-## Training Intelligence Loop — next active slice
+## Training Intelligence Loop — delivered
 
 Objective: turn existing deterministic exercise/training findings and coverage into one compact periodic review.
 
-Contract direction:
+Delivered contract:
 
-- summarize completed versus planned training only where a canonical plan exists;
-- surface material PR/performance direction, muscle exposure/gaps and reviewed movement-pattern coverage;
-- suppress low-value repetition and keep missing evidence unknown;
-- every finding must retain deterministic evidence and drill-down;
-- Coach may explain deterministic findings but does not become their calculation authority;
-- any future plan adjustment remains a proposal requiring explicit user action;
+- completed-versus-planned comparison uses exact `TrainingProgramDay.workoutTemplateId` -> `WorkoutSession.workoutId` identity only;
+- name-only planned days fail closed and are shown as partial plan evidence;
+- review composes existing deterministic findings and Training Coverage rather than persisting a second analytics authority;
+- meaningful findings are bounded and repeated scopes are suppressed deterministically;
+- coverage summary exposes completed working sets, active muscle groups and reviewed movement patterns;
+- Coach is not the calculation authority;
 - no universal readiness score and no silent workout/program mutation.
 
-Implementation boundary for the next slice:
+Delivery evidence:
 
-- reuse `TrainingProgramDay.workoutTemplateId` as the canonical planned-workout link when present;
-- do not infer planned completion from template names when canonical IDs are absent;
-- derive the periodic review from existing completed workout sessions, Training Coverage and deterministic training findings rather than persisting a second analytics state;
-- keep review findings inspectable and deterministic before any Coach explanation layer is added.
+- implementation: #828 (`feat(progress): add Training Intelligence Loop review`);
+- exact PR head `518a9c2f796ffa01d34a39fad14c9612f984c141` passed Mobile CI #2867, including TypeScript, full regression, expanded-model smoke, Expo export and Expo Doctor;
+- merged to `main` as `19abbd3af5e755be40ee9f3158ef71b957d71d7c`.
+
+## Next approved package
+
+Adaptive Program + Recovery Engine is now the next reviewed unnumbered expansion. Its authority and staged mutation boundary are defined in `docs/roadmap/adaptive-program-recovery.md`.
 
 ## Smart Replace template boundary
 
