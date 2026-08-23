@@ -1,5 +1,5 @@
-import { buildWorkoutPrescriptionFingerprint, type WorkoutPrescriptionPatch } from '@/features/workouts/workoutPrescriptionPatch';
-import type { Workout, WorkoutPrescriptionSet } from '@/types';
+import { buildWorkoutPrescriptionFingerprint } from '@/features/workouts/workoutPrescriptionPatch';
+import type { Workout, WorkoutPrescriptionPatch, WorkoutPrescriptionSet } from '@/types';
 
 import type { AdaptiveProgramProposal } from './adaptiveProgramEngine';
 
