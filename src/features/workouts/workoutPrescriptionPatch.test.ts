@@ -1,11 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import type { Workout } from '@/types';
+import type { Workout, WorkoutPrescriptionPatch } from '@/types';
 
 import {
   applyWorkoutPrescriptionPatch,
   buildWorkoutPrescriptionFingerprint,
-  type WorkoutPrescriptionPatch,
 } from './workoutPrescriptionPatch';
 
 const workout = (): Workout => ({
