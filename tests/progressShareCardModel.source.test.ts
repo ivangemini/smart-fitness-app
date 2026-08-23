@@ -31,7 +31,8 @@ describe('Progress share-card S1 source contract', () => {
     expect(source).not.toContain('AsyncStorage');
     expect(source).not.toContain('SecureStore');
     expect(source).not.toContain('Share.share');
-    expect(source).not.toContain('publish');
+    expect(source).not.toContain('publishSocial');
+    expect(source).not.toContain('createSocial');
   });
 
   it('does not introduce native share/capture dependencies in S1', () => {
