@@ -6,14 +6,14 @@ This is an approved unnumbered expansion package after the reviewed Phase 19/21 
 
 ## Execution sequence
 
-1. Exercise Preferences + Smart Replace.
-2. Exercise Intelligence 2.0.
-3. Training Coverage.
-4. Training Intelligence Loop.
+1. Exercise Preferences + Smart Replace — delivered through #816/#818/#819/#820, with exact template replacement identity established by #824.
+2. Exercise Intelligence 2.0 — delivered by #825.
+3. Training Coverage — delivered by #826.
+4. Training Intelligence Loop — **next active slice**.
 
-Exercise Preferences and active-session Smart Replace are delivered through #816/#818/#819/#820. Exact template replacement identity and deterministic prescription remapping are established by #824. Template/program replacement UI remains a separate explicit action surface; no automatic replacement is authorized.
+Template/program Smart Replace UI remains a separate explicit action surface; no automatic replacement is authorized.
 
-## Exercise Intelligence 2.0
+## Exercise Intelligence 2.0 — delivered
 
 Objective: make an exercise detail answer how recent performance changed without creating a second analytics authority or assigning unsupported meaning to ordinary variation.
 
@@ -31,22 +31,29 @@ Reviewed contract:
 - estimated 1RM remains an estimate from the existing calculation authority, not a tested max;
 - no new persistence, backend endpoint, sync schema, provider/model call or hidden workout mutation is introduced.
 
-## Training Coverage — next slice
+## Training Coverage — delivered
 
 Objective: show what the user has actually trained over an explicit recent window, using existing canonical muscle and reviewed movement-pattern authorities.
 
-Contract to implement:
+Delivered contract:
 
-- derive only from completed, non-warm-up workout evidence;
-- reuse the canonical muscle taxonomy; do not create a parallel body-part taxonomy;
-- reuse reviewed `exercise-intelligence-v1` movement patterns by exact canonical exercise ID;
+- derives only from completed, non-warm-up workout evidence;
+- reuses the canonical muscle taxonomy; no parallel body-part taxonomy is introduced;
+- reuses reviewed `exercise-intelligence-v1` movement patterns by exact canonical exercise ID;
 - unknown/custom/remote-only identities fail closed for movement-pattern coverage unless a reviewed mapping exists;
-- support explicit recent windows such as 7 and 30 days rather than a timeless score;
-- present muscle exposure and movement-pattern counts/volume as evidence, not as an "optimality", readiness or recovery score;
-- expose evidence drill-down to contributing exercises/sessions where practical;
-- no automatic program edits from a coverage gap.
+- supports the explicit 7/30/90-day windows already exposed by Training Progress;
+- presents muscle exposure and movement-pattern sets/volume/session counts as evidence, not as an "optimality", readiness or recovery score;
+- exposes contributing exercises and session counts for drill-down evidence;
+- introduces no persistence, backend/sync schema, provider/model call or automatic program edit.
 
-## Training Intelligence Loop — after Coverage
+Delivery evidence:
+
+- implementation: #826 (`feat(progress): add deterministic Training Coverage`);
+- exact PR head validated by Mobile CI run #2864;
+- repository line audits, agent navigation integrity, TypeScript, full regression suite, expanded-model smoke, Expo export and Expo Doctor all passed before merge;
+- merged to `main` as `96606bbd4ada9545eec6532f338cc5ab687b2ed7`.
+
+## Training Intelligence Loop — next active slice
 
 Objective: turn existing deterministic exercise/training findings and coverage into one compact periodic review.
 
@@ -59,6 +66,13 @@ Contract direction:
 - Coach may explain deterministic findings but does not become their calculation authority;
 - any future plan adjustment remains a proposal requiring explicit user action;
 - no universal readiness score and no silent workout/program mutation.
+
+Implementation boundary for the next slice:
+
+- reuse `TrainingProgramDay.workoutTemplateId` as the canonical planned-workout link when present;
+- do not infer planned completion from template names when canonical IDs are absent;
+- derive the periodic review from existing completed workout sessions, Training Coverage and deterministic training findings rather than persisting a second analytics state;
+- keep review findings inspectable and deterministic before any Coach explanation layer is added.
 
 ## Smart Replace template boundary
 
