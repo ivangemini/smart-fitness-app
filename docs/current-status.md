@@ -22,16 +22,20 @@ Closed reviewed source packages:
 - Training Coverage #826;
 - Training Intelligence Loop #828;
 - Adaptive Program + Recovery A1–A4 #829/#830/#831/#832;
-- Adaptive package closure docs #833.
+- Adaptive package closure docs #833;
+- **Custom-template Smart Replace T1–T4 #835**.
 
-Latest completed Adaptive Program authority:
+Latest Smart Replace delivery:
 
-- exact `TrainingProgramDay.workoutTemplateId` / `Workout.id` / exercise ID joins;
-- deterministic `progress | maintain | review` proposal actions;
-- fresh stored recovery evidence may conservatively downgrade an action without producing a universal readiness score;
-- A3 preview/Apply mutates only eligible future custom-template prescription targets under exact identity, stale fingerprint and bounded change rules;
-- completed `WorkoutSession` history remains immutable;
-- A4 Coach explanation is optional/read-only and cannot recalculate or apply the proposal.
+- #835 exact validated head `d915ed60cad9e59fe3966e34fab16d80c9c1f430`;
+- Mobile CI #2882 fully green;
+- merged squash `1a9c1ca7d9300cbf25c526b69c653a5f82e30d40`;
+- saved custom templates expose deterministic reviewed/manual exact-ID replacement selection;
+- selection is read-only until explicit before/after preview and Apply;
+- Apply rechecks a conservative current-template fingerprint and returns `applied | stale | blocked`;
+- matching prescription exercise identity remaps while targets/unrelated fields remain unchanged;
+- completed `WorkoutSession` history and program→template references remain unchanged;
+- existing AppState persistence/sync mutation authority remains the only write path.
 
 ### Backend / Admin
 
@@ -44,18 +48,17 @@ Repository: `ivangemini/smart-fitness-backend`.
 
 ## Smart Replace current boundary
 
-Delivered:
+Delivered end-to-end reviewed source scope:
 
 - device-local `avoid` + note preference separate from favorites;
 - reviewed exact-ID candidate ranking with `avoid` filtering;
 - read-only detail candidates;
 - explicit active-session replacement that changes only `completed === false` sets;
 - completed/legacy evidence preservation;
-- #824 exact-ID custom-template replacement primitive with deterministic `Workout.prescription` identity remapping and preservation of unrelated fields.
+- #824 exact-ID custom-template replacement primitive with deterministic `Workout.prescription` identity remapping;
+- #835 saved-custom-template preview/Apply UI with exact identity, collision protection and stale fingerprint validation.
 
-The old blocker saying template editing lacks stable identity/prescription remapping is obsolete after #824.
-
-**Next active source package:** user-facing custom-template Smart Replace preview/confirm/apply over #824. It must remain explicit, fail closed on stale/unresolved/collision cases, preserve unrelated workout data, reuse existing persistence/sync authority and never rewrite completed session history.
+The old blocker saying template editing lacks stable identity/prescription remapping is obsolete. The user-facing custom-template Smart Replace package is now also source/CI-complete.
 
 ## Exercise & Training Intelligence / Adaptive packages
 
@@ -65,11 +68,10 @@ The Adaptive Program + Recovery package is source/CI-complete through #829–#83
 
 ## Next autonomous source queue
 
-1. **Custom-template Smart Replace UI** — immediate.
-2. **Weekly Training Review** — compose existing deterministic planned/completed, findings, Coverage, Adaptive and recovery evidence into one weekly review.
-3. **Progress Stories / Share Cards** — explicit privacy-aware share/export over existing progress evidence.
-4. **Trainer / Coach collaboration** — first define cross-account authority/privacy contract, then backend/mobile implementation with owner confirmation before mutation.
-5. **Apple Health / Apple Watch expansion** — source-side adapters/architecture where possible; device/runtime claims remain evidence-gated.
+1. **Weekly Training Review** — current active package; compose existing deterministic planned/completed, findings, Coverage, Adaptive and recovery evidence into one 7-day read-only review.
+2. **Progress Stories / Share Cards** — explicit privacy-aware share/export over existing progress evidence.
+3. **Trainer / Coach collaboration** — first define cross-account authority/privacy contract, then backend/mobile implementation with owner confirmation before mutation.
+4. **Apple Health / Apple Watch expansion** — source-side adapters/architecture where possible; device/runtime claims remain evidence-gated.
 
 Canonical package detail: `docs/roadmap/next-product-expansions.md`.
 
@@ -78,6 +80,7 @@ Canonical package detail: `docs/roadmap/next-product-expansions.md`.
 These remain separate from source completion:
 
 - relevant production EAS OTA metadata and real-iPhone Phase 21/Smart Replace active-workout smoke;
+- optional real-device custom-template Smart Replace modal/search comprehension check;
 - Phase 20 physical-device progress-photo validation via `docs/qa/progress-photo-device-validation.md`;
 - Phase 14 configured APNs/FCM, Labs storage/model and native Health evidence;
 - Coach → Learn production mapping activation from approved canonical content only;

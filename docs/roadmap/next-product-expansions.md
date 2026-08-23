@@ -6,50 +6,31 @@ This file defines the reviewed queue after completion of the Exercise & Training
 
 ## Execution order
 
-1. Custom-template Smart Replace UI — **source implementation in progress; T1–T3 contract in `docs/roadmap/template-smart-replace.md`**.
-2. Weekly Training Review.
+1. Custom-template Smart Replace UI — **delivered by #835; source/CI package closed**.
+2. Weekly Training Review — **current active source package**.
 3. Progress Stories / Share Cards.
 4. Trainer / Coach collaboration layer.
 5. Apple Health / Apple Watch expansion.
 
 Independent OTA/device/provider/content-activation gates remain outside this source queue and may run whenever prerequisites exist.
 
-## 1. Custom-template Smart Replace UI
+## 1. Custom-template Smart Replace UI — delivered
 
-### Objective
+Delivered by #835 on exact validated head `d915ed60cad9e59fe3966e34fab16d80c9c1f430`, Mobile CI #2882, merged as `1a9c1ca7d9300cbf25c526b69c653a5f82e30d40`.
 
-Allow a user to explicitly replace an exercise in a saved custom workout template using the same reviewed Smart Replace candidate authority already used in exercise detail and active-session replacement.
+The final contract is documented in `docs/roadmap/template-smart-replace.md` and includes:
 
-### Existing foundation
-
-- #816: exercise preferences;
-- #818: read-only deterministic candidate explorer;
-- #819/#820: active-session exact-ID pending-set replacement;
-- #824: exact source/replacement template identity and deterministic prescription remapping primitive.
-
-### Required contract
-
-- only custom/editable templates are eligible;
-- source and replacement identities resolve by exact canonical ID;
-- reviewed candidates are preferred, while the normal manual catalog remains available;
-- saved `avoid` filters the reviewed shortlist but does not prohibit explicit manual selection;
-- the user sees a preview before Apply;
-- preview identifies the exact template, source exercise, replacement exercise and affected prescription rows;
-- unrelated exercise entries, prescription rows and workout metadata are preserved;
-- unresolved identity, collision, stale template state or unsafe prescription remapping fails closed;
-- Apply is an explicit second action;
-- existing template persistence/sync authority is reused;
-- completed workout history is immutable;
-- no automatic program/template rewrite.
-
-### Initial implementation slices
-
-- **T1 — deterministic preview model:** derive exact before/after template changes over #824 without mutation.
-- **T2 — explicit custom-template UI:** surface Smart Replace from template editing/detail with reviewed shortlist + manual fallback.
-- **T3 — confirm/apply + stale gate:** explicit Apply, fail-closed stale/collision handling, persistence/sync regression coverage.
-- **T4 — package closure:** docs, CI evidence and optional Coach explanation only if a separate read-only need is demonstrated.
-
-Detailed T1–T3 source contract and validation requirements are in `docs/roadmap/template-smart-replace.md`.
+- custom/editable templates only;
+- exact source/replacement canonical IDs;
+- reviewed candidates with existing `avoid` filtering plus explicit manual catalog fallback;
+- read-only selection and before/after preview;
+- separate explicit Apply;
+- stale/collision/unresolved identity fail closed;
+- matching prescription identity remaps while load/reps/RPE and unrelated fields stay unchanged;
+- title/description/duration/coach metadata and unrelated exercises stay unchanged;
+- completed history remains immutable;
+- existing template persistence/sync authority remains the only mutation path;
+- no automatic program/template rewrite and no model mutation authority.
 
 ## 2. Weekly Training Review
 
