@@ -2,12 +2,14 @@ import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { ProgressShareCardShareModal } from '@/components/progress/ProgressShareCardShareModal';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
 import { Colors, Spacing } from '@/constants/theme';
 import { exerciseRepository, type Exercise } from '@/features/exercises';
 import { getCanonicalMuscleLabel } from '@/features/exercises/muscleLabels';
 import { useLocalization } from '@/localization';
+import { getProgressShareCardCopy } from '@/localization/progressShareCardCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import type {
   RecoveryCheckIn,
@@ -20,6 +22,7 @@ import {
   buildAdaptiveProgramReview,
   buildRecoveryModifier,
 } from './adaptiveProgramEngine';
+import { buildWeeklyReviewShareCard } from './progressShareCardModel';
 import { buildTrainingCoverage } from './trainingCoverage';
 import {
   buildCanonicalTrainingIntelligence,
@@ -50,10 +53,12 @@ export function WeeklyTrainingReviewSection({
   const { colors } = useAppTheme();
   const { formatNumber, locale } = useLocalization();
   const copy = useMemo(() => getWeeklyTrainingReviewCopy(locale), [locale]);
+  const shareCopy = useMemo(() => getProgressShareCardCopy(locale), [locale]);
   const trainingCopy = useMemo(() => getTrainingIntelligenceCopy(locale), [locale]);
   const styles = useMemo(() => createStyles(colors), [colors]);
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [shareOpen, setShareOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -142,107 +147,129 @@ export function WeeklyTrainingReviewSection({
 
   const review = result.review;
   const adaptive = review.adaptive;
+  const shareResult = buildWeeklyReviewShareCard(review);
+  const shareCard = shareResult.status === 'ready' ? shareResult.card : null;
 
   return (
-    <AppCard>
-      <View style={styles.stack}>
-        <View style={styles.block}>
-          <Text selectable style={styles.title}>{copy.title}</Text>
-          <Text selectable style={styles.detail}>{copy.subtitle}</Text>
-        </View>
+    <>
+      <AppCard>
+        <View style={styles.stack}>
+          <View style={styles.block}>
+            <Text selectable style={styles.title}>{copy.title}</Text>
+            <Text selectable style={styles.detail}>{copy.subtitle}</Text>
+          </View>
 
-        <View style={styles.block}>
-          <Text selectable style={styles.sectionTitle}>{copy.plan}</Text>
-          {review.plan.status === 'unavailable' ? (
-            <Text selectable style={styles.detail}>{copy.planUnavailable}</Text>
-          ) : (
-            <>
-              <Text selectable style={styles.detail}>
-                {copy.completedPlanned}: {formatNumber(review.plan.completedPlannedSessionCount)} / {formatNumber(review.plan.plannedSessionCount)}
-              </Text>
-              {review.plan.otherCompletedSessionCount > 0 ? (
+          <View style={styles.block}>
+            <Text selectable style={styles.sectionTitle}>{copy.plan}</Text>
+            {review.plan.status === 'unavailable' ? (
+              <Text selectable style={styles.detail}>{copy.planUnavailable}</Text>
+            ) : (
+              <>
                 <Text selectable style={styles.detail}>
-                  {copy.otherSessions}: {formatNumber(review.plan.otherCompletedSessionCount)}
+                  {copy.completedPlanned}: {formatNumber(review.plan.completedPlannedSessionCount)} / {formatNumber(review.plan.plannedSessionCount)}
                 </Text>
-              ) : null}
-              {review.plan.unresolvedPlannedSessionCount > 0 ? (
-                <Text selectable style={styles.detail}>
-                  {copy.unresolvedSlots}: {formatNumber(review.plan.unresolvedPlannedSessionCount)}
-                </Text>
-              ) : null}
-            </>
-          )}
-        </View>
+                {review.plan.otherCompletedSessionCount > 0 ? (
+                  <Text selectable style={styles.detail}>
+                    {copy.otherSessions}: {formatNumber(review.plan.otherCompletedSessionCount)}
+                  </Text>
+                ) : null}
+                {review.plan.unresolvedPlannedSessionCount > 0 ? (
+                  <Text selectable style={styles.detail}>
+                    {copy.unresolvedSlots}: {formatNumber(review.plan.unresolvedPlannedSessionCount)}
+                  </Text>
+                ) : null}
+              </>
+            )}
+          </View>
 
-        <View style={styles.block}>
-          <Text selectable style={styles.sectionTitle}>{copy.coverage}</Text>
-          <Text selectable style={styles.detail}>
-            {formatNumber(review.coverage.eligibleWorkingSetCount)} {copy.workingSets} · {formatNumber(review.coverage.activeMuscleCount)} {copy.activeMuscles} · {formatNumber(review.coverage.reviewedMovementPatternCount)} {copy.movementPatterns}
-          </Text>
-        </View>
-
-        <View style={styles.block}>
-          <Text selectable style={styles.sectionTitle}>{copy.recovery}</Text>
-          <Text selectable style={styles.detail}>
-            {copy.recoveryLabel(review.recovery.state)}
-          </Text>
-          {review.recovery.signals.length > 0 ? (
+          <View style={styles.block}>
+            <Text selectable style={styles.sectionTitle}>{copy.coverage}</Text>
             <Text selectable style={styles.detail}>
-              {copy.recoverySignals(formatNumber(review.recovery.signals.length))}
+              {formatNumber(review.coverage.eligibleWorkingSetCount)} {copy.workingSets} · {formatNumber(review.coverage.activeMuscleCount)} {copy.activeMuscles} · {formatNumber(review.coverage.reviewedMovementPatternCount)} {copy.movementPatterns}
             </Text>
-          ) : null}
-        </View>
+          </View>
 
-        <View style={styles.block}>
-          <Text selectable style={styles.sectionTitle}>{copy.adaptive}</Text>
-          {adaptive.available ? (
-            <>
+          <View style={styles.block}>
+            <Text selectable style={styles.sectionTitle}>{copy.recovery}</Text>
+            <Text selectable style={styles.detail}>
+              {copy.recoveryLabel(review.recovery.state)}
+            </Text>
+            {review.recovery.signals.length > 0 ? (
               <Text selectable style={styles.detail}>
-                {formatNumber(adaptive.actionCounts.progress)} {copy.progress} · {formatNumber(adaptive.actionCounts.maintain)} {copy.maintain} · {formatNumber(adaptive.actionCounts.review)} {copy.review}
+                {copy.recoverySignals(formatNumber(review.recovery.signals.length))}
               </Text>
-              {adaptive.adjustedByRecoveryCount > 0 ? (
+            ) : null}
+          </View>
+
+          <View style={styles.block}>
+            <Text selectable style={styles.sectionTitle}>{copy.adaptive}</Text>
+            {adaptive.available ? (
+              <>
                 <Text selectable style={styles.detail}>
-                  {formatNumber(adaptive.adjustedByRecoveryCount)} {copy.recoveryAdjusted}
+                  {formatNumber(adaptive.actionCounts.progress)} {copy.progress} · {formatNumber(adaptive.actionCounts.maintain)} {copy.maintain} · {formatNumber(adaptive.actionCounts.review)} {copy.review}
                 </Text>
-              ) : null}
-            </>
-          ) : (
-            <Text selectable style={styles.detail}>{copy.adaptiveUnavailable}</Text>
-          )}
-        </View>
+                {adaptive.adjustedByRecoveryCount > 0 ? (
+                  <Text selectable style={styles.detail}>
+                    {formatNumber(adaptive.adjustedByRecoveryCount)} {copy.recoveryAdjusted}
+                  </Text>
+                ) : null}
+              </>
+            ) : (
+              <Text selectable style={styles.detail}>{copy.adaptiveUnavailable}</Text>
+            )}
+          </View>
 
-        <View style={styles.block}>
-          <Text selectable style={styles.sectionTitle}>{copy.keySignals}</Text>
-          {review.keyFindings.length > 0 ? (
-            review.keyFindings.map((finding) => (
-              <Text key={finding.id} selectable style={styles.detail}>
-                • {findingLabel(finding)}
-              </Text>
-            ))
-          ) : (
-            <Text selectable style={styles.detail}>{copy.noSignals}</Text>
-          )}
-        </View>
+          <View style={styles.block}>
+            <Text selectable style={styles.sectionTitle}>{copy.keySignals}</Text>
+            {review.keyFindings.length > 0 ? (
+              review.keyFindings.map((finding) => (
+                <Text key={finding.id} selectable style={styles.detail}>
+                  • {findingLabel(finding)}
+                </Text>
+              ))
+            ) : (
+              <Text selectable style={styles.detail}>{copy.noSignals}</Text>
+            )}
+          </View>
 
-        <Text selectable style={styles.hint}>{copy.deterministicHint}</Text>
-        <WeeklyTrainingReviewCoachExplanation review={review} />
-        <AppButton
-          label={copy.openDetails}
-          onPress={() =>
-            router.push({
-              pathname: '/training-progress',
-              params: { period: '7' },
-            })
-          }
-          variant="secondary"
+          <Text selectable style={styles.hint}>{copy.deterministicHint}</Text>
+          <WeeklyTrainingReviewCoachExplanation review={review} />
+          <View style={styles.actions}>
+            {shareCard ? (
+              <AppButton
+                label={shareCopy.shareAction}
+                onPress={() => setShareOpen(true)}
+                variant="secondary"
+              />
+            ) : null}
+            <AppButton
+              label={copy.openDetails}
+              onPress={() =>
+                router.push({
+                  pathname: '/training-progress',
+                  params: { period: '7' },
+                })
+              }
+              variant="secondary"
+            />
+          </View>
+        </View>
+      </AppCard>
+
+      {shareCard ? (
+        <ProgressShareCardShareModal
+          card={shareCard}
+          onClose={() => setShareOpen(false)}
+          visible={shareOpen}
         />
-      </View>
-    </AppCard>
+      ) : null}
+    </>
   );
 }
 
 const createStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
+    actions: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
     block: { gap: Spacing.half },
     detail: { color: colors.textSecondary, fontSize: 13, lineHeight: 19 },
     hint: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
