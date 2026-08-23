@@ -73,6 +73,9 @@ export function ProgressShareCardShareModal({
     try {
       if (Platform.OS === 'ios') {
         const image = await makeImageFromView(cardRef);
+        if (!image) {
+          throw new Error('Progress share-card capture was unavailable');
+        }
         const dataUrl = `data:image/png;base64,${image.encodeToBase64()}`;
 
         await new Promise<void>((resolve, reject) => {
