@@ -1,6 +1,6 @@
 # Latest Handoff
 
-Updated: 2026-08-22
+Updated: 2026-08-23
 
 Exact source, tests, CI, deployment state and Git history override prose if this handoff becomes stale. **Resolve live refs/open-PR/CI state from Git/GitHub before acting.** Use `docs/current-status.md` for the mutable checkpoint, `ROADMAP_PROGRESS.md` for execution order and `docs/project-context.md` for stable architecture.
 
@@ -10,107 +10,100 @@ Exact source, tests, CI, deployment state and Git history override prose if this
 
 Repository: `ivangemini/smart-fitness-app`.
 
-- Phase 19 reviewed Exercise + Training Intelligence scope is merged through #803/#807.
-- Phase 20 P20-A/P20-B/P20-C is merged through #804/#805/#806 and source/CI-complete for reviewed scope.
-- CI guard repair #812 is merged and long-lived PR validation uses the live remote base branch.
-- Phase 21 Workout Assistant P21-A through P21-E exact PR head `94f70355fe4b4b22240d2c90f1bd861f5bc6d068` passed Mobile CI #2806; #810 merged as `a2abde02e31b5ed1207e67835144e9359aea711e`.
-- Exercise Preferences foundation #816 merged as `99427b189792489c1977d96959a366bac05962b9`.
-- Read-only Smart Replace explorer #818 merged as `d396fc343019b96578f09fa2041dc6893bc5da9e`.
-- Active-session replacement safety #819 exact head `438ae2946abf58eec3dc8bd2da371b937a126cb2` passed Mobile CI #2823 and merged as `c52277f580b5255d801a8cc045b0d2d4d708dc54`.
-- Active-session reviewed Smart Replace Apply #820 exact head `fb70be57fe735e835494e6895a5016d35fe962bd` passed Mobile CI #2830 and merged as `872d0a677d85b0d856a9ab6df6e08d655e949739` with `[ota]`.
-- Latest `[ota]` source therefore includes Phase 21 plus the Exercise Preferences/Smart Replace active-session work. Actual EAS publication metadata is still a separate evidence item until observed.
+Closed reviewed source scope includes:
+
+- Phase 19 Exercise + Training Intelligence;
+- Phase 20 P20-A/P20-B/P20-C;
+- Phase 21 Workout Assistant P21-A through P21-E;
+- Exercise Preferences + Smart Replace active-session scope #816/#818/#819/#820;
+- exact custom-template replacement/prescription remapping primitive #824;
+- Exercise Intelligence 2.0 #825;
+- Training Coverage #826;
+- Training Intelligence Loop #828;
+- Adaptive Program + Recovery A1–A4 #829/#830/#831/#832;
+- Adaptive package closure docs #833.
+
+Most recent Adaptive package merge sequence:
+
+- A1 #829 → `089753636c006c32937188285f33aba1aeac71eb`;
+- A2 #830 → `18d2d6de52f36313582e28272c6b36665e261ed7`;
+- A3 #831 → `8216903f8c44df5a4109c6d7839bcbd5e0757a03`;
+- A4 #832 exact head `23ec7e692b305b1835b6b3e618243a785b5823f5` passed Mobile CI #2877 and merged as `4bf3015b5b911df5ffe4c3634ef6872fce83ecbf`;
+- closure docs #833 merged as `9a38b143d892ee80fc6bfda7c6e5127bebfec638`.
 
 ### Backend / Admin
 
 Repository: `ivangemini/smart-fitness-backend`.
 
-- Phase 21 sync dependency #332 is merged as `b5a054e49e795a75f19c16ba85f507396e4598b6` and requires no database migration.
-- Admin write-plane #325 and follow-up hardening #335/#336/#337 are merged.
-- #340 Administration navigation activation merged as `75c47a2a8973e41146c98d78cab07baa007f1274` after Backend CI #2453.
-- #342 Admin session-v2 repair passed Backend CI #2458 and merged as `62cb9846b3ba644b8f5e2a7ffcc520d7bfc9058c`.
-- #343 browser-login session-v2 repair passed Backend CI #2461 and merged as `5a2ff9bb0bb006522576ff2eb3c588bf3d08fd50`.
-- Production backend is deployed at exact SHA `62cb9846b3ba644b8f5e2a7ffcc520d7bfc9058c`.
-- Production Admin-console is deployed at exact SHA `5a2ff9bb0bb006522576ff2eb3c588bf3d08fd50`.
-- Migration `0056_admin_control_plane.sql` is applied; backend/PostgreSQL health, authorized schema-v2 `owner / bootstrap` session, account search, roles, feature flags, audit reads and ordinary-user 403 gating are verified.
-- Final browser smoke passed for authorized login, global Administration navigation, `/administration`, `/administration/audit`, refresh persistence and direct-navigation persistence with 0 browser JS exceptions.
-- **Admin production activation is closed.**
+- Phase 21 sync dependency #332 is merged.
+- Admin control-plane/write hardening/navigation/session-v2 repair work through #325/#335/#336/#337/#340/#342/#343 is merged.
+- production backend/Admin-console and authorized browser smoke were verified for the reviewed activation scope.
+- **Admin production activation is closed** unless a reproduced production defect appears.
 
 ## Current authority
 
-### Exercise + Training Intelligence
-
-- `src/features/exercises/exerciseIntelligence.ts` owns reviewed `exercise-intelligence-v1` metadata for the 15 canonical local exercise identities.
-- Unknown/remote-only IDs fail closed.
-- OSS rows gain reviewed intelligence only when existing normalization reuses a reviewed canonical identity.
-- Fatigue cost is qualitative programming guidance, not a readiness measurement.
-- Reviewed substitutions are the only authority used to seed Smart Replace candidates.
-- Canonical SVG muscle anatomy and deterministic training analytics remain separate reviewed authorities.
-
 ### Exercise Preferences + Smart Replace
 
-Delivered source boundaries:
+Delivered:
 
-- per-exercise `avoid` and notes are device-local and separate from favorites;
-- candidate ranking uses only reviewed substitutions, exact repository resolution and fail-closed filtering;
-- `avoid` removes a candidate from the reviewed shortlist but does not prohibit manual explicit selection;
-- detail-screen candidate explorer is read-only;
-- active-session reviewed candidates map to the workout catalog only by exact canonical ID;
-- active-session Apply requires explicit user selection and at least one source set with `completed === false`;
-- only pending sets change exercise ID/name;
-- completed sets and legacy completion evidence remain under the source exercise;
-- set ID, load, reps, target/actual RPE, set type and superset membership are preserved;
-- no new backend/sync schema was introduced.
+- `avoid` and notes remain device-local and separate from favorites;
+- reviewed candidates originate only from exact canonical Exercise Intelligence substitutions;
+- candidate mapping uses exact IDs and fails closed;
+- active-session Apply changes only explicitly pending sets;
+- completed/legacy history is immutable;
+- #824 removed the old custom-template identity blocker by establishing exact source/replacement identity and deterministic `Workout.prescription` remapping while preserving unrelated fields.
 
-Do not wire Smart Replace into persisted program/workout-template updates yet. Current custom-template editing rebuilds exercise identities from names/indexes and lacks a reviewed `workout.prescription` remapping contract.
+**Do not repeat the obsolete claim that custom-template editing lacks a reviewed prescription-remapping primitive.**
 
-### Phase 21 Workout Assistant
+The next authorized source package is the user-facing custom-template Smart Replace flow: deterministic preview → explicit selection → confirm → Apply, with stale/collision/unresolved states failing closed and existing template persistence/sync authority reused.
 
-P21-A through P21-E remain merged and source/CI-complete:
+### Exercise + Training Intelligence
 
-- Previous + Today guidance is row-aligned, exact-ID based and read-only until user input;
-- rest timer starts only on explicit set completion and uses configured `restSeconds`;
-- warm-up proposal is deterministic from prescribed working load and persists as `setType: warmup` only after Add;
-- warm-ups do not pollute working Previous, live totals, PR/e1RM/volume, exercise progress or weekly muscle analytics;
-- durable set semantics are `working | warmup | backoff | drop | amrap` plus optional `supersetId`;
-- workout sync remains v1 for legacy sessions and uses additive v2 only when set semantics exist;
-- invalid v1/v2 semantic envelopes fail closed instead of silently losing fields;
-- contextual adjustment requires material deterministic RPE/reps divergence and explicit Apply/Ignore.
+- reviewed `exercise-intelligence-v1` metadata remains exact/fail-closed;
+- canonical SVG muscle anatomy and deterministic analytics remain separate authorities;
+- Training Coverage and Training Intelligence Loop are merged/read-only evidence composition;
+- no universal readiness score or hidden mutation authority.
 
-### Admin control plane
+### Adaptive Program + Recovery
 
-Production activation is closed for the reviewed scope. Do not reopen this activation gate unless a reproduced production defect appears.
+A1–A4 are complete.
 
-## Remaining evidence / release gates
+- deterministic findings map to `progress | maintain | review`;
+- fresh stored recovery evidence may conservatively downgrade proposals without generating a weighted readiness score;
+- recent exposure evidence is descriptive, not a recovery timer;
+- eligible future custom-template prescription changes require explicit preview + Apply, exact identity, idempotency and stale fingerprint validation;
+- completed history remains immutable;
+- Coach explanation is optional/read-only and cannot calculate or apply the proposal.
 
-### Current OTA / active workout
+Do not silently extend A1–A4; any future adaptive work is a new reviewed unnumbered package.
 
-1. Confirm the `Publish EAS Update` run for latest `[ota]` merge `872d0a677d85b0d856a9ab6df6e08d655e949739` succeeded.
-2. Record EAS update ID/group/runtime (`1.0.3`) plus production branch/channel evidence.
-3. Perform a real-device active-workout smoke covering Previous/Today, rest timer, warm-ups, set types/supersets, contextual Apply/Ignore, reviewed Smart Replace shortlist, manual replacement fallback, completed-set preservation, session persistence and sync sanity.
+## Immediate autonomous continuation
 
-The old #810/a2ab OTA run remains an historical audit item if exact old-run metadata is needed; a successful current OTA from `872d0a677...` is the preferred user-facing release checkpoint because it contains that source ancestry.
+1. Keep canonical docs synchronized with the current #824–#833 state and new expansion queue.
+2. Implement **Custom-template Smart Replace T1 — deterministic preview model** over #824.
+3. Continue T2 explicit template UI, T3 confirm/apply + stale gate, then T4 package closure after exact-head Mobile CI.
+4. After template Smart Replace, implement Weekly Training Review.
+5. Then Progress Stories / Share Cards.
+6. Define Trainer / Coach collaboration authority/privacy contract before implementation.
+7. Continue Apple Health / Apple Watch source expansion where device evidence is not required.
 
-### Admin
+Detailed queue: `docs/roadmap/next-product-expansions.md`.
 
-No remaining activation gate. Keep closed unless a reproduced production defect appears.
+## Independent evidence / release gates
 
-### Other independent evidence
+These can run whenever prerequisites exist and must not be confused with source completion:
 
-- Phase 14 configured-provider/native/device evidence;
-- P20-A camera/photo-library lifecycle evidence;
-- P20-B real-device comparison/overlay evidence;
-- Coach → Learn production mapping activation from approved canonical content only.
+- relevant production EAS OTA metadata and real-iPhone active-workout smoke;
+- Phase 20 signed-iPhone progress-photo validation;
+- Phase 14 configured APNs/FCM, Labs storage/model and native Health evidence;
+- Coach → Learn production mapping activation from approved canonical content;
+- native build/install, provider activation, production rollout/store submission.
 
-Use `docs/qa/progress-photo-device-validation.md` for P20-A/P20-B real-device evidence. A prepared checklist is not proof of a completed run.
+## Permanent continuation rules
 
-## Immediate continuation
-
-1. Verify the EAS OTA publication corresponding to `872d0a677d85b0d856a9ab6df6e08d655e949739` when workflow evidence is available.
-2. Run the current real-iPhone active-workout smoke and record dated evidence.
-3. Run the Phase 20 signed-iPhone validation checklist.
-4. Continue Phase 14 external evidence only when prerequisites are actually present.
-5. Keep Admin production activation closed unless a reproduced defect appears.
-6. Keep active-session Smart Replace source scope closed unless a reproduced defect appears; keep program/template Apply gated by stable identity/prescription-remapping requirements.
-7. Do not invent P21-F/Phase 22 or reopen closed Phase 18/19/20/21 source slices without a reproduced defect or newly reviewed requirement.
-8. Keep the Coach → Learn production mapping registry fail closed until approved canonical mappings exist.
-9. Keep source completion, deployment, migration execution, provider activation, OTA/native publication and device validation as separate claims.
+- Do not invent P21-F or Phase 22.
+- Do not reopen closed Phase 18/19/20/21 or Adaptive A1–A4 source scope without a reproduced defect or newly reviewed requirement.
+- Completed workout/session history remains immutable.
+- Exact exercise/template identity is required for mutation; unknown identity fails closed.
+- Coach/model output may explain deterministic decisions but does not become calculation or mutation authority.
+- Source merge, deployment, migration, provider activation, OTA/native publication and physical-device validation are separate claims.
