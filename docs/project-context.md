@@ -1,10 +1,10 @@
 # Smart Fitness Project Context
 
-Updated: 2026-08-22
+Updated: 2026-08-23
 
 ## Purpose
 
-Smart Fitness is an offline-first fitness application covering workouts, nutrition, progress, authentication/profile, synchronization, deterministic/structured AI Coach workflows, private Labs / Analyses, a privacy-first Social workout network, evidence-linked Knowledge & Learning, Exercise/Training Intelligence and private Progress Photos / Body Composition.
+Smart Fitness is an offline-first fitness application covering workouts, nutrition, progress, authentication/profile, synchronization, deterministic/structured AI Coach workflows, private Labs / Analyses, a privacy-first Social workout network, evidence-linked Knowledge & Learning, Exercise/Training Intelligence, Adaptive Program proposals and private Progress Photos / Body Composition.
 
 Repositories:
 
@@ -12,7 +12,7 @@ Repositories:
 - backend: `ivangemini/smart-fitness-backend`;
 - production API: `https://api.peptonio.com`.
 
-This file is **stable orientation context**. Live commit/PR/CI truth comes from Git/GitHub; the last verified mutable product/workstream checkpoint belongs in `docs/current-status.md`; restart state belongs in `docs/handoffs/latest.md`; forward sequencing belongs in `docs/implementation-plan.md`.
+This file is **stable orientation context**. Live commit/PR/CI truth comes from Git/GitHub; mutable product/workstream state belongs in `docs/current-status.md`; restart state belongs in `docs/handoffs/latest.md`; forward sequencing belongs in `docs/implementation-plan.md` and `ROADMAP_PROGRESS.md`.
 
 Exact code, schemas, migrations, tests and current Git history override stale prose.
 
@@ -21,17 +21,20 @@ Exact code, schemas, migrations, tests and current Git history override stale pr
 The mobile application includes:
 
 - social-first Home with personal daily context, Stories and Social workout feed;
-- Workouts, programs, exercise library and active workout logging;
+- Workouts, programs, custom templates, exercise library and active workout logging;
+- exercise preferences and deterministic Smart Replace candidates;
+- Workout Assistant guidance, warm-ups, rest timer, set types/supersets and bounded contextual adjustments;
 - Nutrition diary, targets, reusable meals and saved library items;
 - Progress with body, strength/training, activity and highlights drill-downs;
-- canonical SVG muscle anatomy, exercise detail intelligence and deterministic training analytics;
+- canonical SVG muscle anatomy, Exercise Intelligence, Training Coverage and deterministic Training Intelligence reviews;
+- Adaptive Program + Recovery proposals with explicit bounded future-template Apply and optional read-only Coach explanation;
 - private standardized progress photos, deterministic comparison and body-composition progress;
 - Profile, authentication, Data & Sync and privacy-facing controls;
 - Coach/Companion flows for Nutrition, Strength, Safety & Recovery, Combined review and bounded questions;
 - Labs / Analyses as a private server-authoritative longitudinal laboratory-results domain;
 - Social profiles, relationships, Stories, workout posts, feeds, reactions, comments, notifications and moderation/reporting surfaces;
 - Knowledge Library, immutable article reader, quizzes, account-owned learning state and reviewed learning paths;
-- optional Coach → Learn recommendation cards when an approved deterministic mapping exists.
+- optional Coach → Learn recommendation cards only when an approved deterministic mapping exists.
 
 Knowledge is deliberately non-gamified. No Knowledge XP, levels, streaks, badges, leaderboards, punishment or reward currency belong to the reviewed contract.
 
@@ -46,7 +49,7 @@ Knowledge is deliberately non-gamified. No Knowledge XP, levels, streaks, badges
 - Synchronization orchestration lives in `src/context/SyncContext.tsx` and `src/cloud/`.
 - Presentation uses the adaptive Liquid Glass system documented under `docs/architecture/`.
 
-Local AsyncStorage remains the reviewed storage strategy for private offline-first fitness state; architecture alternatives are not implementation authorization without new evidence/review.
+Local AsyncStorage remains the reviewed storage strategy for private offline-first fitness state; alternatives are not implementation authorization without new evidence/review.
 
 ## Data authority classes
 
@@ -79,20 +82,18 @@ These are not ordinary private fitness `AppState` sync families:
 - canonical Knowledge content;
 - account-owned learning state.
 
-Mobile renders bounded DTOs and actions but must not fabricate server truth.
+Mobile renders bounded DTOs/actions but must not fabricate server truth.
 
 ### Private local progress-photo media
 
-Phase 20 progress photos are a separate private local-media authority:
+Phase 20 progress photos remain a separate private local-media authority:
 
 - account-owned app metadata plus app-owned native document storage;
-- camera/library input is re-encoded before durable storage;
-- embedded imported EXIF/location metadata is not copied into durable app metadata;
-- durable deletion/account cleanup is required;
-- no cloud/provider/social upload is part of the reviewed scope;
-- comparison/body-composition views are derived/read-only and do not create a second canonical measurement authority.
-
-Do not silently insert photo bytes into revisioned fitness sync or server domains without a separately reviewed storage/privacy/sync design.
+- camera/library input re-encoded before durable storage;
+- imported EXIF/location metadata not copied into durable app metadata;
+- durable deletion/account cleanup required;
+- no cloud/provider/social upload in the reviewed scope;
+- comparison/body-composition views are derived/read-only and do not create a second measurement authority.
 
 ## Backend authority
 
@@ -109,7 +110,7 @@ The backend is server authority for:
 - deterministic Coach → Learn rule evaluation and exact-version recommendation hydration;
 - privacy, retention, deletion and export-source controls.
 
-Mobile must not call model, moderation, OCR, storage, evidence/search, email or other privileged providers directly.
+Mobile must not call privileged model, moderation, OCR, storage, evidence/search, email or similar providers directly.
 
 ## AI Coach / Companion model
 
@@ -126,7 +127,7 @@ Fastify route
 
 Deterministic calculations and hard guardrails stay outside model prompts. Automatic application is prohibited. Hidden chain-of-thought is not stored.
 
-Coach and Companion remain one product surface. Progress is the primary detailed analytics destination; Companion presents/interprets bounded facts and links to inspectable evidence rather than becoming a second data authority.
+Coach and Companion remain one product surface. Progress is the primary detailed analytics destination; Coach/Companion present or explain bounded facts and link to inspectable evidence rather than becoming a second data authority.
 
 ## Knowledge & Learning authority
 
@@ -153,11 +154,37 @@ Key rules:
 
 - one reviewed canonical muscle taxonomy and reusable local SVG anatomy;
 - exact/fail-closed muscle mapping;
-- deterministic completed-session analytics under explicit 7/30/90-day windows;
+- deterministic completed-session analytics under explicit windows;
 - reviewed static Exercise Intelligence for canonical local exercise identities only;
 - no runtime guessing of movement pattern/technique/ROM/fatigue/substitutions from labels;
 - qualitative fatigue cost is programming guidance, not a measured readiness signal;
-- substitutions are read-only alternatives and never hidden mutation authority.
+- `training-intelligence-v1` findings remain deterministic evidence, not model output authority;
+- Training Coverage and Training Intelligence Loop compose existing deterministic evidence without a second analytics store.
+
+## Smart Replace authority
+
+Candidate authority starts from reviewed Exercise Intelligence substitutions and exact repository resolution.
+
+- `avoid` filters the reviewed shortlist but does not prohibit explicit manual selection;
+- active-session replacement mutates only explicitly pending sets and preserves completed/legacy history;
+- #824 established the exact-ID custom-template replacement primitive and deterministic `Workout.prescription` identity remapping;
+- the remaining custom-template Smart Replace product flow must be previewed and explicitly confirmed;
+- no automatic active-session, template or program rewrite is authorized.
+
+## Adaptive Program + Recovery authority
+
+The completed A1–A4 package composes existing deterministic training evidence into explicit proposals.
+
+- exact active/default `TrainingProgram` and `Workout`/exercise identity remain authority;
+- proposal actions are deterministic `progress | maintain | review`;
+- fresh stored recovery check-in evidence may conservatively downgrade proposals without a weighted universal readiness score;
+- descriptive recent exposure evidence is not a physiological recovery timer;
+- eligible future custom-template prescription changes require explicit preview and Apply;
+- A3 uses exact identity, bounded target changes, idempotency marker and stale fingerprint checks;
+- completed workout history is immutable;
+- A4 Coach explanation is read-only over already-derived facts and cannot recalculate or apply the proposal.
+
+Do not silently extend A1–A4; future adaptive work requires a new reviewed unnumbered package.
 
 ## Labs boundary
 
@@ -173,7 +200,7 @@ Social, Stories and managed media are server-authoritative. Sharing private fitn
 
 Source merge, backend deployment, database migration execution, provider activation, canonical content activation, OTA/native publication and physical-device validation are separate claims.
 
-Backend Admin deployment details are mutable operational state and belong to backend source/operations/current-status. At the 2026-08-22 checkpoint, the authoritative Admin source-deploy path is VPS/GitHub Actions rather than automatic Vercel Git deployment; re-check backend operations before acting and do not generalize this into permission for backend restart, migration execution or secret changes.
+Admin production activation is closed for the reviewed scope; operational deployment truth still belongs to backend current-status/operations and must be re-checked before production actions.
 
 ## Documentation hierarchy
 
@@ -181,8 +208,8 @@ When statements conflict:
 
 1. exact code, migrations, schemas, tests and current Git/GitHub state;
 2. focused architecture/privacy/operations/QA/release documents for stable contracts;
-3. `docs/current-status.md` for the last verified mutable product/workstream checkpoint;
-4. `docs/implementation-plan.md` for forward sequencing;
+3. `docs/current-status.md` for mutable workstream checkpoint;
+4. `docs/implementation-plan.md` and `ROADMAP_PROGRESS.md` for forward sequencing;
 5. this stable project context;
 6. `PROJECT_LEARNINGS.md`;
 7. historical PR descriptions/chat summaries.
