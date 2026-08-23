@@ -11,10 +11,11 @@ import { getCanonicalMuscleLabel } from '@/features/exercises/muscleLabels';
 import type { CanonicalMuscleId, MuscleHighlightMap } from '@/features/exercises/muscleTaxonomy';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
-import type { WorkoutSession } from '@/types';
+import type { TrainingProgram, WorkoutSession } from '@/types';
 import { useUnitPreferences, weightFromKg } from '@/units';
 
 import { buildTrainingCoverage } from './trainingCoverage';
+import { buildTrainingIntelligenceReview } from './trainingIntelligenceReview';
 import { getTrainingIntelligenceCopy } from './trainingIntelligenceCopy';
 import {
   buildCanonicalTrainingIntelligence,
@@ -24,10 +25,12 @@ import {
 
 export function TrainingIntelligenceSection({
   endAt,
+  trainingProgram,
   windowDays,
   workoutSessions,
 }: {
   endAt: string;
+  trainingProgram: TrainingProgram | null;
   windowDays: TrainingIntelligenceWindowDays;
   workoutSessions: WorkoutSession[];
 }) {
@@ -72,6 +75,18 @@ export function TrainingIntelligenceSection({
         ? buildTrainingCoverage({ exercises, sessions: workoutSessions, endAt, windowDays })
         : null,
     [endAt, exercises, loadState, windowDays, workoutSessions],
+  );
+  const review = useMemo(
+    () =>
+      coverage && analytics
+        ? buildTrainingIntelligenceReview({
+            coverage,
+            findings: analytics.findings,
+            program: trainingProgram,
+            sessions: workoutSessions,
+          })
+        : null,
+    [analytics, coverage, trainingProgram, workoutSessions],
   );
   const activeFacts = useMemo(
     () =>
@@ -146,6 +161,73 @@ export function TrainingIntelligenceSection({
 
   return (
     <View style={styles.stack}>
+      <AppCard>
+        <Text selectable style={styles.title}>{copy.review}</Text>
+        <Text selectable style={styles.detail}>{copy.reviewHint}</Text>
+        {loadState === 'loading' ? <Text selectable style={styles.detail}>{copy.loading}</Text> : null}
+        {loadState === 'error' ? <Text selectable style={styles.detail}>{copy.unavailable}</Text> : null}
+        {review ? (
+          <>
+            <Text selectable style={styles.sectionTitle}>
+              {formatNumber(review.windowDays)} {copy.days}
+            </Text>
+            {review.plan.status === 'unavailable' ? (
+              <Text selectable style={styles.detail}>{copy.planUnavailable}</Text>
+            ) : (
+              <View style={styles.rows}>
+                <Text selectable style={styles.detail}>
+                  {copy.plannedVsCompleted}: {formatNumber(review.plan.completedPlannedSessionCount)} / {formatNumber(review.plan.plannedSessionCount)}
+                </Text>
+                {review.plan.status === 'partial' ? (
+                  <Text selectable style={styles.detail}>{copy.planPartial}</Text>
+                ) : null}
+                {review.plan.unresolvedPlannedSessionCount > 0 ? (
+                  <Text selectable style={styles.detail}>
+                    {copy.unresolvedPlanSlots}: {formatNumber(review.plan.unresolvedPlannedSessionCount)}
+                  </Text>
+                ) : null}
+                {review.plan.otherCompletedSessionCount > 0 ? (
+                  <Text selectable style={styles.detail}>
+                    {copy.otherCompletedSessions}: {formatNumber(review.plan.otherCompletedSessionCount)}
+                  </Text>
+                ) : null}
+              </View>
+            )}
+
+            <Text selectable style={styles.sectionTitle}>{copy.reviewCoverage}</Text>
+            <Text selectable style={styles.detail}>
+              {formatNumber(review.eligibleWorkingSetCount)} {copy.workingSets} · {formatNumber(review.activeMuscleCount)} {copy.activeMuscles} · {formatNumber(review.reviewedMovementPatternCount)} {copy.reviewedPatterns}
+            </Text>
+            {review.topMovementPatterns.length > 0 ? (
+              <View style={styles.rows}>
+                <Text selectable style={styles.rowTitle}>{copy.topPatterns}</Text>
+                {review.topMovementPatterns.map((fact) => (
+                  <Text key={fact.pattern} selectable style={styles.detail}>
+                    {movementCopy.movementPatterns[fact.pattern]} · {formatNumber(fact.workingSetCount)} {copy.workingSets} · {formatNumber(fact.exposureSessions)} {copy.sessions}
+                  </Text>
+                ))}
+              </View>
+            ) : null}
+
+            <Text selectable style={styles.sectionTitle}>{copy.keySignals}</Text>
+            {review.keyFindings.length > 0 ? (
+              <View style={styles.rows}>
+                {review.keyFindings.map((finding) => (
+                  <View key={finding.id} style={styles.row}>
+                    <Text selectable style={styles.rowTitle}>{copy.findingTitle(finding.kind, finding.prType)}</Text>
+                    {finding.exerciseName ? <Text selectable style={styles.detail}>{finding.exerciseName}</Text> : null}
+                    {finding.muscleId ? <Text selectable style={styles.detail}>{getCanonicalMuscleLabel(finding.muscleId, locale)}</Text> : null}
+                    <Text selectable style={styles.detail}>{copy.evidence}: {evidenceText(finding)}</Text>
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <Text selectable style={styles.detail}>{copy.noKeySignals}</Text>
+            )}
+          </>
+        ) : null}
+      </AppCard>
+
       <AppCard>
         <Text selectable style={styles.title}>{copy.coverage}</Text>
         <Text selectable style={styles.detail}>{copy.coverageHint}</Text>

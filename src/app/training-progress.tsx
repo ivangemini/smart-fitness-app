@@ -13,9 +13,11 @@ import { SectionHeader } from '@/components/ui/SectionHeader';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useWorkoutState } from '@/context/AppContext';
+import { useProfileState } from '@/context/ProfileStateContext';
 import { TrainingIntelligenceSection } from '@/features/progress/TrainingIntelligenceSection';
 import type { TrainingIntelligenceWindowDays } from '@/features/progress/trainingIntelligence';
 import { getRequestedTrainingProgressExerciseKey } from '@/features/progress/trainingProgressSelection';
+import { resolveActiveTrainingProgram } from '@/features/workouts/activeProgramSelection';
 import {
   buildExerciseProgressSeries,
   buildTrainingProgressAnalytics,
@@ -48,7 +50,8 @@ const getExerciseKey = (exercise: { exerciseId: string; exerciseName: string }) 
 
 export default function TrainingProgressScreen() {
   const { colors } = useAppTheme();
-  const { workoutSessions } = useWorkoutState();
+  const { trainingPrograms, workouts, workoutSessions } = useWorkoutState();
+  const { profile } = useProfileState();
   const { formatDate, formatNumber, locale } = useLocalization();
   const { formatWeightValue, weight: weightUnit } = useUnitPreferences();
   const searchParams = useLocalSearchParams<TrainingProgressSearchParams>();
@@ -61,6 +64,15 @@ export default function TrainingProgressScreen() {
   const requestedExerciseKey = useMemo(
     () => getRequestedTrainingProgressExerciseKey(searchParams),
     [searchParams],
+  );
+  const activeTrainingProgram = useMemo(
+    () =>
+      resolveActiveTrainingProgram({
+        activeTrainingProgramId: profile.activeTrainingProgramId,
+        trainingPrograms,
+        workouts,
+      }).program,
+    [profile.activeTrainingProgramId, trainingPrograms, workouts],
   );
   const periodDays = PERIOD_DAYS[periodKey];
   const analytics = useMemo(
@@ -206,6 +218,7 @@ export default function TrainingProgressScreen() {
 
         <TrainingIntelligenceSection
           endAt={anchorAt}
+          trainingProgram={activeTrainingProgram}
           windowDays={periodDays}
           workoutSessions={workoutSessions}
         />
