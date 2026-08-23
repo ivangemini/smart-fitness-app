@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { TemplateSmartReplaceModal } from '@/components/workouts/TemplateSmartReplaceModal';
 import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
@@ -32,6 +33,7 @@ import {
   toggleWorkoutTemplateFavorite,
 } from '@/lib/workouts';
 import { useLocalization } from '@/localization';
+import { getTemplateSmartReplaceCopy } from '@/localization/templateSmartReplaceCopy';
 import { getWorkoutTemplateDetailCopy } from '@/localization/workoutTemplateDetailCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import {
@@ -42,12 +44,16 @@ import {
 export default function WorkoutTemplateDetailScreen() {
   const params = useLocalSearchParams<{ workoutId?: string }>();
   const workoutId = Array.isArray(params.workoutId) ? params.workoutId[0] : params.workoutId;
-  const { deleteWorkoutTemplate } = useAppActions();
+  const {
+    applyWorkoutTemplateReplacementPatch,
+    deleteWorkoutTemplate,
+  } = useAppActions();
   const { isRestoringState } = useAppInfrastructure();
-  const { workouts } = useWorkoutState();
+  const { exercises, workouts } = useWorkoutState();
   const { colors, resolvedAppearance } = useAppTheme();
   const { formatNumber, locale, t } = useLocalization();
   const copy = getWorkoutTemplateDetailCopy(locale);
+  const smartReplaceCopy = getTemplateSmartReplaceCopy(locale);
   const insets = useSafeAreaInsets();
   const { height: viewportHeight } = useWindowDimensions();
   const glass = useMemo(
@@ -56,6 +62,9 @@ export default function WorkoutTemplateDetailScreen() {
   );
   const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const [footerHeight, setFooterHeight] = useState(0);
+  const [smartReplaceSourceId, setSmartReplaceSourceId] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
     void hydrateActiveWorkoutSessionDraft();
@@ -69,6 +78,16 @@ export default function WorkoutTemplateDetailScreen() {
     () => parseWorkoutPlanDescription(workout?.description),
     [workout?.description],
   );
+
+  useEffect(() => {
+    if (
+      smartReplaceSourceId &&
+      (!workout ||
+        !workout.exercises.some((exercise) => exercise.id === smartReplaceSourceId))
+    ) {
+      setSmartReplaceSourceId(null);
+    }
+  }, [smartReplaceSourceId, workout]);
 
   if (isRestoringState) {
     return (
@@ -209,6 +228,15 @@ export default function WorkoutTemplateDetailScreen() {
                       formatNumber(targetSets, { maximumFractionDigits: 0 }),
                     )}
                   </Text>
+                  {workout.isCustom ? (
+                    <View style={styles.smartReplaceAction}>
+                      <SecondaryButton
+                        accessibilityLabel={`${smartReplaceCopy.replaceExercise}: ${exercise.name}`}
+                        label={smartReplaceCopy.replaceExercise}
+                        onPress={() => setSmartReplaceSourceId(exercise.id)}
+                      />
+                    </View>
+                  ) : null}
                 </View>
               </View>
             </View>
@@ -239,6 +267,16 @@ export default function WorkoutTemplateDetailScreen() {
           />
         </View>
       </View>
+
+      {smartReplaceSourceId ? (
+        <TemplateSmartReplaceModal
+          exerciseCatalog={exercises}
+          onApply={applyWorkoutTemplateReplacementPatch}
+          onClose={() => setSmartReplaceSourceId(null)}
+          sourceExerciseId={smartReplaceSourceId}
+          workout={workout}
+        />
+      ) : null}
     </View>
   );
 }
@@ -385,6 +423,10 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
     screen: {
       backgroundColor: colors.background,
       flex: 1,
+    },
+    smartReplaceAction: {
+      marginTop: Spacing.one,
+      maxWidth: 180,
     },
     title: {
       color: colors.textPrimary,
