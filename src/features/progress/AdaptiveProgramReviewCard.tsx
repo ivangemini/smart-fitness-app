@@ -9,6 +9,7 @@ import { useAppTheme } from '@/theme/AppThemeProvider';
 import type { Workout, WorkoutPrescriptionPatch, WorkoutPrescriptionPatchStatus } from '@/types';
 
 import { AdaptiveProgramApplyControls } from './AdaptiveProgramApplyControls';
+import { AdaptiveProgramCoachExplanation } from './AdaptiveProgramCoachExplanation';
 import type {
   AdaptiveProgramAction,
   AdaptiveProgramReview,
@@ -158,6 +159,10 @@ export function AdaptiveProgramReviewCard({
                     ) : null}
                   </View>
                 ) : null}
+                <AdaptiveProgramCoachExplanation
+                  proposal={proposal}
+                  recovery={review.recovery}
+                />
                 <AdaptiveProgramApplyControls
                   onApply={onApplyPrescriptionPatch}
                   proposal={proposal}
