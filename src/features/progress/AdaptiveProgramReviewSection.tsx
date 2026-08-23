@@ -8,6 +8,7 @@ import type { RecoveryCheckIn, TrainingProgram, Workout, WorkoutSession } from '
 
 import { AdaptiveProgramReviewCard } from './AdaptiveProgramReviewCard';
 import { buildAdaptiveProgramReview } from './adaptiveProgramEngine';
+import { buildAdaptiveRecoveryEvidence } from './adaptiveRecoveryEvidence';
 import {
   buildCanonicalTrainingIntelligence,
   type TrainingIntelligenceWindowDays,
@@ -64,6 +65,19 @@ export function AdaptiveProgramReviewSection({
     });
   }, [endAt, exercises, loadState, program, recoveryCheckIns, windowDays, workouts, workoutSessions]);
 
+  const evidence = useMemo(
+    () => review
+      ? buildAdaptiveRecoveryEvidence({
+          endAt,
+          exercises,
+          proposals: review.proposals,
+          recoveryCheckIns,
+          sessions: workoutSessions,
+        })
+      : null,
+    [endAt, exercises, recoveryCheckIns, review, workoutSessions],
+  );
+
   if (loadState === 'error') {
     return (
       <AppCard>
@@ -75,6 +89,6 @@ export function AdaptiveProgramReviewSection({
       </AppCard>
     );
   }
-  if (!review) return null;
-  return <AdaptiveProgramReviewCard review={review} />;
+  if (!review || !evidence) return null;
+  return <AdaptiveProgramReviewCard evidence={evidence} review={review} />;
 }
