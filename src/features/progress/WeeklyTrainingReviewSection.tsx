@@ -27,6 +27,7 @@ import {
 } from './trainingIntelligence';
 import { getTrainingIntelligenceCopy } from './trainingIntelligenceCopy';
 import { buildTrainingIntelligenceReview } from './trainingIntelligenceReview';
+import { WeeklyTrainingReviewCoachExplanation } from './WeeklyTrainingReviewCoachExplanation';
 import {
   buildWeeklyTrainingReview,
   WEEKLY_TRAINING_REVIEW_WINDOW_DAYS,
@@ -224,6 +225,7 @@ export function WeeklyTrainingReviewSection({
         </View>
 
         <Text selectable style={styles.hint}>{copy.deterministicHint}</Text>
+        <WeeklyTrainingReviewCoachExplanation review={review} />
         <AppButton
           label={copy.openDetails}
           onPress={() =>

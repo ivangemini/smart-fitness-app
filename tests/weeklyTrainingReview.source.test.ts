@@ -17,6 +17,9 @@ const readSource = (relativePath: string) =>
 const section = readSource(
   'src/features/progress/WeeklyTrainingReviewSection.tsx',
 );
+const coachExplanation = readSource(
+  'src/features/progress/WeeklyTrainingReviewCoachExplanation.tsx',
+);
 const progress = readSource('src/app/(tabs)/progress.tsx');
 const trainingProgress = readSource('src/app/training-progress.tsx');
 
@@ -39,5 +42,16 @@ describe('Weekly Training Review source contract', () => {
     expect(section).toContain("params: { period: '7' }");
     expect(trainingProgress).toContain("period?: string | string[]");
     expect(trainingProgress).toContain("requestedPeriodKey ?? '30'");
+  });
+
+  it('keeps Coach explanation explicit and read-only', () => {
+    expect(section).toContain('<WeeklyTrainingReviewCoachExplanation review={review} />');
+    expect(coachExplanation).toContain('onPress={() => void explain()}');
+    expect(coachExplanation).toContain('coachApi.getCapabilities()');
+    expect(coachExplanation).toContain('coachApi.askQuestion(question)');
+    expect(coachExplanation).not.toContain('useAppActions');
+    expect(coachExplanation).not.toContain('applyWorkout');
+    expect(coachExplanation).not.toContain('saveTrainingProgram');
+    expect(coachExplanation).not.toContain('updateWorkoutTemplate');
   });
 });
