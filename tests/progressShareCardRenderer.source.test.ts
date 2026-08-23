@@ -38,11 +38,9 @@ describe('Progress share-card S2 authority boundary', () => {
     expect(presentation).toContain("from './progressShareCardModel'");
     expect(presentation).not.toContain('trainingIntelligence');
     expect(presentation).not.toContain('weeklyTrainingReview');
-    expect(presentation).not.toContain('WorkoutSession');
-    expect(presentation).not.toContain('WeightEntry');
-    expect(presentation).not.toContain('BodyMeasurement');
-    expect(presentation).not.toContain("from '@/api/");
+    expect(presentation).not.toContain("from '@/types'");
     expect(presentation).not.toContain("from '@/context/");
+    expect(presentation).not.toContain("from '@/api/");
     expect(presentation).not.toContain('/social/');
   });
 
