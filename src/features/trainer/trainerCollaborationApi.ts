@@ -56,6 +56,16 @@ export type TrainerCollaborationApi = {
     relationshipId: string,
     proposalId: string,
   ): Promise<TrainerProposal>;
+  applyProposal(
+    accessToken: string,
+    relationshipId: string,
+    proposalId: string,
+  ): Promise<TrainerProposal>;
+  rejectProposal(
+    accessToken: string,
+    relationshipId: string,
+    proposalId: string,
+  ): Promise<TrainerProposal>;
 };
 
 const authHeaders = (accessToken: string) => ({
@@ -157,6 +167,30 @@ export const createTrainerCollaborationApi = (apiClient: ApiClient): TrainerColl
   async withdrawProposal(accessToken, relationshipId, proposalId) {
     const response = await apiClient.post<unknown, Record<string, never>>(
       `/v1/trainer/relationships/${encodeURIComponent(relationshipId)}/proposals/${encodeURIComponent(proposalId)}/withdraw`,
+      {},
+      {
+        headers: authHeaders(accessToken),
+        retry: false,
+      },
+    );
+    return parseTrainerProposalEnvelope(response, relationshipId);
+  },
+
+  async applyProposal(accessToken, relationshipId, proposalId) {
+    const response = await apiClient.post<unknown, Record<string, never>>(
+      `/v1/trainer/relationships/${encodeURIComponent(relationshipId)}/proposals/${encodeURIComponent(proposalId)}/apply`,
+      {},
+      {
+        headers: authHeaders(accessToken),
+        retry: false,
+      },
+    );
+    return parseTrainerProposalEnvelope(response, relationshipId);
+  },
+
+  async rejectProposal(accessToken, relationshipId, proposalId) {
+    const response = await apiClient.post<unknown, Record<string, never>>(
+      `/v1/trainer/relationships/${encodeURIComponent(relationshipId)}/proposals/${encodeURIComponent(proposalId)}/reject`,
       {},
       {
         headers: authHeaders(accessToken),

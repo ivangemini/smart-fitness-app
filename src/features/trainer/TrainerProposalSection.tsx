@@ -4,6 +4,7 @@ import * as Crypto from 'expo-crypto';
 
 import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
+import { DestructiveButton } from '@/components/ui/DestructiveButton';
 import { FormField } from '@/components/ui/FormField';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import {
@@ -36,6 +37,13 @@ type Draft = {
   durationWeeks: string;
   cadencePerWeek: string;
   message: string;
+};
+
+type Decision = 'apply' | 'reject';
+
+type DecisionState = {
+  proposalId: string;
+  action: Decision;
 };
 
 const EMPTY_DRAFT: Draft = {
@@ -108,6 +116,8 @@ export function TrainerProposalSection({ accessToken, api, locale, relationship 
   const [loadError, setLoadError] = useState(false);
   const [withdrawingId, setWithdrawingId] = useState<string | null>(null);
   const [withdrawErrorId, setWithdrawErrorId] = useState<string | null>(null);
+  const [decisionBusy, setDecisionBusy] = useState<DecisionState | null>(null);
+  const [decisionError, setDecisionError] = useState<DecisionState | null>(null);
   const [templates, setTemplates] = useState<TrainerWorkoutTemplateItem[] | null>(null);
   const [templatesLoading, setTemplatesLoading] = useState(false);
   const [templatesError, setTemplatesError] = useState(false);
@@ -135,8 +145,16 @@ export function TrainerProposalSection({ accessToken, api, locale, relationship 
     setSelected(null);
     setDraft(EMPTY_DRAFT);
     setAttemptKey(null);
+    setDecisionBusy(null);
+    setDecisionError(null);
     void loadProposals();
   }, [loadProposals]);
+
+  const replaceProposal = (proposal: TrainerProposal) => {
+    setProposals((current) =>
+      current.map((item) => (item.id === proposal.id ? proposal : item)),
+    );
+  };
 
   const loadTemplates = async () => {
     if (
@@ -215,16 +233,45 @@ export function TrainerProposalSection({ accessToken, api, locale, relationship 
     setWithdrawingId(proposalId);
     setWithdrawErrorId(null);
     try {
-      const proposal = await api.withdrawProposal(accessToken, relationship.id, proposalId);
-      setProposals((current) =>
-        current.map((item) => (item.id === proposal.id ? proposal : item)),
-      );
+      replaceProposal(await api.withdrawProposal(accessToken, relationship.id, proposalId));
     } catch {
       setWithdrawErrorId(proposalId);
     } finally {
       setWithdrawingId(null);
     }
   };
+
+  const decide = async (proposal: TrainerProposal, action: Decision) => {
+    if (
+      relationship.role !== 'client' ||
+      relationship.status !== 'active' ||
+      !relationship.scopes.includes('workout_templates') ||
+      proposal.status !== 'pending' ||
+      decisionBusy ||
+      (action === 'apply' && proposal.target.state !== 'current')
+    ) {
+      return;
+    }
+    const state = { proposalId: proposal.id, action } as const;
+    setDecisionBusy(state);
+    setDecisionError(null);
+    try {
+      const next =
+        action === 'apply'
+          ? await api.applyProposal(accessToken, relationship.id, proposal.id)
+          : await api.rejectProposal(accessToken, relationship.id, proposal.id);
+      replaceProposal(next);
+    } catch {
+      setDecisionError(state);
+    } finally {
+      setDecisionBusy(null);
+    }
+  };
+
+  const clientCanDecide =
+    relationship.role === 'client' &&
+    relationship.status === 'active' &&
+    relationship.scopes.includes('workout_templates');
 
   return (
     <AppCard>
@@ -245,66 +292,109 @@ export function TrainerProposalSection({ accessToken, api, locale, relationship 
         <Text style={styles.hint}>{copy.empty}</Text>
       ) : null}
       <View style={styles.list}>
-        {proposals.map((proposal) => (
-          <View key={proposal.id} style={styles.proposal}>
-            <View style={styles.rowBetween}>
-              <Text style={styles.proposalTitle}>
-                {proposal.author.displayName?.trim() || copy.humanTrainer}
-              </Text>
-              <Text style={styles.meta}>{copy.statuses[proposal.status]}</Text>
-            </View>
-            <Text style={styles.meta}>
-              {copy.createdAt}: {formatLocalizedDateTime(proposal.createdAt, locale)}
-            </Text>
-            <Text style={styles.meta}>
-              {copy.targetState}: {copy.targetStates[proposal.target.state]}
-            </Text>
-            <Text style={styles.meta}>
-              {copy.targetRevision}: {proposal.target.expectedRevision}
-              {proposal.target.currentRevision
-                ? ` → ${proposal.target.currentRevision}`
-                : ''}
-            </Text>
-            {proposal.message ? (
-              <View style={styles.block}>
-                <Text style={styles.label}>{copy.message}</Text>
-                <Text style={styles.body}>{proposal.message}</Text>
+        {proposals.map((proposal) => {
+          const decisionPending = decisionBusy?.proposalId === proposal.id;
+          return (
+            <View key={proposal.id} style={styles.proposal}>
+              <View style={styles.rowBetween}>
+                <Text style={styles.proposalTitle}>
+                  {proposal.author.displayName?.trim() || copy.humanTrainer}
+                </Text>
+                <Text style={styles.meta}>{copy.statuses[proposal.status]}</Text>
               </View>
-            ) : null}
-            <View style={styles.block}>
-              <Text style={styles.label}>{copy.changes}</Text>
-              {proposal.changes.map((change) => (
-                <View key={change.field} style={styles.change}>
-                  <Text style={styles.changeLabel}>{copy.fields[change.field]}</Text>
-                  <Text style={styles.meta}>
-                    {copy.before}: {String(change.before)}
-                  </Text>
-                  <Text style={styles.body}>
-                    {copy.after}: {String(change.after)}
-                  </Text>
+              <Text style={styles.meta}>
+                {copy.createdAt}: {formatLocalizedDateTime(proposal.createdAt, locale)}
+              </Text>
+              {proposal.resolvedAt ? (
+                <Text style={styles.meta}>
+                  {copy.resolvedAt}: {formatLocalizedDateTime(proposal.resolvedAt, locale)}
+                </Text>
+              ) : null}
+              <Text style={styles.meta}>
+                {copy.targetState}: {copy.targetStates[proposal.target.state]}
+              </Text>
+              <Text style={styles.meta}>
+                {copy.targetRevision}: {proposal.target.expectedRevision}
+                {proposal.target.currentRevision
+                  ? ` → ${proposal.target.currentRevision}`
+                  : ''}
+              </Text>
+              {proposal.appliedRevision ? (
+                <Text style={styles.meta}>
+                  {copy.appliedRevision}: {proposal.appliedRevision}
+                </Text>
+              ) : null}
+              {proposal.message ? (
+                <View style={styles.block}>
+                  <Text style={styles.label}>{copy.message}</Text>
+                  <Text style={styles.body}>{proposal.message}</Text>
                 </View>
-              ))}
+              ) : null}
+              <View style={styles.block}>
+                <Text style={styles.label}>{copy.changes}</Text>
+                {proposal.changes.map((change) => (
+                  <View key={change.field} style={styles.change}>
+                    <Text style={styles.changeLabel}>{copy.fields[change.field]}</Text>
+                    <Text style={styles.meta}>
+                      {copy.before}: {String(change.before)}
+                    </Text>
+                    <Text style={styles.body}>
+                      {copy.after}: {String(change.after)}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+              {proposal.status === 'pending' && proposal.target.state === 'stale' ? (
+                <Text style={styles.warning}>{copy.staleApplyBlocked}</Text>
+              ) : null}
+              {proposal.status === 'pending' && proposal.target.state === 'unavailable' ? (
+                <Text style={styles.warning}>{copy.staleApplyBlocked}</Text>
+              ) : null}
+              {proposal.status === 'withdrawn' ? (
+                <Text style={styles.hint}>{copy.withdrawnHint}</Text>
+              ) : null}
+              {proposal.status === 'applied' ? (
+                <Text style={styles.hint}>{copy.appliedHint}</Text>
+              ) : null}
+              {proposal.status === 'rejected' ? (
+                <Text style={styles.hint}>{copy.rejectedHint}</Text>
+              ) : null}
+              {relationship.role === 'trainer' && proposal.status === 'pending' ? (
+                <AppButton
+                  disabled={Boolean(withdrawingId)}
+                  label={copy.withdraw}
+                  loading={withdrawingId === proposal.id}
+                  onPress={() => void withdraw(proposal.id)}
+                  variant="secondary"
+                />
+              ) : null}
+              {clientCanDecide && proposal.status === 'pending' ? (
+                <View style={styles.decisionActions}>
+                  <AppButton
+                    disabled={Boolean(decisionBusy) || proposal.target.state !== 'current'}
+                    label={copy.apply}
+                    loading={decisionPending && decisionBusy?.action === 'apply'}
+                    onPress={() => void decide(proposal, 'apply')}
+                  />
+                  <DestructiveButton
+                    disabled={Boolean(decisionBusy)}
+                    label={copy.reject}
+                    loading={decisionPending && decisionBusy?.action === 'reject'}
+                    onPress={() => void decide(proposal, 'reject')}
+                  />
+                </View>
+              ) : null}
+              {withdrawErrorId === proposal.id ? (
+                <Text style={styles.error}>{copy.withdrawFailed}</Text>
+              ) : null}
+              {decisionError?.proposalId === proposal.id ? (
+                <Text style={styles.error}>
+                  {decisionError.action === 'apply' ? copy.applyFailed : copy.rejectFailed}
+                </Text>
+              ) : null}
             </View>
-            {proposal.target.state === 'stale' ? (
-              <Text style={styles.warning}>{copy.staleHint}</Text>
-            ) : null}
-            {proposal.status === 'withdrawn' ? (
-              <Text style={styles.hint}>{copy.withdrawnHint}</Text>
-            ) : null}
-            {relationship.role === 'trainer' && proposal.status === 'pending' ? (
-              <AppButton
-                disabled={Boolean(withdrawingId)}
-                label={copy.withdraw}
-                loading={withdrawingId === proposal.id}
-                onPress={() => void withdraw(proposal.id)}
-                variant="secondary"
-              />
-            ) : null}
-            {withdrawErrorId === proposal.id ? (
-              <Text style={styles.error}>{copy.withdrawFailed}</Text>
-            ) : null}
-          </View>
-        ))}
+          );
+        })}
       </View>
 
       {relationship.role === 'trainer' ? (
@@ -371,6 +461,7 @@ const createStyles = (colors: typeof Colors.light) =>
     body: { color: colors.textSecondary, fontSize: 13, lineHeight: 19 },
     change: { borderTopColor: colors.divider, borderTopWidth: StyleSheet.hairlineWidth, gap: Spacing.one, paddingTop: Spacing.two },
     changeLabel: { color: colors.textPrimary, fontSize: 13, fontWeight: '700', lineHeight: 19 },
+    decisionActions: { gap: Spacing.two },
     error: { color: colors.error, fontSize: 13, lineHeight: 19 },
     flex: { flex: 1, minWidth: 0 },
     form: { gap: Spacing.three },
