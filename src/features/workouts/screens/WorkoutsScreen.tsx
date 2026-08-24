@@ -11,6 +11,7 @@ import {
 } from '@/components/navigation/floatingTabBarLayout';
 import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
+import { Spacing } from '@/constants/theme';
 import {
   useAppActions,
   useAppInfrastructure,
