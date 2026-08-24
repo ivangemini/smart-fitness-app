@@ -39,7 +39,7 @@ import {
 } from './WorkoutsScreenComponents';
 import { createWorkoutsScreenStyles } from './workoutsScreen.styles';
 
-const STICKY_ACTION_MIN_HEIGHT = 48;
+export const WORKOUTS_STICKY_ACTION_MIN_HEIGHT = 48;
 
 export default function WorkoutsScreen() {
   const { colors } = useAppTheme();
@@ -102,7 +102,7 @@ export default function WorkoutsScreen() {
   const floatingTabBarClearance = getFloatingTabBarBottomClearance(insets.bottom);
   const scrollBottomPadding = getFloatingTabBarStickyActionContentPadding(
     insets.bottom,
-    STICKY_ACTION_MIN_HEIGHT,
+    WORKOUTS_STICKY_ACTION_MIN_HEIGHT,
   );
 
   const startEmptyWorkout = () => {
