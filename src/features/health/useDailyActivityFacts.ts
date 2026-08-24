@@ -16,8 +16,16 @@ export type DailyActivityFactsState = {
 
 type ActivityReadMode = 'check' | 'request_permission';
 
-export function useDailyActivityFacts(date = new Date()): DailyActivityFactsState {
+type UseDailyActivityFactsOptions = {
+  autoRead?: boolean;
+};
+
+export function useDailyActivityFacts(
+  date = new Date(),
+  options: UseDailyActivityFactsOptions = {},
+): DailyActivityFactsState {
   const localDate = formatLocalDate(date);
+  const autoRead = options.autoRead ?? true;
   const mountedRef = useRef(true);
   const [state, setState] = useState<
     Omit<DailyActivityFactsState, 'connect' | 'refresh'>
@@ -28,7 +36,7 @@ export function useDailyActivityFacts(date = new Date()): DailyActivityFactsStat
   });
 
   const read = useCallback(
-    async (mode: ActivityReadMode) => {
+    async (mode: ActivityReadMode, includeFacts: boolean) => {
       const source = getActivityFactSource();
       if (mountedRef.current) {
         setState((current) => ({ ...current, loading: true }));
@@ -40,7 +48,7 @@ export function useDailyActivityFacts(date = new Date()): DailyActivityFactsStat
             ? await source.requestReadPermission()
             : await source.getAvailability();
         const facts =
-          availability === 'available'
+          includeFacts && availability === 'available'
             ? await source.readDailyActivity(localDate)
             : null;
         if (mountedRef.current) {
@@ -57,14 +65,17 @@ export function useDailyActivityFacts(date = new Date()): DailyActivityFactsStat
 
   useEffect(() => {
     mountedRef.current = true;
-    void read('check');
+    void read('check', autoRead);
     return () => {
       mountedRef.current = false;
     };
-  }, [read]);
+  }, [autoRead, read]);
 
-  const connect = useCallback(() => read('request_permission'), [read]);
-  const refresh = useCallback(() => read('check'), [read]);
+  const connect = useCallback(
+    () => read('request_permission', true),
+    [read],
+  );
+  const refresh = useCallback(() => read('check', true), [read]);
 
   return { ...state, connect, refresh };
 }
