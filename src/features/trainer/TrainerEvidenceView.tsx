@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { formatLocalizedDateTime, type SupportedLocale } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 
 import { getTrainerCollaborationC3Copy } from './trainerCollaborationC3Copy';
@@ -9,19 +10,10 @@ import type { TrainerEvidence } from './trainerCollaborationC3Model';
 
 type TrainerEvidenceViewProps = {
   evidence: TrainerEvidence;
-  locale: string;
+  locale: SupportedLocale;
 };
 
 type Fact = { label: string; value: string };
-
-const formatTimestamp = (value: string, locale: string) =>
-  new Date(value).toLocaleString(locale, {
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
 
 const optional = (value: string | number | null | undefined) =>
   value === null || value === undefined || value === '' ? '—' : String(value);
@@ -56,14 +48,14 @@ export function TrainerEvidenceView({ evidence, locale }: TrainerEvidenceViewPro
         {evidence.data.map((item) => (
           <EvidenceRecord
             facts={[
-              { label: f.date, value: formatTimestamp(item.startedAt, locale) },
+              { label: f.date, value: formatLocalizedDateTime(item.startedAt, locale) },
               { label: f.duration, value: `${optional(item.durationMinutes)} min` },
               { label: f.exercises, value: String(item.exerciseCount) },
               { label: f.sets, value: String(item.completedSetCount) },
               { label: f.volume, value: String(item.volume) },
             ]}
             key={item.sessionId}
-            title={formatTimestamp(item.startedAt, locale)}
+            title={formatLocalizedDateTime(item.startedAt, locale)}
           />
         ))}
       </View>
@@ -103,7 +95,7 @@ export function TrainerEvidenceView({ evidence, locale }: TrainerEvidenceViewPro
               { label: f.active, value: item.isActive ? f.yes : f.no },
               {
                 label: f.date,
-                value: item.startedAt ? formatTimestamp(item.startedAt, locale) : '—',
+                value: item.startedAt ? formatLocalizedDateTime(item.startedAt, locale) : '—',
               },
             ]}
             key={item.id}
@@ -123,7 +115,7 @@ export function TrainerEvidenceView({ evidence, locale }: TrainerEvidenceViewPro
         {evidence.data.weights.map((item) => (
           <EvidenceRecord
             facts={[
-              { label: f.date, value: formatTimestamp(item.measuredAt, locale) },
+              { label: f.date, value: formatLocalizedDateTime(item.measuredAt, locale) },
               { label: f.weight, value: `${item.value} ${item.unit}` },
             ]}
             key={item.id}
@@ -133,7 +125,7 @@ export function TrainerEvidenceView({ evidence, locale }: TrainerEvidenceViewPro
         {evidence.data.measurements.map((item) => (
           <EvidenceRecord
             facts={[
-              { label: f.date, value: formatTimestamp(item.measuredAt, locale) },
+              { label: f.date, value: formatLocalizedDateTime(item.measuredAt, locale) },
               {
                 label: f.measurement,
                 value: `${optional(item.bodyPart || item.measurementType)} · ${item.value} ${item.unit}`,
@@ -153,7 +145,7 @@ export function TrainerEvidenceView({ evidence, locale }: TrainerEvidenceViewPro
       {evidence.data.map((item) => (
         <EvidenceRecord
           facts={[
-            { label: f.date, value: formatTimestamp(item.recordedAt, locale) },
+            { label: f.date, value: formatLocalizedDateTime(item.recordedAt, locale) },
             { label: f.sleepDuration, value: optional(item.sleepDurationHours) },
             { label: f.sleepQuality, value: optional(item.sleepQuality) },
             { label: f.fatigue, value: optional(item.fatigue) },
@@ -163,7 +155,7 @@ export function TrainerEvidenceView({ evidence, locale }: TrainerEvidenceViewPro
             { label: f.readiness, value: optional(item.readiness) },
           ]}
           key={item.id}
-          title={formatTimestamp(item.recordedAt, locale)}
+          title={formatLocalizedDateTime(item.recordedAt, locale)}
         />
       ))}
     </View>
