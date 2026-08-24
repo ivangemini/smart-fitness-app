@@ -47,6 +47,9 @@ describe('trainer collaboration C3 mobile contract', () => {
     );
 
     expect(evidence.scope).toBe('workout_history_summary');
+    if (evidence.scope !== 'workout_history_summary') {
+      throw new Error('Expected workout-history evidence');
+    }
     expect(evidence.data[0]).toEqual({
       sessionId: ITEM_ID,
       templateId: null,
@@ -123,13 +126,25 @@ describe('trainer collaboration C3 mobile contract', () => {
       data: [],
     };
     expect(() =>
-      parseTrainerEvidenceEnvelope({ evidence: { ...base, schemaVersion: 2 } }, RELATIONSHIP_ID, 'workout_templates'),
+      parseTrainerEvidenceEnvelope(
+        { evidence: { ...base, schemaVersion: 2 } },
+        RELATIONSHIP_ID,
+        'workout_templates',
+      ),
     ).toThrow();
     expect(() =>
-      parseTrainerEvidenceEnvelope({ evidence: base }, OTHER_RELATIONSHIP_ID, 'workout_templates'),
+      parseTrainerEvidenceEnvelope(
+        { evidence: base },
+        OTHER_RELATIONSHIP_ID,
+        'workout_templates',
+      ),
     ).toThrow();
     expect(() =>
-      parseTrainerEvidenceEnvelope({ evidence: base }, RELATIONSHIP_ID, 'training_programs'),
+      parseTrainerEvidenceEnvelope(
+        { evidence: base },
+        RELATIONSHIP_ID,
+        'training_programs',
+      ),
     ).toThrow();
   });
 
