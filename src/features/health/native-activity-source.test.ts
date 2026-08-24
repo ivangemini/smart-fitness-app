@@ -22,12 +22,14 @@ const bridge = (
 
 describe('native activity fact source', () => {
   it('reads one local calendar day and normalizes HealthKit facts', async () => {
-    const readDailyActivity = vi.fn(async ({ endDate }: { endDate: string }) => ({
-      steps: 4321.9,
-      distanceMeters: 3012.45,
-      activeEnergyKcal: 456.7,
-      measuredAt: endDate,
-    }));
+    const readDailyActivity = vi.fn(
+      async ({ endDate }: { startDate: string; endDate: string }) => ({
+        steps: 4321.9,
+        distanceMeters: 3012.45,
+        activeEnergyKcal: 456.7,
+        measuredAt: endDate,
+      }),
+    );
     const source = createNativeActivityFactSource(
       bridge({ readDailyActivity }),
       'healthkit',
