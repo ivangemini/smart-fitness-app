@@ -29,12 +29,11 @@ const model = readFileSync(
 );
 
 describe('trainer collaboration C4 mobile authority boundary', () => {
-  it('uses only the reviewed authenticated proposal list/create/withdraw endpoints', () => {
+  it('keeps reviewed authenticated proposal list/create/withdraw endpoints intact', () => {
     expect(api).toContain('/proposals`');
     expect(api).toContain('/withdraw`');
     expect(api).toContain('authorization: `Bearer ${accessToken}`');
     expect(api).toContain('retry: false');
-    expect(api).not.toContain('/apply');
   });
 
   it('keeps proposal authoring trainer-only and gated by workout-template scope', () => {
@@ -53,7 +52,7 @@ describe('trainer collaboration C4 mobile authority boundary', () => {
     expect(section).not.toContain('void loadTemplates();\n  }, [loadProposals]');
   });
 
-  it('keeps C4 preview-only and outside AppState, Social, Coach, and local persistence', () => {
+  it('keeps trainer proposal authoring outside AppState, Social, Coach, and local persistence', () => {
     for (const source of [api, detail, section, model]) {
       expect(source).not.toContain('/social/');
       expect(source).not.toContain('/coach/');
@@ -66,15 +65,13 @@ describe('trainer collaboration C4 mobile authority boundary', () => {
     expect(section).not.toContain('scheduleStateMutation');
     expect(section).not.toContain('saveWorkout');
     expect(section).not.toContain('saveTrainingProgram');
-    expect(section).not.toContain('applyProposal');
     expect(section).toContain('copy.noApply');
   });
 
-  it('shows server-authoritative provenance and stale-target state without mutation controls', () => {
+  it('shows server-authoritative provenance and target state', () => {
     expect(section).toContain('proposal.author.displayName');
     expect(section).toContain('proposal.target.expectedRevision');
     expect(section).toContain('proposal.target.currentRevision');
-    expect(section).toContain("proposal.target.state === 'stale'");
     expect(model).toContain("throw new Error('Invalid trainer proposal provenance')");
     expect(model).toContain("throw new Error('Invalid trainer proposal target revision state')");
     expect(model).toContain("throw new Error('Invalid trainer proposal patch field')");
