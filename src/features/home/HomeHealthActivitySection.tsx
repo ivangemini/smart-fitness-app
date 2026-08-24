@@ -27,16 +27,10 @@ export function HomeHealthActivitySection() {
   const { energy } = useUnitPreferences();
   const { formatNumber, locale } = useLocalization();
   const copy = getHomeHealthActivityCopy(locale);
-  const { availability, connect, facts, loading, refresh } = useDailyActivityFacts(
-    new Date(),
-    { autoRead: false },
-  );
+  const { availability, connect, facts, hasRead, loading, refresh } =
+    useDailyActivityFacts(new Date(), { autoRead: false });
 
-  if (
-    availability === 'unsupported' ||
-    (!loading && availability === 'unavailable') ||
-    (loading && availability === 'unavailable')
-  ) {
+  if (availability === 'unsupported' || availability === 'unavailable') {
     return null;
   }
 
@@ -82,10 +76,14 @@ export function HomeHealthActivitySection() {
         </View>
       ) : null}
 
-      {!loading && availability === 'available' && !facts ? (
+      {!loading && availability === 'available' && !hasRead ? (
+        <SecondaryButton label={copy.load} onPress={() => void refresh()} />
+      ) : null}
+
+      {!loading && availability === 'available' && hasRead && !facts ? (
         <>
           <Text style={styles.message}>{copy.noData}</Text>
-          <SecondaryButton label={actionLabel} onPress={() => void action()} />
+          <SecondaryButton label={copy.load} onPress={() => void refresh()} />
         </>
       ) : null}
 
