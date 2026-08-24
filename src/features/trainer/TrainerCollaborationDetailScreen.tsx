@@ -14,6 +14,7 @@ import { formatLocalizedDateTime, useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 
 import { TrainerEvidenceView } from './TrainerEvidenceView';
+import { TrainerProposalSection } from './TrainerProposalSection';
 import { createTrainerCollaborationApi } from './trainerCollaborationApi';
 import { getTrainerCollaborationC3Copy } from './trainerCollaborationC3Copy';
 import type { TrainerComment, TrainerEvidence } from './trainerCollaborationC3Model';
@@ -329,6 +330,15 @@ export function TrainerCollaborationDetailScreen({
             <Text style={styles.hint}>{copy.trainerOnlyComment}</Text>
           )}
         </AppCard>
+      ) : null}
+
+      {relationship?.status === 'active' && accessToken ? (
+        <TrainerProposalSection
+          accessToken={accessToken}
+          api={api}
+          locale={locale}
+          relationship={relationship}
+        />
       ) : null}
 
       {relationship?.status === 'active' ? (
