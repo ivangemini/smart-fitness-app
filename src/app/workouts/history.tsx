@@ -241,14 +241,17 @@ export default function WorkoutHistoryRoute() {
 const createStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
     container: {
+      alignSelf: 'center',
       gap: Spacing.three,
       maxWidth: MaxContentWidth,
+      minWidth: 0,
       width: '100%',
     },
     content: {
-      alignItems: 'center',
       gap: Spacing.two,
+      minWidth: 0,
       padding: Spacing.three,
+      width: '100%',
     },
     list: {
       backgroundColor: colors.background,
