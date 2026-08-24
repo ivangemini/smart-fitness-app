@@ -52,4 +52,21 @@ export const getProgressShareCardCopy = (locale: SupportedLocale) => ({
     locale === 'ru'
       ? 'Сформировано из сохранённых данных Smart Fitness'
       : 'Built from recorded Smart Fitness data',
+  shareAction: locale === 'ru' ? 'Поделиться' : 'Share',
+  sharePreviewTitle: locale === 'ru' ? 'Поделиться прогрессом' : 'Share progress',
+  sharePreviewSubtitle:
+    locale === 'ru'
+      ? 'Проверьте карточку перед открытием системного меню.'
+      : 'Review the card before opening the system share sheet.',
+  shareImage: locale === 'ru' ? 'Поделиться карточкой' : 'Share card',
+  shareSummary: locale === 'ru' ? 'Поделиться сводкой' : 'Share summary',
+  sharePrivacy:
+    locale === 'ru'
+      ? 'Отправка начинается только после вашего действия. Фото, заметки и скрытая публикация не добавляются.'
+      : 'Sharing starts only after your action. Photos, notes, and hidden publication are not included.',
+  shareFailed:
+    locale === 'ru'
+      ? 'Не удалось открыть системное меню. Попробуйте ещё раз.'
+      : 'Could not open the system share sheet. Try again.',
+  close: locale === 'ru' ? 'Закрыть' : 'Close',
 });
