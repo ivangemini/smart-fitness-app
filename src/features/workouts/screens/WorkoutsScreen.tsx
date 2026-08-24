@@ -5,8 +5,9 @@ import { FlatList, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
+  FLOATING_COMPANION_ENTRY_GAP,
+  FLOATING_COMPANION_ENTRY_SIZE,
   getFloatingTabBarBottomClearance,
-  getFloatingTabBarStickyActionContentPadding,
 } from '@/components/navigation/floatingTabBarLayout';
 import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
@@ -40,6 +41,12 @@ import {
 import { createWorkoutsScreenStyles } from './workoutsScreen.styles';
 
 export const WORKOUTS_STICKY_ACTION_MIN_HEIGHT = 48;
+
+export const getWorkoutsStickyActionBottom = (bottomInset: number) =>
+  getFloatingTabBarBottomClearance(bottomInset, 0) +
+  FLOATING_COMPANION_ENTRY_GAP +
+  FLOATING_COMPANION_ENTRY_SIZE +
+  Spacing.two;
 
 export default function WorkoutsScreen() {
   const { colors } = useAppTheme();
@@ -99,11 +106,9 @@ export default function WorkoutsScreen() {
   const visibleProgramSummaries = favoritesOnly
     ? programSummaries.filter((summary) => summary.isFavorite)
     : programSummaries;
-  const floatingTabBarClearance = getFloatingTabBarBottomClearance(insets.bottom);
-  const scrollBottomPadding = getFloatingTabBarStickyActionContentPadding(
-    insets.bottom,
-    WORKOUTS_STICKY_ACTION_MIN_HEIGHT,
-  );
+  const stickyActionBottom = getWorkoutsStickyActionBottom(insets.bottom);
+  const scrollBottomPadding =
+    stickyActionBottom + WORKOUTS_STICKY_ACTION_MIN_HEIGHT + Spacing.six;
 
   const startEmptyWorkout = () => {
     const draft = startEmptyWorkoutSessionDraft();
@@ -232,7 +237,7 @@ export default function WorkoutsScreen() {
         />
       )}
 
-      <View pointerEvents="box-none" style={[styles.footer, { bottom: floatingTabBarClearance }]}>
+      <View pointerEvents="box-none" style={[styles.footer, { bottom: stickyActionBottom }]}>
         <View style={styles.container}>
           <PrimaryButton
             accessibilityHint={t(
