@@ -10,6 +10,7 @@ import {
   Palette,
   Ruler,
   ShieldCheck,
+  UsersRound,
   Wrench,
 } from 'lucide-react-native';
 
@@ -55,6 +56,12 @@ export default function SettingsScreen() {
             key: 'profile',
             label: copy.profile,
             onPress: () => router.push('/settings/profile'),
+          },
+          {
+            Icon: UsersRound,
+            key: 'trainer-collaboration',
+            label: copy.trainerCollaboration,
+            onPress: () => router.push('/settings/trainer-collaboration'),
           },
         ]}
         title={copy.account}
