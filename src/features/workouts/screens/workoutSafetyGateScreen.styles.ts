@@ -65,14 +65,17 @@ export const createWorkoutSafetyGateStyles = (
       borderColor: colors.accent,
     },
     container: {
+      alignSelf: 'center',
       gap: Spacing.four,
       maxWidth: MaxContentWidth,
+      minWidth: 0,
       width: '100%',
     },
     content: {
-      alignItems: 'center',
+      minWidth: 0,
       paddingHorizontal: Spacing.three,
       paddingTop: Spacing.three,
+      width: '100%',
     },
     disclaimer: {
       color: colors.textMuted,
