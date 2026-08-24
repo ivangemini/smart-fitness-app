@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronUp, Dumbbell, Scale, Utensils } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import {
   LayoutAnimation,
   Pressable,
@@ -27,6 +27,7 @@ type MacroMetric = {
 };
 
 type HomeDailyMetricsPanelProps = {
+  activityContext?: ReactNode;
   caloriesCurrent: string;
   caloriesProgress: number;
   caloriesTarget: string;
@@ -74,6 +75,7 @@ function ProgressLine({
 }
 
 export function HomeDailyMetricsPanel({
+  activityContext,
   caloriesCurrent,
   caloriesProgress,
   caloriesTarget,
@@ -189,6 +191,8 @@ export function HomeDailyMetricsPanel({
               <Text style={styles.contextValue}>{streakLabel}</Text>
             </View>
           </View>
+
+          {activityContext}
 
           <PrimaryButton
             icon={Dumbbell}
