@@ -30,16 +30,26 @@ describe('workout viewport layout regression guards', () => {
   it('keeps scroll/list content viewport-bound without center-shrinking cell owners', () => {
     viewportStyleFiles.forEach((path) => {
       const source = readSource(path);
-      expect(source, path).toMatch(/container:\s*\{[\s\S]*?alignSelf: 'center',[\s\S]*?minWidth: 0,[\s\S]*?width: '100%',/);
-      expect(source, path).toMatch(/content:\s*\{[\s\S]*?minWidth: 0,[\s\S]*?width: '100%',/);
+      expect(source, path).toMatch(
+        /container:\s*\{[\s\S]*?alignSelf: 'center',[\s\S]*?minWidth: 0,[\s\S]*?width: '100%',/,
+      );
+      expect(source, path).toMatch(
+        /content:\s*\{[\s\S]*?minWidth: 0,[\s\S]*?width: '100%',/,
+      );
       expect(source, path).not.toMatch(/content:\s*\{\s*alignItems: 'center',/);
     });
   });
 
-  it('positions the history control above the workouts sticky action', () => {
-    expect(workoutsScreen).toContain('export const WORKOUTS_STICKY_ACTION_MIN_HEIGHT = 48;');
-    expect(workoutsRoute).toContain('getFloatingTabBarStickyActionContentPadding(');
-    expect(workoutsRoute).toContain('WORKOUTS_STICKY_ACTION_MIN_HEIGHT');
-    expect(workoutsRoute).not.toContain('getFloatingTabBarBottomClearance(');
+  it('keeps the sticky workout action above the history and Companion row', () => {
+    expect(workoutsScreen).toContain('FLOATING_COMPANION_ENTRY_GAP');
+    expect(workoutsScreen).toContain('FLOATING_COMPANION_ENTRY_SIZE');
+    expect(workoutsScreen).toContain('export const getWorkoutsStickyActionBottom');
+    expect(workoutsScreen).toContain('style={[styles.footer, { bottom: stickyActionBottom }]}');
+    expect(workoutsScreen).toContain(
+      'stickyActionBottom + WORKOUTS_STICKY_ACTION_MIN_HEIGHT + Spacing.six',
+    );
+    expect(workoutsRoute).toContain(
+      'getFloatingTabBarBottomClearance(insets.bottom, Spacing.two)',
+    );
   });
 });
