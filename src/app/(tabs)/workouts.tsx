@@ -4,14 +4,10 @@ import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import {
-  getFloatingTabBarStickyActionContentPadding,
-} from '@/components/navigation/floatingTabBarLayout';
+import { getFloatingTabBarBottomClearance } from '@/components/navigation/floatingTabBarLayout';
 import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
-import WorkoutsScreen, {
-  WORKOUTS_STICKY_ACTION_MIN_HEIGHT,
-} from '@/features/workouts/screens/WorkoutsScreen';
+import WorkoutsScreen from '@/features/workouts/screens/WorkoutsScreen';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import {
@@ -28,11 +24,7 @@ export default function WorkoutsRoute() {
   );
   const styles = useMemo(() => createStyles(colors, glass), [colors, glass]);
   const insets = useSafeAreaInsets();
-  const historyBottom = getFloatingTabBarStickyActionContentPadding(
-    insets.bottom,
-    WORKOUTS_STICKY_ACTION_MIN_HEIGHT,
-    Spacing.two,
-  );
+  const historyBottom = getFloatingTabBarBottomClearance(insets.bottom, Spacing.two);
 
   return (
     <View style={styles.screen}>
