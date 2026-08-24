@@ -12,6 +12,7 @@ import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
+import { HomeHealthActivitySection } from '@/features/home/HomeHealthActivitySection';
 import type { HomeSocialCopy } from '@/features/home/homeSocialCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import {
@@ -189,6 +190,8 @@ export function HomeDailyMetricsPanel({
               <Text style={styles.contextValue}>{streakLabel}</Text>
             </View>
           </View>
+
+          <HomeHealthActivitySection />
 
           <PrimaryButton
             icon={Dumbbell}
