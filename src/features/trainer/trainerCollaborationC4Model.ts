@@ -11,7 +11,7 @@ export const TRAINER_PROPOSAL_FIELDS = [
 ] as const;
 
 export type TrainerProposalField = (typeof TRAINER_PROPOSAL_FIELDS)[number];
-export type TrainerProposalStatus = 'pending' | 'withdrawn';
+export type TrainerProposalStatus = 'pending' | 'withdrawn' | 'applied' | 'rejected';
 export type TrainerProposalTargetState = 'current' | 'stale' | 'unavailable';
 
 export type TrainerWorkoutTemplateMetadata = {
@@ -52,6 +52,9 @@ export type TrainerProposal = {
   message: string | null;
   createdAt: string;
   withdrawnAt: string | null;
+  resolvedAt: string | null;
+  appliedRevision: string | null;
+  appliedSyncOperationId: string | null;
 };
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -80,6 +83,9 @@ const requireUuid = (value: unknown, label: string): string => {
   return value;
 };
 
+const requireNullableUuid = (value: unknown, label: string): string | null =>
+  value === null ? null : requireUuid(value, label);
+
 const requireTimestamp = (value: unknown, label: string): string => {
   const timestamp = requireString(value, label);
   if (!Number.isFinite(Date.parse(timestamp))) {
@@ -96,6 +102,11 @@ const requirePositiveRevision = (value: unknown, label: string): string => {
   if (!/^[1-9]\d*$/.test(revision)) throw new Error(`Invalid trainer proposal ${label}`);
   return revision;
 };
+
+const requireNullablePositiveRevision = (
+  value: unknown,
+  label: string,
+): string | null => (value === null ? null : requirePositiveRevision(value, label));
 
 const requireInteger = (
   value: unknown,
@@ -184,6 +195,53 @@ const parseChanges = (
   return parsed;
 };
 
+const parseLifecycle = (
+  raw: Record<string, unknown>,
+  status: TrainerProposalStatus,
+) => {
+  const withdrawnAt = requireNullableTimestamp(raw.withdrawnAt, 'withdrawn at');
+  const resolvedAt = requireNullableTimestamp(raw.resolvedAt, 'resolved at');
+  const appliedRevision = requireNullablePositiveRevision(
+    raw.appliedRevision,
+    'applied revision',
+  );
+  const appliedSyncOperationId = requireNullableUuid(
+    raw.appliedSyncOperationId,
+    'applied sync operation id',
+  );
+
+  const pending =
+    status === 'pending' &&
+    withdrawnAt === null &&
+    resolvedAt === null &&
+    appliedRevision === null &&
+    appliedSyncOperationId === null;
+  const withdrawn =
+    status === 'withdrawn' &&
+    withdrawnAt !== null &&
+    resolvedAt === null &&
+    appliedRevision === null &&
+    appliedSyncOperationId === null;
+  const rejected =
+    status === 'rejected' &&
+    withdrawnAt === null &&
+    resolvedAt !== null &&
+    appliedRevision === null &&
+    appliedSyncOperationId === null;
+  const applied =
+    status === 'applied' &&
+    withdrawnAt === null &&
+    resolvedAt !== null &&
+    appliedRevision !== null &&
+    appliedSyncOperationId !== null;
+
+  if (!pending && !withdrawn && !rejected && !applied) {
+    throw new Error('Invalid trainer proposal lifecycle');
+  }
+
+  return { withdrawnAt, resolvedAt, appliedRevision, appliedSyncOperationId };
+};
+
 export const parseTrainerProposal = (
   value: unknown,
   expectedRelationshipId: string,
@@ -199,9 +257,15 @@ export const parseTrainerProposal = (
   if (raw.proposalType !== TRAINER_PROPOSAL_TYPE) {
     throw new Error('Unsupported trainer proposal type');
   }
-  if (raw.status !== 'pending' && raw.status !== 'withdrawn') {
+  if (
+    raw.status !== 'pending' &&
+    raw.status !== 'withdrawn' &&
+    raw.status !== 'applied' &&
+    raw.status !== 'rejected'
+  ) {
     throw new Error('Invalid trainer proposal status');
   }
+  const status = raw.status;
   const author = requireRecord(raw.author, 'author');
   if (author.role !== 'trainer') throw new Error('Invalid trainer proposal provenance');
   const target = requireRecord(raw.target, 'target');
@@ -224,13 +288,7 @@ export const parseTrainerProposal = (
   const before = parseMetadata(raw.before);
   const patch = parsePatch(raw.patch);
   const changes = parseChanges(raw.changes, buildChanges(before, patch));
-  const withdrawnAt = requireNullableTimestamp(raw.withdrawnAt, 'withdrawn at');
-  if (
-    (raw.status === 'pending' && withdrawnAt !== null) ||
-    (raw.status === 'withdrawn' && withdrawnAt === null)
-  ) {
-    throw new Error('Invalid trainer proposal lifecycle');
-  }
+  const lifecycle = parseLifecycle(raw, status);
   const message =
     raw.message === null ? null : requireBoundedString(raw.message, 'message', 2000);
   return {
@@ -244,7 +302,7 @@ export const parseTrainerProposal = (
           ? null
           : requireBoundedString(author.displayName, 'author name', 160),
     },
-    status: raw.status,
+    status,
     proposalType: TRAINER_PROPOSAL_TYPE,
     target: {
       type: 'workout_template',
@@ -258,7 +316,7 @@ export const parseTrainerProposal = (
     changes,
     message,
     createdAt: requireTimestamp(raw.createdAt, 'created at'),
-    withdrawnAt,
+    ...lifecycle,
   };
 };
 
