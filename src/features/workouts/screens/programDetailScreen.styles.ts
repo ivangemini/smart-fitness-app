@@ -47,14 +47,17 @@ export const createProgramDetailScreenStyles = (
       backgroundColor: glass.controlPressedFill,
     },
     container: {
+      alignSelf: 'center',
       maxWidth: MaxContentWidth,
+      minWidth: 0,
       width: '100%',
     },
     content: {
-      alignItems: 'center',
       backgroundColor: colors.background,
+      minWidth: 0,
       paddingHorizontal: Spacing.three,
       paddingTop: 0,
+      width: '100%',
     },
     cover: {
       alignItems: 'center',
