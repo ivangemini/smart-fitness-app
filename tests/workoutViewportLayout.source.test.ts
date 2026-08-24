@@ -20,13 +20,14 @@ const viewportStyleFiles = [
   'src/features/workouts/screens/workoutHistoryScreen.styles.ts',
   'src/features/workouts/screens/programDetailScreen.styles.ts',
   'src/features/workouts/screens/workoutsScreen.styles.ts',
+  'src/features/nutrition/styles/nutritionScreenStyles.ts',
   'src/app/workouts/history.tsx',
 ] as const;
 
 const workoutsRoute = readSource('src/app/(tabs)/workouts.tsx');
 const workoutsScreen = readSource('src/features/workouts/screens/WorkoutsScreen.tsx');
 
-describe('workout viewport layout regression guards', () => {
+describe('viewport layout regression guards', () => {
   it('keeps scroll/list content viewport-bound without center-shrinking cell owners', () => {
     viewportStyleFiles.forEach((path) => {
       const source = readSource(path);
