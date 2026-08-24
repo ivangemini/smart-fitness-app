@@ -21,6 +21,7 @@ const viewportStyleFiles = [
   'src/features/workouts/screens/programDetailScreen.styles.ts',
   'src/features/workouts/screens/workoutsScreen.styles.ts',
   'src/features/nutrition/styles/nutritionScreenStyles.ts',
+  'src/app/sync-backup.tsx',
   'src/app/workouts/history.tsx',
 ] as const;
 

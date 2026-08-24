@@ -130,14 +130,17 @@ export default function SyncBackupScreen() {
 const createStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
     container: {
+      alignSelf: 'center',
       gap: Spacing.three,
       maxWidth: MaxContentWidth,
+      minWidth: 0,
       width: '100%',
     },
     content: {
-      alignItems: 'center',
       flexGrow: 1,
+      minWidth: 0,
       padding: Spacing.three,
+      width: '100%',
     },
     detail: {
       color: colors.textSecondary,
