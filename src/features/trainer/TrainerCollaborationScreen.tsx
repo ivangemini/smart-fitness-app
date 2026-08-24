@@ -378,4 +378,3 @@ const createStyles = (colors: typeof Colors.light) =>
     scopeText: { color: colors.textPrimary, flex: 1, fontSize: 14, lineHeight: 20 },
     sectionHeader: { gap: Spacing.one },
   });
-}
