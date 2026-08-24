@@ -107,14 +107,17 @@ export const createWorkoutHistoryScreenStyles = (
       lineHeight: Typography.label.lineHeight,
     },
     container: {
+      alignSelf: 'center',
       gap: Spacing.four,
       maxWidth: MaxContentWidth,
+      minWidth: 0,
       width: '100%',
     },
     content: {
-      alignItems: 'center',
+      minWidth: 0,
       paddingHorizontal: Spacing.three,
       paddingTop: Spacing.three,
+      width: '100%',
     },
     controlPressed: {
       backgroundColor: glass.controlPressedFill,
