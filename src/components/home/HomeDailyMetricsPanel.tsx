@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronUp, Dumbbell, Scale, Utensils } from 'lucide-react-native';
-import { useMemo, useState, type ReactNode } from 'react';
+import { useMemo, useState } from 'react';
 import {
   LayoutAnimation,
   Pressable,
@@ -12,6 +12,7 @@ import { LiquidGlassSurface } from '@/components/ui/LiquidGlassSurface';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
+import { HomeHealthActivitySection } from '@/features/home/HomeHealthActivitySection';
 import type { HomeSocialCopy } from '@/features/home/homeSocialCopy';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 import {
@@ -27,7 +28,6 @@ type MacroMetric = {
 };
 
 type HomeDailyMetricsPanelProps = {
-  activityContext?: ReactNode;
   caloriesCurrent: string;
   caloriesProgress: number;
   caloriesTarget: string;
@@ -75,7 +75,6 @@ function ProgressLine({
 }
 
 export function HomeDailyMetricsPanel({
-  activityContext,
   caloriesCurrent,
   caloriesProgress,
   caloriesTarget,
@@ -192,7 +191,7 @@ export function HomeDailyMetricsPanel({
             </View>
           </View>
 
-          {activityContext}
+          <HomeHealthActivitySection />
 
           <PrimaryButton
             icon={Dumbbell}
