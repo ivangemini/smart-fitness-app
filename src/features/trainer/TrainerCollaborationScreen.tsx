@@ -1,5 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 
 import { getMobileApiBaseUrl } from '@/api';
 import { createApiClient } from '@/api/client';
@@ -29,6 +30,7 @@ const INVITE_BUSY_KEY = 'invite';
 
 export function TrainerCollaborationScreen() {
   const auth = useContext(AuthContext);
+  const router = useRouter();
   const { colors } = useAppTheme();
   const { locale } = useLocalization();
   const copy = useMemo(() => getTrainerCollaborationCopy(locale), [locale]);
@@ -146,6 +148,13 @@ export function TrainerCollaborationScreen() {
     }
   };
 
+  const openCollaboration = (relationshipId: string) => {
+    router.push({
+      pathname: '/settings/trainer-collaboration/[relationshipId]',
+      params: { relationshipId },
+    });
+  };
+
   const counterpartLabel = (relationship: TrainerRelationshipView) =>
     relationship.counterpart.displayName?.trim() ||
     `${copy.counterpartFallback} · ${relationship.counterpart.userId.slice(0, 8)}`;
@@ -259,6 +268,15 @@ export function TrainerCollaborationScreen() {
 
                     {relationship.status === 'invited' && relationship.role === 'client' ? (
                       <Text style={styles.hint}>{copy.awaitingAcceptance}</Text>
+                    ) : null}
+
+                    {relationship.status === 'active' ? (
+                      <AppButton
+                        disabled={Boolean(busyKey)}
+                        label={copy.openCollaboration}
+                        onPress={() => openCollaboration(relationship.id)}
+                        variant="secondary"
+                      />
                     ) : null}
 
                     {canAccept ? (
