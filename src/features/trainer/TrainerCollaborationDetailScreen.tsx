@@ -10,7 +10,7 @@ import { AppCard } from '@/components/ui/AppCard';
 import { FormField } from '@/components/ui/FormField';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { SettingsScreenLayout } from '@/features/settings/SettingsScreenLayout';
-import { useLocalization } from '@/localization';
+import { formatLocalizedDateTime, useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 
 import { TrainerEvidenceView } from './TrainerEvidenceView';
@@ -40,15 +40,6 @@ const EMPTY_EVIDENCE_STATE: EvidenceLoadState = {
   error: false,
   loading: false,
 };
-
-const formatTimestamp = (value: string, locale: string) =>
-  new Date(value).toLocaleString(locale, {
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
 
 export function TrainerCollaborationDetailScreen({
   relationshipId,
@@ -297,7 +288,7 @@ export function TrainerCollaborationDetailScreen({
                     {comment.author.displayName?.trim() || copy.humanTrainer}
                   </Text>
                   <Text style={styles.commentTime}>
-                    {formatTimestamp(comment.createdAt, locale)}
+                    {formatLocalizedDateTime(comment.createdAt, locale)}
                   </Text>
                 </View>
                 <Text style={styles.commentBody}>{comment.body}</Text>
