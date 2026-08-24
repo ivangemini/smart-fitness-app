@@ -3,14 +3,19 @@ type SupportedCopyLocale = 'ru' | 'en';
 const COPY = {
   ru: {
     title: 'Предложения тренера',
-    subtitle: 'Предпросмотр изменений без автоматического применения.',
+    subtitle: 'Просмотрите изменения перед отдельным решением применить или отклонить их.',
     refresh: 'Обновить',
     loading: 'Загрузка предложений…',
     empty: 'Предложений пока нет.',
     unavailable: 'Не удалось загрузить предложения.',
     humanTrainer: 'Тренер',
     status: 'Статус',
-    statuses: { pending: 'Ожидает', withdrawn: 'Отозвано' },
+    statuses: {
+      pending: 'Ожидает решения',
+      withdrawn: 'Отозвано',
+      applied: 'Применено',
+      rejected: 'Отклонено',
+    },
     targetState: 'Состояние шаблона',
     targetStates: {
       current: 'Актуален',
@@ -18,7 +23,9 @@ const COPY = {
       unavailable: 'Шаблон больше недоступен',
     },
     createdAt: 'Создано',
+    resolvedAt: 'Решение принято',
     targetRevision: 'Версия',
+    appliedRevision: 'Применённая версия',
     message: 'Комментарий тренера',
     changes: 'Предлагаемые изменения',
     before: 'Сейчас',
@@ -31,7 +38,17 @@ const COPY = {
       cadencePerWeek: 'Тренировок в неделю',
     },
     noApply:
-      'Это только предложение. В этой версии клиент не может применить его из этого экрана; прямое изменение тренировок тренером отключено.',
+      'Тренер не может менять тренировку напрямую. Только клиент отдельно применяет или отклоняет ожидающее предложение.',
+    apply: 'Применить изменения',
+    reject: 'Отклонить предложение',
+    applyFailed:
+      'Не удалось применить предложение. Обновите список: доступ или версия шаблона могли измениться.',
+    rejectFailed:
+      'Не удалось отклонить предложение. Обновите список и проверьте актуальный статус.',
+    staleApplyBlocked:
+      'Применение отключено: версия шаблона уже изменилась. Предложение можно только отклонить.',
+    appliedHint: 'Изменения применены после явного решения клиента.',
+    rejectedHint: 'Предложение отклонено клиентом и больше не может быть применено.',
     withdrawnHint: 'Отозванное предложение нельзя применить.',
     staleHint: 'Предпросмотр сохранён, но исходный шаблон уже изменился.',
     withdraw: 'Отозвать предложение',
@@ -60,14 +77,19 @@ const COPY = {
   },
   en: {
     title: 'Trainer proposals',
-    subtitle: 'Review suggested changes without automatic application.',
+    subtitle: 'Review changes before separately choosing to apply or reject them.',
     refresh: 'Refresh',
     loading: 'Loading proposals…',
     empty: 'No proposals yet.',
     unavailable: 'Proposals are unavailable.',
     humanTrainer: 'Trainer',
     status: 'Status',
-    statuses: { pending: 'Pending', withdrawn: 'Withdrawn' },
+    statuses: {
+      pending: 'Awaiting decision',
+      withdrawn: 'Withdrawn',
+      applied: 'Applied',
+      rejected: 'Rejected',
+    },
     targetState: 'Template state',
     targetStates: {
       current: 'Current',
@@ -75,7 +97,9 @@ const COPY = {
       unavailable: 'Template is no longer available',
     },
     createdAt: 'Created',
+    resolvedAt: 'Decision made',
     targetRevision: 'Revision',
+    appliedRevision: 'Applied revision',
     message: 'Trainer note',
     changes: 'Suggested changes',
     before: 'Current',
@@ -88,7 +112,17 @@ const COPY = {
       cadencePerWeek: 'Sessions per week',
     },
     noApply:
-      'This is a proposal only. This version does not let the client apply it from this screen; direct trainer workout mutation is disabled.',
+      'The trainer cannot mutate workouts directly. Only the client can separately apply or reject a pending proposal.',
+    apply: 'Apply changes',
+    reject: 'Reject proposal',
+    applyFailed:
+      'Could not apply the proposal. Refresh the list because access or the template revision may have changed.',
+    rejectFailed:
+      'Could not reject the proposal. Refresh the list and check its current status.',
+    staleApplyBlocked:
+      'Apply is disabled because the template revision changed. The proposal can only be rejected.',
+    appliedHint: 'Changes were applied after an explicit client decision.',
+    rejectedHint: 'The client rejected this proposal and it can no longer be applied.',
     withdrawnHint: 'A withdrawn proposal cannot be applied.',
     staleHint: 'The preview is preserved, but the source template has changed.',
     withdraw: 'Withdraw proposal',
