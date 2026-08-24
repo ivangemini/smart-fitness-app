@@ -42,7 +42,7 @@ export function HomeHealthActivitySection() {
     <View style={styles.section}>
       <View style={styles.header}>
         <Text style={styles.title}>{copy.activity}</Text>
-        <Text style={styles.source}>{copy.source}</Text>
+        <Text style={styles.sourceLabel}>{copy.sourceLabel}</Text>
       </View>
 
       {loading ? <Text style={styles.message}>{copy.loading}</Text> : null}
@@ -129,7 +129,7 @@ const createStyles = (colors: typeof Colors.light) =>
     section: {
       gap: Spacing.three,
     },
-    source: {
+    sourceLabel: {
       color: colors.textSecondary,
       fontSize: Typography.caption.fontSize,
     },
