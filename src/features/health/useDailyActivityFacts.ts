@@ -9,6 +9,7 @@ import type { HealthActivityAvailability } from './steps-contract';
 export type DailyActivityFactsState = {
   availability: HealthActivityAvailability;
   facts: DailyActivityFacts | null;
+  hasRead: boolean;
   loading: boolean;
   connect: () => Promise<void>;
   refresh: () => Promise<void>;
@@ -32,6 +33,7 @@ export function useDailyActivityFacts(
   >({
     availability: 'unavailable',
     facts: null,
+    hasRead: false,
     loading: true,
   });
 
@@ -47,16 +49,24 @@ export function useDailyActivityFacts(
           mode === 'request_permission'
             ? await source.requestReadPermission()
             : await source.getAvailability();
-        const facts =
-          includeFacts && availability === 'available'
-            ? await source.readDailyActivity(localDate)
-            : null;
+        const shouldRead = includeFacts && availability === 'available';
+        const facts = shouldRead ? await source.readDailyActivity(localDate) : null;
         if (mountedRef.current) {
-          setState({ availability, facts, loading: false });
+          setState({
+            availability,
+            facts,
+            hasRead: shouldRead,
+            loading: false,
+          });
         }
       } catch {
         if (mountedRef.current) {
-          setState({ availability: 'unavailable', facts: null, loading: false });
+          setState({
+            availability: 'unavailable',
+            facts: null,
+            hasRead: false,
+            loading: false,
+          });
         }
       }
     },
