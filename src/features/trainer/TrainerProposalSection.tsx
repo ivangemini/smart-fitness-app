@@ -6,7 +6,10 @@ import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
 import { FormField } from '@/components/ui/FormField';
 import { Colors, Spacing, Typography } from '@/constants/theme';
-import { formatLocalizedDateTime } from '@/localization';
+import {
+  formatLocalizedDateTime,
+  type SupportedLocale,
+} from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 
 import type { TrainerCollaborationApi } from './trainerCollaborationApi';
@@ -22,7 +25,7 @@ import type { TrainerRelationshipView } from './trainerCollaborationModel';
 type Props = {
   accessToken: string;
   api: TrainerCollaborationApi;
-  locale: string;
+  locale: SupportedLocale;
   relationship: TrainerRelationshipView;
 };
 
