@@ -10,6 +10,7 @@ const RELATIONSHIP_ID = '11111111-1111-4111-8111-111111111111';
 const OTHER_RELATIONSHIP_ID = '22222222-2222-4222-8222-222222222222';
 const PROPOSAL_ID = '33333333-3333-4333-8333-333333333333';
 const TARGET_ID = '44444444-4444-4444-8444-444444444444';
+const SYNC_OPERATION_ID = '55555555-5555-4555-8555-555555555555';
 
 const proposal = {
   schemaVersion: 1,
@@ -40,10 +41,13 @@ const proposal = {
   message: 'Shift the next block toward hypertrophy.',
   createdAt: '2026-08-24T08:00:00.000Z',
   withdrawnAt: null,
+  resolvedAt: null,
+  appliedRevision: null,
+  appliedSyncOperationId: null,
 } as const;
 
-describe('trainer collaboration C4 mobile contract', () => {
-  it('parses an exact preview-only workout-template metadata proposal', () => {
+describe('trainer collaboration C4/C5 mobile proposal contract', () => {
+  it('parses an exact workout-template metadata proposal', () => {
     const parsed = parseTrainerProposalEnvelope({ proposal }, RELATIONSHIP_ID);
 
     expect(parsed.id).toBe(PROPOSAL_ID);
@@ -156,7 +160,7 @@ describe('trainer collaboration C4 mobile contract', () => {
     ).toThrow();
   });
 
-  it('keeps pending and withdrawn lifecycle timestamps consistent', () => {
+  it('keeps pending and withdrawn lifecycle fields consistent', () => {
     expect(() =>
       parseTrainerProposal(
         { ...proposal, withdrawnAt: '2026-08-24T09:00:00.000Z' },
@@ -179,5 +183,51 @@ describe('trainer collaboration C4 mobile contract', () => {
       RELATIONSHIP_ID,
     );
     expect(withdrawn.status).toBe('withdrawn');
+  });
+
+  it('parses applied and rejected outcomes only with valid provenance fields', () => {
+    const applied = parseTrainerProposal(
+      {
+        ...proposal,
+        status: 'applied',
+        target: { ...proposal.target, currentRevision: '3', state: 'stale' },
+        resolvedAt: '2026-08-24T09:00:00.000Z',
+        appliedRevision: '3',
+        appliedSyncOperationId: SYNC_OPERATION_ID,
+      },
+      RELATIONSHIP_ID,
+    );
+    expect(applied.status).toBe('applied');
+    expect(applied.appliedRevision).toBe('3');
+    expect(applied.appliedSyncOperationId).toBe(SYNC_OPERATION_ID);
+
+    const rejected = parseTrainerProposal(
+      {
+        ...proposal,
+        status: 'rejected',
+        resolvedAt: '2026-08-24T09:00:00.000Z',
+      },
+      RELATIONSHIP_ID,
+    );
+    expect(rejected.status).toBe('rejected');
+    expect(rejected.appliedRevision).toBeNull();
+
+    expect(() =>
+      parseTrainerProposal(
+        { ...proposal, status: 'applied', resolvedAt: '2026-08-24T09:00:00.000Z' },
+        RELATIONSHIP_ID,
+      ),
+    ).toThrow();
+    expect(() =>
+      parseTrainerProposal(
+        {
+          ...proposal,
+          status: 'rejected',
+          resolvedAt: '2026-08-24T09:00:00.000Z',
+          appliedRevision: '3',
+        },
+        RELATIONSHIP_ID,
+      ),
+    ).toThrow();
   });
 });
