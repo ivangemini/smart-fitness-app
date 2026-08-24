@@ -9,7 +9,7 @@ export type HomeHealthActivityCopy = {
   load: string;
   loading: string;
   noData: string;
-  source: string;
+  sourceLabel: string;
   steps: string;
 };
 
@@ -23,7 +23,7 @@ const copy: Record<SupportedLocale, HomeHealthActivityCopy> = {
     load: 'Load Apple Health activity',
     loading: 'Reading Apple Health…',
     noData: 'No Apple Health activity samples are available for today.',
-    source: 'Apple Health',
+    sourceLabel: 'Apple Health',
     steps: 'Steps',
   },
   ru: {
@@ -35,7 +35,7 @@ const copy: Record<SupportedLocale, HomeHealthActivityCopy> = {
     load: 'Загрузить активность Apple Health',
     loading: 'Читаем Apple Health…',
     noData: 'За сегодня в Apple Health нет доступных данных активности.',
-    source: 'Apple Health',
+    sourceLabel: 'Apple Health',
     steps: 'Шаги',
   },
 };
