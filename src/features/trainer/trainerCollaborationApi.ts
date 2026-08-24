@@ -1,6 +1,13 @@
 import type { ApiClient } from '@/api/client';
 
 import {
+  parseTrainerCommentEnvelope,
+  parseTrainerCommentsEnvelope,
+  parseTrainerEvidenceEnvelope,
+  type TrainerComment,
+  type TrainerEvidence,
+} from './trainerCollaborationC3Model';
+import {
   parseTrainerRelationshipEnvelope,
   parseTrainerRelationshipsEnvelope,
   type TrainerReadScope,
@@ -15,6 +22,17 @@ export type TrainerCollaborationApi = {
   ): Promise<TrainerRelationship>;
   acceptInvitation(accessToken: string, relationshipId: string): Promise<TrainerRelationship>;
   revokeRelationship(accessToken: string, relationshipId: string): Promise<TrainerRelationship>;
+  loadEvidence(
+    accessToken: string,
+    relationshipId: string,
+    scope: TrainerReadScope,
+  ): Promise<TrainerEvidence>;
+  listComments(accessToken: string, relationshipId: string): Promise<TrainerComment[]>;
+  createComment(
+    accessToken: string,
+    relationshipId: string,
+    input: { body: string; idempotencyKey: string },
+  ): Promise<TrainerComment>;
 };
 
 const authHeaders = (accessToken: string) => ({
@@ -63,5 +81,33 @@ export const createTrainerCollaborationApi = (apiClient: ApiClient): TrainerColl
       },
     );
     return parseTrainerRelationshipEnvelope(response);
+  },
+
+  async loadEvidence(accessToken, relationshipId, scope) {
+    const response = await apiClient.get<unknown>(
+      `/v1/trainer/relationships/${encodeURIComponent(relationshipId)}/evidence/${encodeURIComponent(scope)}`,
+      { headers: authHeaders(accessToken) },
+    );
+    return parseTrainerEvidenceEnvelope(response, relationshipId, scope);
+  },
+
+  async listComments(accessToken, relationshipId) {
+    const response = await apiClient.get<unknown>(
+      `/v1/trainer/relationships/${encodeURIComponent(relationshipId)}/comments`,
+      { headers: authHeaders(accessToken) },
+    );
+    return parseTrainerCommentsEnvelope(response, relationshipId);
+  },
+
+  async createComment(accessToken, relationshipId, input) {
+    const response = await apiClient.post<unknown, typeof input>(
+      `/v1/trainer/relationships/${encodeURIComponent(relationshipId)}/comments`,
+      input,
+      {
+        headers: authHeaders(accessToken),
+        retry: false,
+      },
+    );
+    return parseTrainerCommentEnvelope(response, relationshipId);
   },
 });
