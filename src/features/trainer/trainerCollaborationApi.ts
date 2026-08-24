@@ -8,6 +8,12 @@ import {
   type TrainerEvidence,
 } from './trainerCollaborationC3Model';
 import {
+  parseTrainerProposalEnvelope,
+  parseTrainerProposalsEnvelope,
+  type TrainerProposal,
+  type TrainerWorkoutTemplateMetadataPatch,
+} from './trainerCollaborationC4Model';
+import {
   parseTrainerRelationshipEnvelope,
   parseTrainerRelationshipsEnvelope,
   type TrainerReadScope,
@@ -33,6 +39,23 @@ export type TrainerCollaborationApi = {
     relationshipId: string,
     input: { body: string; idempotencyKey: string },
   ): Promise<TrainerComment>;
+  listProposals(accessToken: string, relationshipId: string): Promise<TrainerProposal[]>;
+  createProposal(
+    accessToken: string,
+    relationshipId: string,
+    input: {
+      proposalType: 'workout_template_metadata_patch';
+      targetId: string;
+      patch: TrainerWorkoutTemplateMetadataPatch;
+      message?: string | null;
+      idempotencyKey: string;
+    },
+  ): Promise<TrainerProposal>;
+  withdrawProposal(
+    accessToken: string,
+    relationshipId: string,
+    proposalId: string,
+  ): Promise<TrainerProposal>;
 };
 
 const authHeaders = (accessToken: string) => ({
@@ -109,5 +132,37 @@ export const createTrainerCollaborationApi = (apiClient: ApiClient): TrainerColl
       },
     );
     return parseTrainerCommentEnvelope(response, relationshipId);
+  },
+
+  async listProposals(accessToken, relationshipId) {
+    const response = await apiClient.get<unknown>(
+      `/v1/trainer/relationships/${encodeURIComponent(relationshipId)}/proposals`,
+      { headers: authHeaders(accessToken) },
+    );
+    return parseTrainerProposalsEnvelope(response, relationshipId);
+  },
+
+  async createProposal(accessToken, relationshipId, input) {
+    const response = await apiClient.post<unknown, typeof input>(
+      `/v1/trainer/relationships/${encodeURIComponent(relationshipId)}/proposals`,
+      input,
+      {
+        headers: authHeaders(accessToken),
+        retry: false,
+      },
+    );
+    return parseTrainerProposalEnvelope(response, relationshipId);
+  },
+
+  async withdrawProposal(accessToken, relationshipId, proposalId) {
+    const response = await apiClient.post<unknown, Record<string, never>>(
+      `/v1/trainer/relationships/${encodeURIComponent(relationshipId)}/proposals/${encodeURIComponent(proposalId)}/withdraw`,
+      {},
+      {
+        headers: authHeaders(accessToken),
+        retry: false,
+      },
+    );
+    return parseTrainerProposalEnvelope(response, relationshipId);
   },
 });
