@@ -28,6 +28,7 @@ export function useDailyActivityFacts(
   const localDate = formatLocalDate(date);
   const autoRead = options.autoRead ?? true;
   const mountedRef = useRef(true);
+  const requestIdRef = useRef(0);
   const [state, setState] = useState<
     Omit<DailyActivityFactsState, 'connect' | 'refresh'>
   >({
@@ -39,6 +40,7 @@ export function useDailyActivityFacts(
 
   const read = useCallback(
     async (mode: ActivityReadMode, includeFacts: boolean) => {
+      const requestId = ++requestIdRef.current;
       const source = getActivityFactSource();
       if (mountedRef.current) {
         setState((current) => ({ ...current, loading: true }));
@@ -51,7 +53,7 @@ export function useDailyActivityFacts(
             : await source.getAvailability();
         const shouldRead = includeFacts && availability === 'available';
         const facts = shouldRead ? await source.readDailyActivity(localDate) : null;
-        if (mountedRef.current) {
+        if (mountedRef.current && requestId === requestIdRef.current) {
           setState({
             availability,
             facts,
@@ -60,7 +62,7 @@ export function useDailyActivityFacts(
           });
         }
       } catch {
-        if (mountedRef.current) {
+        if (mountedRef.current && requestId === requestIdRef.current) {
           setState({
             availability: 'unavailable',
             facts: null,
@@ -78,6 +80,7 @@ export function useDailyActivityFacts(
     void read('check', autoRead);
     return () => {
       mountedRef.current = false;
+      requestIdRef.current += 1;
     };
   }, [autoRead, read]);
 
