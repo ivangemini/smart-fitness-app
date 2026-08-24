@@ -33,10 +33,15 @@ describe('Workouts hub material convergence', () => {
     expect(stylesSource).not.toContain('footerLabel:');
   });
 
-  it('keeps the sticky action tied to shared tab-bar clearance geometry', () => {
-    expect(screenSource).toContain('getFloatingTabBarBottomClearance(insets.bottom)');
-    expect(screenSource).toContain('getFloatingTabBarStickyActionContentPadding');
-    expect(screenSource).toContain('bottom: floatingTabBarClearance');
+  it('keeps the sticky action above the shared auxiliary tab-bar controls', () => {
+    expect(screenSource).toContain('getFloatingTabBarBottomClearance(bottomInset, 0)');
+    expect(screenSource).toContain('FLOATING_COMPANION_ENTRY_GAP');
+    expect(screenSource).toContain('FLOATING_COMPANION_ENTRY_SIZE');
+    expect(screenSource).toContain('getWorkoutsStickyActionBottom(insets.bottom)');
+    expect(screenSource).toContain('bottom: stickyActionBottom');
+    expect(screenSource).toContain(
+      'stickyActionBottom + WORKOUTS_STICKY_ACTION_MIN_HEIGHT + Spacing.six',
+    );
     expect(stylesSource).toContain("position: 'absolute'");
   });
 

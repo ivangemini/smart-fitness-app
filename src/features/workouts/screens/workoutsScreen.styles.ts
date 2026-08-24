@@ -163,14 +163,17 @@ export const createModalStyles = (colors: typeof Colors.light) =>
 export const createWorkoutsScreenStyles = (colors: typeof Colors.light) =>
   StyleSheet.create({
     container: {
+      alignSelf: 'center',
       maxWidth: MaxContentWidth,
+      minWidth: 0,
       width: '100%',
     },
     content: {
-      alignItems: 'center',
       flexGrow: 1,
+      minWidth: 0,
       paddingHorizontal: Spacing.three,
       paddingTop: Spacing.two,
+      width: '100%',
     },
     emptyProgramText: {
       color: colors.textMuted,

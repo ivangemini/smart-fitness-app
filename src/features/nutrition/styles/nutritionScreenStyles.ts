@@ -38,14 +38,17 @@ export const createStyles = (colors: typeof Colors.dark, glass: LiquidGlassPalet
       paddingHorizontal: Spacing.two,
     },
     container: {
+      alignSelf: 'center',
       gap: Spacing.three,
       maxWidth: MaxContentWidth,
+      minWidth: 0,
       width: '100%',
     },
     content: {
-      alignItems: 'center',
+      minWidth: 0,
       paddingHorizontal: Spacing.three,
       paddingTop: Spacing.three,
+      width: '100%',
     },
     controlPressed: {
       backgroundColor: glass.controlPressedFill,

@@ -28,13 +28,16 @@ export const createStyles = (colors: typeof Colors.light) => {
       fontWeight: '700',
     },
     container: {
+      alignSelf: 'center',
       maxWidth: MaxContentWidth,
+      minWidth: 0,
       width: '100%',
     },
     content: {
-      alignItems: 'center',
+      minWidth: 0,
       paddingHorizontal: Spacing.four,
       paddingTop: 0,
+      width: '100%',
     },
     emptyState: {
       color: colors.textSecondary,
