@@ -49,13 +49,14 @@ export const getTrainerCollaborationCopy = (locale: string) => {
     relationships: ru ? 'Связи' : 'Relationships',
     empty: ru ? 'Связей с тренером пока нет.' : 'No trainer relationships yet.',
     refresh: ru ? 'Обновить' : 'Refresh',
+    openCollaboration: ru ? 'Открыть совместную работу' : 'Open collaboration',
     accept: ru ? 'Принять' : 'Accept',
     revoke: ru ? 'Отозвать доступ' : 'Revoke access',
     cancelInvitation: ru ? 'Отменить приглашение' : 'Cancel invitation',
     awaitingAcceptance: ru ? 'Ждём принятия тренером.' : 'Waiting for the trainer to accept.',
     privacy: ru
-      ? 'C2 не даёт тренеру права менять тренировки, программы или прогресс. Прямые записи в фитнес-данные отключены.'
-      : 'C2 does not let a trainer change workouts, programs, or progress. Direct fitness mutations remain disabled.',
+      ? 'Связь даёт только явно выбранные права чтения и комментарии человека-тренера. Прямые записи тренера в фитнес-данные отключены.'
+      : 'The relationship grants only explicitly selected reads and human trainer comments. Direct trainer writes to fitness data remain disabled.',
     accountRequired: ru ? 'Войдите в аккаунт, чтобы управлять связями.' : 'Sign in to manage trainer relationships.',
     unavailable: ru
       ? 'Не удалось загрузить связи. Проверьте подключение и доступность сервера.'
