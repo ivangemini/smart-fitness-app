@@ -240,7 +240,7 @@ export default function HomeScreen() {
       <View style={styles.headerRow}>
         <View style={styles.headerActions}>
           <LiquidGlassIconButton
-            accessibilityLabel={russian ? 'Поиск профилей и сообществ' : 'Search profiles and communities'}
+            accessibilityLabel={russian ? 'Поиск профилей' : 'Search profiles'}
             Icon={Search}
             onPress={() => router.push('/social')}
             testID="home-social-search-button"
