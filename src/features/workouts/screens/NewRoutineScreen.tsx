@@ -184,11 +184,11 @@ export function NewRoutineScreen() {
           accessibilityRole="button"
           onPress={() => router.back()}
           style={({ pressed }) => [styles.navButton, pressed && styles.navButtonPressed]}>
-          <Text numberOfLines={2} style={styles.navButtonLabel}>
+          <Text numberOfLines={1} style={styles.navButtonLabel}>
             {copy.cancel}
           </Text>
         </Pressable>
-        <Text numberOfLines={2} style={styles.headerTitle}>
+        <Text numberOfLines={1} style={styles.headerTitle}>
           {copy.newRoutine}
         </Text>
         <Pressable
@@ -202,7 +202,7 @@ export function NewRoutineScreen() {
             !canSave && styles.disabled,
             pressed && canSave && styles.navButtonPressed,
           ]}>
-          <Text numberOfLines={2} style={styles.navButtonLabel}>
+          <Text numberOfLines={1} style={styles.navButtonLabel}>
             {copy.save}
           </Text>
         </Pressable>
@@ -340,54 +340,60 @@ export function NewRoutineScreen() {
                     value={item.notes}
                   />
                   <Text style={styles.restTimer}>{copy.restTimerOff}</Text>
-                  <View style={styles.planTableHeader}>
-                    <Text style={[styles.tableHeaderText, styles.colSet]}>
-                      {copy.set}
-                    </Text>
-                    <Text style={[styles.tableHeaderText, styles.colPrevious]}>
-                      {copy.previous}
-                    </Text>
-                    <Text style={[styles.tableHeaderText, styles.colWeight]}>
-                      {weight}
-                    </Text>
-                    <Text style={[styles.tableHeaderText, styles.colReps]}>
-                      {copy.repsHeader}
-                    </Text>
-                  </View>
-                  {Array.from({ length: item.targetSets }, (_, index) => (
-                    <View key={`${item.exercise.id}-row-${index}`} style={styles.planSetRow}>
-                      <Text style={[styles.planSetText, styles.colSet]}>
-                        {formatNumber(index + 1, { maximumFractionDigits: 0 })}
+                  <View style={styles.planTable}>
+                    <View style={styles.planTableHeader}>
+                      <Text numberOfLines={1} style={[styles.tableHeaderText, styles.colSet]}>
+                        {copy.set}
                       </Text>
-                      <Text style={[styles.planPrevious, styles.colPrevious]}>
-                        {index === 0
-                          ? '—'
-                          : copy.reps(
-                              item.targetReps,
-                              formatNumber(item.targetReps, {
-                                maximumFractionDigits: 0,
-                              }),
-                            )}
+                      <Text
+                        numberOfLines={1}
+                        style={[styles.tableHeaderText, styles.colPrevious]}>
+                        {copy.previous}
                       </Text>
-                      <TextInput
-                        accessibilityLabel={`${item.exercise.name} ${weight}`}
-                        keyboardType="decimal-pad"
-                        selectionColor={colors.accent}
-                        style={[styles.planInput, styles.colWeight]}
-                      />
-                      <TextInput
-                        accessibilityLabel={`${item.exercise.name} ${copy.repsHeader}`}
-                        keyboardType="number-pad"
-                        onChangeText={(value) =>
-                          updatePlanExercise(item.exercise.id, {
-                            targetReps: Number.parseInt(value, 10) || 8,
-                          })
-                        }
-                        selectionColor={colors.accent}
-                        style={[styles.planInput, styles.colReps]}
-                      />
+                      <Text
+                        numberOfLines={1}
+                        style={[styles.tableHeaderText, styles.colWeight]}>
+                        {weight}
+                      </Text>
+                      <Text numberOfLines={1} style={[styles.tableHeaderText, styles.colReps]}>
+                        {copy.repsHeader}
+                      </Text>
                     </View>
-                  ))}
+                    <View style={styles.planTableBody}>
+                      {Array.from({ length: item.targetSets }, (_, index) => (
+                        <View key={`${item.exercise.id}-row-${index}`} style={styles.planSetRow}>
+                          <Text style={[styles.planSetText, styles.colSet]}>
+                            {formatNumber(index + 1, { maximumFractionDigits: 0 })}
+                          </Text>
+                          <Text
+                            numberOfLines={1}
+                            style={[styles.planPrevious, styles.colPrevious]}>
+                            —
+                          </Text>
+                          <TextInput
+                            accessibilityLabel={`${item.exercise.name} ${weight}`}
+                            keyboardType="decimal-pad"
+                            placeholder="—"
+                            placeholderTextColor={colors.textSecondary}
+                            selectionColor={colors.accent}
+                            style={[styles.planInput, styles.colWeight]}
+                          />
+                          <TextInput
+                            accessibilityLabel={`${item.exercise.name} ${copy.repsHeader}`}
+                            keyboardType="number-pad"
+                            onChangeText={(value) =>
+                              updatePlanExercise(item.exercise.id, {
+                                targetReps: Number.parseInt(value, 10) || 8,
+                              })
+                            }
+                            selectionColor={colors.accent}
+                            style={[styles.planInput, styles.colReps]}
+                            value={formatNumber(item.targetReps, { maximumFractionDigits: 0 })}
+                          />
+                        </View>
+                      ))}
+                    </View>
+                  </View>
                   <Pressable
                     accessibilityLabel={copy.addSetForExercise(item.exercise.name)}
                     accessibilityRole="button"
@@ -408,6 +414,7 @@ export function NewRoutineScreen() {
           );
         }}
         showsVerticalScrollIndicator={false}
+        style={styles.list}
       />
 
       <RoutineExercisePickerModal
