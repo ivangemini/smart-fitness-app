@@ -22,11 +22,12 @@ describe('LG-5 Workouts creation/detail secondary material convergence', () => {
     expect(programStyles).not.toContain('colors.surfaceSecondary');
   });
 
-  it('uses glass card/control material for routine thumbnails and set inputs', () => {
+  it('keeps routine exercise and set materials aligned with the active session', () => {
     expect(routineScreen).toContain('resolveLiquidGlassPalette(resolvedAppearance)');
     expect(routineScreen).toContain('createStyles(colors, glass)');
-    expect(routineStyles).toContain('backgroundColor: glass.cardFill');
-    expect(routineStyles).toContain('borderColor: glass.cardBorder');
+    expect(routineStyles).toContain("backgroundColor: '#FFFFFF'");
+    expect(routineStyles).toContain("borderColor: '#F3F3F3'");
+    expect(routineStyles).toContain('backgroundColor: colors.background');
     expect(routineStyles).toContain('backgroundColor: glass.controlFill');
     expect(routineStyles).toContain('borderColor: glass.controlBorder');
     expect(routineStyles).not.toContain('colors.surfacePrimary');
