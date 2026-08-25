@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { User } from 'lucide-react-native';
+import { Bell, Search, User } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -87,6 +87,7 @@ export default function HomeScreen() {
   const todayKey = formatLocalDate(new Date());
   const { refresh: refreshSteps, steps } = useHomeDailySteps(todayKey);
   const [activeDraftReady, setActiveDraftReady] = useState(false);
+  const russian = locale.toLowerCase().startsWith('ru');
 
   useEffect(() => {
     if (isRestoringState) return;
@@ -237,13 +238,26 @@ export default function HomeScreen() {
   const listHeader = (
     <View style={styles.headerContent}>
       <View style={styles.headerRow}>
-        <Text style={styles.headerTitle}>{t('tabs.home')}</Text>
-        <LiquidGlassIconButton
-          accessibilityLabel={t('home.openProfile')}
-          Icon={User}
-          onPress={() => router.push('/(tabs)/profile')}
-          testID="home-profile-glass-button"
-        />
+        <View style={styles.headerActions}>
+          <LiquidGlassIconButton
+            accessibilityLabel={russian ? 'Поиск профилей и сообществ' : 'Search profiles and communities'}
+            Icon={Search}
+            onPress={() => router.push('/social')}
+            testID="home-social-search-button"
+          />
+          <LiquidGlassIconButton
+            accessibilityLabel={russian ? 'Социальные уведомления' : 'Social notifications'}
+            Icon={Bell}
+            onPress={() => router.push('/social/notifications')}
+            testID="home-social-notifications-button"
+          />
+          <LiquidGlassIconButton
+            accessibilityLabel={t('home.openProfile')}
+            Icon={User}
+            onPress={() => router.push('/(tabs)/profile')}
+            testID="home-profile-glass-button"
+          />
+        </View>
       </View>
 
       <HomeDailyMetricsPanel
@@ -422,6 +436,11 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
       fontWeight: Typography.cardTitle.fontWeight,
       lineHeight: Typography.cardTitle.lineHeight,
     },
+    headerActions: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: Spacing.two,
+    },
     headerContent: {
       alignSelf: 'center',
       gap: Spacing.three,
@@ -432,16 +451,8 @@ const createStyles = (colors: typeof Colors.light, glass: LiquidGlassPalette) =>
     headerRow: {
       alignItems: 'center',
       flexDirection: 'row',
-      gap: Spacing.two,
-      justifyContent: 'space-between',
-    },
-    headerTitle: {
-      color: colors.textPrimary,
-      flexShrink: 1,
-      fontSize: Typography.screenTitle.fontSize,
-      fontWeight: Typography.screenTitle.fontWeight,
-      lineHeight: Typography.screenTitle.lineHeight,
-      minWidth: 0,
+      justifyContent: 'flex-end',
+      width: '100%',
     },
     screen: { backgroundColor: glass.backgroundBase, flex: 1 },
     storyErrorCard: { gap: Spacing.two },
