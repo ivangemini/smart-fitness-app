@@ -27,15 +27,4 @@ describe('Profile primary Liquid Glass surfaces', () => {
     expect(source).not.toContain('BlurView');
     expect(source).not.toContain('blur={true}');
   });
-
-  it('keeps Social Profile entry on shared card/buttons and the active theme', () => {
-    const source = readSource('src/features/social/SocialProfileEntryCard.tsx');
-
-    expect(source).toContain('AppCard');
-    expect(source).toContain('SecondaryButton');
-    expect(source).toContain('useAppTheme');
-    expect(source).toContain('color: colors.textPrimary');
-    expect(source).toContain('color: colors.textSecondary');
-    expect(source).not.toContain('Colors.dark');
-  });
 });

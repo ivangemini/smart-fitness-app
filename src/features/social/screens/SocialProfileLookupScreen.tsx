@@ -1,5 +1,12 @@
 import { useMemo, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -9,16 +16,20 @@ import { FormField } from '@/components/ui/FormField';
 import { LiquidGlassIconButton } from '@/components/ui/LiquidGlassIconButton';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
-import { Colors, MaxContentWidth, Spacing, Typography } from '@/constants/theme';
+import { SecondaryButton } from '@/components/ui/SecondaryButton';
+import { Colors, MaxContentWidth, Radii, Spacing, Typography } from '@/constants/theme';
 import { useAuthSession } from '@/hooks/useAuthSession';
 import { useLocalization } from '@/localization';
 import { useAppTheme } from '@/theme/AppThemeProvider';
 
+import { getSocialDiscoveryCopy } from '../socialDiscoveryCopy';
 import { getSocialPublicProfileCopy } from '../socialPublicProfileCopy';
 import {
   normalizeSocialLookupUsername,
   validateSocialLookupUsername,
 } from '../socialPublicProfileModel';
+
+type DiscoveryTab = 'profiles' | 'subscriptions';
 
 export default function SocialProfileLookupScreen() {
   const router = useRouter();
@@ -27,7 +38,9 @@ export default function SocialProfileLookupScreen() {
   const { locale, t } = useLocalization();
   const { isAuthenticated, ready } = useAuthSession();
   const copy = getSocialPublicProfileCopy(locale);
+  const discoveryCopy = getSocialDiscoveryCopy(locale);
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const [activeTab, setActiveTab] = useState<DiscoveryTab>('profiles');
   const [username, setUsername] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const validation = validateSocialLookupUsername(username);
@@ -45,6 +58,26 @@ export default function SocialProfileLookupScreen() {
       pathname: '/social/[username]',
       params: { username: normalizeSocialLookupUsername(username) },
     });
+  };
+
+  const renderTab = (tab: DiscoveryTab, label: string) => {
+    const selected = activeTab === tab;
+    return (
+      <Pressable
+        accessibilityRole="tab"
+        accessibilityState={{ selected }}
+        key={tab}
+        onPress={() => setActiveTab(tab)}
+        style={({ pressed }) => [
+          styles.tab,
+          selected && styles.tabSelected,
+          pressed && styles.tabPressed,
+        ]}>
+        <Text numberOfLines={1} style={[styles.tabLabel, selected && styles.tabLabelSelected]}>
+          {label}
+        </Text>
+      </Pressable>
+    );
   };
 
   return (
@@ -68,9 +101,9 @@ export default function SocialProfileLookupScreen() {
             onPress={() => router.back()}
           />
           <View style={styles.headerCopy}>
-            <Text style={styles.eyebrow}>{copy.findEyebrow}</Text>
-            <Text style={styles.title}>{copy.findTitle}</Text>
-            <Text style={styles.subtitle}>{copy.findSubtitle}</Text>
+            <Text style={styles.eyebrow}>{discoveryCopy.eyebrow}</Text>
+            <Text style={styles.title}>{discoveryCopy.title}</Text>
+            <Text style={styles.subtitle}>{discoveryCopy.subtitle}</Text>
           </View>
         </View>
 
@@ -84,31 +117,57 @@ export default function SocialProfileLookupScreen() {
           <AppCard>
             <Text style={styles.cardTitle}>{copy.signInTitle}</Text>
             <Text style={styles.body}>{copy.signInBody}</Text>
-            <PrimaryButton
-              label={copy.signInAction}
-              onPress={() => router.push('/auth/sign-in')}
-            />
+            <PrimaryButton label={copy.signInAction} onPress={() => router.push('/auth/sign-in')} />
           </AppCard>
         ) : null}
 
         {ready && isAuthenticated ? (
-          <AppCard>
-            <FormField
-              autoCapitalize="none"
-              autoCorrect={false}
-              errorMessage={validationMessage}
-              helperText={copy.usernameHelp}
-              label={copy.username}
-              maxLength={30}
-              onChangeText={setUsername}
-              onSubmitEditing={openProfile}
-              placeholder={copy.usernamePlaceholder}
-              returnKeyType="search"
-              textContentType="username"
-              value={username}
-            />
-            <PrimaryButton label={copy.openProfile} onPress={openProfile} />
-          </AppCard>
+          <>
+            <View style={styles.tabs}>
+              {renderTab('profiles', discoveryCopy.profilesTab)}
+              {renderTab('subscriptions', discoveryCopy.subscriptionsTab)}
+            </View>
+
+            {activeTab === 'profiles' ? (
+              <AppCard style={styles.card}>
+                <Text style={styles.cardTitle}>{discoveryCopy.profileSectionTitle}</Text>
+                <FormField
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  errorMessage={validationMessage}
+                  helperText={copy.usernameHelp}
+                  label={copy.username}
+                  maxLength={30}
+                  onChangeText={setUsername}
+                  onSubmitEditing={openProfile}
+                  placeholder={copy.usernamePlaceholder}
+                  returnKeyType="search"
+                  textContentType="username"
+                  value={username}
+                />
+                <PrimaryButton label={copy.openProfile} onPress={openProfile} />
+                <SecondaryButton
+                  label={discoveryCopy.manageProfile}
+                  onPress={() => router.push('/settings/social-profile')}
+                />
+              </AppCard>
+            ) : null}
+
+            {activeTab === 'subscriptions' ? (
+              <AppCard style={styles.card}>
+                <Text style={styles.cardTitle}>{discoveryCopy.subscriptionsTitle}</Text>
+                <Text style={styles.body}>{discoveryCopy.subscriptionsBody}</Text>
+                <PrimaryButton
+                  label={discoveryCopy.relationships}
+                  onPress={() => router.push('/social/relationships')}
+                />
+                <SecondaryButton
+                  label={discoveryCopy.followingFeed}
+                  onPress={() => router.push('/social/feed')}
+                />
+              </AppCard>
+            ) : null}
+          </>
         ) : null}
       </View>
     </ScrollView>
@@ -122,17 +181,25 @@ const createStyles = (colors: typeof Colors.light) =>
       fontSize: Typography.body.fontSize,
       lineHeight: Typography.body.lineHeight,
     },
+    card: { gap: Spacing.three },
     cardTitle: {
       color: colors.textPrimary,
       fontSize: Typography.cardTitle.fontSize,
       fontWeight: Typography.cardTitle.fontWeight,
       lineHeight: Typography.cardTitle.lineHeight,
     },
-    container: { gap: Spacing.four, maxWidth: MaxContentWidth, width: '100%' },
+    container: {
+      alignSelf: 'center',
+      gap: Spacing.four,
+      maxWidth: MaxContentWidth,
+      minWidth: 0,
+      width: '100%',
+    },
     content: {
-      alignItems: 'center',
       flexGrow: 1,
+      minWidth: 0,
       paddingHorizontal: Spacing.four,
+      width: '100%',
     },
     eyebrow: {
       color: colors.accent,
@@ -148,6 +215,33 @@ const createStyles = (colors: typeof Colors.light) =>
       flexShrink: 1,
       fontSize: Typography.body.fontSize,
       lineHeight: Typography.body.lineHeight,
+    },
+    tab: {
+      alignItems: 'center',
+      borderColor: colors.border,
+      borderRadius: Radii.pill,
+      borderWidth: StyleSheet.hairlineWidth,
+      flex: 1,
+      justifyContent: 'center',
+      minHeight: 42,
+      minWidth: 0,
+      paddingHorizontal: Spacing.one,
+    },
+    tabLabel: {
+      color: colors.textSecondary,
+      flexShrink: 1,
+      fontSize: 13,
+      fontWeight: '700',
+      textAlign: 'center',
+    },
+    tabLabelSelected: { color: colors.textPrimary },
+    tabPressed: { opacity: 0.72 },
+    tabSelected: { backgroundColor: colors.surfaceSecondary },
+    tabs: {
+      flexDirection: 'row',
+      gap: Spacing.one,
+      minWidth: 0,
+      width: '100%',
     },
     title: {
       color: colors.textPrimary,

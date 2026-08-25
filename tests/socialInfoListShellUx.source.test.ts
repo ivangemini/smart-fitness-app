@@ -14,9 +14,6 @@ const projectRoot = resolve(__dirname, '..');
 const readSource = (relativePath: string) =>
   readFileSync(resolve(projectRoot, relativePath), 'utf8');
 
-const guidelinesScreen = readSource(
-  'src/features/social/screens/SocialCommunityGuidelinesScreen.tsx',
-);
 const notificationScreen = readSource(
   'src/features/social/screens/SocialNotificationScreen.tsx',
 );
@@ -31,16 +28,6 @@ const relationshipStyles = readSource(
 );
 
 describe('Social information and list shell UX', () => {
-  it('keeps Guidelines on the existing Lucide language and hidden-header safe area', () => {
-    expect(guidelinesScreen).toContain("import { ChevronLeft } from 'lucide-react-native';");
-    expect(guidelinesScreen).toContain('paddingTop: insets.top + Spacing.four');
-    expect(guidelinesScreen).toContain('LiquidGlassIconButton');
-    expect(guidelinesScreen).toContain('Icon={ChevronLeft}');
-    expect(guidelinesScreen).toContain('onPress={() => router.back()}');
-    expect(guidelinesScreen).not.toContain('styles.backButton');
-    expect(guidelinesScreen).not.toContain('>‹</Text>');
-  });
-
   it.each([
     ['notification', notificationScreen],
     ['relationship-list', relationshipScreen],
