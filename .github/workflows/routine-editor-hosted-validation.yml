@@ -1,0 +1,38 @@
+name: Routine Editor Hosted Validation
+
+on:
+  push:
+    branches:
+      - ci/routine-editor-hosted-validation
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript
+        run: npm run typecheck
+
+      - name: Full regression suite
+        run: npm test
+
+      - name: Expo export
+        run: npx expo export --clear
+
+      - name: Expo Doctor
+        run: npx expo-doctor@1.20.1
