@@ -29,7 +29,7 @@ import {
   validateSocialLookupUsername,
 } from '../socialPublicProfileModel';
 
-type DiscoveryTab = 'profiles' | 'communities' | 'subscriptions';
+type DiscoveryTab = 'profiles' | 'subscriptions';
 
 export default function SocialProfileLookupScreen() {
   const router = useRouter();
@@ -125,7 +125,6 @@ export default function SocialProfileLookupScreen() {
           <>
             <View style={styles.tabs}>
               {renderTab('profiles', discoveryCopy.profilesTab)}
-              {renderTab('communities', discoveryCopy.communitiesTab)}
               {renderTab('subscriptions', discoveryCopy.subscriptionsTab)}
             </View>
 
@@ -150,17 +149,6 @@ export default function SocialProfileLookupScreen() {
                 <SecondaryButton
                   label={discoveryCopy.manageProfile}
                   onPress={() => router.push('/settings/social-profile')}
-                />
-              </AppCard>
-            ) : null}
-
-            {activeTab === 'communities' ? (
-              <AppCard style={styles.card}>
-                <Text style={styles.cardTitle}>{discoveryCopy.communitiesTitle}</Text>
-                <Text style={styles.body}>{discoveryCopy.communitiesBody}</Text>
-                <SecondaryButton
-                  label={discoveryCopy.communityGuidelines}
-                  onPress={() => router.push('/social/guidelines')}
                 />
               </AppCard>
             ) : null}
