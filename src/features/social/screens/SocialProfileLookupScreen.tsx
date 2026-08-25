@@ -126,7 +126,7 @@ export default function SocialProfileLookupScreen() {
 
         {ready && isAuthenticated ? (
           <>
-            <View accessibilityRole="tablist" style={styles.tabs}>
+            <View style={styles.tabs}>
               {renderTab('profiles', copy.profilesTab)}
               {renderTab('communities', copy.communitiesTab)}
               {renderTab('subscriptions', copy.subscriptionsTab)}
@@ -234,7 +234,7 @@ const createStyles = (colors: typeof Colors.light) =>
     tab: {
       alignItems: 'center',
       borderColor: colors.border,
-      borderRadius: Radii.full,
+      borderRadius: Radii.pill,
       borderWidth: StyleSheet.hairlineWidth,
       flex: 1,
       justifyContent: 'center',
