@@ -37,8 +37,8 @@ export default function SocialProfileLookupScreen() {
   const { colors } = useAppTheme();
   const { locale, t } = useLocalization();
   const { isAuthenticated, ready } = useAuthSession();
-  const profileCopy = getSocialPublicProfileCopy(locale);
-  const copy = getSocialDiscoveryCopy(locale);
+  const copy = getSocialPublicProfileCopy(locale);
+  const discoveryCopy = getSocialDiscoveryCopy(locale);
   const styles = useMemo(() => createStyles(colors), [colors]);
   const [activeTab, setActiveTab] = useState<DiscoveryTab>('profiles');
   const [username, setUsername] = useState('');
@@ -47,8 +47,8 @@ export default function SocialProfileLookupScreen() {
   const validationMessage =
     submitted && validation
       ? validation === 'required'
-        ? profileCopy.validationRequired
-        : profileCopy.validationFormat
+        ? copy.validationRequired
+        : copy.validationFormat
       : undefined;
 
   const openProfile = () => {
@@ -101,57 +101,54 @@ export default function SocialProfileLookupScreen() {
             onPress={() => router.back()}
           />
           <View style={styles.headerCopy}>
-            <Text style={styles.eyebrow}>{copy.eyebrow}</Text>
-            <Text style={styles.title}>{copy.title}</Text>
-            <Text style={styles.subtitle}>{copy.subtitle}</Text>
+            <Text style={styles.eyebrow}>{discoveryCopy.eyebrow}</Text>
+            <Text style={styles.title}>{discoveryCopy.title}</Text>
+            <Text style={styles.subtitle}>{discoveryCopy.subtitle}</Text>
           </View>
         </View>
 
         {!ready ? (
           <AppCard>
-            <LoadingState label={profileCopy.loading} />
+            <LoadingState label={copy.loading} />
           </AppCard>
         ) : null}
 
         {ready && !isAuthenticated ? (
           <AppCard>
-            <Text style={styles.cardTitle}>{profileCopy.signInTitle}</Text>
-            <Text style={styles.body}>{profileCopy.signInBody}</Text>
-            <PrimaryButton
-              label={profileCopy.signInAction}
-              onPress={() => router.push('/auth/sign-in')}
-            />
+            <Text style={styles.cardTitle}>{copy.signInTitle}</Text>
+            <Text style={styles.body}>{copy.signInBody}</Text>
+            <PrimaryButton label={copy.signInAction} onPress={() => router.push('/auth/sign-in')} />
           </AppCard>
         ) : null}
 
         {ready && isAuthenticated ? (
           <>
             <View style={styles.tabs}>
-              {renderTab('profiles', copy.profilesTab)}
-              {renderTab('communities', copy.communitiesTab)}
-              {renderTab('subscriptions', copy.subscriptionsTab)}
+              {renderTab('profiles', discoveryCopy.profilesTab)}
+              {renderTab('communities', discoveryCopy.communitiesTab)}
+              {renderTab('subscriptions', discoveryCopy.subscriptionsTab)}
             </View>
 
             {activeTab === 'profiles' ? (
               <AppCard style={styles.card}>
-                <Text style={styles.cardTitle}>{copy.profileSectionTitle}</Text>
+                <Text style={styles.cardTitle}>{discoveryCopy.profileSectionTitle}</Text>
                 <FormField
                   autoCapitalize="none"
                   autoCorrect={false}
                   errorMessage={validationMessage}
-                  helperText={profileCopy.usernameHelp}
-                  label={profileCopy.username}
+                  helperText={copy.usernameHelp}
+                  label={copy.username}
                   maxLength={30}
                   onChangeText={setUsername}
                   onSubmitEditing={openProfile}
-                  placeholder={profileCopy.usernamePlaceholder}
+                  placeholder={copy.usernamePlaceholder}
                   returnKeyType="search"
                   textContentType="username"
                   value={username}
                 />
-                <PrimaryButton label={profileCopy.openProfile} onPress={openProfile} />
+                <PrimaryButton label={copy.openProfile} onPress={openProfile} />
                 <SecondaryButton
-                  label={copy.manageProfile}
+                  label={discoveryCopy.manageProfile}
                   onPress={() => router.push('/settings/social-profile')}
                 />
               </AppCard>
@@ -159,10 +156,10 @@ export default function SocialProfileLookupScreen() {
 
             {activeTab === 'communities' ? (
               <AppCard style={styles.card}>
-                <Text style={styles.cardTitle}>{copy.communitiesTitle}</Text>
-                <Text style={styles.body}>{copy.communitiesBody}</Text>
+                <Text style={styles.cardTitle}>{discoveryCopy.communitiesTitle}</Text>
+                <Text style={styles.body}>{discoveryCopy.communitiesBody}</Text>
                 <SecondaryButton
-                  label={copy.communityGuidelines}
+                  label={discoveryCopy.communityGuidelines}
                   onPress={() => router.push('/social/guidelines')}
                 />
               </AppCard>
@@ -170,14 +167,14 @@ export default function SocialProfileLookupScreen() {
 
             {activeTab === 'subscriptions' ? (
               <AppCard style={styles.card}>
-                <Text style={styles.cardTitle}>{copy.subscriptionsTitle}</Text>
-                <Text style={styles.body}>{copy.subscriptionsBody}</Text>
+                <Text style={styles.cardTitle}>{discoveryCopy.subscriptionsTitle}</Text>
+                <Text style={styles.body}>{discoveryCopy.subscriptionsBody}</Text>
                 <PrimaryButton
-                  label={copy.relationships}
+                  label={discoveryCopy.relationships}
                   onPress={() => router.push('/social/relationships')}
                 />
                 <SecondaryButton
-                  label={copy.followingFeed}
+                  label={discoveryCopy.followingFeed}
                   onPress={() => router.push('/social/feed')}
                 />
               </AppCard>
