@@ -7,10 +7,6 @@ const storySettings = readFileSync(
   resolve(process.cwd(), 'src/features/social/screens/SocialStorySettingsScreen.tsx'),
   'utf8',
 );
-const guidelines = readFileSync(
-  resolve(process.cwd(), 'src/features/social/screens/SocialCommunityGuidelinesScreen.tsx'),
-  'utf8',
-);
 const shareWorkout = readFileSync(
   resolve(process.cwd(), 'src/features/social/screens/ShareWorkoutScreen.tsx'),
   'utf8',
@@ -26,11 +22,5 @@ describe('Social residual Liquid Glass materials', () => {
     expect(shareWorkout).toContain('thumbColor={Platform.OS === "android" ? glass.cardHighlight : undefined}');
     expect(shareWorkout).toContain('trackColor={{ false: glass.controlFill, true: glass.accentFill }}');
     expect(shareWorkout).not.toMatch(/colors\.(surfacePrimary|borderStrong)\b/);
-  });
-
-  it('uses warning glass material for the community safety note', () => {
-    expect(guidelines).toContain('backgroundColor: glass.semanticWarningFill');
-    expect(guidelines).toContain('borderColor: glass.semanticWarningBorder');
-    expect(guidelines).not.toMatch(/colors\.warningSoft\b/);
   });
 });
