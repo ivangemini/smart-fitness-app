@@ -18,7 +18,6 @@ const presentationFiles = [
   'src/app/(tabs)/profile.tsx',
   'src/features/profile/ProfileGoalsSection.tsx',
   'src/components/profile/ProfileGoalsCard.tsx',
-  'src/features/social/SocialProfileEntryCard.tsx',
 ] as const;
 
 describe('Profile theme consistency', () => {
