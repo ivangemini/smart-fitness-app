@@ -1,12 +1,14 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-const readSource = (path) => readFileSync(resolve(process.cwd(), path), 'utf8');
+const resolveSource = (path) => resolve(process.cwd(), path);
+const readSource = (path) => readFileSync(resolveSource(path), 'utf8');
 
 const home = readSource('src/app/(tabs)/index.tsx');
 const profile = readSource('src/app/(tabs)/profile.tsx');
 const discovery = readSource('src/features/social/screens/SocialProfileLookupScreen.tsx');
+const discoveryCopy = readSource('src/features/social/socialDiscoveryCopy.ts');
 const settings = readSource('src/app/settings/index.tsx');
 const updates = readSource('src/app/settings/updates.tsx');
 
@@ -23,12 +25,16 @@ describe('home social navigation and OTA controls', () => {
     expect(profile).not.toContain('SocialProfileEntryCard');
   });
 
-  it('consolidates profile discovery and subscriptions', () => {
-    expect(discovery).toContain("type DiscoveryTab = 'profiles' | 'communities' | 'subscriptions'");
+  it('consolidates profile discovery and subscriptions without communities', () => {
+    expect(discovery).toContain("type DiscoveryTab = 'profiles' | 'subscriptions'");
     expect(discovery).toContain("router.push('/settings/social-profile')");
     expect(discovery).toContain("router.push('/social/relationships')");
     expect(discovery).toContain("router.push('/social/feed')");
-    expect(discovery).toContain("router.push('/social/guidelines')");
+    expect(discovery).not.toContain('communities');
+    expect(discovery).not.toContain("router.push('/social/guidelines')");
+    expect(discoveryCopy.toLowerCase()).not.toContain('communit');
+    expect(discoveryCopy).not.toContain('Сообществ');
+    expect(existsSync(resolveSource('src/app/social/guidelines.tsx'))).toBe(false);
   });
 
   it('restores a normal settings entry for OTA update checks', () => {
