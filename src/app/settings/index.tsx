@@ -8,6 +8,7 @@ import {
   KeyRound,
   Languages,
   Palette,
+  RefreshCw,
   Ruler,
   ShieldCheck,
   UsersRound,
@@ -120,6 +121,12 @@ export default function SettingsScreen() {
 
       <SettingsNavigationGroup
         rows={[
+          {
+            Icon: RefreshCw,
+            key: 'updates',
+            label: copy.updates,
+            onPress: () => router.push('/settings/updates'),
+          },
           {
             Icon: Info,
             key: 'about',
