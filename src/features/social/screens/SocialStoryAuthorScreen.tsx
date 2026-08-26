@@ -54,6 +54,7 @@ export default function SocialStoryAuthorScreen() {
     captionLabel: { color: colors.textPrimary, fontSize: Typography.bodyEmphasized.fontSize, fontWeight: Typography.bodyEmphasized.fontWeight },
     captionCount: { color: colors.textSecondary, fontSize: Typography.caption.fontSize },
     captionInput: { backgroundColor: glass.controlFill, borderColor: glass.controlBorder, borderRadius: 18, borderWidth: StyleSheet.hairlineWidth, color: colors.textPrimary, fontSize: Typography.body.fontSize, minHeight: 52, paddingHorizontal: Spacing.three, paddingVertical: Spacing.two },
+    captionInputDisabled: { backgroundColor: glass.disabledFill, borderColor: glass.disabledBorder },
     statusCard: { gap: Spacing.two },
     actions: { gap: Spacing.two },
   }), [colors, glass]);
@@ -111,7 +112,7 @@ export default function SocialStoryAuthorScreen() {
         <SocialStoryOverlayEditor copy={{ label: copy.overlayLabel, placeholder: copy.overlayPlaceholder, placementLabel: copy.overlayPlacementLabel, placements: { top: copy.overlayTop, center: copy.overlayCenter, bottom: copy.overlayBottom } }} disabled={busy} onPlacementChange={authoring.setOverlayPlacement} onTextChange={authoring.setOverlayText} placement={authoring.overlayPlacement} value={authoring.overlayText} />
         <View style={styles.captionField}>
           <View style={styles.captionHeader}><Text style={styles.captionLabel}>{copy.captionLabel}</Text><Text style={styles.captionCount}>{authoring.caption.length}/{SOCIAL_STORY_CAPTION_MAX_LENGTH}</Text></View>
-          <TextInput accessibilityLabel={copy.captionLabel} editable={!busy} maxLength={SOCIAL_STORY_CAPTION_MAX_LENGTH} onChangeText={authoring.setCaption} placeholder={ru ? 'Добавьте подпись…' : copy.captionPlaceholder} placeholderTextColor={colors.textSecondary} style={styles.captionInput} value={authoring.caption} />
+          <TextInput accessibilityLabel={copy.captionLabel} editable={!busy} maxLength={SOCIAL_STORY_CAPTION_MAX_LENGTH} onChangeText={authoring.setCaption} placeholder={ru ? 'Добавьте подпись…' : copy.captionPlaceholder} placeholderTextColor={colors.textSecondary} style={[styles.captionInput, busy ? styles.captionInputDisabled : null]} value={authoring.caption} />
         </View>
         <SocialStoryAudienceSelector copy={expansionCopy} disabled={busy} onChange={authoring.setAudience} value={authoring.audience} />
         {operationLabel || statusLabel || authoring.errorMessage ? <AppCard style={styles.statusCard}>{operationLabel ? <Text style={styles.body}>{operationLabel}</Text> : null}{!operationLabel && statusLabel ? <Text style={styles.body}>{statusLabel}</Text> : null}{authoring.errorMessage ? <InlineError message={authoring.errorMessage} /> : null}</AppCard> : null}
